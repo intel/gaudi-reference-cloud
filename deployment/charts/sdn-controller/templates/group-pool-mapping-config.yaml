@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: group-pool-mapping-config
+data:
+  group_pool_mapping_config.json: |
+    {{ .Values.managerConfig.groupToPoolMappingConfigJson | toJson | indent 4 }} 

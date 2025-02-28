@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    pcDatabase:
+      url: {{ include "idc-common.add-db-url" . }}
+      usernameFile: /vault/secrets/pc_db_username
+      passwordFile: /vault/secrets/pc_db_password
+    defaultRegions:
+    {{- range $regions := $.Values.regions }}
+      - name: {{ $regions.name }}
+        friendlyName: {{ $regions.friendlyName }}
+        type: {{ $regions.type }}
+        subnet: {{ $regions.subnet }}
+        availabilityZone: {{ $regions.availabilityZone }}
+        prefix: {{ $regions.prefix }}
+        isDefault: {{ $regions.default }}
+        apiDns: {{ $regions.apiDns }}
+        environment: {{ $regions.environment }}
+    {{- end }}

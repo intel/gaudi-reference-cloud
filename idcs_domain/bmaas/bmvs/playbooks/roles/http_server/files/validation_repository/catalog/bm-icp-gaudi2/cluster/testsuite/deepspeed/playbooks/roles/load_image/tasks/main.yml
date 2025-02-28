@@ -1,0 +1,45 @@
+---
+# Load Docker Image and Launch Docker Container on all nodes
+
+- name: Export docker image package to other nodes
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/build_image/files/"
+    dest: "{{ val_dir }}"
+
+- name: Fetch original checksum
+  slurp:
+    src: "{{ playbook_dir }}/roles/build_image/files/images/checksum.txt"
+  register: original_checksum
+  delegate_to: node-0
+
+- name: Calculate new checksum
+  shell: sha256sum "{{ val_dir }}/images/btower.tar" | awk '{ print $1 }'
+  register: fetched_checksum
+
+- name: Verify checksum
+  fail:
+    msg: "Checksums don't match. The image might be corrupted!"
+  when: original_checksum.content | b64decode != fetched_checksum.stdout
+
+- name: Load Docker image on all nodes
+  command: docker load -i "{{ val_dir }}/images/btower.tar"
+  become: yes
+  register: successful_image_copied
+  changed_when: successful_image_copied.stdout != ""
+  ignore_errors: yes
+
+- name: Verify Docker image has been loaded
+  debug:
+    msg: "Docker image btower has been loaded on all nodes"
+  when: successful_image_copied.stdout != ""
+
+- name: Launch Docker Container
+  command: sh "{{ val_dir }}"/launch_container.sh
+  args:
+    chdir: "{{ val_dir }}"
+  register: container_output
+  changed_when: false
+
+- name: Verify successful launch of docker containers on all nodes
+  debug:
+    msg: "Docker container {{ container_output.stdout }} has been launched."  

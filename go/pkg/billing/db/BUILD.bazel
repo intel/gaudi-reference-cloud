@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "db",
+    srcs = ["migrations.go"],
+    embedsrcs = [
+        "migrations/20230424100044_billing_tables.down.sql",
+        "migrations/20230424100044_billing_tables.up.sql",
+        "migrations/20230508060640_billing_tables.up.sql",
+        "migrations/20230511043259_billing_tables.up.sql",
+        "migrations/20230912043259_billing_tables.up.sql",
+        "migrations/20240116043259_billing_notifications_tables.down.sql",
+        "migrations/20240116043259_billing_notifications_tables.up.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing/db",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,39 @@
+metadata:
+  name: "iks-a100-u22-cd-wk-1-30-3-v20250129"
+spec:
+  displayName: IKS Ubuntu 22.04 Worker for BM v1.30.3 released on 2025-01-29
+  description: IKS Ubuntu 22.04 Worker for BM v1.30.3 released on 2025-01-29
+  hidden: true
+  instanceCategories:
+    - BareMetalHost
+  instanceTypes:
+    - bm-spr-a100-4
+  md5sum: "19f041854c887083e1fe2c7356425d83"
+  sha256sum: "ecaa9b45836427e3c338711e43629a8071606b39e4b04841d81dc8a66ce0e82e"
+  sha512sum: "45b8eb7c0370a400f98531b5b500f9d611527a7427df8fff2b92b742799a9b60cba2c87535a71ffded1c45253cf48793eb519c502d7b240abf31ad1f9c38c6f2"
+  virtualSizeBytes: 64424509440
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (Baremetal only)
+    kernelVersion: 5.17 (mainline)
+    iks: "true"
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+    - IKS
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: IKS Core Components
+      type: Software kit
+      version: "1.30.3"
+      description: core set of tools for Kubernetes.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20sthttps://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: sdp

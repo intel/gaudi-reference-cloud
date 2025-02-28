@@ -1,0 +1,6 @@
+apiVersion: v2
+name: idc-versions
+description: A psuedo-chart that contains the versions of all other IDC charts.
+type: library
+version: 0.1.0
+appVersion: "0.1.0"

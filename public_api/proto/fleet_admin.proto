@@ -1,0 +1,99 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+//
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://protobuf.dev/programming-guides/proto3/
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+import "fleet_common.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "fleet-admin-api-server";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+service FleetAdminService {
+  // Get the list of compute node pools that the CloudAccount is allowed to launch instances in.
+  rpc SearchComputeNodePoolsForInstanceScheduling(SearchComputeNodePoolsForInstanceSchedulingRequest) returns (SearchComputeNodePoolsForInstanceSchedulingResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/computenodepools"
+    };
+  };
+  // Update the list of compute node pools that the CloudAccount is allowed to launch instances in.
+  // DEPRECATED. WILL BE REPLACED WITH AddCloudAccountToComputeNodePool AND DeleteCloudAccountFromComputeNodePool.
+  rpc UpdateComputeNodePoolsForCloudAccount(UpdateComputeNodePoolsForCloudAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{cloudAccountId}/computenodepools"
+      body: "*"
+    };
+  };
+  // Ping returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/fleetadmin/ping"
+    };
+  };
+  // Get the list of patches which needs to be applied on the resource (Nodes/BaremetalHosts)
+  rpc GetResourcePatches(GetResourcePatchesRequest) returns (GetResourcePatchesResponse) {};
+
+  
+  // Sync the Fleet Admin DB with latest NodeStatistics
+  rpc ReportNodeStatistics(ReportNodeStatisticsRequest) returns (google.protobuf.Empty) {};
+
+}
+
+message SearchComputeNodePoolsForInstanceSchedulingRequest {
+  string cloudAccountId = 1;
+}
+
+message SearchComputeNodePoolsForInstanceSchedulingResponse {
+  repeated ComputeNodePoolForInstanceScheduling computeNodePools = 1;
+}
+
+message UpdateComputeNodePoolsForCloudAccountRequest {
+  string cloudAccountId = 1;
+  repeated ComputeNodePoolForInstanceScheduling computeNodePools = 2;
+  string createAdmin = 3;
+}
+
+message ComputeNodePoolForInstanceScheduling {
+  string poolId = 1;
+}
+
+message GetResourcePatchesRequest {
+  string clusterId = 1;
+  string region = 2;
+  string availabilityZone = 3;
+}
+
+message ResourcePatch {
+  // For VMaaS, this is the K8s node resource name. For BMaaS, this is the Metal3 BareMetalHost resource name
+  string nodeName = 1;
+  // For BMaaS, this is the namespace of the Metal3 BareMetalHost resource. For VMaaS, this is an empty string
+  string namespace = 2;
+  // Group, Version, and Resource for a K8s API resource.
+  GroupVersionResource gvr = 3;
+  // Regex which are currently present on the resource for the matching labels.
+  repeated string ownedLabelsRegex = 4;
+  // Labels to be patched onto the resource
+  map<string, string> labels = 5;
+}
+
+message GetResourcePatchesResponse {
+  repeated ResourcePatch resourcePatches = 1;
+}
+
+message ReportNodeStatisticsRequest {
+  // Collection of statistics for each node.
+  repeated SchedulerNodeStatistics schedulerNodeStatistics = 1;
+}

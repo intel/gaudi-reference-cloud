@@ -1,0 +1,27 @@
+controller:
+  hostNetwork: true
+  image:
+    registry: amr-idc-registry.infra-host.com
+    image: cache/moditamam/ingress-nginx-controller
+    tag: v1.11.3-patched
+    digest: sha256:d2196b8aeb018d5f735f535872cd1c0067710d5c3b7a351300d6abd5bb78702c
+    pullPolicy: IfNotPresent
+  extraArgs:
+    default-ssl-certificate: "istio-system/ingress-certs"
+#    enable-ssl-passthrough: ""
+
+# This triggers errors in the ingress controller logs:
+# E0206 12:24:36.288585       7 event.go:368] "Unable to write event (may retry after sleeping)" err="can't patch an event with namespace 'ingress-nginx' in namespace 'istio-system'" event="&Event{ObjectM
+#  scope:
+#    # -- Enable 'scope' or not
+#    enabled: true
+#    # -- Namespace to limit the controller to; defaults to $(POD_NAMESPACE)
+#    namespace: "istio-system"
+  rbac:
+    create: true
+    scope: true
+  # -- Configure
+  config:
+    log-level: warn
+  admissionWebhooks:
+    enabled: false

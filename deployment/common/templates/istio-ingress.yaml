@@ -1,0 +1,19 @@
+# This Ingress forwards all HTTP traffic to the idcs-istio-ingress service.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: idcs-istio-ingress
+  namespace: idcs-istio-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: idcs-istio-ingress
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

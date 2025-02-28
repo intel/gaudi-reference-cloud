@@ -1,0 +1,41 @@
+autoscaling:
+  enabled: false
+computeNodePoolForUnknownCloudAccount: ""
+cognito:
+  enabled: false
+database:
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  arg: sslmode=disable
+  # The DNS name used to connect to the Postgres database.
+  service: fleet-admin-db-postgresql
+  # credentials path
+  vaultCredentialsPath: database/static-creds/us-dev-1-fleet-admin-db-client
+# Default MaxIdleConnectionCount to the database
+dbMaxIdleConnectionCount: 0
+image:
+  pullPolicy: IfNotPresent
+  registry: amr-registry.caas.intel.com
+  repository: intelcloud/fleet-admin-ui-server
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+podAnnotations:
+# The region that this service is running in.
+region: us-dev-1
+replicaCount: 1
+resources:
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+  requests:
+    cpu: "250m"
+    memory: "500Mi"
+service:
+  type: ClusterIP

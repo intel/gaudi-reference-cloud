@@ -1,0 +1,45 @@
+prometheus:
+  prometheusSpec:
+    remoteWrite:
+      - name: sre-reg-mon
+        url: "https://phx04-k01-smon-cluster.us-region-2.cloud.intel.com/vmdata/push/api/v1/write"
+        tlsConfig:
+          ca:
+            secret:
+              name: sre-reg-mon-remote-write-auth
+              key: ca.crt
+        basicAuth:
+          username:
+            name: sre-reg-mon-remote-write-auth
+            key: username
+          password:
+            name: sre-reg-mon-remote-write-auth
+            key: password
+    externalLabels:
+      k8s_cluster: maas-o11y-prod
+  additionalServiceMonitors:
+    - name: maas-iks-monitor-prod
+      endpoints:
+        - port: metrics
+          path: /metrics
+          interval: 30s
+      namespaceSelector:
+        matchNames:
+          - idcs-system
+      selector:
+        matchLabels: {}
+prometheus-node-exporter:
+  prometheus:
+    monitor:
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: hostname
+          action: replace
+        - targetLabel: clustername
+          replacement: maas-o11y-prod
+          action: replace
+prometheusOperator:
+  admissionWebhooks:
+    patch:
+      podAnnotations:
+        sidecar.istio.io/inject: "false"

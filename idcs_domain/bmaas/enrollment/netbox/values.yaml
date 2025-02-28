@@ -1,0 +1,38 @@
+init:
+  image:
+    repository: internal-placeholder.com/cache/library/busybox
+
+image:
+  repository: internal-placeholder.com/cache/netboxcommunity/netbox
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: internal-placeholder.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: netbox
+              port:
+                number: 80
+  tls:
+    - secretName: intel-ca-certs
+      hosts:
+        - internal-placeholder.com
+
+postgresql:
+  image:
+    registry: internal-placeholder.com/cache
+  postgresqlPostgresPassword: "p@ssw0rd"
+  postgresqlPassword: "p@ssw0rd"
+
+redis:
+  image:
+    registry: internal-placeholder.com/cache
+  replica:
+    replicaCount: 1
+  auth:
+    password: "p@ssw0rd"

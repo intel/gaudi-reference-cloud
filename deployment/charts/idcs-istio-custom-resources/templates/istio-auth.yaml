@@ -1,0 +1,18 @@
+# This RequestAuthentication configures the Istio so that it can validate JWTs from Azure AD.
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  annotations:
+  name: ingress-jwt
+  namespace: {{ .Release.Namespace }}
+spec:
+  jwtRules:
+  - issuer: https://consumerint.intel.com/38438b6e-050c-4402-9bb0-3e773ffc7dab/v2.0/
+    jwksUri: https://consumerint.intel.com/intelcorpintb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/discovery/v2.0/keys
+    forwardOriginalToken: true
+  - issuer: http://localhost:80
+    jwksUri: http://oidc.idcs-system.svc.cluster.local:80/keys
+    forwardOriginalToken: true
+  selector:
+    matchLabels:
+      istio: {{ .Release.Namespace }}

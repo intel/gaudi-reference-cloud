@@ -1,0 +1,34 @@
+replicaCount: 1
+image:
+  repository: intelcloud/authz
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+database:
+  service: authz-db-postgresql
+  vaultCredentialsPath: controlplane/data/authz/database
+
+features:
+  # If policiesStartupSync is true the policies and groups will be overwritten
+  # by the policies and groups in the files directory.
+  policiesStartupSync: true
+  watcher: true
+  auditLogging:
+    # If auditLogging is true, the service will log all permission
+    # activities in a database table
+    enabled: true
+    cleanupSchedulerEnabled: false
+    retentionPeriodInDays: 365
+    schedulerTime: 0 # "00:00:00"
+
+limits:
+  maxCloudAccountRoles: 1000
+  maxPermissions: 1000
+
+
+# paths should match with the configmap configuration
+resourcesFilePath: /resources.yaml
+modelFilePath: /model.conf
+groupFilePath: /groups.csv
+policyFilePath: /policy.csv

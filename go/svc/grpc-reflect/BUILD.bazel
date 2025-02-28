@@ -1,0 +1,30 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "grpc-reflect_lib",
+    srcs = ["grpc-reflect.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/grpc-reflect",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/pb",
+        "@org_golang_google_grpc//reflection",
+    ],
+)
+
+go_binary(
+    name = "grpc-reflect",
+    embed = [":grpc-reflect_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "grpc-reflect_image",
+    embed = [":grpc-reflect_lib"],
+    visibility = ["//visibility:public"],
+)

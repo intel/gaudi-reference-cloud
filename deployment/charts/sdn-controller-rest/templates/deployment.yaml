@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: {{ .Chart.Name }}
+        apparmor.security.beta.kubernetes.io/{{ .Chart.Name }}: runtime/default
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-secret-eapi: {{ .Values.vault.agent.inject.secret.path }}/eapi
+        vault.hashicorp.com/agent-inject-template-eapi: |-
+          {{`{{- with secret `}}"{{ .Values.vault.agent.inject.secret.path }}/eapi"{{` -}}`}}
+          ---
+          credentials:
+            username: "{{`{{ .Data.data.username | trimSpace }}`}}"
+            password: "{{`{{ .Data.data.password | trimSpace }}`}}"
+          {{`{{- end }}`}}
+        # Override the injected CA to ONLY trust client-certs signed by the network-CA specifically, not the root.
+        vault.hashicorp.com/agent-inject-secret-ca.pem: "{{ ((.Values.tls).client).rootCa }}/cert/ca"
+        vault.hashicorp.com/agent-inject-template-ca.pem: |
+          {{`{{- with secret`}} "{{ ((.Values.tls).client).rootCa }}/cert/ca" {{` -}}`}}
+          {{`{{ .Data.certificate }}`}}
+          {{`{{- end }}`}}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext: # Apply to all containers unless overridden.
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 10
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 10
+      containers:
+      - command:
+        - /app/go/pkg/sdn-controller/rest-api/sdn-controller-rest_image_1.binary
+        args:
+        - --configFile=/rest_config.yaml
+        - --eapiSecretPath=/vault/secrets/eapi
+        {{- include "idc-common.logArgs" . | nindent 8 }}
+        env:
+          {{- include "idc-common.commonEnv" . | nindent 10 }}
+          {{- include "idc-common.proxyEnv" . | nindent 10 }}
+          {{- include "idc-common.otelEnv" . | nindent 10 }}
+        image: {{ include "idc-common.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Chart.Name }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - "ALL"
+        livenessProbe:
+          httpGet:
+            scheme: "HTTPS"
+            path: /healthz
+            port: {{ .Values.restConfig.healthPort }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            scheme: "HTTPS"
+            path: /readyz
+            port: {{ .Values.restConfig.healthPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        ports:
+        - containerPort: {{ .Values.restConfig.targetPort }}
+          protocol: TCP
+        - containerPort: {{ .Values.restConfig.healthPort }}
+          protocol: TCP
+        volumeMounts:
+          - mountPath: /rest_config.yaml
+            name: sdn-controller-rest-config
+            subPath: rest_config.yaml
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - configMap:
+          name: sdn-controller-rest-config
+        name: sdn-controller-rest-config

@@ -1,0 +1,122 @@
+{
+  "servercouldnotgetaccountdetails": {
+    "message": "Could not get account details.",
+    "uiResponse": "na"
+  },
+  "serversessionexpired": {
+    "message": "Your session has expired, but an account has been created.",
+    "uiResponse": "na"
+  },
+  "servermustselectpaymethod": {
+    "message": "You must select a method of payment.",
+    "uiResponse": "na"
+  },
+  "serveryoumustenterccnumber": {
+    "message": "You must enter a credit card number.",
+    "uiResponse": "verify"
+  },
+  "serverccnumnumeric": {
+    "message": "Credit card numbers must be numeric.",
+    "uiResponse": "verify"
+  },
+  "servercardmustbe16digits": {
+    "message": "Visa, MasterCard and Discover card numbers must be 16 digits long.",
+    "uiResponse": "verify"
+  },
+  "serveramexmustbe15digits": {
+    "message": "Amex card numbers must be 15 digits long.",
+    "uiResponse": "verify"
+  },
+  "serverlengthofccnumber": {
+    "message": "Amex card numbers must be 15 digits long. Visa, MasterCard & Discover card numbers must be 16 digits long.",
+    "uiResponse": "verify"
+  },
+  "servercvvmissing": {
+    "message": "Card security code missing.",
+    "uiResponse": "verify"
+  },
+  "servercvvmustbenumeric": {
+    "message": "Card security codes must be numeric.",
+    "uiResponse": "verify"
+  },
+  "servercvvhowmanydigits": {
+    "message": "Card security codes must be 3 or 4 digits.",
+    "uiResponse": "verify"
+  },
+  "serverexpirationmonthmissing": {
+    "message": "Credit card expiration month missing.",
+    "uiResponse": "verify"
+  },
+  "serverexpirationyearmissing": {
+    "message": "Credit card expiration year missing.",
+    "uiResponse": "verify"
+  },
+  "serverccexpired": {
+    "message": "Credit card has expired.",
+    "uiResponse": "verify"
+  },
+  "Varies depending on the scenario.": {
+    "message": "Invalid credit card number.",
+    "uiResponse": "verify"
+  },
+  "servercouldnotupdatepaymethod": {
+    "message": "Could not update payment method.",
+    "uiResponse": "verify"
+  },
+  "servercouldnotvalidatecard": {
+    "message": "Could not validate credit card. Please re-enter card number, expiration and CVV.",
+    "uiResponse": "verify"
+  },
+  "serverenterbankroutingnumber": {
+    "message": "You must enter a bank routing number for electronic funds transfer.",
+    "uiResponse": "verify"
+  },
+  "serverroutingnummustbenumeric": {
+    "message": "Bank routing numbers must be numeric.",
+    "uiResponse": "na"
+  },
+  "serverroutingnum9digits": {
+    "message": "Bank routing number must be 9 digits.",
+    "uiResponse": "na"
+  },
+  "serverbankaccountrequired": {
+    "message": "Bank routing number must be 9 digits.",
+    "uiResponse": "na"
+  },
+  "serverbankacctnumeric": {
+    "message": "Bank account numbers must be numeric.",
+    "uiResponse": "na"
+  },
+  "serverbankacct20digits": {
+    "message": "Bank account number must be less than 20 digits.",
+    "uiResponse": "na"
+  },
+  "servermustentervalidcollectionamount": {
+    "message": "You must enter a valid collection amount.",
+    "uiResponse": "na"
+  },
+  "serverinvalidpaymethodforcollection": {
+    "message": "You must enter a valid payment method for payment. Net terms is not allowed.",
+    "uiResponse": "na"
+  },
+  "servercouldnotvalidatepaymentinformation": {
+    "message": "Could not validate payment information.",
+    "uiResponse": "na"
+  },
+  "servercouldnotcollectfromacct": {
+    "message": "Could not collect from account.",
+    "uiResponse": "na"
+  },
+  "servercouldnotupdateacctstatusonpromotion": {
+    "message": "Invoice accepted, but account status was not changed.",
+    "uiResponse": "na"
+  },
+  "servercouldnotupdateacctstatusonauthfailure": {
+    "message": "Authorization failed: Could not update account.",
+    "uiResponse": "na"
+  },
+  "servercouldnotsettleinvoice": {
+    "message": "Could not settle invoice.",
+    "uiResponse": "na"
+  }
+}

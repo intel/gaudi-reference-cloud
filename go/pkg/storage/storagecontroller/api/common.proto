@@ -1,0 +1,22 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api";
+
+message AuthenticationContext {
+  oneof scheme {
+    Basic basic = 1;
+    Bearer bearer = 2;
+  }
+  message Basic {
+    string principal = 1;
+    string credentials = 2;
+  }
+
+  message Bearer {
+    string token = 2;
+  }
+}

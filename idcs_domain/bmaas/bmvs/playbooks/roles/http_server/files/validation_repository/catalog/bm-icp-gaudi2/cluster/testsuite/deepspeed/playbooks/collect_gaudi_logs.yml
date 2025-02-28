@@ -1,0 +1,99 @@
+---
+- name: Collect habana logs
+  gather_facts: true
+  hosts: hosts
+
+  tasks:
+    - name: create directory
+      file:
+        path: /tmp/validation/logs/
+        state: directory
+        mode: '0644'
+
+    - name: check if cloud init instance data file exist
+      stat:
+        path: /run/cloud-init/instance-data.json
+      register: instance_data_file
+
+    - name: load instance data
+      slurp:
+        path: /run/cloud-init/instance-data.json
+      register: instance_data_json
+      when: instance_data_file.stat.exists
+
+    - name: load instance data
+      set_fact:
+        instance_data: "{{ instance_data_json.content | b64decode | from_json }}"
+      when: instance_data_file.stat.exists
+
+    - name: get BHM name(local_hostname)
+      set_fact:
+        bmh_name: "{{ instance_data.v1.local_hostname }}"
+      when: instance_data_file.stat.exists and instance_data.v1 is defined and instance_data.v1.local_hostname is defined
+
+    # use ansible host_name when bmh_name is not available
+    - name: get ansible hostname
+      set_fact:
+        bmh_name: "{{ ansible_hostname }}"
+      when: bmh_name is not defined
+
+    - name: print bmh_name
+      debug:
+        msg: "{{ bmh_name }}"
+
+    - name: check if habana_logs folder exist
+      stat:
+        path: /tmp/habana_logs
+      register: habana_logs_folder
+
+    - name: compress habana logs
+      archive:
+        path: /tmp/habana_logs
+        dest: "/tmp/validation/logs/{{ bmh_name }}_habana_logs.tar.gz"
+        format: gz
+        force_archive: true
+      when: habana_logs_folder.stat.exists and habana_logs_folder.stat.isdir
+      become: true
+
+    - name: collect kernel logs
+      shell: "dmesg -T | tee /tmp/validation/logs/{{ bmh_name }}_dmesg.txt"
+      register: kernel_logs
+      become: yes
+      failed_when: kernel_logs.rc > 0
+
+    - name: compress kernel logs
+      archive:
+        path: "/tmp/validation/logs/{{ bmh_name }}_dmesg.txt"
+        dest: "/tmp/validation/logs/{{ bmh_name }}_dmesg.tar.gz"
+        format: gz
+        force_archive: true
+      when: kernel_logs.rc == 0
+      become: true
+
+    - name: change permission of the log files
+      file:
+        path: /tmp/validation/logs
+        state: directory
+        recurse: yes
+        owner: sdp
+        group: sdp
+        mode: 0775
+      become: true
+
+    - name: fetch habana logs file
+      fetch:
+        src:  "/tmp/validation/logs/{{ bmh_name }}_habana_logs.tar.gz"
+        dest: /tmp/validation/logs/
+        flat: true
+
+    - name: fetch dmesg logs file
+      fetch:
+        src:  "/tmp/validation/logs/{{ bmh_name }}_dmesg.tar.gz"
+        dest: /tmp/validation/logs/
+        flat: true
+      when: kernel_logs.rc == 0
+
+    - name: remove uncompressed kernel logs file
+      file:
+        path: "/tmp/validation/logs/{{ bmh_name }}_dmesg.txt"
+        state: absent

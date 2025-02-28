@@ -1,0 +1,407 @@
+{{- if .Values.enableTLSandAuth -}}
+{{- if not .Values.deployStandaloneBaremetalOperator -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baremetal-operator-ironic
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      name: baremetal-operator-ironic-{{ .Release.Namespace }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: baremetal-operator-ironic-{{ .Release.Namespace }}
+        app: ironic
+      annotations:
+        checksum/baremetal-configmap: {{ include (print $.Template.BasePath "/baremetal-configmap.yaml") . | sha256sum }}
+        checksum/baremetal-fw-update-configmap: {{ include (print $.Template.BasePath "/baremetal-fw-update-configmap.yaml") . | sha256sum }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - ironic
+              topologyKey: kubernetes.io/hostname
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: name
+                  operator: In
+                  values:
+                  - baremetal-operator-{{ .Release.Namespace }}
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - command:
+        - /bin/runhttpd
+        env:
+        - name: IRONIC_REVERSE_PROXY_SETUP
+          value: "true"
+        - name: INSPECTOR_REVERSE_PROXY_SETUP
+          value: "true"
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-htpasswd
+        - configMapRef:
+            name: ironic-inspector-htpasswd
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSfk https://127.0.0.1:6385
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic-httpd
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSfk https://127.0.0.1:6385
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /auth/ironic
+          name: ironic-auth-config
+          readOnly: true
+        - mountPath: /auth/ironic-inspector
+          name: ironic-inspector-auth-config
+          readOnly: true
+        - mountPath: /certs/ironic
+          name: cert-ironic
+          readOnly: true
+        - mountPath: /certs/ironic-inspector
+          name: cert-ironic-inspector
+          readOnly: true
+        # Do not mount the ca certs when using vault PKI
+        {{- if not .Values.useVaultPKI }}
+        - mountPath: /certs/ca/ironic
+          name: cert-ironic-ca
+          readOnly: true
+        - mountPath: /certs/ca/ironic-inspector
+          name: cert-ironic-inspector-ca
+          readOnly: true
+        {{- end }}
+        - mountPath: /shared
+          name: ironic-data-volume
+        - mountPath: /shared/html/images/fw/ironic-fw-update.json
+          name: ironic-fw-versions-volume
+          subPath: ironic-fw-update.json
+          readOnly: true
+      - command:
+        - /bin/runironic
+        env:
+        - name: IRONIC_REVERSE_PROXY_SETUP
+          value: "true"
+        - name: INSPECTOR_REVERSE_PROXY_SETUP
+          value: "true"
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-password
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-htpasswd
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:6388
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:6388
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        volumeMounts:
+        # Do not mount the ca certs when using vault PKI
+        {{- if not .Values.useVaultPKI }}
+        - mountPath: /certs/ca/ironic
+          name: cert-ironic-ca
+          readOnly: true
+        - mountPath: /certs/ca/ironic-inspector
+          name: cert-ironic-inspector-ca
+          readOnly: true
+        - mountPath: /certs/ca/mariadb
+          name: cert-mariadb-ca
+          readOnly: true
+        {{- else }}
+        # Mount ironic cert to restart the pod when certificate is updated
+        - mountPath: /etc/ironic/fw
+          name: ironic-fw-versions-volume
+          readOnly: true
+        - mountPath: /certs/ironic
+          name: cert-ironic
+          readOnly: true
+        - mountPath: /certs/ironic-inspector
+          name: cert-ironic-inspector
+          readOnly: true
+        - mountPath: /certs/mariadb
+          name: cert-mariadb
+          readOnly: true
+        {{- end }}
+        - mountPath: /auth/ironic-inspector
+          name: ironic-inspector-auth-config
+          readOnly: true
+        - mountPath: /shared
+          name: ironic-data-volume
+      - command:
+        - /bin/runironic-inspector
+        env:
+        - name: IRONIC_REVERSE_PROXY_SETUP
+          value: "true"
+        - name: INSPECTOR_REVERSE_PROXY_SETUP
+          value: "true"
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-inspector-htpasswd
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:5049
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic-inspector
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:5049
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        volumeMounts:
+        # Do not mount the ca certs when using vault PKI
+        {{- if not .Values.useVaultPKI }}
+        - mountPath: /certs/ca/ironic
+          name: cert-ironic-ca
+          readOnly: true
+        - mountPath: /certs/ca/ironic-inspector
+          name: cert-ironic-inspector-ca
+          readOnly: true
+        {{- else }}
+        # Mount ironic cert to restart the pod when certificate is updated
+        - mountPath: /certs/ironic
+          name: cert-ironic
+          readOnly: true
+        - mountPath: /certs/ironic-inspector
+          name: cert-ironic-inspector
+          readOnly: true
+        {{- end }}
+        - mountPath: /auth/ironic
+          name: ironic-auth-config
+          readOnly: true
+      - env:
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-password
+        - name: RESTART_CONTAINER_CERTIFICATE_UPDATED
+          valueFrom:
+            configMapKeyRef:
+              key: RESTART_CONTAINER_CERTIFICATE_UPDATED
+              name: ironic-bmo-configmap
+        image: {{ .Values.mariaDBImageRepo }}:{{ .Values.mariaDBImageTag }}
+        imagePullPolicy: {{ .Values.mariaDBImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: mariadb
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /certs/mariadb
+          name: cert-mariadb
+          readOnly: true
+        {{- if not .Values.useVaultPKI }}
+        - mountPath: /certs/ca/mariadb
+          name: cert-mariadb-ca
+          readOnly: true
+        {{- end }}
+        - mountPath: /shared
+          name: ironic-data-volume
+      {{- if not .Values.disableIronicPodDnsmasq }}
+      - command:
+        - /bin/rundnsmasq
+        env:
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            {{- if .Values.ironicEnvConfigMap.disableIronicDHCP }}
+            - ss -lun | grep :69
+            {{- else }}
+            - ss -lun | grep :67 && ss -lun | grep :69
+            {{- end }}
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic-dnsmasq
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            {{- if .Values.ironicEnvConfigMap.disableIronicDHCP }}
+            - ss -lun | grep :69
+            {{- else }}
+            - ss -lun | grep :67 && ss -lun | grep :69
+            {{- end }}
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        securityContext:
+        {{- include "idc-common.securityContextWithCapabilities" . | nindent 12 }}
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+      {{- end }}
+      - command:
+        - /bin/runlogwatch.sh
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        name: ironic-log-watch
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+      hostNetwork: {{ .Values.useHostNetwork }}
+      serviceAccountName: baremetal-operator-ironic
+      {{- if .Values.enableIPAinitContainer }}
+      initContainers:
+      - command:
+        - /usr/local/bin/get-resource.sh
+        env:
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicIPAImageRepo }}:{{ .Values.ironicIPAImageTag }}
+        imagePullPolicy: {{ .Values.ironicIPAImagePullPolicy }}
+        name: ironic-ipa-downloader
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+      {{- end }}
+      volumes:
+      - name: ironic-auth-config
+        secret:
+          secretName: ironic-auth-config
+      - name: ironic-inspector-auth-config
+        secret:
+          secretName: ironic-inspector-auth-config
+      # Do not mount the ca certs when using vault PKI
+      {{- if not .Values.useVaultPKI }}
+      - name: cert-ironic-ca
+        secret:
+          secretName: ironic-cacert
+      - name: cert-ironic-inspector-ca
+        secret:
+          secretName: ironic-cacert
+      - name: cert-mariadb-ca
+        secret:
+          secretName: ironic-cacert
+     {{- end }}
+      - name: cert-ironic
+        secret:
+          secretName: ironic-cert
+      - name: cert-ironic-inspector
+        secret:
+          secretName: ironic-inspector-cert
+      - name: cert-mariadb
+        secret:
+          secretName: mariadb-cert
+      - emptyDir: {}
+        name: ironic-data-volume
+      - name: ironic-fw-versions-volume
+        configMap:
+          name: ironic-fw-update
+{{- end }}
+{{- end }}

@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "netbox_validation",
+    srcs = [
+        "compute_netbox_enroll.go",
+        "compute_netbox_initial.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/test/compute/helper/netbox_validation",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/dcim",
+        "//go/test/compute/helper/bm_helper",
+        "@com_github_netbox_community_go_netbox//netbox/client/dcim",
+        "@com_github_netbox_community_go_netbox//netbox/models",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "versioned",
+    srcs = ["clientset.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/clientset/versioned",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/generated/clientset/versioned/typed/kubevirt.io/v1:kubevirt_io",
+        "@io_k8s_client_go//discovery",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//util/flowcontrol",
+    ],
+)

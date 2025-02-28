@@ -1,0 +1,46 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+load("//build/kubebuilder:kubebuilder.bzl", "kubebuilder_test_env")
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "base_testenv_test.go",
+        "listerwatcher_test.go",
+        "replicator_test.go",
+        "suite_test.go",
+    ],
+    data = [
+        "//build/kubebuilder:kubebuilder_bin",
+        "//go/pkg/k8s/config/crd/bases:crds",
+    ],
+    env = kubebuilder_test_env(path_to_root = "../../../.."),
+    deps = [
+        "//go/pkg/instance_operator/test",
+        "//go/pkg/instance_replicator/convert",
+        "//go/pkg/instance_replicator/replicator",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/tools/stoppable",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//tools/cache",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/envtest",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

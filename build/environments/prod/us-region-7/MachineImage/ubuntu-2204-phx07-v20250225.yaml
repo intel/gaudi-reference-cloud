@@ -1,0 +1,35 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-2204-phx07-v20250225
+spec:
+  displayName: Ubuntu 22.04 LTS v20250225
+  description: Test generic VM image with redsocks setup for PHX07.
+  hidden: false
+  instanceCategories:
+  - VirtualMachine
+  instanceTypes: []
+  md5sum: 643532680bae010f49e28b521046e1f2
+  sha256sum: 42958dbee046bec5400389d873c58cc2548107400ca9e83c7e5a3a5af897c739
+  sha512sum: f6ec52258b3ab74068793ad0c35e2fda823d139de5fac65fe04f63396f8c32a3c8e4a1337e243d0b260b7a3be3e73e3d1e93b61fbeefa06b8a691254700fc492
+  virtualSizeBytes: 10737418240
+  labels:
+    architecture: X86_64 (VM only)
+    family: ubuntu-2204-lts
+    kernelVersion: 5.15 (KVM)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - Internal
+  - AI
+  - General Computing
+  - Deep Learning
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: ubuntu

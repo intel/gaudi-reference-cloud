@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "v1alpha1",
+    srcs = [
+        "baremetalhost.go",
+        "doc.go",
+        "generated_expansion.go",
+        "metal3.io_client.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/metal3client/clientset/versioned/typed/metal3.io/v1alpha1",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/k8s/generated/metal3client/clientset/versioned/scheme",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/watch",
+        "@io_k8s_client_go//rest",
+    ],
+)

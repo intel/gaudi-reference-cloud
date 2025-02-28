@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: idcs-admin
+  labels:
+    app: idcs-admin
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: idcs-admin
+  template:
+    metadata:
+      labels:
+        app: idcs-admin
+    spec:
+      containers:
+      - name:  idcs-admin
+        image:   internal-placeholder.com/intelcloud/idcs-admin:dev01
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512M
+          requests:
+            cpu: 100m
+            memory: 128M   
+               
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: idcs-admin-service
+spec:
+  type: ClusterIP             
+  ports:
+  - name: default
+    port: 80
+    protocol: TCP
+    targetPort: 80             
+  selector:
+    app: idcs-admin
+
+  
+  

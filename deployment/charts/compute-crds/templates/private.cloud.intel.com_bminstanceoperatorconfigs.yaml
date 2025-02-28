@@ -1,0 +1,504 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: bminstanceoperatorconfigs.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: BmInstanceOperatorConfig
+    listKind: BmInstanceOperatorConfigList
+    plural: bminstanceoperatorconfigs
+    singular: bminstanceoperatorconfig
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: |-
+          BmInstanceOperatorConfig is the Schema for the bminstanceoperatorconfigs API.
+          It stores the configuration for the Instance Operator.
+        properties:
+          acceleratorNetworkSdnEnabled:
+            description: Enable SDN support for accelerator network in BM instance
+              operator when set to true
+            type: boolean
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          cacheNamespace:
+            description: |-
+              CacheNamespace if specified restricts the manager's cache to watch objects in
+              the desired namespace Defaults to all namespaces
+
+              Note: If a namespace is specified, controllers can still Watch for a
+              cluster-scoped resource (e.g Node).  For namespaced resources the cache
+              will only hold objects from the desired namespace.
+            type: string
+          cloudAccountID:
+            description: Faceless Cloud Account ID that will be used by operator.
+            type: string
+          controller:
+            description: |-
+              Controller contains global configuration options for controllers
+              registered within this manager.
+            properties:
+              cacheSyncTimeout:
+                description: |-
+                  CacheSyncTimeout refers to the time limit set to wait for syncing caches.
+                  Defaults to 2 minutes if not set.
+                format: int64
+                type: integer
+              groupKindConcurrency:
+                additionalProperties:
+                  type: integer
+                description: |-
+                  GroupKindConcurrency is a map from a Kind to the number of concurrent reconciliation
+                  allowed for that controller.
+
+                  When a controller is registered within this manager using the builder utilities,
+                  users have to specify the type the controller reconciles in the For(...) call.
+                  If the object's kind passed matches one of the keys in this map, the concurrency
+                  for that controller is set to the number specified.
+
+                  The key is expected to be consistent in form with GroupKind.String(),
+                  e.g. ReplicaSet in apps group (regardless of version) would be `ReplicaSet.apps`.
+                type: object
+              recoverPanic:
+                description: RecoverPanic indicates if panics should be recovered.
+                type: boolean
+            type: object
+          enabledInstanceTypes:
+            description: Instances types enabled for validation
+            items:
+              type: string
+            type: array
+          envConfiguration:
+            description: Configuration details about the enviornment where the operator
+              is running
+            properties:
+              availabilityZone:
+                description: Availability Zone
+                type: string
+              huggingFaceTokenFilePath:
+                description: Huggingface token file path
+                type: string
+              netboxAddress:
+                description: Netbox address
+                type: string
+              netboxKeyFilePath:
+                description: Netbox key file path
+                type: string
+              region:
+                description: Region details.
+                type: string
+              subnetPrefixLength:
+                description: Subnet Prefix Length for the current environment
+                type: integer
+            required:
+            - availabilityZone
+            - huggingFaceTokenFilePath
+            - netboxAddress
+            - netboxKeyFilePath
+            - region
+            - subnetPrefixLength
+            type: object
+          featureFlags:
+            description: Feature flags used by Validation operator
+            properties:
+              deProvisionPostValidationFailure:
+                description: Enable deletion of instance if validation fails.
+                type: boolean
+              enableFirmwareUpgrade:
+                description: Enable firmware upgrade on BMHs
+                type: boolean
+              enabledGroupInstanceTypes:
+                description: Instances types enabled for group-validation
+                items:
+                  type: string
+                type: array
+              groupValidation:
+                description: Enable of disable group validation.
+                type: boolean
+            required:
+            - deProvisionPostValidationFailure
+            - enableFirmwareUpgrade
+            - enabledGroupInstanceTypes
+            - groupValidation
+            type: object
+          gracefulShutDown:
+            description: |-
+              GracefulShutdownTimeout is the duration given to runnable to stop before the manager actually returns on stop.
+              To disable graceful shutdown, set to time.Duration(0)
+              To use graceful shutdown without timeout, set to a negative duration, e.G. time.Duration(-1)
+              The graceful shutdown is skipped for safety reasons in case the leader election lease is lost.
+            type: string
+          health:
+            description: Health contains the controller health configuration
+            properties:
+              healthProbeBindAddress:
+                description: |-
+                  HealthProbeBindAddress is the TCP address that the controller should bind to
+                  for serving health probes
+                  It can be set to "0" or "" to disable serving the health probe.
+                type: string
+              livenessEndpointName:
+                description: LivenessEndpointName, defaults to "healthz"
+                type: string
+              readinessEndpointName:
+                description: ReadinessEndpointName, defaults to "readyz"
+                type: string
+            type: object
+          instanceOperator:
+            description: Configuration shared with BmInstanceOperatorConfig and VmInstanceOperatorConfig.
+            properties:
+              computeApiServerAddr:
+                description: Format should be "compute-api-server:80"
+                type: string
+              ddi:
+                description: Configuration for DHCP, DNS, IP Address Management (DDI).
+                properties:
+                  method:
+                    type: string
+                  mmws:
+                    description: Configuration for DDI using Men & Mice DDI Proxy.
+                    properties:
+                      baseUrl:
+                        description: |-
+                          URL of Men & Mice DDI Proxy.
+                          Example: http://localhost:57930/mmws/api
+                        type: string
+                      passwordFilePath:
+                        description: Path to the file containing the password to authenticate
+                          to Men & Mice.
+                        type: string
+                      userNameFilePath:
+                        description: Path to the file containing the user name to
+                          authenticate to Men & Mice.
+                        type: string
+                    type: object
+                type: object
+              enableMeteringMonitorFinalizer:
+                description: If true, this operator will add the Metering Monitor
+                  finalizer to all instances.
+                type: boolean
+              filter:
+                description: Filter the Instance objects to be reconciled.
+                properties:
+                  labels:
+                    additionalProperties:
+                      type: string
+                    description: Instances must have all specified labels. Leave blank
+                      to have no filter.
+                    type: object
+                required:
+                - labels
+                type: object
+              httpClient:
+                description: Http Client related configuration.
+                properties:
+                  insecureSkipVerify:
+                    type: boolean
+                  keepAlive:
+                    format: int64
+                    type: integer
+                  timeoutInSecs:
+                    format: int64
+                    type: integer
+                  tlsHandshakeTimeout:
+                    format: int64
+                    type: integer
+                required:
+                - insecureSkipVerify
+                - keepAlive
+                - timeoutInSecs
+                - tlsHandshakeTimeout
+                type: object
+              operatorFeatureFlags:
+                description: Feature flags used by vm and bm instance operator
+                properties:
+                  enableQuickConnectClientCA:
+                    description: Makes creation of quick connect client CA secret
+                      optional.
+                    type: boolean
+                  useKubeVirtCluster:
+                    description: Whether to create a VirtualMachine spec for a Harvester
+                      or KubeVirt cluster
+                    type: boolean
+                required:
+                - enableQuickConnectClientCA
+                - useKubeVirtCluster
+                type: object
+              quickConnectHost:
+                description: Quick Connect host, i.e. connect.us-region-1.devcloudtenant.io
+                type: string
+              sshProxyTunnelCluster:
+                description: Details for connecting to the Kubernetes API Server of
+                  the cluster running SSH Proxy Operator.
+                properties:
+                  kubeConfigFilePath:
+                    description: |-
+                      Path to the KubeConfig file for the Sshproxytunnel cluster.
+                      If blank, use local Kubernetes cluster.
+                    type: string
+                type: object
+              storageClusterAddr:
+                description: Storage cluster addr, i.e. vip1.vast-pdx09-1.us-qa1-1.cloud.intel.com:2049
+                type: string
+            required:
+            - computeApiServerAddr
+            - enableMeteringMonitorFinalizer
+            - filter
+            - httpClient
+            - operatorFeatureFlags
+            - sshProxyTunnelCluster
+            type: object
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          leaderElection:
+            description: |-
+              LeaderElection is the LeaderElection config to be used when configuring
+              the manager.Manager leader election
+            properties:
+              leaderElect:
+                description: |-
+                  leaderElect enables a leader election client to gain leadership
+                  before executing the main loop. Enable this when running replicated
+                  components for high availability.
+                type: boolean
+              leaseDuration:
+                description: |-
+                  leaseDuration is the duration that non-leader candidates will wait
+                  after observing a leadership renewal until attempting to acquire
+                  leadership of a led but unrenewed leader slot. This is effectively the
+                  maximum duration that a leader can be stopped before it is replaced
+                  by another candidate. This is only applicable if leader election is
+                  enabled.
+                type: string
+              renewDeadline:
+                description: |-
+                  renewDeadline is the interval between attempts by the acting master to
+                  renew a leadership slot before it stops leading. This must be less
+                  than or equal to the lease duration. This is only applicable if leader
+                  election is enabled.
+                type: string
+              resourceLock:
+                description: |-
+                  resourceLock indicates the resource object type that will be used to lock
+                  during leader election cycles.
+                type: string
+              resourceName:
+                description: |-
+                  resourceName indicates the name of resource object that will be used to lock
+                  during leader election cycles.
+                type: string
+              resourceNamespace:
+                description: |-
+                  resourceName indicates the namespace of resource object that will be used to lock
+                  during leader election cycles.
+                type: string
+              retryPeriod:
+                description: |-
+                  retryPeriod is the duration the clients should wait between attempting
+                  acquisition and renewal of a leadership. This is only applicable if
+                  leader election is enabled.
+                type: string
+            required:
+            - leaderElect
+            - leaseDuration
+            - renewDeadline
+            - resourceLock
+            - resourceName
+            - resourceNamespace
+            - retryPeriod
+            type: object
+          maxConcurrentReconciles:
+            description: Max concurrent reconcile value of BM instance operator
+            type: integer
+          metadata:
+            type: object
+          metrics:
+            description: Metrics contains the controller metrics configuration
+            properties:
+              bindAddress:
+                description: |-
+                  BindAddress is the TCP address that the controller should bind to
+                  for serving prometheus metrics.
+                  It can be set to "0" to disable the metrics serving.
+                type: string
+            type: object
+          networkConfig:
+            description: Network Configuration
+            properties:
+              accBGPNetworkDefaultCommunityID:
+                type: integer
+              acceleratorNetworkDefaultVlan:
+                type: integer
+              networkBackEndType:
+                type: string
+              networkKubeConfig:
+                type: string
+              provisioningVlan:
+                type: integer
+              storageDefaultVlan:
+                type: integer
+            required:
+            - accBGPNetworkDefaultCommunityID
+            - acceleratorNetworkDefaultVlan
+            - networkBackEndType
+            - networkKubeConfig
+            - provisioningVlan
+            - storageDefaultVlan
+            type: object
+          osHttpServerUrl:
+            description: OS http server url for BM machine images
+            type: string
+          sshConfig:
+            description: SSH configuration for this operator to connect to instances
+              to check instance health.
+            properties:
+              hostPublicKeyFilePath:
+                description: Path to the ssh proxy server host public key used for
+                  verifying the SSH proxy server
+                type: string
+              privateKeyFilePath:
+                description: Path to the Private key used for connecting to the SSH
+                  proxy server
+                type: string
+              publicKeyFilePath:
+                description: Path to the Public key corresponding to the private key
+                type: string
+              sshProxyAddress:
+                description: If blank, use address in instance.Status.SshProxy.ProxyAddress.
+                type: string
+              sshProxyPort:
+                description: If 0, use address in instance.Status.SshProxy.ProxyPort.
+                type: integer
+              sshProxyUser:
+                description: The username for authenticating with the SSH proxy server.
+                type: string
+              waitForSSHAccess:
+                description: Whether to wait for the SSH access of the BM instance
+                  to be ready
+                type: boolean
+            required:
+            - hostPublicKeyFilePath
+            - privateKeyFilePath
+            - publicKeyFilePath
+            - sshProxyAddress
+            - sshProxyPort
+            - sshProxyUser
+            - waitForSSHAccess
+            type: object
+          storageServerSubnets:
+            description: Storage server addresses
+            items:
+              type: string
+            type: array
+          syncPeriod:
+            description: |-
+              SyncPeriod determines the minimum frequency at which watched resources are
+              reconciled. A lower period will correct entropy more quickly, but reduce
+              responsiveness to change if there are many watched resources. Change this
+              value only if you know what you are doing. Defaults to 10 hours if unset.
+              there will a 10 percent jitter between the SyncPeriod of all controllers
+              so that all controllers will not send list requests simultaneously.
+            type: string
+          validationReportS3Config:
+            description: S3 Configuration where the validation logs/reports are stored
+            properties:
+              accessKeyFilePath:
+                description: S3 access key file path
+                type: string
+              bucketName:
+                description: S3 bucket where the validation reports are stored
+                type: string
+              cloudfrontPrefix:
+                description: Cloudfront prefix
+                type: string
+              httpsProxy:
+                description: Proxy for pushing reports
+                type: string
+              secretAccessKeyFilePath:
+                description: S3 secret access key file path
+                type: string
+            required:
+            - accessKeyFilePath
+            - bucketName
+            - cloudfrontPrefix
+            - httpsProxy
+            - secretAccessKeyFilePath
+            type: object
+          validationTaskRepositoryURL:
+            description: Validation task repository base url
+            type: string
+          validationTaskVersion:
+            description: Version of the validation task to be used for every InstanceType
+            properties:
+              clusterVersionMap:
+                additionalProperties:
+                  type: string
+                description: Validation task artifact version for clusters. It is
+                  a map of instanceType to the version to be used.
+                type: object
+              instanceVersionMap:
+                additionalProperties:
+                  type: string
+                description: Validation task artifact version for plain instances.
+                  It is a map of instanceType to the version to be used.
+                type: object
+            required:
+            - clusterVersionMap
+            - instanceVersionMap
+            type: object
+          webhook:
+            description: Webhook contains the controllers webhook configuration
+            properties:
+              certDir:
+                description: |-
+                  CertDir is the directory that contains the server key and certificate.
+                  if not set, webhook server would look up the server key and certificate in
+                  {TempDir}/k8s-webhook-server/serving-certs. The server key and certificate
+                  must be named tls.key and tls.crt, respectively.
+                type: string
+              host:
+                description: |-
+                  Host is the hostname that the webhook server binds to.
+                  It is used to set webhook.Server.Host.
+                type: string
+              port:
+                description: |-
+                  Port is the port that the webhook server serves at.
+                  It is used to set webhook.Server.Port.
+                type: integer
+            type: object
+        required:
+        - acceleratorNetworkSdnEnabled
+        - cloudAccountID
+        - enabledInstanceTypes
+        - envConfiguration
+        - featureFlags
+        - instanceOperator
+        - maxConcurrentReconciles
+        - networkConfig
+        - osHttpServerUrl
+        - sshConfig
+        - storageServerSubnets
+        - validationReportS3Config
+        - validationTaskRepositoryURL
+        - validationTaskVersion
+        type: object
+    served: true
+    storage: true

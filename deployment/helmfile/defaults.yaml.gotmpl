@@ -1,0 +1,2873 @@
+# This file provides defaults for all helmfile environments.
+
+# All security-related options should be secure by default.
+# Specific development files in the "environments" directory can override such options with parameters beginning with "insecure".
+# For other options, the defaults should work in kind or other common development environments.
+
+# The global section contains parameters for services that will be deployed to the global services Kubernetes cluster (EKS in production).
+# Some of these parameters will also be used by other services that must refer to these global services.
+
+# Parameters that apply to all clusters or releases (e.g. Vault, Docker registry, OTEL) should be top-level items in this file.
+
+# This file and associated environment files should be kept in the same order to make comparing them easier.
+# Keys and lists should be alphabetized unless there is an important reason not to.
+
+# An entire component can be disabled using the values in this section.
+# However, for environments that use Universe Deployer (prod, staging), components should be disabled by removing them from
+# the Universe Config File (e.g. prod.json).
+
+components:
+  computeBm:
+    enabled: true
+  computeVm:
+    enabled: true
+  dpai:
+    enabled: false
+  firewall:
+    enabled: false
+  fleetAdmin:
+    enabled: false
+  training:
+    enabled: false
+    armada:
+      enabled: false
+  cloudmonitor:
+    enabled: false
+  cloudmonitorLogs:
+    enabled: false
+  iks:
+    enabled: true
+    listenPort: 8083
+  iksDb:
+    enabled: false
+    primary:
+        persistence:
+          enabled: false
+  iksOperators:
+    enabled: false
+  maasCompute:
+    enabled: false
+  insights:
+    enabled: false
+  insightsDb:
+    enabled: false
+    primary:
+        persistence:
+          enabled: false
+  rateLimit:
+    enabled: false
+  sdnVN:
+    enabled: false
+  storageFile:
+    enabled: false
+  storageObject:
+    enabled: false
+  loadbalancer:
+    enabled: false
+  network:
+    enabled: false
+  networkCluster:
+    enabled: false # Controls whether to deploy the services in helmfile-network-cluster (to a separate cluster, or to one of the existing clusters depending on availabilityZone.networkCluster.kubecontext)
+  kfaas:
+    enabled: false
+    listenPort: 8083
+  dataloader:
+    enabled: false
+  maas:
+    enabled: false
+  pgOperator:
+    enabled: false
+  quickConnect:
+    enabled: false
+  minioOperator:
+    enabled: false
+  minioTenant:
+    enabled: false
+  quotaManagementService:
+    enabled: false
+  tftpServer:
+    enabled: false
+global:
+  adminJwtOpaRules:
+    insecureAlwaysAllowAdminToken: false   #Set this flag to true to enable Admin JWT token access to all endpoints. This should be set to true only in dev environments.
+  # This components section defines the components that will be deployed by Universe Deployer
+  # to the global Kubernetes cluster of development environments.
+  # However, if the file /universe_config/environment/${IDC_ENV}.json exists,
+  # then that will take precedence and this section will be completely ignored.
+  # See also the region and availabilityZone components sections.
+  components:
+    adminPortal:
+      commit: HEAD
+      enabled: false
+    authz:
+      commit: HEAD
+      enabled: true
+    billing:
+      commit: HEAD
+      enabled: true
+    cloudaccount:
+      commit: HEAD
+      enabled: true
+    cloudcredits:
+      commit: HEAD
+      enabled: true
+    cloudmonitor:
+      commit: HEAD
+      enabled: false
+    externalSecrets:
+      commit: HEAD
+      enabled: true
+    grpc:
+      commit: HEAD
+      enabled: true
+    metering:
+      commit: HEAD
+      enabled: true
+    oidc:
+      commit: HEAD
+      enabled: true
+    portal:
+      commit: HEAD
+      enabled: true
+    populateProductCatalog:
+      commit: HEAD
+      enabled: false
+    productCatalog:
+      commit: HEAD
+      enabled: true
+    rateLimit:
+      commit: HEAD
+      enabled: false
+    telemetry:
+      commit: HEAD
+      enabled: true
+    tradeScanner:
+      commit: HEAD
+      enabled: true
+  kubeContext: ""
+  log:
+    level: "0"
+  notifications:
+    database:
+      arg: sslmode=disable
+      name: notification
+      service: notification-db-postgresql
+      vaultCredentialsPath: controlplane/data/notification-gateway/database
+    aws:
+      role_arn: arn:aws:iam::390677890188:role/notification-gateway-irsa-dev
+      vaultCredentialsPath: controlplane/data/notification-gateway/awssecrets
+      credentialsFile: /vault/secrets/aws_credentials
+      region: "us-west-2"
+      accountIdFile: /vault/secrets/accountid
+      sns:
+        topicArn: arn:aws:sns:us-west-2:accountid:idc-dev-credits-topic
+      sqs:
+        queueArn: arn:aws:sqs:us-west-2:accountid:idc-dev-credits-queue
+        queueUrl: "https://sqs.us-west-2.amazonaws.com/accountid/idc-dev-credits-queue"
+    inviteLink: "https://console.cloud.intel.com"
+    inviteTemplate: "Multi-User-Invitation-Template"
+    inviteAcceptTemplate: "Multi-User-Invitation-Accept-Template"
+    inviteExpiredTemplate: "Multi-User-Invitation-Expired-Template-Dev"
+    senderEmail: "test@dev3.api.idcservice.net"
+    otpTemplate: "Multi-User-OTP-Template"
+    consoleUrl: "https://dev3.console.idcservice.net/"
+    paymentUrl: "https://dev3.console.idcservice.net/upgradeaccount"
+    cloudCreditHundredPercentUsedTemplate: "Terminate-Instance-100-Used-Template-Dev"
+    cloudCreditEightyPercentUsedTemplate: "Terminate-Instance-80-Used-Template-Dev"
+    cloudCreditExpiryTemplate: "Cloud-Credit-Expired-Template-Dev"
+    enabled: true
+    replicaCount: 1
+  notificationsDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+
+  usercredentials:
+    replicaCount: 1
+    database:
+      arg: sslmode=disable
+      name: cloudaccount
+      service: cloundaccount-db-postgresql
+      vaultCredentialsPath: controlplane/data/cloudaccount/database
+    emailExclusionPattern: "!#$%^&*()+=[]{};':\"\\|<>/?"
+    aws:
+      role_arn: arn:aws:iam::390677890188:role/user-credentials-irsa-dev
+      vaultCredentialsPath: controlplane/data/user-credentials/awssecrets
+      credentialsFile: /vault/secrets/aws_credentials
+      region: "us-west-2"
+      accountIdFile: /vault/secrets/accountid
+      userPool: "us-west-2_UYbIELOby"
+      customScope: "dev-idc-global-dev-internal/read"
+      cognitoUrl: "https://dev-idc-global-dev-internal.auth.us-west-2.amazoncognito.com/oauth2/token"
+    enabled: true
+
+  argocd:
+    server:
+      ingress:
+        className: "nginx"
+        host: dev.argocd.cloud.intel.com.kind.local
+  authz:
+    enabled: true
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+        allowedCallers: "grpc-proxy-external,grpc-proxy-internal,cloudaccount,cloudaccount-enroll,app-client-api-grpc-proxy-external"
+    replicaCount: 1
+    database:
+      arg: sslmode=disable
+      name: authz
+      service: authz-db-postgresql
+      vaultCredentialsPath: controlplane/data/authz/database
+    features:
+      policiesStartupSync: true
+      watcher: true
+      auditLogging:
+        enabled: false
+        cleanupSchedulerEnabled: false
+        retentionPeriodInDays: 365
+        schedulerTime: 0
+    limits:
+      maxCloudAccountRoles: 1000
+      maxPermissions: 1000
+    groupsFile: ../../go/pkg/authz/default_data/groups.yaml
+    modelConfFile: ../../go/pkg/authz/default_data/model.conf
+    policiesPath: ../../go/pkg/authz/default_data/policies
+    resourcesFile: ../../go/pkg/authz/default_data/resources.yaml
+  authzDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+  billing:
+    database:
+      arg: sslmode=disable
+      dbname: billing
+      name: cloudcredits
+      service: cloudcredits-db-postgresql
+      vaultCredentialsPath: controlplane/data/cloudcredits/database
+    enabled: true
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+        allowedCallers: "grpc-proxy-internal,grpc-proxy-external,app-client-api-grpc-proxy-external,cloudaccount-enroll,console,productcatalog,productcatalog-operator"
+    features:
+      servicesTerminationAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+  billingDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+  billingStandard:
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+        allowedCallers: "billing,billing-schedulers,cloudcredits"
+  billingIntel:
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+        allowedCallers: "billing,billing-schedulers,cloudcredits"
+  billingAria:
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+        allowedCallers: "billing,billing-schedulers,cloudcredits"
+    features:
+      deactivationScheduler: true
+      reportUsageScheduler: true
+      reportProductUsageScheduler: false
+      syncStoragePlan: true
+      syncTokenPlan: false
+      syncInferencePlan: false
+    productcatalog:
+      storageUsageUnitType: "terabyte hour"
+      tokenUsageUnitType: "million tokens"
+      inferenceUsageUnitType: "inference"
+    storageInstanceTypes:
+      - storage-file
+      - storage-object
+      - sc-storage-file
+    ariasystem:
+      service: billing-aria
+      vaultCredentialsPath: controlplane/data/billing-aria/secrets
+  billingSchedulers:
+    resources:
+      requests:
+        memory: "4Gi"
+        cpu: "1"
+      limits:
+        memory: "4Gi"
+        cpu: "1"
+    notifications:
+      senderEmail: "test@dev3.api.idcservice.net"
+      consoleUrl: "https://dev3.console.idcservice.net/"
+      paymentUrl: "https://dev3.console.idcservice.net/upgradeaccount"
+      cloudCreditHundredPercentUsedTemplate: "Terminate-Instance-100-Used-Template-Dev"
+      cloudCreditEightyPercentUsedTemplate: "Terminate-Instance-80-Used-Template-Dev"
+      cloudCreditExpiryTemplate: "Cloud-Credit-Expiry-Template-Dev"
+      pdlEmail: "idc-dev-autoterminate-instances@intel.com"
+    features:
+      reportUsageScheduler: true
+      reportProductUsageScheduler: false
+      creditUsageScheduler: true
+      creditExpiryScheduler: true
+      servicesTerminationScheduler: true
+      eventExpiryScheduler: true
+      cloudCreditUsageReportScheduler: true
+      # Account Types for enabling services termination
+      servicesTerminationAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+      # Account Types for emailing credit usage notifications
+      creditUsageEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+      # Account Types for emailing credit expiry notifications
+      creditExpiryEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+    productcatalog:
+  gitToGrpcSynchronizer:
+    # Jobs will be deleted after this many seconds.
+    ttlSecondsAfterFinished: 31536000  # 1 year
+    # Number of objects in each configMap
+    chunkSize: 1000
+  minio:
+    enabled: false
+    persistence:
+      enabled: false
+      size: 5Gi
+  cloudmonitor:
+    enabled: false
+    database:
+      arg: sslmode=disable
+      name: cloudmonitor
+      service: cloudmonitor-db-postgresql
+      vaultCredentialsPath: controlplane/data/cloudmonitor/database
+    victoriaMetricsAddr: https://monitoring.stg.api.idcservice.net/app1/api/v1/query_range
+    remoteReadAddrBM: https://cloudmonitor.pvt.staging.api.idcservice.net/apptenant/select/%id%/prometheus/api/v1/query_range
+    insecureSkipVerify: false
+    enableMetricsBM: false
+    roleArn: ""
+    awsVMClusterRegion: us-west-2
+    remoteWriteBMAddr: https://cloudmonitor-bm.dev3.api.idcservice.net/bmauth/api/v1/write
+    remoteWriteIKSAddr: https://monitoring.stg.api.idcservice.net/vmauth/api/v1/query_range
+    replicaCount: 1
+    vMClusterName: idc04-k02-cmcp
+    clusterEndpoint: https://B1A1DD142DF13DB235D8DF9BFEBF47A5.gr7.us-west-2.eks.amazonaws.com
+    replicaCount: 1
+  cloudmonitorDb:
+    enabled: false
+    primary:
+      persistence:
+        enabled: false
+  cloudaccount:
+    replicaCount: 1
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+        allowedCallers: "grpc-proxy-internal,grpc-proxy-external,app-client-api-grpc-proxy-external,billing,billing-schedulers,billing-aria,billing-intel,billing-standard,cloudcredits,cloudaccount-enroll,productcatalog,usage,user-credentials"
+    database:
+      arg: sslmode=disable
+      name: cloudaccount
+      service: cloudaccount-db-postgresql
+      vaultCredentialsPath: controlplane/data/cloudaccount/database
+    authz:
+      enabled: false
+    invitationsExpirySchedulerTime: 0
+    invitationsExpirySchedulerBatchSize: 100
+    intelMemberInvitationLimit: 15
+    premiumMemberInvitationLimit: 10
+    enterpriseMemberInvitationLimit: 50
+    otpRetryLimit: 3
+    otpRetryLimitIntervalDuration: 1
+    runSchedulers: true
+    features:
+      invitationsExpiryScheduler: true
+      invitationsExpiryEmail: false
+  cloudaccountDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+  cloudaccountEnroll:
+    replicaCount: 1
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+        allowedCallers: "grpc-proxy-external,app-client-api-grpc-proxy-external"
+    authz:
+      enabled: false
+  console:
+    enabled: false
+  debugTools:
+    # If true, a pod named debug-tools will be started that provides various utilities for debugging and troubleshooting.
+    enabled: false
+  # If enabled is false, helmfile will not process any global releases.
+  enabled: true
+  environmentName: {{ .Environment.Name }}-global
+  environmentType: development
+  externalSecrets:
+    # external-secrets is not needed by global services but it is enabled by default for single-cluster development environments.
+    enabled: true
+    serviceMonitor:
+      enabled: false
+      additionalLabels:
+        release: monitoring
+  gitea:
+    ingress:
+      className: "nginx"
+      host: dev.gitea.cloud.intel.com.kind.local
+  grpcProxy:
+    deployment: global
+    # external is used for external (public) requests via the grpc-rest-gateway.
+    external:
+      replicaCount: 1
+      # If insecureSkipJwtValidation is true, API authorization will be disabled.
+      # This MUST be false in production environments.
+      insecureSkipJwtValidation: false
+      # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+      # This MUST be false in production environments.
+      insecureDevEnvironment: false
+      statsd:
+        enabled: false
+        prefix: envoy.grpc-external
+      opa:
+        enabled: true
+        files: /authz/external
+      oidc:
+        # insecureDevServer is only used if insecureDevEnvironment=true and global.oidc.insecureEnabled=true.
+        insecureDevServer:
+          issueURL: http://localhost:80
+          port: 80
+          useTls: false
+        # Below are production authentication settings which can also be used for development where impersonation is not required.
+        # Default audience for development is: 435e26cc-529d-45ca-8814-6def72d03e81
+        servers:
+          - audiences:
+            - 435e26cc-529d-45ca-8814-6def72d03e81
+            - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+            - aa792d0d-16e7-4219-837b-00fa97d8cecd
+            - 13aa24f9-4ef7-4f15-8cbc-b5865a29bf9d
+            issueURL: https://consumer.intel.com/6abca663-55ad-4274-84df-caa464ddef9e/v2.0/
+            keyURL: https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/discovery/v2.0/keys
+            server: consumer.intel.com
+            port: 443
+          - audiences:
+            - 435e26cc-529d-45ca-8814-6def72d03e81
+            - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+            - aa792d0d-16e7-4219-837b-00fa97d8cecd
+            - 13aa24f9-4ef7-4f15-8cbc-b5865a29bf9d
+            issueURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/v2.0
+            keyURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/discovery/v2.0/keys
+            server: login.microsoftonline.com
+            port: 443
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "1"
+        limits:
+          memory: "1Gi"
+          cpu: "1"
+      rateLimit:
+        enabled: true
+        claim: enterpriseId
+    # internal is used for internal requests from trusted IDC services.
+    internal:
+      replicaCount: 1
+      opa:
+        enabled: false
+        files: /authz/internal
+      ingress:
+        annotations: []
+        className: nginx
+        enabled: true
+        externalSecret:
+          enabled: false
+          refreshInterval: 30m
+        host: dev.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: grpc-proxy-internal-tls
+      # If insecureSkipJwtValidation is true, API authorization will be disabled.
+      # This MUST be false in production environments.
+      insecureSkipJwtValidation: false
+      # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+      # This MUST be false in production environments.
+      insecureDevEnvironment: false
+      statsd:
+        enabled: false
+        prefix: envoy.grpc-internal
+      oidc:
+        # insecureDevServer is only used if insecureDevEnvironment=true and global.oidc.insecureEnabled=true.
+        insecureDevServer:
+          issueURL: http://localhost:80
+          port: 80
+          useTls: false
+        # Below are production authentication settings which can also be used for development where impersonation is not required.
+        # Default audience for development is: 435e26cc-529d-45ca-8814-6def72d03e81
+        servers:
+          - audiences:
+            - 435e26cc-529d-45ca-8814-6def72d03e81
+            - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+            - aa792d0d-16e7-4219-837b-00fa97d8cecd
+            - 13aa24f9-4ef7-4f15-8cbc-b5865a29bf9d
+            issueURL: https://consumer.intel.com/6abca663-55ad-4274-84df-caa464ddef9e/v2.0/
+            keyURL: https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/discovery/v2.0/keys
+            server: consumer.intel.com
+            port: 443
+          - audiences:
+            - 435e26cc-529d-45ca-8814-6def72d03e81
+            - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+            - aa792d0d-16e7-4219-837b-00fa97d8cecd
+            - 13aa24f9-4ef7-4f15-8cbc-b5865a29bf9d
+            issueURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/v2.0
+            keyURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/discovery/v2.0/keys
+            server: login.microsoftonline.com
+            port: 443
+      service:
+        type: ClusterIP
+      rateLimit:
+        enabled: false
+        replicaCount: 1
+  issueCa: {{ .Environment.Name }}-global-ca
+  grpcRestGateway:
+    replicaCount: 1
+    swagger:
+      enabled: true
+    ingress:
+      annotations:
+        nginx.ingress.kubernetes.io/server-snippet: |
+          client_body_timeout 60s;
+          client_header_timeout 60s;
+      className: nginx
+      enabled: true
+      host: dev.api.cloud.intel.com.kind.local
+      tls:
+        secretName: wildcard-tls
+  grpcInternalRestGateway:
+    enabled: false
+    replicaCount: 1
+    swagger:
+      enabled: true
+    ingress:
+      annotations:
+        nginx.ingress.kubernetes.io/server-snippet: |
+          client_body_timeout 60s;
+          client_header_timeout 60s;
+      className: nginx
+      enabled: true
+      host: dev-internal.api.cloud.intel.com.kind.local
+      tls:
+        secretName: wildcard-tls
+  appClientApiGrpcProxy:
+    deployment: global
+    external:
+      insecureSkipJwtValidation: true
+      enabled: true
+      replicaCount: 1
+      insecureDevEnvironment: false
+      statsd:
+        enabled: false
+        prefix: envoy.app-client-api-grpc-external
+      opa:
+        enabled: false
+        files: /authz/appclient
+      cognito:
+        enabled: false
+        endpoint: https://dev-idc-global-dev-internal.auth.us-west-2.amazoncognito.com
+        oidc:
+          enabled: true
+          issueURL: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_UYbIELOby
+          keyURL: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_UYbIELOby/.well-known/jwks.json
+          port: 443
+          server: cognito-idp.us-west-2.amazonaws.com
+      rateLimit:
+        enabled: true
+        claim: client_id
+  appClientApiGrpcRestGateway:
+    deployment: global
+    enabled: true
+    replicaCount: 1
+    swagger:
+      enabled: true
+    ingress:
+      enabled: true
+      host: dev-sdk.api.cloud.intel.com.kind.local
+      className: nginx
+      tls:
+        secretName: wildcard-tls
+      annotations:
+        nginx.ingress.kubernetes.io/server-snippet: |
+          client_body_timeout 60s;
+          client_header_timeout 60s;
+  appClientTokenGrpcProxy:
+    deployment: global
+    external:
+      insecureSkipJwtValidation: true
+      enabled: false
+      replicaCount: 1
+      opa:
+        enabled: false
+        policyName: authzservice.rego
+      cognito:
+        enabled: false
+        endpoint: https://dev-idc-global-dev-internal.auth.us-west-2.amazoncognito.com
+        oidc:
+          enabled: false
+          issueURL: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_UYbIELOby
+          keyURL: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_UYbIELOby/.well-known/jwks.json
+          port: 443
+          server: cognito-idp.us-west-2.amazonaws.com
+      rateLimit:
+        enabled: true
+        claim: client_id
+  appClientTokenGrpcRestGateway:
+    deployment: global
+    enabled: false
+    replicaCount: 1
+    swagger:
+      enabled: true
+    ingress:
+      enabled: true
+      host: dev-sdk.api.cloud.intel.com.kind.local
+      className: nginx
+      tls:
+        secretName: wildcard-tls
+      annotations:
+        nginx.ingress.kubernetes.io/server-snippet: |
+          client_body_timeout 60s;
+          client_header_timeout 60s;
+  idcCoreServices:
+    # If enabled is false, helmfile will not process any global IDC core releases.
+    enabled: true
+  cloudcreditsworker:
+    enabled: false
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      nodePort: 0
+    aws:
+      sqs:
+        queueName: "idc-dev-credits-queue"
+        waitTimeSeconds: 10
+        maxNumberofMessages: 10
+    workerConfig:
+      initSleepTimeSeconds: 60
+      maxSleepTimeSeconds: 900
+      channelCapacity:  10
+    notifications:
+      opsPDL: "idc-dev-autoterminate-instances@intel.com"
+    features:
+      servicesTerminationAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+      creditUsageEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+      creditExpiryEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+    premiumCloudCreditThreshold: 80
+    intelCloudCreditThreshold: 80
+    enterpriseCloudCreditThreshold: 80
+  cloudcredits:
+    enabled: true
+    database:
+      arg: sslmode=disable
+      name: cloudcredits
+      service: cloudcredits-db-postgresql
+      vaultCredentialsPath: controlplane/data/cloudcredits/database
+    creditUsageEventSchedulerInterval: 240
+    creditExpiryEventSchedulerInterval: 240
+    creditUsageReportSchedulerInterval: 240
+    premiumCloudCreditThreshold: 80
+    intelCloudCreditThreshold: 80
+    enterpriseCloudCreditThreshold: 80
+    premiumCloudCreditNotifyBeforeExpiry: 4320
+    intelCloudCreditNotifyBeforeExpiry: 4320
+    enterpriseCloudCreditNotifyBeforeExpiry: 4320
+    creditsExpiryMinimumInterval: 38
+    couponNumberOfUsesThresholdStandard: 500
+    couponNumberOfUsesThresholdNonStandard: 50
+    runCreditEventSchedulers: true
+    features:
+      creditUsageEventScheduler: false
+      creditExpiryEventScheduler: false
+      creditUsageReportScheduler: false
+  cloudcreditsDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+  usage:
+    database:
+      arg: sslmode=disable
+      name: usage
+      service: usage-db-postgresql
+      vaultCredentialsPath: controlplane/data/usage/database
+    usageSchedulerInterval: 3600
+    productUsageSchedulerInterval: 3600
+    migrationResourcePaginationSize: 40
+    storageMetricUnitType: "TB"
+    storageTimeMetricUnitType: "hour"
+    storageServiceTypes:
+      - FileStorageAsAService
+      - ObjectStorageAsAService
+      - FileStorageAsAService-SC
+      - ObjectStorageAsAService-SC
+    features:
+      usageScheduler: true
+      productUsageScheduler: true
+    resources:
+      requests:
+        memory: "0.5Gi"
+        cpu: "500m"
+      limits:
+        memory: "0.5Gi"
+        cpu: "500m"
+  usageDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+  metering:
+    replicaCount: 1
+    database:
+      arg: sslmode=disable
+      name: metering
+      service: metering-db-postgresql
+      vaultCredentialsPath: controlplane/data/metering/database
+    service:
+      type: ClusterIP
+      nodePort: 0
+    validServiceTypes:
+      - ComputeAsAService
+      - FileStorageAsAService
+      - ObjectStorageAsAService
+      - FileStorageAsAService-SC
+      - ObjectStorageAsAService-SC
+      - SoftwareAsAService
+      - TrainingAsAService
+      - SuperComputingAsAService
+  meteringDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+  oidc:
+    # If insecureEnabled is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+    # This MUST be false in production environments.
+    insecureEnabled: false
+    ingress:
+      className: nginx
+      enabled: true
+      host: dev.oidc.cloud.intel.com.kind.local
+  opal:
+    enabled: false
+  otel:
+    exporter:
+      otlp:
+        # Below OTEL endpoint corresponds to Kibana https://internal-placeholder.com/.
+        # See https://internal-placeholder.com/x/WA-Msw for more information.
+        endpoint: internal-placeholder.com:443
+  # portal is the HTTP server that serves the IDC Console (user-facing UI) such as https://stg.console.idcservice.net/.
+  portal:
+    enabled: false
+    ingress:
+      className: nginx
+      enabled: false
+      host: ""
+      tls:
+        secretName: wildcard-tls
+    configMap:
+      REACT_APP_DEFAULT_REGION_AVAILABILITY_ZONES: ["us-dev-1a", "us-dev-2a"]
+      REACT_APP_DEFAULT_REGION_NAMES: ["us-dev-1a-default", "us-dev-2a-default"]
+      REACT_APP_DEFAULT_REGION_PREFIXES: ["22", "24"]
+      REACT_APP_DEFAULT_REGIONS: ["us-dev-1", "us-dev-2"]
+      REACT_APP_FEATURE_KaaS: 0
+      REACT_APP_FEATURE_API_KEYS: 0
+      REACT_APP_FEATURE_OBJECT_STORAGE: 0
+      REACT_APP_SELECTED_REGION: "us-dev-1"
+    version: "0.1.0-25b8a98aee"
+  # adminportal is the HTTP server that serves the IDC Admin Console (user-facing UI).
+  adminportal:
+    enabled: false
+    ingress:
+      className: nginx
+      enabled: false
+      host: ""
+      tls:
+        secretName: wildcard-tls
+    version: "0.1.0-c96c9f19f6"
+  productCatalog:
+    enabled: true
+    replicaCount: 1
+    whitelist:
+      enabled: true
+    database:
+      arg: sslmode=disable
+      name: cloudaccount
+      service: cloudaccount-db-postgresql
+      vaultCredentialsPath: controlplane/data/cloudaccount/database
+    addDatabase:
+      enabled: false
+      arg: sslmode=disable
+      name: productcatalog
+      service: productcatalog-db-postgresql
+      vaultCredentialsPath: controlplane/data/productcatalog/database
+    sync:
+      enabled: false
+  productCatalogDb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: false
+  rateLimit:
+    enabled: false
+    replicaCount: 1
+    serviceMonitor:
+      enabled: false
+  tradeScanner:
+    enabled: true
+    replicaCount: 1
+  vault:
+    # If true, Vault Agent Injector will be installed in the global cluster.
+    enabled: true
+    authPath: auth/cluster-auth
+    ingress:
+      enabled: true
+      className: "nginx"
+      host: dev.vault.cloud.intel.com.kind.local
+    server:
+      # If true, Vault Server will be installed in the global cluster.
+      enabled: true
+  # If true, telemetry service will be installed in the global cluster.
+  # telemetry.enabled must also be true to enable the service in the global cluster.
+  telemetry:
+    enabled: false
+  grafana:
+    enabled: false
+    ingress:
+      enabled: true
+      host: dev.grafana.cloud.intel.com.kind.local
+    version: "6.57.3"
+  localstack:
+    enabled: true
+    version: "0.6.8"
+
+
+vault:
+  enabled: true
+  service: http://dev.vault.cloud.intel.com.kind.local:80
+  version: "0.28.0"
+
+log:
+  # Zap log encoding (one of 'json' or 'console'). Use json with ELK.
+  encoder: json
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: debug
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: error
+  # gRPC log severity level. Can be one of 'error', 'warning', or 'info'.
+  grpcGoLogSeverityLevel: error
+  # gRPC log verbosity level. Higher numbers will result in more logs.
+  grpcGoLogVerbosityLevel: 0
+  # gRPC log encoding format. options: json, console (default:console)
+  grpcGoLogEncoding: json
+
+otel:
+  deployment:
+    environment: {{ .Environment.Name }}
+    group: regional
+  extraResourceAttributes: {}
+  otelAnnotations: true
+
+# Global Docker registry for custom images built by frameworks.cloud.devcloud.services.idc.
+image:
+  registry: {{ env "DOCKER_REGISTRY" | default "localhost:5001" | quote }}
+  repositoryPrefix: ""
+
+# Global Docker registry for custom images NOT built by frameworks.cloud.devcloud.services.idc.
+# This includes forks of open source projects such as Metal3 and Ironic.
+idcRegistry:
+  registry: internal-placeholder.com
+  repositoryPrefix: intelcloud/
+
+# Global Docker registry for docker.io images.
+dockerIo:
+  registry: internal-placeholder.com
+  repositoryPrefix: cache/
+
+# Global Helm repository for custom charts.
+idcHelmRepository:
+  url: {{ env "DOCKER_REGISTRY" | default "localhost:5001" }}/intelcloud
+
+# Global proxy parameters are used by deployment/charts/idc-common/templates/_common.tpl.
+proxy:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+  enabled: true
+
+gts:
+  get_token_url: https://apis-sandbox.intel.com/v1/auth/token
+  create_product_url: https://apis-sandbox.intel.com/integration/services/v1/gts/idc?productName=IDC%20Trade%20Compliance&apiName=CreateProductDev
+  create_order_url: https://apis-sandbox.intel.com/integration/services/v1/gts/idc?productName=IDC%20Trade%20Compliance&apiName=CreateOrderDev
+  business_screen_url: https://apis-sandbox.intel.com/integration/services/v1/gts/idc?productName=IDC%20Trade%20Compliance&apiName=ScreenBusinessPartnerDev
+
+tls:
+  client:
+    enabled: true
+    insecureSkipVerify: false
+    rootCa: {{ $.Environment.Name }}-root-ca
+  server:
+    enabled: true
+    requireClientCertificate: true
+
+
+cognito:
+  enabled: false
+  endpoint: ""
+
+# If true, pods will request zero resources. For development only.
+zeroResources: false
+
+imagePullSecrets: []
+# CoreDNS is used to provide FQDN resolution to pods for .kind.local addresses for testing.
+coredns:
+  enabled: false
+  service:
+    clusterIP: 10.96.0.10
+  # Values of localZoneTargets should be valid DNS zone file records (class, type, and data).
+  # Values can be in the format "IN CNAME www.example.com." (note the trailing dot) or "IN A 10.2.3.4".
+  localZoneTargets:
+    global: IN CNAME idc-global-control-plane.
+    usDev1: IN CNAME idc-global-control-plane.
+    usDev2: IN CNAME idc-global-control-plane.
+    usDev1a: IN CNAME idc-global-control-plane.
+    usDev2a: IN CNAME idc-global-control-plane.
+    usDev1aNet: IN CNAME idc-global-control-plane.
+
+debugTools:
+  collector:
+    enabled: false
+    image:
+      tag: "3e89d1d1dbd10b1809bde3436bbe9f3708ad4c7d3ad4a9551cd8a16d88400365"
+  enabled: true
+  image:
+    tag: "a7c92e1a2fb9287576a16e107166fee7f9925e15d2c1a683dbb1f4370ba9bfe8"
+
+externalSecrets:
+  enabled: true
+
+telemetry:
+  config:
+    receivers:
+      filelog:
+        start_at: end
+  # If false, disable the telemetry service in all clusters
+  enabled: false
+
+argocd:
+  enabled: false
+  version: "5.52.1"
+
+gitea:
+  version: "9.6.1"
+
+regions: {}
+
+defaults:
+  region:
+    access: open
+    baremetalEnrollmentApi:
+      ingress:
+        className: nginx
+        enabled: true
+        host: dev.baremetal-enrollment-api.us-dev-1.api.cloud.intel.com.kind.local
+        tls:
+          secretName: enrollment-tls
+    # This components section defines the components that will be deployed by Universe Deployer
+    # to the regional Kubernetes clusters of development environments.
+    # However, if the file /universe_config/environment/${IDC_ENV}.json exists,
+    # then that will take precedence and this section will be completely ignored.
+    # See also the global and availabilityZone components sections.
+    components:
+      cloudmonitorLogs:
+        commit: HEAD
+        enabled: false
+      compute:
+        commit: HEAD
+        enabled: true
+      computeApiServer:
+        commit: HEAD
+        enabled: true
+      computeBm:
+        commit: HEAD
+        enabled: true
+      computeBmEnrollment:
+        commit: HEAD
+        enabled: true
+      computePopulateInstanceType:
+        commit: HEAD
+        enabled: true
+      computePopulateMachineImage:
+        commit: HEAD
+        enabled: true
+      computePopulateSubnet:
+        commit: HEAD
+        enabled: true
+      dpai:
+        commit: HEAD
+        enabled: false
+      externalSecrets:
+        commit: HEAD
+        enabled: true
+      fleetAdmin:
+        commit: HEAD
+        enabled: true
+      grpc:
+        commit: HEAD
+        enabled: true
+      iks:
+        commit: HEAD
+        enabled: true
+      maasCompute:
+        commit: HEAD
+        enabled: false
+      kfaas:
+        commit: HEAD
+        enabled: false
+      maas:
+        commit: HEAD
+        enabled: false
+      network:
+        commit: HEAD
+        enabled: false
+      sdnVN:
+        commit: HEAD
+        enabled: false
+      quotaManagementService:
+        commit: HEAD
+        enabled: false
+      storage:
+        commit: HEAD
+        enabled: true
+      telemetry:
+        commit: HEAD
+        enabled: true
+      training:
+        commit: HEAD
+        enabled: true
+      rateLimit:
+        commit: HEAD
+        enabled: false
+      tftpServer:
+        commit: HEAD
+        enabled: false
+      training:
+        commit: HEAD
+        enabled: false
+    computeVmMachineImages:
+      urlPrefix: http://10.45.122.149/vmaas/images
+      excludeSources: []
+      dataVolumes: {}
+      virtualMachineImages: {}
+    default: false
+    kfaasDb:
+      enabled: false
+      primary:
+        persistence:
+          enabled: false
+    kfaas:
+      database:
+        arg: sslmode=disable
+      domainSuffix: idcservice.net
+      listenPort: 8083
+      otel:
+        exporter:
+          otlp:
+            endpoint: internal-placeholder.com:443
+    dataloader:
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for demo is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.dataloader.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+    cloudmonitorLogs:
+      enabled: false
+      apiServer:
+        database:
+          arg: sslmode=disable
+        domainSuffix: idcservice.net
+        service:
+          nodePort: 0
+          type: ClusterIP
+        openSearchEndpoint: https://os-dev.eglb.intel.com
+      devDb:
+        enabled: true
+        primary:
+          persistence:
+            enabled: false
+      replicaCount: 1
+    computeApiServer:
+      database:
+        arg: sslmode=disable
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      quotaManagementServerAddr: ""
+      service:
+        nodePort: 0
+        type: ClusterIP
+      cloudAccountQuota:
+        cloudAccounts:
+          ENTERPRISE:
+            instanceQuota:
+              bm-icp-gaudi2: 128
+              bm-icp-gaudi2-debug: 40
+              bm-icx-gaudi2: 128
+              bm-spr-gaudi2: 128
+              bm-icp-gaudi2-sc: 128
+              bm-icx-gaudi2-sc: 128
+              bm-spr-gaudi3-dell: 128
+              bm-emr-gaudi3-dell: 128
+              bm-gnr-gaudi3-smc: 128
+              bm-spr-pvc-1100-8: 20
+              bm-spr-pvc-1100-4: 10
+              bm-spr-pvc-1550-8: 20
+              bm-spr: 20
+              bm-spr-a100-4: 20
+              bm-emr: 2
+              bm-emr-dell: 2
+              bm-srf-sp-quanta: 2
+              bm-gnr-sp-quanta: 20
+              bm-spr-pl: 20
+              bm-spr-pl-sc: 20
+              bm-spr-atsm-170-1: 2
+              bm-spr-hbm-c: 2
+              bm-spr-hbm-f: 2
+              bm-spr-hbm: 2
+              bm-virtual: 5
+              bm-virtual-sc: 5
+              vm-spr-lrg: 50
+              vm-spr-med: 50
+              vm-spr-sml: 50
+              vm-iks-tny: 0
+              vm-spr-tny: 5
+              vm-icp-gaudi2-1: 0
+              vm-icp-gaudi2-slurm-1: 0
+              vm-icp-gaudi2-8: 0
+              vm-spr-pvc-1100-1: 20
+            storageQuota:
+              filesystems: 2
+              totalSizeGB: 50000
+              buckets: 100
+              bucketPrincipals: 50
+          ENTERPRISE_PENDING:
+            instanceQuota:
+              bm-icp-gaudi2: 0
+              bm-icx-gaudi2: 0
+              bm-icp-gaudi2-sc: 0
+              bm-icx-gaudi2-sc: 0
+              bm-spr-gaudi2: 0
+              bm-spr-gaudi3-dell: 0
+              bm-emr-gaudi3-dell: 0
+              bm-gnr-gaudi3-smc: 0
+              bm-spr-pvc-1100-4: 1
+              bm-spr-pvc-1100-8: 0
+              bm-spr-pvc-1550-8: 0
+              bm-spr: 1
+              bm-spr-a100-4: 1
+              bm-emr: 2
+              bm-emr-dell: 2
+              bm-srf-sp-quanta: 2
+              bm-gnr-sp-quanta: 2
+              bm-spr-pl: 1
+              bm-spr-pl-sc: 1
+              bm-spr-atsm-170-1: 2
+              bm-spr-hbm-c: 2
+              bm-spr-hbm-f: 2
+              bm-spr-hbm: 2
+              bm-virtual: 5
+              bm-virtual-sc: 5
+              vm-spr-lrg: 0
+              vm-spr-med: 0
+              vm-spr-sml: 2
+              vm-iks-tny: 0
+              vm-spr-tny: 5
+              vm-icp-gaudi2-1: 0
+              vm-icp-gaudi2-slurm-1: 0
+              vm-icp-gaudi2-8: 0
+              vm-spr-pvc-1100-1: 5
+          INTEL:
+            instanceQuota:
+              bm-icp-gaudi2: 32
+              bm-icp-gaudi2-sc: 32
+              bm-icp-gaudi2-debug: 40
+              bm-icx-gaudi2: 32
+              bm-icx-gaudi2-sc: 32
+              bm-spr-pvc-1100-8: 8
+              bm-spr-pvc-1100-4: 10
+              bm-spr-pvc-1550-8: 8
+              bm-spr-gaudi2: 10
+              bm-spr-gaudi3-dell: 10
+              bm-emr-gaudi3-dell: 10
+              bm-gnr-gaudi3-smc: 10
+              bm-spr: 20
+              bm-spr-a100-4: 20
+              bm-emr: 2
+              bm-emr-dell: 2
+              bm-srf-sp-quanta: 2
+              bm-gnr-sp-quanta: 20
+              bm-spr-pl: 20
+              bm-spr-pl-sc: 20
+              bm-spr-atsm-170-1: 2
+              bm-spr-hbm-c: 2
+              bm-spr-hbm-f: 2
+              bm-spr-hbm: 2
+              bm-virtual: 5
+              bm-virtual-sc: 5
+              vm-spr-lrg: 5
+              vm-spr-med: 10
+              vm-spr-sml: 20
+              vm-iks-tny: 0
+              vm-spr-tny: 5
+              vm-icp-gaudi2-1: 16
+              vm-icp-gaudi2-slurm-1: 16
+              vm-icp-gaudi2-8: 16
+              vm-spr-pvc-1100-1: 20
+            storageQuota:
+              filesystems: 2
+              totalSizeGB: 50000
+              buckets: 100
+              bucketPrincipals: 50
+          PREMIUM:
+            instanceQuota:
+              bm-icp-gaudi2: 20
+              bm-icp-gaudi2-debug: 40
+              bm-icx-gaudi2: 20
+              bm-icp-gaudi2-sc: 20
+              bm-icx-gaudi2-sc: 20
+              bm-spr-pvc-1100-8: 8
+              bm-spr-pvc-1550-8: 8
+              bm-spr-pvc-1100-4: 5
+              bm-spr-gaudi2: 20
+              bm-spr-gaudi3-dell: 20
+              bm-emr-gaudi3-dell: 20
+              bm-gnr-gaudi3-smc: 20
+              bm-spr: 20
+              bm-spr-a100-4: 20
+              bm-emr: 2
+              bm-emr-dell: 2
+              bm-srf-sp-quanta: 2
+              bm-gnr-sp-quanta: 20
+              bm-spr-pl: 20
+              bm-spr-pl-sc: 20
+              bm-spr-atsm-170-1: 2
+              bm-spr-hbm-c: 2
+              bm-spr-hbm-f: 2
+              bm-spr-hbm: 2
+              bm-virtual: 5
+              bm-virtual-sc: 5
+              vm-spr-lrg: 5
+              vm-spr-med: 10
+              vm-spr-sml: 20
+              vm-iks-tny: 0
+              vm-spr-tny: 5
+              vm-icp-gaudi2-1: 1
+              vm-icp-gaudi2-slurm-1: 1
+              vm-icp-gaudi2-8: 1
+              vm-spr-pvc-1100-1: 20
+            storageQuota:
+              filesystems: 2
+              totalSizeGB: 50000
+              buckets: 100
+              bucketPrincipals: 50
+          STANDARD:
+            instanceQuota:
+              bm-icp-gaudi2: 0
+              bm-icx-gaudi2: 0
+              bm-spr-gaudi2: 0
+              bm-spr-gaudi3-dell: 0
+              bm-emr-gaudi3-dell: 0
+              bm-gnr-gaudi3-smc: 0
+              bm-icp-gaudi2-debug: 40
+              bm-icx-gaudi2-sc: 0
+              bm-spr-gaudi2-sc: 0
+              bm-spr-pvc-1100-4: 1
+              bm-spr-pvc-1100-8: 3
+              bm-spr-pvc-1550-8: 3
+              bm-spr: 1
+              bm-spr-a100-4: 1
+              bm-emr: 2
+              bm-emr-dell: 2
+              bm-srf-sp-quanta: 2
+              bm-gnr-sp-quanta: 20
+              bm-spr-pl: 1
+              bm-spr-pl-sc: 1
+              bm-spr-atsm-170-1: 2
+              bm-spr-hbm-c: 2
+              bm-spr-hbm-f: 2
+              bm-spr-hbm: 2
+              bm-virtual: 5
+              bm-virtual-sc: 5
+              vm-spr-lrg: 0
+              vm-spr-med: 0
+              vm-spr-sml: 2
+              vm-iks-tny: 0
+              vm-spr-tny: 5
+              vm-icp-gaudi2-1: 0
+              vm-icp-gaudi2-slurm-1: 0
+              vm-spr-pvc-1100-1: 3
+            storageQuota:
+              filesystems: 3
+              totalSizeGB: 300
+              buckets: 10
+              bucketPrincipals: 5
+      featureFlags:
+        enableComputeNodePoolsForScheduling: false
+        enableMultipleFirmwareSupport: false
+        enableQMSForQuotaProcessing: false
+      acceleratorInterface:
+        enableStaticBGP: false
+        enabledInstanceTypes:
+          - bm-virtual
+          - bm-virtual-sc
+          - bm-icp-gaudi2
+          - bm-icx-gaudi2
+          - bm-spr-gaudi2
+          - bm-icp-gaudi2-sc
+          - bm-icx-gaudi2-sc
+          - bm-spr-gaudi3-dell
+          - bm-emr-gaudi3-dell
+          - bm-gnr-gaudi3-smc
+      storageInterface:
+        enabled: false
+        enabledInstanceTypes: []
+        enabledOnSingles: false
+    computeDb:
+      enabled: true
+      primary:
+        persistence:
+          enabled: false
+    dpaiDb:
+      enabled: false
+      primary:
+        persistence:
+          enabled: false
+    maas:
+      enabled: false
+      dispatcher:
+        dispatcherServerAddr: maas-dispatcher.idcstage.intel.com:443
+      product:
+        productCatalogServerAddr: productcatalog.idcs-system.svc.cluster.local:8443
+        productId: ba5d2874-dc83-425e-af98-c810f11dad79
+      serviceMonitor:
+        enabled: true
+    dpai:
+      enabled: false
+      database:
+        arg: sslmode=disable
+      domainSuffix: idcservice.net
+      listenPort: 8083
+      defaultRegistry:
+        host: https://icir.cps.intel.com
+        username: robot$dpai+robot_dpai_backend_stage
+    fleetAdmin:
+      apiServer:
+        computeNodePoolForUnknownCloudAccount: general
+        database:
+          arg: sslmode=disable
+        service:
+          nodePort: 0
+          type: ClusterIP
+      devDb:
+        enabled: true
+        primary:
+          persistence:
+            enabled: false
+      enabled: false
+      replicaCount: 1
+    fleetAdminUIServer:
+      apiServer:
+        database:
+          arg: sslmode=disable
+        service:
+          nodePort: 0
+          type: ClusterIP
+      enabled: false
+      replicaCount: 1
+    loadbalancerOperator:
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2048Mi"
+    pgOperator:
+      enabled: false
+      releaseVersion: "0.21.6"
+      replicaCount: 3
+      resources:
+        limits:
+          cpu: "100m"
+          memory: "200Mi"
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
+      monitoring:
+        prometheusEnabled: false
+        grafanaDashboard:
+          enabled: false
+          labels: {}
+          annotations: {}
+      additionalEnv: []
+      config:
+        data:
+          certDuration: 90
+          inheritedLabels: environment
+    minioOperator:
+      enabled: false
+      releaseVersion: "6.0.1"
+      replicaCount: 2
+      resources:
+        requests:
+          cpu: "200m"
+          memory: "256Mi"
+          estorage: "500Mi"
+    minioTenant:
+      enabled: false
+      releaseVersion: "6.0.1"
+      tenant:
+        name: miniotenant
+        pools:
+          name: pool-0
+          servers: 4
+          volperserver: 4
+          storageclass: standard
+          size: 5Gi
+    trainingApiServer:
+      database:
+        arg: sslmode=disable
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for training-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.training-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        nodePort: 0
+        type: ClusterIP
+      slurmBatchService:
+        endpoint: "https://internal-placeholder.com"
+      slurmJupyterhubService:
+        endpoint: "https://internal-placeholder.com"
+      slurmSSHService:
+        endpoint: "internal-placeholder.com"
+    trainingDb:
+      enabled: true
+      primary:
+        persistence:
+          enabled: false
+    storageAdminApiServer:
+      enabled: false
+      domainSuffix: idcservice.net
+      customQuotaMaxAllowedInTB: 200
+      maxVolumesAllowed: 100
+      maxBucketsAllowed: 100
+      selectedRegion: us-dev-1
+      ingress:
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+    quotaManagementService:
+      enabled: false
+      selectedRegion: us-dev-1
+      domainSuffix: idcservice.net
+      database:
+        arg: sslmode=disable
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+      bootstrappedServices:
+        - quotaUnit: COUNT
+          maxLimits:
+            - compute:
+                - bm-icp-gaudi2: 128
+                - bm-icp-gaudi2-debug: 40
+                - bm-icx-gaudi2: 128
+                - bm-spr-gaudi2: 128
+                - bm-spr-gaudi2-sc: 0
+                - bm-icp-gaudi2-sc: 128
+                - bm-icx-gaudi2-sc: 128
+                - bm-spr-gaudi3-dell: 128
+                - bm-emr-gaudi3-dell: 128
+                - bm-gnr-gaudi3-smc: 128
+                - bm-spr-pvc-1100-8: 20
+                - bm-spr-pvc-1100-4: 10
+                - bm-spr-pvc-1550-8: 20
+                - bm-spr: 20
+                - bm-spr-a100-4: 20
+                - bm-emr: 2
+                - bm-emr-dell: 2
+                - bm-srf-sp-quanta: 2
+                - bm-gnr-sp-quanta: 20
+                - bm-spr-pl: 20
+                - bm-spr-pl-sc: 20
+                - bm-spr-atsm-170-1: 2
+                - bm-spr-hbm-c: 2
+                - bm-spr-hbm-f: 2
+                - bm-spr-hbm: 2
+                - bm-virtual: 5
+                - bm-virtual-sc: 5
+                - vm-spr-lrg: 50
+                - vm-spr-med: 50
+                - vm-spr-sml: 50
+                - vm-iks-tny: 0
+                - vm-spr-tny: 5
+                - vm-icp-gaudi2-1: 16
+                - vm-icp-gaudi2-slurm-1: 16
+                - vm-icp-gaudi2-8: 16
+                - vm-spr-pvc-1100-1: 20
+            - storage:
+                - filesystems: 3
+                - totalSizeTB: 50
+                - buckets: 100
+                - bucketPrincipals: 50
+                - bucketSizeInTB: 5
+          quotaAccountType:
+              ACCOUNT_TYPE_ENTERPRISE:
+                defaultLimits:
+                  - compute:
+                      - bm-icp-gaudi2: 128
+                      - bm-icp-gaudi2-debug: 40
+                      - bm-icx-gaudi2: 128
+                      - bm-spr-gaudi2: 128
+                      - bm-icp-gaudi2-sc: 128
+                      - bm-icx-gaudi2-sc: 128
+                      - bm-spr-gaudi3-dell: 128
+                      - bm-emr-gaudi3-dell: 128
+                      - bm-gnr-gaudi3-smc: 128
+                      - bm-spr-pvc-1100-8: 20
+                      - bm-spr-pvc-1100-4: 10
+                      - bm-spr-pvc-1550-8: 20
+                      - bm-spr: 20
+                      - bm-spr-a100-4: 20
+                      - bm-emr: 2
+                      - bm-emr-dell: 2
+                      - bm-srf-sp-quanta: 2
+                      - bm-gnr-sp-quanta: 20
+                      - bm-spr-pl: 20
+                      - bm-spr-pl-sc: 20
+                      - bm-spr-atsm-170-1: 2
+                      - bm-spr-hbm-c: 2
+                      - bm-spr-hbm-f: 2
+                      - bm-spr-hbm: 2
+                      - bm-virtual: 5
+                      - bm-virtual-sc: 5
+                      - vm-spr-lrg: 50
+                      - vm-spr-med: 50
+                      - vm-spr-sml: 50
+                      - vm-iks-tny: 0
+                      - vm-spr-tny: 5
+                      - vm-icp-gaudi2-1: 0
+                      - vm-icp-gaudi2-slurm-1: 0
+                      - vm-icp-gaudi2-8: 0
+                      - vm-spr-pvc-1100-1: 20
+                  - storage:
+                      - filesystems: 3
+                      - totalSizeTB: 50
+                      - buckets: 100
+                      - bucketPrincipals: 50
+                      - bucketSizeInTB: 5
+              ACCOUNT_TYPE_ENTERPRISE_PENDING:
+                defaultLimits:
+                  - compute:
+                      - bm-icp-gaudi2: 0
+                      - bm-icx-gaudi2: 0
+                      - bm-icp-gaudi2-sc: 0
+                      - bm-icx-gaudi2-sc: 0
+                      - bm-spr-gaudi2: 0
+                      - bm-spr-gaudi3-dell: 0
+                      - bm-emr-gaudi3-dell: 0
+                      - bm-gnr-gaudi3-smc: 0
+                      - bm-spr-pvc-1100-4: 1
+                      - bm-spr-pvc-1100-8: 0
+                      - bm-spr-pvc-1550-8: 0
+                      - bm-spr: 1
+                      - bm-spr-a100-4: 1
+                      - bm-emr: 2
+                      - bm-emr-dell: 2
+                      - bm-srf-sp-quanta: 2
+                      - bm-gnr-sp-quanta: 2
+                      - bm-spr-pl: 1
+                      - bm-spr-pl-sc: 1
+                      - bm-spr-atsm-170-1: 2
+                      - bm-spr-hbm-c: 2
+                      - bm-spr-hbm-f: 2
+                      - bm-spr-hbm: 2
+                      - bm-virtual: 5
+                      - bm-virtual-sc: 5
+                      - vm-spr-lrg: 0
+                      - vm-spr-med: 0
+                      - vm-spr-sml: 2
+                      - vm-iks-tny: 0
+                      - vm-spr-tny: 5
+                      - vm-icp-gaudi2-1: 0
+                      - vm-icp-gaudi2-slurm-1: 0
+                      - vm-icp-gaudi2-8: 0
+                      - vm-spr-pvc-1100-1: 5
+              ACCOUNT_TYPE_INTEL:
+                defaultLimits:
+                  - compute:
+                      - bm-icp-gaudi2: 32
+                      - bm-icp-gaudi2-sc: 32
+                      - bm-icp-gaudi2-debug: 40
+                      - bm-icx-gaudi2: 32
+                      - bm-icx-gaudi2-sc: 32
+                      - bm-spr-pvc-1100-8: 8
+                      - bm-spr-pvc-1100-4: 10
+                      - bm-spr-pvc-1550-8: 8
+                      - bm-spr-gaudi2: 10
+                      - bm-spr-gaudi3-dell: 10
+                      - bm-emr-gaudi3-dell: 10
+                      - bm-gnr-gaudi3-smc: 10
+                      - bm-spr: 20
+                      - bm-spr-a100-4: 20
+                      - bm-emr: 2
+                      - bm-emr-dell: 2
+                      - bm-srf-sp-quanta: 2
+                      - bm-gnr-sp-quanta: 20
+                      - bm-spr-pl: 20
+                      - bm-spr-pl-sc: 20
+                      - bm-spr-atsm-170-1: 2
+                      - bm-spr-hbm-c: 2
+                      - bm-spr-hbm-f: 2
+                      - bm-spr-hbm: 2
+                      - bm-virtual: 5
+                      - bm-virtual-sc: 5
+                      - vm-spr-lrg: 5
+                      - vm-spr-med: 10
+                      - vm-spr-sml: 20
+                      - vm-iks-tny: 0
+                      - vm-spr-tny: 5
+                      - vm-icp-gaudi2-1: 16
+                      - vm-icp-gaudi2-slurm-1: 16
+                      - vm-icp-gaudi2-8: 16
+                      - vm-spr-pvc-1100-1: 20
+                  - storage:
+                      - filesystems: 2
+                      - totalSizeTB: 50
+                      - buckets: 100
+                      - bucketPrincipals: 50
+                      - bucketSizeInTB: 5
+              ACCOUNT_TYPE_PREMIUM:
+                defaultLimits:
+                  - compute:
+                      - bm-icp-gaudi2: 20
+                      - bm-icp-gaudi2-debug: 40
+                      - bm-icx-gaudi2: 20
+                      - bm-icp-gaudi2-sc: 20
+                      - bm-icx-gaudi2-sc: 20
+                      - bm-spr-pvc-1100-8: 8
+                      - bm-spr-pvc-1550-8: 8
+                      - bm-spr-pvc-1100-4: 5
+                      - bm-spr-gaudi2: 20
+                      - bm-spr-gaudi3-dell: 20
+                      - bm-emr-gaudi3-dell: 20
+                      - bm-gnr-gaudi3-smc: 20
+                      - bm-spr: 20
+                      - bm-spr-a100-4: 20
+                      - bm-emr: 2
+                      - bm-emr-dell: 2
+                      - bm-srf-sp-quanta: 2
+                      - bm-gnr-sp-quanta: 20
+                      - bm-spr-pl: 20
+                      - bm-spr-pl-sc: 20
+                      - bm-spr-atsm-170-1: 2
+                      - bm-spr-hbm-c: 2
+                      - bm-spr-hbm-f: 2
+                      - bm-spr-hbm: 2
+                      - bm-virtual: 5
+                      - bm-virtual-sc: 5
+                      - vm-spr-lrg: 5
+                      - vm-spr-med: 10
+                      - vm-spr-sml: 20
+                      - vm-iks-tny: 0
+                      - vm-spr-tny: 5
+                      - vm-icp-gaudi2-1: 1
+                      - vm-icp-gaudi2-slurm-1: 1
+                      - vm-icp-gaudi2-8: 1
+                      - vm-spr-pvc-1100-1: 20
+                  - storage:
+                      - filesystems: 2
+                      - totalSizeTB: 50
+                      - buckets: 100
+                      - bucketPrincipals: 50
+                      - bucketSizeInTB: 5
+              ACCOUNT_TYPE_STANDARD:
+                defaultLimits:
+                  - compute:
+                      - bm-icp-gaudi2: 0
+                      - bm-icx-gaudi2: 0
+                      - bm-spr-gaudi2: 0
+                      - bm-spr-gaudi3-dell: 0
+                      - bm-emr-gaudi3-dell: 0
+                      - bm-gnr-gaudi3-smc: 0
+                      - bm-icp-gaudi2-debug: 40
+                      - bm-icx-gaudi2-sc: 0
+                      - bm-spr-gaudi2-sc: 0
+                      - bm-spr-pvc-1100-4: 1
+                      - bm-spr-pvc-1100-8: 3
+                      - bm-spr-pvc-1550-8: 3
+                      - bm-spr: 1
+                      - bm-spr-a100-4: 1
+                      - bm-emr: 2
+                      - bm-emr-dell: 2
+                      - bm-srf-sp-quanta: 2
+                      - bm-gnr-sp-quanta: 20
+                      - bm-spr-pl: 1
+                      - bm-spr-pl-sc: 1
+                      - bm-spr-atsm-170-1: 2
+                      - bm-spr-hbm-c: 2
+                      - bm-spr-hbm-f: 2
+                      - bm-spr-hbm: 2
+                      - bm-virtual: 5
+                      - bm-virtual-sc: 5
+                      - vm-spr-lrg: 0
+                      - vm-spr-med: 0
+                      - vm-spr-sml: 2
+                      - vm-iks-tny: 0
+                      - vm-spr-tny: 5
+                      - vm-icp-gaudi2-1: 0
+                      - vm-icp-gaudi2-slurm-1: 0
+                      - vm-spr-pvc-1100-1: 3
+                  - storage:
+                      - filesystems: 3
+                      - totalSizeTB: 3
+                      - buckets: 10
+                      - bucketPrincipals: 5
+                      - bucketSizeInTB: 5
+    quotaManagementDb:
+      enabled: false
+      primary:
+        persistence:
+          enabled: true
+    rateLimit:
+      enabled: false
+      replicaCount: 1
+      serviceMonitor:
+        enabled: false
+    sdnVN:
+      enabled: false
+      replicaCount: 1
+      database:
+        arg: sslmode=disable
+      service:
+        type: ClusterIP
+      devDb:
+        enabled: true
+        primary:
+          persistence:
+            enabled: false
+      ovnCentral:
+        ovnAddress: ovn-central-db.idcs-system.svc.cluster.local
+        ovnPort: 6641
+    storageApiServer:
+      database:
+        arg: sslmode=disable
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+    storageDb:
+      enabled: true
+      primary:
+        persistence:
+          enabled: false
+    storageScheduler:
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+    storageCustomMetricsService:
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+        port: 9092
+      serviceMonitor:
+        enabled: false
+        interval: 1m
+        scrapeTimeout: 15s
+    storageUser:
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+    storageResourceCleaner:
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        dryRun: false
+        enabled: false
+        type: ClusterIP
+      schedule:
+        interval: 1440
+        threshold: 30
+      template: Storage-Deprovisioning-Notification-Template-Dev
+    storageKMS:
+      domainSuffix: idcservice.net
+      ingress:
+        # Ingress for compute-api-server is disabled by default. Use grpc-proxy ingress instead.
+        className: nginx
+        enabled: false
+        enableNginxServerSnippet: true
+        host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      service:
+        type: ClusterIP
+    storageConfig:
+      metric:
+        enabled: true
+        bucketMetricEnabled: false
+        metricUpdateIntervalMinutes: 60
+      objectStore:
+        enabled: true
+        defaultBucketSizeInGB: 5000
+        scheduleSubnetMonitorInterval: 60
+        serviceType: ObjectStorageAsAService
+      fileStore:
+        enabled: true
+        iksStorageEnabled: true
+        serviceType: FileStorageAsAService
+        generalPurposeVASTEnabled: false
+      storageController:
+        storageControllerServerUseMtls: true
+        storageControllerServerAddr: 100.64.5.147:30051
+        fileStorageClusterAddr: vip1.vast-pdx05-1.us-staging-1.cloud.intel.com:2049
+      serviceAddresses:
+        storageSchedulerServerAddr: us-dev-1-storage-scheduler.idcs-system.svc.cluster.local:8443
+        storageUserServerAddr: us-dev-1-storage-user.idcs-system.svc.cluster.local:8443
+        storageKmsServerAddr: us-dev-1-storage-kms.idcs-system.svc.cluster.local:8443
+        quotaManagementServerAddr: us-dev-1-quota-management-service.idcs-system.svc.cluster.local:8443
+    storageServerSubnets: []
+    nginxS3Gateway:
+      enabled: false
+      s3_bucket_name: {{ env "NGINX_S3_GATEWAY_BUCKET" | default "catalog-fs-dev" }}
+    debugTools:
+      # If true, a pod named debug-tools will be started that provides various utilities for debugging and troubleshooting.
+      enabled: false
+    dhcpProxy:
+      enabled: true
+      url: http://172.18.0.2:50100
+      dhcpProxyConfig:
+        dhcpFileserver: ""
+    externalSecrets:
+      enabled: false
+      serviceMonitor:
+        enabled: false
+        additionalLabels:
+          release: monitoring
+    iks:
+      computeServerAddr: dev.compute.us-dev-1.grpcapi.cloud.intel.com.kind.local:443
+      otel:
+        exporter:
+          otlp:
+            # Below OTEL endpoint corresponds to Kibana https://internal-placeholder.com/.
+            # See https://internal-placeholder.com/x/WA-Msw for more information.
+            endpoint: internal-placeholder.com:443
+      database:
+        service: us-dev-1-iks-db-postgresql
+        name: main
+        arg: sslmode=disable
+        port: 5432
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "1000m"
+        limits:
+          memory: "2Gi"
+          cpu: "2000m"
+      dbSeed:
+        enabled: false
+        data: {}
+    insights:
+      enabled: false
+      database:
+        service: us-dev-1-insights-db-postgresql
+        name: main
+        arg: sslmode=disable
+        port: 5432
+    insightsDb:
+      enabled: false
+    kubeContext: ""
+    gitToGrpcSynchronizer:
+      # Jobs will be deleted after this many seconds.
+      ttlSecondsAfterFinished: 31536000  # 1 year
+      # Number of objects in each configMap
+      chunkSize: 1000
+    grpc:
+      enabled: true
+    grpcProxy:
+      # external is used for external requests from customer browsers.
+      external:
+        rateLimit:
+          enabled: true
+          claim: enterpriseId
+        opa:
+          enabled: true
+          files: /authz/external
+        statsd:
+          enabled: false
+          image:
+            repository: amr-idc-registry-pre.infra-host.com/cache/prom/statsd-exporter
+          prefix: envoy.grpc-external
+      # internal is used for internal requests from trusted IDC services.
+      internal:
+        rateLimit:
+          enabled: false
+        opa:
+          enabled: false
+          files: /authz/internal
+        statsd:
+          enabled: false
+          image:
+            repository: amr-idc-registry-pre.infra-host.com/cache/prom/statsd-exporter
+          prefix: envoy.grpc-internal
+        ingress:
+          className: nginx
+          enabled: true
+          enableNginxServerSnippet: true
+          host: dev.compute.us-dev-1.grpcapi.cloud.intel.com.kind.local
+          tls:
+            secretName: wildcard-tls
+        # Regional grpc-proxy-internal will only authorize based on the required TLS client cert (future).
+        skipJwtValidation: true
+
+    grpcRestGateway:
+      enabled: true
+      swagger:
+        enabled: true
+      ingress:
+        enabled: true
+        host: dev.compute.us-dev-1.api.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+        annotations:
+          nginx.ingress.kubernetes.io/server-snippet: |
+            client_body_timeout 60s;
+            client_header_timeout 60s;
+    appClientApiGrpcProxy:
+      external:
+        insecureSkipJwtValidation: true
+        enabled: true
+        opa:
+          enabled: false
+          files: /authz/appclient
+        cognito:
+          enabled: false
+          endpoint: https://token.dev.api.idcservice.net
+          oidc:
+            enabled: true
+            issueURL: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_UYbIELOby
+            keyURL: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_UYbIELOby/.well-known/jwks.json
+            port: 443
+            server: cognito-idp.us-west-2.amazonaws.com
+        rateLimit:
+          enabled: true
+          claim: client_id
+    appClientApiGrpcRestGateway:
+      enabled: true
+      swagger:
+        enabled: true
+      ingress:
+        enabled: true
+        host: dev.sdk.us-dev-1.api.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+        annotations:
+          nginx.ingress.kubernetes.io/server-snippet: |
+            client_body_timeout 60s;
+            client_header_timeout 60s;
+    menAndMice:
+      insecureSkipVerify: false
+      enabled: false
+      url: "https://1.1.1.1/"
+      serverAddress: ""
+      tftpServerIp: "1.1.1.1"
+    otel:
+      exporter:
+        otlp:
+          # Below OTEL endpoint corresponds to Kibana https://internal-placeholder.com/.
+          # See https://internal-placeholder.com/x/WA-Msw for more information.
+          endpoint: internal-placeholder.com:443
+    setBiosPassword: false
+    nameservers:
+      - 10.22.224.196
+      - 10.248.2.1
+    netbox:
+      enabled: true
+      ingress:
+        className: nginx
+        enabled: true
+        host: dev.netbox.us-dev-1.api.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+    tftpServer:
+      enabled: false
+    vault:
+      authPath: auth/cluster-auth
+    vNetService:
+      subnetConsumerIdPattern: ""
+    network:
+      apiServer:
+        ingress:
+          enabled: true
+          className: nginx
+          enableNginxServerSnippet: true
+          host: dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local
+          tls:
+            secretName: wildcard-tls
+        database:
+          arg: sslmode=disable
+        service:
+          nodePort: 0
+          type: ClusterIP
+        availabilityZones: {}
+      devDb:
+        enabled: true
+        primary:
+          persistence:
+            enabled: false
+      enabled: false
+  availabilityZone:
+    acceleratorClusterSubnets:
+      addSubnets: true
+      vlanDomainCount: 32
+      addBgpCommunityId: false
+      bgpCommunityIdCount: 128
+    baremetalOperator:
+      enabled: true
+      firmwareImageServer: http://1.1.1.1:50001
+      ironicImageTag: "114-a1fb1b9-ubuntu"
+      enableEraseDevices: false
+      provisioningLimit: 40
+      firmwareMinVersion:
+        Virtual:
+          BIOS: "0.0.0"
+          BMC: "0.0.0"
+      bkc:
+        dnp:
+          config:
+            denalipassCleaningPriority: 0
+          fwVersions:
+            bmc: ""
+            bios: ""
+            cpld: ""
+        redfish:
+          config:
+            firmwareCleaningPriority: 0
+        smc:
+          fwVersions:
+            pvc_1100: {}
+            pvc_1550: {}
+            type_3: {}
+            gaudi_2: {}
+            gaudi_3: {}
+        dell:
+          fwVersions:
+            hs5620: {}
+            xe9680_gaudi_3: {}
+      pvc:
+        pvc_1100:
+          fwVersions:
+            amc: ""
+            ifwi: ""
+            psc: ""
+        pvc_1550:
+          fwVersions:
+            amc: ""
+            ifwi: ""
+            psc: ""
+      gaudi2:
+        wiwynn:
+          fwVersions:
+            build: ""
+            spi: ""
+            full: ""
+        dell:
+          fwVersions:
+            build: ""
+            spi: ""
+            full: ""
+        smc:
+          fwVersions:
+            build: ""
+            spi: ""
+            full: ""
+      gaudi3:
+        dell:
+          fwVersions:
+            build: ""
+            cpld: ""
+            full: ""
+            spi: ""
+        smc:
+          fwVersions:
+            build: ""
+            cpld: ""
+            full: ""
+            spi: ""
+      mellanox:
+        MT_0000000436:
+          version: ""
+          sha256: ""
+        MT_0000000359:
+          version: ""
+          sha256: ""
+        MT_0000000224:
+          version: ""
+          sha256: ""
+        MT_0000000838:
+          version: ""
+          sha256: ""
+    baremetalOperatorNamespaces: []
+    bmEnrollmentTask:
+      enabled: true
+    bmEnrollmentOperator:
+      computeApiServerAddress: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+      dhcpProxy:
+        enabled: true
+        url: http://172.18.0.2:50100
+      enabled: false
+      maxConcurrentReconciles: 1
+      menAndMice:
+        enabled: false
+        url: "https://1.1.1.1/"
+        serverAddress: "localhost"
+        tftpServerIp: "1.1.1.1"
+        insecureSkipVerify: true
+      netbox:
+        address: "netbox.idcs-enrollment.svc.cluster.local"
+        skipTlsVerify: true
+      setBiosPassword: false
+      vaultAddress: "http://vault.kube-system.svc.cluster.local:8200"
+    bmInstanceOperator:
+      enabled: true
+      operatorFeatureFlags:
+        enableQuickConnectClientCA: false
+      osHttpServerUrl: ""
+      networkConfig:
+        # networkBackEndType is by default set to "none", which means no network backend is used.
+        # Please set this value to "raven" or "sdn" or "transition" in the specific env helmfile to overwrite it.
+        networkBackEndType: "none"
+        networkKubeConfig: "/vault/secrets/sdnkubeconfig"
+        provisioningVlan: 4008
+        acceleratorNetworkDefaultVlan: 100
+        accBGPNetworkDefaultCommunityID: 1000
+        storageDefaultVlan: 2100
+      sshConfig:
+        sshProxyAddress: ""
+        sshProxyPort: 0
+        sshProxyUser: bmo
+      acceleratorNetworkSdnEnabled: false
+      maxConcurrentReconciles: 8
+    computeMeteringMonitor:
+      maxUsageRecordSendInterval: 60m
+    bmValidationOperator:
+      enabled: false
+      # Faceless CloudAccount that will be used by the validation operator
+      cloudAccountId: "000000000001"
+      enabledInstanceTypes:
+        - bm-virtual
+        - bm-virtual-sc
+      validationTaskVersion:
+        clusterVersionMap: {}
+        instanceVersionMap: {}
+      subnetPrefixLength: 22
+      availabilityZone: ""
+      region: ""
+      netboxAddress: "dev.netbox.us-dev-1.api.cloud.intel.com.kind.local"
+      netboxKeyFilePath: /vault/secrets/netbox_key
+      huggingFaceTokenFilePath: /vault/secrets/huggingface_token
+      featureFlags:
+        deProvisionPostValidationFailure: true
+        groupValidation: false
+        enabledGroupInstanceTypes:
+          - bm-virtual
+          - bm-virtual-sc
+        enableFirmwareUpgrade: false
+      validationReportS3Config:
+        bucketName: idc-bmaas-validator-testing
+        accessKeyFilePath: /vault/secrets/aws_access_key
+        secretAccessKeyFilePath: /vault/secrets/aws_secret_access_key
+        httpsProxy: ""
+        cloudfrontPrefix: "s3://idc-bmaas-validator-testing"
+    certManager:
+      enabled: true
+    # This components section defines the components that will be deployed by Universe Deployer
+    # to the availability zone Kubernetes clusters of development environments.
+    # However, if the file /universe_config/environment/${IDC_ENV}.json exists,
+    # then that will take precedence and this section will be completely ignored.
+    # See also the global and region components sections.
+    components:
+      compute:
+        commit: HEAD
+        enabled: true
+      computeBm:
+        commit: HEAD
+        enabled: true
+      computeBmEnrollment:
+        commit: HEAD
+        enabled: true
+      computeBmInstanceOperator:
+        commit: HEAD
+        enabled: true
+      computeBmMetal3:
+        commit: HEAD
+        enabled: true
+      computeBmValidationOperator:
+        commit: HEAD
+        enabled: true
+      computeInstanceReplicator:
+        commit: HEAD
+        enabled: true
+      computeMeteringMonitor:
+        commit: HEAD
+        enabled: true
+      computePopulateMachineImage:
+        commit: HEAD
+        enabled: true
+      computeSshProxy:
+        commit: HEAD
+        enabled: true
+      computeVmInstanceOperator:
+        commit: HEAD
+        enabled: true
+      computeVmInstanceScheduler:
+        commit: HEAD
+        enabled: true
+      externalSecrets:
+        commit: HEAD
+        enabled: true
+      fleetAdmin:
+        commit: HEAD
+        enabled: true
+      firewall:
+        commit: HEAD
+        enabled: true
+      iks:
+        commit: HEAD
+        enabled: true
+      loadbalancer:
+        commit: HEAD
+        enabled: true
+      quickConnect:
+        commit: HEAD
+        enabled: true
+      sdn:
+        commit: HEAD
+        enabled: true
+      storage:
+        commit: HEAD
+        enabled: true
+      telemetry:
+        commit: HEAD
+        enabled: true
+    computeCRDs:
+      enabled: true
+    computeVmMachineImages:
+      enabled: false
+    coredns:
+      enabled: true
+    debugTools:
+      # If true, a pod named debug-tools will be started that provides various utilities for debugging and troubleshooting.
+      enabled: false
+    externalSecrets:
+      enabled: false
+      serviceMonitor:
+        enabled: false
+        additionalLabels:
+          release: monitoring
+    harvesterClusters: []
+    kubeVirtClusters: []
+    kubeContext: ""
+    ilbOperator:
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2048Mi"
+    firewall:
+      enabled: false
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2048Mi"
+      serviceMonitor:
+        enabled: false
+    fleetNodeReporter:
+      enabled: false
+      schedulerStatisticsPollingInterval: 60s
+    instanceReplicator:
+      enabled: true
+    intelDevicePlugin:
+      enabled: false
+    kubernetesOperator:
+      resources:
+        requests:
+          cpu: "1000m"
+          memory: "1024Mi"
+        limits:
+          cpu: "2000m"
+          memory: "4096Mi"
+    kubernetesReconciler:
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2048Mi"
+    k8sResourcePatcher:
+      enabled: false
+      patchApplyInterval: 60s
+    loadbalancer:
+      enabled: false
+      serviceMonitor:
+        enabled: false
+    maasCompute:
+      enabled: false
+      models: []
+      ingressController:
+        registry: amr-idc-registry.infra-host.com
+        image: cache/moditamam/ingress-nginx-controller
+        tag: v1.11.3-patched
+    metallb:
+      enabled: true
+    meteringMonitor:
+      enabled: true
+    otel:
+      exporter:
+        otlp:
+          # Below OTEL endpoint corresponds to Kibana https://o11y-dev-kb.idcmgt.intel.com/.
+          # See https://wiki.ith.intel.com/x/WA-Msw for more information.
+          endpoint: o11y-dev-otel.idcmgt.intel.com:443
+    sshProxy:
+      authorizedKeysScpTargets: []
+      proxyAddress: ""
+      proxyUser: ""
+    sshProxyOperator:
+      enabled: true
+    vault:
+      enabled: true
+      authPath: auth/cluster-auth
+    vmInstanceOperator:
+      enabled: true
+      operatorFeatureFlags:
+        enableQuickConnectClientCA: false
+    vmInstanceScheduler:
+      enabled: true
+      enableValidation: false
+      managerConfig:
+        controllerManagerConfigYaml:
+          enableBmaasBinpack: false
+          overcommitConfig:
+            cpu: 200
+            memory: 100
+            storage: 200
+          bgpNetworkRequiredInstanceCountThreshold: 9
+      ingress:
+        className: nginx
+        enabled: true
+        host: dev.compute.us-dev-1a.grpcapi.cloud.intel.com.kind.local
+        tls:
+          secretName: wildcard-tls
+      log:
+        # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+        level: debug
+        # Verbosity level for kube-scheduler (klog). "0" is the default. Higher numbers will log more details.
+        verbosity: 3
+      service:
+        nodePort: 0
+        type: ClusterIP
+    quickConnect:
+      enabled: false
+      host: quick-connect.us-dev-1a.cloud.intel.com.kind.local
+      ingress:
+        annotations: []
+        className: nginx
+        enabled: true
+        tls:
+          secretName: wildcard-tls
+      # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+      # This MUST be false in production environments.
+      insecureDevEnvironment: false
+      kubeContext: ""
+      oauth:
+        enabled: true
+        host: consumer.intel.com
+        port: 443
+        authorizationURL: https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/authorize
+        tokenURL: https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/token
+        redirectHost: dev.quick-connect.us-dev-1a.cloud.intel.com.kind.local
+        clientID: aa792d0d-16e7-4219-837b-00fa97d8cecd
+        scopes:
+        - openid
+        - https://intelcorpb2c.onmicrosoft.com/aa792d0d-16e7-4219-837b-00fa97d8cecd/Read
+        - profile
+        - offline_access
+      oidc:
+        # insecureDevServer is only used if insecureDevEnvironment=true and global.oidc.insecureEnabled=true.
+        insecureDevServer:
+          issueURL: http://localhost:80
+          port: 80
+          useTls: false
+        # Below are production authentication settings which can also be used for development where impersonation is not required.
+        # Default audience for quick connect development is: aa792d0d-16e7-4219-837b-00fa97d8cecd
+        servers:
+          - audiences:
+            - 435e26cc-529d-45ca-8814-6def72d03e81
+            - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+            - aa792d0d-16e7-4219-837b-00fa97d8cecd
+            - 13aa24f9-4ef7-4f15-8cbc-b5865a29bf9d
+            issueURL: https://consumer.intel.com/6abca663-55ad-4274-84df-caa464ddef9e/v2.0/
+            keyURL: https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/discovery/v2.0/keys
+            server: consumer.intel.com
+            port: 443
+          - audiences:
+            - 435e26cc-529d-45ca-8814-6def72d03e81
+            - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+            - aa792d0d-16e7-4219-837b-00fa97d8cecd
+            - 13aa24f9-4ef7-4f15-8cbc-b5865a29bf9d
+            issueURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/v2.0
+            keyURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/discovery/v2.0/keys
+            server: login.microsoftonline.com
+            port: 443
+      proxy:
+        http_proxy: ""
+        https_proxy: ""
+        no_proxy: ""
+      replicaCount: 1
+      statsd:
+        enabled: false
+    sdnController:
+      enabled: true
+      serviceMonitor:
+        enabled: false # Requires cattle-monitor CRDs to be installed, so can only enable on Rancher-managed clusters
+      restAPI:
+        enabled: false
+      managerConfig:
+        controllerManagerConfigYaml:
+          controllerConfig:
+            switchBackendMode: mock
+            enableReadOnlyMode: false
+            switchSecretsPath: /vault/secrets/eapi
+            dataCenter: fxhb3p3r
+            maxConcurrentReconciles: 10
+            maxConcurrentSwitchReconciles: 10
+            maxConcurrentNetworkNodeReconciles: 10
+            maxConcurrentNodeGroupReconciles: 10
+            portResyncPeriodInSec: 300
+            switchResyncPeriodInSec: 300
+            bmhResyncPeriodInSec: 300
+            switchImportPeriodInSec: 300
+            networkNodeResyncPeriodInSec: 300
+            nodeGroupResyncPeriodInSec: 300
+            statusReportPeriodInSec: 600
+            statusReportAcceleratedPeriodInSec: 10
+            bmhClusterKubeConfigFilePath: "/vault/secrets/bmhkubeconfig"
+            poolsConfigFilePath: "/pool_config.json"
+            nodeGroupToPoolMappingConfigFilePath: "/group_pool_mapping_config.json"
+            nodeGroupToPoolMappingSource: "local"
+            useDefaultValueInPoolForMovingNodeGroup: false
+            bgpCommunityIncomingGroupName: "incoming_group"
+            allowedTrunkGroups:
+              - none
+            allowedModes:
+              - "access"
+              - "trunk"
+            allowedVlanIds: "21-39,100-3999,4008"
+            allowedNativeVlanIds: "1,55"
+            portChannelsEnabled: false
+            provisioningVlanIds: "4008,100,2100"
+            allowedCountAccInterfaces: "0,24"
+            netboxServer: "netbox.idcs-enrollment.svc.cluster.local"
+            netboxProtocol: "https"
+            netboxTokenPath: "/vault/secrets/netboxtoken"
+            netboxProviderServersFilterFilePath: /netbox/netbox_provider_servers_filter.json
+            netboxProviderInterfacesFilterFilePath: /netbox/netbox_provider_interfaces_filter.json
+            netboxSwitchesFilterFilePath: /netbox/switches_filter.json
+            netboxClientInsecureSkipVerify: false
+            netboxSwitchFQDNDomainName: "internal-placeholder.com"
+            switchImportSource: none # raven/netbox/none
+            switchPortImportSource: none # bmh/netbox/none
+
+          ravenConfig:
+            environment: mock
+            credentialsFilePath: /vault/secrets/raven
+            host: raven-devcloud.app.intel.com
+        groupToPoolMappingConfigJson:
+          nodeGroupToPoolMap:
+      netbox:
+        providerServersFilter:
+          site:
+            - non-existent-default-site
+          role:
+            - non-existent-default-role
+        providerInterfacesFilter:
+          interfaceName:
+            - net0/0
+            - net0/1
+            - net1/0
+            - net1/1
+            - ocp0/0
+            - ocp0/1
+        switchesFilter:
+          status:
+            - active
+          site:
+            - non-existent-default-site
+          role:
+            - non-existent-default-role
+    subnet:
+      name: us-dev-1a-default
+      prefix: 22
+    networkCluster:
+      kubeConfig: ""
+      proxy: # Allows overrides for ONLY the network cluster (which needs a proxy to access vault in some envs)
+        http_proxy: ""
+        https_proxy: ""
+        no_proxy: ""
+      vault:
+        injectorReplicas: 1
+  cognito:
+    enabled: false
+
+# TODO: Move billing parameters to global.billing.
+
+# This section provides the default values for billing and billing drivers.
+# Credits Installer Scheduler re-run duration in seconds
+creditsInstallSchedulerInterval: 3600
+reportUsageSchedulerInterval: 3600
+reportProductUsageSchedulerInterval: 3600
+creditUsageSchedulerInterval: 240
+creditExpirySchedulerInterval: 240
+premiumCloudCreditThreshold: 80
+intelCloudCreditThreshold: 80
+enterpriseCloudCreditThreshold: 80
+premiumCloudCreditNotifyBeforeExpiry: 4320
+intelCloudCreditNotifyBeforeExpiry: 4320
+enterpriseCloudCreditNotifyBeforeExpiry: 4320
+servicesTerminationSchedulerInterval: 240
+servicesTerminationInterval: 4320
+instanceTerminationMeteringDuration: 2
+eventExpirySchedulerInterval: 1440
+cloudCreditUsageReportSchedulerInterval: 3600
+runSchedulers: false
+couponNumberOfUsesThresholdStandard: 500
+couponNumberOfUsesThresholdNonStandard: 50
+
+# minimum number of days credits expires in for premium or enterprise user
+creditsExpiryMinimumInterval: 38
+commonConfig:
+  maxDefaultHistory: 12
+  instanceSearchWindow: 2
+
+features:
+    creditInstallScheduler: true
+    reportUsageScheduler: true
+    reportProductUsageScheduler: false
+    creditUsageScheduler: true
+    creditExpiryScheduler: true
+    servicesTerminationScheduler: true
+    eventExpiryScheduler: true
+    cloudCreditUsageReportScheduler: true #billing
+    creditUsageEmail: true    #billing
+    creditExpiryEmail: true   #billing
+    sendCreditUsageEmail: true #cloudcredit-worker service
+    sendCreditExpiryEmail: true #cloudcredit-worker service
+    billingUsageMetrics: true
+    intelCreditUsageEmail: false
+    intelCreditExpiryEmail: false
+
+envoy:
+  version: v1.26.8
+
+# TODO: Move billing-aria parameters to global.billing.aria.
+# default values for billing-aria
+syncInterval: 14400
+usageInterval: 360
+clientIdPrefix: idc
+clientPlanId: "master"
+clientAcctGroupId: "Chase"
+acctPlanActiveInterval: 14400
+enterpriseAcctLinkSchedulerInterval: 14400
+paidServicesDeactivationControllerInterval: 14400
+instanceSearchWindow: 2
+premiumDefaultCreditAmount: 2500
+premiumDefaultCreditExpirationDays: 31
+authorizationEnabled: true
+ariasystem:
+  releaseVersion: "47"
+  coreApiSuffix: "/v1/core"
+  directPostUrl: "https://api.current.stage.ariasystems.net/api/direct_post_eom.php"
+  functionMode: "direct_post_reg"
+  apiCrtFile: /vault/secrets/apicrt
+  apiKeyFile: /vault/secrets/apikey
+  insecureSsl: false
+  # tax group number for ariasystems staging intel cons
+  taxGroup: 7
+  clientTaxGroupId: "SERVICES"
+  storageUsageUnitType: "terabyte hour"
+  tokenUsageUnitType: "million tokens"
+  inferenceUsageUnitType: "inference"
+  server:
+    coreApiUrl: "https://api.future.stage.ariasystems.net"
+    objectApiUrl: "https://api.future.stage.ariasystems.net/api/AriaQuery/objects.php"
+    adminApiUrl: "https://api.future.stage.ariasystems.net/AdminTools.php/Dispatcher"
+
+
+# billing aria driver sqs
+aws:
+ sqs:
+   vaultCredentialsPath: controlplane/data/billing-aria/awssecrets
+   credentialsFile: /vault/secrets/aws_credentials
+   region: "us-west-2"
+   accountIdFile: /vault/secrets/accountid
+   queueUrl: "https://sqs.us-west-2.amazonaws.com/accountid/idc-staging-notifications-queue"
+
+serviceMonitor:
+    global:
+       enabled: false
+    regional:
+       enabled: false
+test:
+  environment:
+    kind:
+      clusterPrefix: idc
+      multicluster: false
+      useDynamicPorts: false
+    registry:
+      portName: idc
+localstack:
+  enabled: false
+  endpoint: "http://localstack.idcs-system:4566"
+universeDeployer:
+  artifactRepositoryUrl: https://internal-placeholder.com/artifactory/idc_evidence-igk-local/idc/releases
+  componentCommitGitRemote: origin
+  componentConfigCommitGitRemote: origin
+  forceCreateReleases: false
+  ignoreHealthCheckFor:
+    baremetal-enrollment-task:
+      namespace: idcs-enrollment
+      name: baremetal-enrollment-task
+    baremetal-operator-ns:
+      namespace: baremetal-operator
+      name: baremetal-operator-ns-
+    opentelemetry-collector:
+      namespace: idcs-observability
+      name: opentelemetry-collector
+    crds:
+      namespace: idcs-system
+      name: -crds$
+    custom-resources:
+      namespace: idcs-system
+      name: -custom-resources$
+    sdn-restricted-sa:
+      namespace: idcs-system
+      name: -sdn-restricted-sa$
+    db:
+      namespace: idcs-system
+      name: -db$
+    debug-tools:
+      namespace: idcs-system
+      name: debug-tools
+    metal3-crds:
+      namespace: metal3-crds
+      name: .*
+    metallb-system:
+      namespace: metallb-system
+      name: .*
+    rate-limit-redis:
+      namespace: idcs-system
+      name: rate-limit-redis
+    # vm-machine-images is neither a Deployment or Job, thus will always fail the health check
+    vm-machine-images:
+      namespace: idcs-system
+      name: .*-vm-machine-images-.*
+  includeDeployK8sTlsSecrets: true
+  includeVaultConfigure: true
+  includeVaultLoadSecrets: true
+  k8sApiEnabled: true
+  manifestsGitBranch: main
+  manifestsGitRemote: http://gitea_admin@gitea-http.gitea.svc.cluster.local:3000/gitea_admin/idc-argocd.git
+  patchCommand: ""
+
+enabledServices:
+  AccessService: true
+  AuthzService: true
+  BillingAccountService: true
+  BillingCouponService: true
+  BillingCreditService: true
+  BillingDeactivateInstancesService: true
+  BillingDriverUsageService: true
+  BillingInstancesService: true
+  BillingInvoiceService: true
+  BillingOpsActionService: true
+  BillingOptionService: true
+  BillingProductCatalogSyncService: true
+  BillingRateService: true
+  BillingUsageService: true
+  BucketLifecyclePrivateService: true
+  BucketUserPrivateService: true
+  CloudAccountAppClientService: true
+  CloudAccountEnrollService: true
+  CloudAccountInvitationMemberService: true
+  CloudAccountInvitationService: true
+  CloudAccountMemberService: true
+  CloudAccountService: true
+  CloudCreditsCouponService: true
+  CloudCreditsCreditService: true
+  CloudMonitorLogsService: true
+  CloudMonitorService: true
+  ConsoleInvoiceService: true
+  Dispatcher: true
+  DpaiAirflowConfService: true
+  DpaiAirflowService: true
+  DpaiAirflowSizeService: true
+  DpaiAirflowVersionService: true
+  DpaiDeploymentService: true
+  DpaiDeploymentTaskService: true
+  DpaiHmsConfGroupService: true
+  DpaiHmsConfService: true
+  DpaiHmsService: true
+  DpaiHmsSizeService: true
+  DpaiHmsVersionService: true
+  DpaiPostgresService: true
+  DpaiPostgresSizeService: true
+  DpaiPostgresVersionService: true
+  DpaiWorkspaceService: true
+  EmailNotificationService: true
+  FileStorageService: true
+  FilesystemOrgPrivateService: true
+  FilesystemPrivateService: true
+  FilesystemSchedulerPrivateService: true
+  FilesystemStorageClusterPrivateService: true
+  FilesystemUserPrivateService: true
+  FleetAdminService: true
+  FleetAdminUIService: true
+  Iks: true
+  IksAdmin: true
+  IksPrivateReconciler: true
+  IksSuperCompute: true
+  InstanceGroupPrivateService: true
+  InstanceGroupService: true
+  InstancePrivateService: true
+  InstanceSchedulingService: true
+  InstanceService: true
+  InstanceTypeService: true
+  IpResourceManagerService: true
+  KFService: true
+  LoadBalancerPrivateService: true
+  LoadBalancerService: true
+  MaasGateway: true
+  MachineImageService: true
+  MeteringService: true
+  NotificationGatewayService: true
+  ObjectStorageService: true
+  ObjectStorageServicePrivate: true
+  OtpService: true
+  PaymentService: true
+  ProductAccessService: true
+  RegionAccessService: true
+  RegionService: true
+  ProductCatalogService: true
+  ProductSyncService: true
+  ProductVendorService: true
+  QuotaManagementPrivateService: true
+  QuotaManagementService: true
+  SecurityInsights: true
+  SshPublicKeyService: true
+  StorageAdminService: true
+  StorageKMSPrivateService: true
+  TextGenerator: true
+  TrainingBatchUserService: true
+  TrainingClusterService: true
+  UsageRecordService: true
+  UsageService: true
+  UserCredentialsService: true
+  VNetPrivateService: true
+  VNetService: true
+  WekaStatefulAgentPrivateService: true

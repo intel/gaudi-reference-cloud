@@ -1,0 +1,28 @@
+# This is used by "make helmfile-dump" to dump environment-specific values used by helmfile to a yaml file.
+
+bases:
+  - environments.yaml
+
+---
+
+# Merge defaults into regions and availabilityZones.
+{{- range $regionIndex, $region := .Values.regions }}
+  {{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+  {{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+    {{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+    {{- $_ := set $region.availabilityZones $availabilityZoneIndex $availabilityZone }}
+  {{- end }}
+  {{- $_ := set $.Values.regions $regionIndex $region }}
+{{- end }}
+
+releases:
+
+  # This is a fake Helm release that is only used by helmfile to generate values.
+  - name: helmfile-dump
+    namespace: default
+    # The chart file must be set but is not actually read.
+    chart: /dev/null
+    values:
+      - Environment:
+          Name: {{ $.Environment.Name | toJson }}
+      - Values: {{ $.Values | toJson }}

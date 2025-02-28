@@ -1,0 +1,52 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/productcatalog-operator@sha256
+      tag: latest
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+
+gts:
+  # For production environment use url as https://apis.intel.com. This is accessible outside of intel network aswell.
+  # Development environment use url as https://apis-sandbox.intel.com.
+  usernameFile: /vault/secrets/gts_username
+  passwordFile: /vault/secrets/gts_password
+  vaultCredentialsPath: controlplane/data/gts-trade-compliance/apigee
+
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https

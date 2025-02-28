@@ -1,0 +1,96 @@
+autoscaling:
+  enabled: false
+clientCertificate:
+  commonName: us-dev-1a-quick-connect-client.idcs-system.svc.cluster.local
+  ttl: 2m
+computeApiServerAddr: dev.compute.us-dev-1.api.cloud.intel.com.kind.local
+# The base domain name of the service. If the value is changed all other subdomains must also change, i.e. oauth.redirectHost, etc.
+host: quick-connect.us-dev-1a.cloud.intel.com.kind.local
+enableJwtValidation: true
+envoy:
+  image:
+    repository: envoyproxy/envoy
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: v1.31.0
+image:
+  pullPolicy: IfNotPresent
+  registry: internal-placeholder.com
+  repository: intelcloud/quick-connect-api-server
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+ingress:
+  # If true, use a standard Kubernetes ingress.
+  enabled: true
+  hosts:
+    # The host value must agree with the host value, i.e. *.{{ .Values.host }}
+    - host: "*.quick-connect.us-dev-1a.cloud.intel.com.kind.local"
+      paths:
+        - path: /v1
+          pathType: Prefix
+listenAddress: 0.0.0.0
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+oauth:
+  enabled: false
+  # The host value must agree with the host value, i.e. dev.{{ .Values.host }}
+  redirectHost: dev.quick-connect.us-dev-1a.cloud.intel.com.kind.local
+oidc:
+  oidcServerConnectTimeout: 100s
+  servers:
+podAnnotations:
+# The region that this service is running in.
+region: us-dev-1
+replicaCount: 1
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "1Gi"
+    cpu: "2000m"
+service:
+  type: ClusterIP
+statsd:
+  enabled: false
+  image:
+    repository: amr-idc-registry-pre.infra-host.com/cache/prom/statsd-exporter
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: v0.26.0
+  address: "localhost"
+  port: 9125
+  prefix: ""
+tls:
+  enabled: true
+  # The vault CA for issuing the certificate for this service.
+  # This certificate is used for both client and server connections.
+  issueCa: ""
+  # The certificate common name requested for the certificate for this service.
+  commonName: us-dev-1a-quick-connect-api-server.idcs-system.svc.cluster.local
+  # Parameters used by TLS clients.
+  client:
+    # The vault CA used for validating server certificates.
+    rootCa: ""
+    # insecureSkipVerify controls whether a client verifies the server's
+    # certificate chain and host name. If insecureSkipVerify is true, the client
+    # accepts any certificate presented by the server and any host name in that
+    # certificate. In this mode, TLS is susceptible to machine-in-the-middle
+    # attacks. This should be used only for testing.
+    insecureSkipVerify: false
+  # Parameters used by TLS servers.
+  server:
+    # The vault CA used for validating client certificates.
+    # (Not implemented. `client.rootCa` is used for this purpose.)
+    rootCa: ""
+    # If true, this service requires clients to provide a valid certificate.
+    requireClientCertificate: true
+vault:
+  enable: true
+  pkiEngine: us-dev-1a-quick-connect-client-ca
+  pkiRole: us-dev-1a-quick-connect-client

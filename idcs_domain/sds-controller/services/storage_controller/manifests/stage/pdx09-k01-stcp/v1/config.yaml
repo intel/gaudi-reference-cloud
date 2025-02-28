@@ -1,0 +1,67 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  - name: pdx09-1
+    uuid: 0fe0285b-c7ca-4dd0-a4a9-bf681a41a6e0
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: development
+      category: development
+      wekaBackend: pdx09-1.us-qa1-1.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: pdx09-c01
+    api:
+      type: REST
+      url: https://pdx09-1.us-qa1-1.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx09-storage-controller-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx09-1.us-qa1-1.cloud.intel.com
+  - name: pdx09-2
+    uuid: 5e9c168e-f0db-4abb-af51-5ccea3c8c812
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: development
+      category: development
+      s3Endpoints: https://pdx09-2.us-qa1-1.cloud.intel.com:9000
+    location: pdx09-c01
+    api:
+      type: REST
+      url: pdx09-2.us-qa1-1.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx09-storage-controller-creds.json
+    minioConfig:
+      kesKey: "minio-kes-key"
+  - name: pdx09-3
+    uuid: 53225c21-950f-48ac-bc54-063da2c9d46b
+    type: Vast
+    supportsApi:
+      - "VastView"
+    labels:
+      operation: development
+      category: development
+      vastBackend: vip1.vast-pdx09-1.us-qa1-1.cloud.intel.com
+    location: pdx09-c01
+    api:
+      type: REST
+      url: https://pdx09-vast01.us-qa1-1.cloud.intel.com/api/v5
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx09-storage-controller-vast-creds.json
+    vastConfig:
+      vipPool: vip1
+      protectedOrgIds:
+        - "1"

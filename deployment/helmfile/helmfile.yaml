@@ -1,0 +1,184 @@
+# This file is used by legacy deployment tools including deploy-all-in-kind and deploy-all-in-kind-v2.
+# New deployment tools including Universe Deployer and deploy-all-in-k8s do not use this file and
+# instead include the helmfile-*.yaml files directly and only when a component is enabled in the Universe Config.
+# To keep the behavior of these deployment tools consistent, it is important that the rules for including helmfile-*.yaml files
+# in this file match the conditions in the helmfile-*.yaml files themselves.
+# For example, the condition `if or $.Values.components.storageFile.enabled $.Values.components.storageObject.enabled`
+# in this file should also exist in helmfile-storage.yaml.
+
+bases:
+  - environments.yaml
+
+---
+
+helmfiles:
+
+{{- if $.Values.argocd.enabled }}
+    - helmfile-argocd.yaml
+{{- end }}
+
+{{- if $.Values.components.tftpServer.enabled }}
+    - helmfile-tftpServer.yaml
+{{- end }}
+
+{{- if $.Values.debugTools.enabled }}
+    - helmfile-debugTools.yaml
+{{- end }}
+
+{{- if $.Values.coredns.enabled }}
+    - helmfile-coredns.yaml
+{{- end }}
+
+{{- if $.Values.vault.enabled }}
+    - helmfile-vault.yaml
+{{- end }}
+
+{{- if $.Values.externalSecrets.enabled }}
+    - helmfile-externalSecrets.yaml
+{{- end }}
+
+{{- if $.Values.telemetry.enabled }}
+    - helmfile-telemetry.yaml
+{{- end }}
+
+{{- if $.Values.global.enabled }}
+    - helmfile-adminPortal.yaml
+    - helmfile-authz.yaml
+    - helmfile-billing.yaml
+    - helmfile-cloudaccount.yaml
+    - helmfile-cloudcredits.yaml
+    - helmfile-cloudmonitor.yaml
+    - helmfile-console.yaml
+    - helmfile-metering.yaml
+    - helmfile-minio.yaml
+    - helmfile-oidc.yaml
+    - helmfile-opal.yaml
+    - helmfile-portal.yaml
+    - helmfile-productCatalog.yaml
+    - helmfile-tradeScanner.yaml
+{{- end }}
+
+{{- if or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+    - helmfile-compute.yaml
+    - helmfile-computeApiServer.yaml
+    - helmfile-computeBm.yaml
+    - helmfile-computeBmEnrollment.yaml
+    - helmfile-computeBmInstanceOperator.yaml
+    - helmfile-computeBmMetal3.yaml
+    - helmfile-computeBmValidationOperator.yaml
+    - helmfile-computeInstanceReplicator.yaml
+    - helmfile-computeMeteringMonitor.yaml
+    - helmfile-computePopulateInstanceType.yaml
+    - helmfile-computePopulateMachineImage.yaml
+    - helmfile-computePopulateSubnet.yaml
+    - helmfile-computeSshProxy.yaml
+    - helmfile-computeVmInstanceOperator.yaml
+    - helmfile-computeVmInstanceScheduler.yaml
+    - helmfile-intelDevicePlugin.yaml
+{{- end }}
+
+{{- if or $.Values.global.enabled $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+    - helmfile-grpc.yaml
+{{- end }}
+
+{{- if $.Values.components.cloudmonitorLogs.enabled }}
+    - helmfile-cloudmonitorLogs.yaml
+{{- end }}
+
+{{- if $.Values.components.fleetAdmin.enabled }}
+    - helmfile-fleetAdmin.yaml
+{{- end }}
+
+{{- if $.Values.components.loadbalancer.enabled }}
+    - helmfile-loadbalancer.yaml
+{{- end }}
+
+{{- if $.Values.global.grafana.enabled }}
+    - helmfile-grafana.yaml
+{{- end }}
+
+{{- if $.Values.global.localstack.enabled }}
+    - helmfile-localstack.yaml
+{{- end }}
+
+{{- if $.Values.components.training.enabled }}
+    - helmfile-training.yaml
+    - helmfile-armada.yaml
+{{- end }}
+
+{{- if or $.Values.components.iks.enabled $.Values.components.iksOperators.enabled }}
+    - helmfile-iks.yaml
+{{- end }}
+
+{{- if $.Values.components.network.enabled }}
+    - helmfile-network.yaml
+{{- end }}
+
+{{- if $.Values.components.firewall.enabled }}
+    - helmfile-firewall.yaml
+{{- end }}
+
+{{- if or $.Values.components.storageFile.enabled $.Values.components.storageObject.enabled}}
+    - helmfile-storage.yaml
+{{- end }}
+
+{{- if $.Values.components.insights.enabled }}
+    - helmfile-insights.yaml
+{{- end }}
+
+{{- if $.Values.components.networkCluster.enabled }}
+    - helmfile-sdn.yaml
+{{- end }}
+
+{{- if $.Values.components.sdnVN.enabled }}
+    - helmfile-sdnVN.yaml
+{{- end }}
+
+{{- if $.Values.components.kfaas.enabled }}
+    - helmfile-kfaas.yaml
+{{- end }}
+
+{{- if $.Values.components.dataloader.enabled }}
+    - helmfile-dataloader.yaml
+{{- end }}
+
+{{- if $.Values.components.dpai.enabled }}
+    - helmfile-dpai.yaml
+{{- end }}
+
+{{- if $.Values.components.maas.enabled }}
+    - helmfile-maas.yaml
+{{- end }}
+
+{{- if $.Values.components.pgOperator.enabled }}
+    - helmfile-pgOperator.yaml
+{{- end }}
+
+{{- if $.Values.components.quickConnect.enabled }}
+    - helmfile-quickConnect.yaml
+{{- end }}
+
+{{- if $.Values.components.minioOperator.enabled }}
+    - helmfile-minioOperator.yaml
+{{- end }}
+
+{{- if $.Values.components.minioTenant.enabled }}
+    - helmfile-minioTenant.yaml
+{{- end }}
+
+{{- if $.Values.global.productCatalog.sync.enabled}}
+    - helmfile-populateProductCatalog.yaml
+{{- end }}
+
+{{- if $.Values.components.rateLimit.enabled }}
+    - helmfile-rateLimit.yaml
+{{- end }}
+
+{{- if $.Values.components.quotaManagementService.enabled }}
+    - helmfile-quotaManagementService.yaml
+{{- end }}
+
+{{- if $.Values.components.maasCompute.enabled }}
+    - helmfile-maasComputeDependencies.yaml
+    - helmfile-maasCompute.yaml
+{{- end }}

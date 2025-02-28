@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_container_image")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "scripts",
+    srcs = [
+        "//go/pkg/instance_operator/baremetal-validation-operator/scripts:scripts_dir",
+    ],
+    package_dir = "/",
+    strip_prefix = ".",
+)
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "bm_validation_operator_image",
+    files = [
+        "//go/pkg/instance_operator/baremetal-validation-operator/cmd/bm_validation_operator",
+        "//go/pkg/instance_operator/baremetal-validation-operator/scripts:scripts_dir",
+    ],
+    layers = ["//go/certs:intel_certs"],
+    tars = [":scripts"],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

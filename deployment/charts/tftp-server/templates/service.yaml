@@ -1,0 +1,22 @@
+
+{{- if .Values.network.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "idc-common.fullname" . }}
+spec:
+  type: {{ .Values.network.service.type }}
+  ports:
+    - port: {{ .Values.network.service.nodePort }}
+      targetPort: {{ .Values.network.container.port }}
+      protocol: UDP
+      {{- if eq .Values.network.service.type "NodePort" }}
+      nodePort: {{ .Values.network.service.nodePort }}
+      {{- end }}
+      name: tftp
+  selector:
+    {{- include "idc-common.selectorLabels" . | nindent 4 }}
+{{- end }}

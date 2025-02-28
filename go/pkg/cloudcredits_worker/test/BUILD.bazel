@@ -1,0 +1,46 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "test",
+    srcs = ["testing.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudcredits_worker/test",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/authz",
+        "//go/pkg/billing_common",
+        "//go/pkg/cloud_credits/test",
+        "//go/pkg/cloudaccount",
+        "//go/pkg/cloudcredits_worker",
+        "//go/pkg/cloudcredits_worker/config",
+        "//go/pkg/grpcutil",
+        "@com_github_lib_pq//:pq",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "creditshandler_test.go",
+        "creditsworker_test.go",
+        "main_test.go",
+    ],
+    embed = [":test"],
+    deps = [
+        "//go/pkg/cloudcredits_worker",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/notification_gateway",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+        "@tools_gotest_v3//assert",
+    ],
+)

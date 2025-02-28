@@ -1,0 +1,56 @@
+diff --git a/models/language_modeling/pytorch/bert_large/inference/gpu/cmd_infer.sh b/models/language_modeling/pytorch/bert_large/inference/gpu/cmd_infer.sh
+index 0afbca71..9156efb2 100755
+--- a/models/language_modeling/pytorch/bert_large/inference/gpu/cmd_infer.sh
++++ b/models/language_modeling/pytorch/bert_large/inference/gpu/cmd_infer.sh
+@@ -76,29 +76,9 @@ DTYPE=FP32
+ NUM_ITER=-1
+ OUTPUT_DIR=/tmp/debug_squad/
+ GDB_ARGS=""
+-NUMA_ARGS=""
+ 
+ Parser $@
+ 
+-if command -v numactl >& /dev/null ; then
+-if [ "x$MPI_LOCALRANKID" != "x" ] ; then
+-  REAL_NUM_NUMA_NODES=`lscpu | grep "NUMA node(s):" | awk '{print $NF}'`
+-  PPNUMA=$(( MPI_LOCALNRANKS / REAL_NUM_NUMA_NODES ))
+-  if [ $PPNUMA -eq 0 ] ; then 
+-    if [ "x$SINGLE_SOCKET_ONLY" == "x1" ] ; then 
+-      NUMA_ARGS="numactl -m 0 "
+-    fi
+-  else
+-    NUMARANK=$(( MPI_LOCALRANKID / PPNUMA ))
+-    NUMA_ARGS="$NUMA_ARGS $GDB_ARGS "
+-  fi
+-  NUM_RANKS=$PMI_SIZE
+-else
+-  NUMA_ARGS="numactl -m 0 "
+-  NUM_RANKS=1
+-fi
+-fi
+-
+ # set dataset and model_path
+ if test -z $dataset || ! test -d $dataset ; then
+   dataset=$DATASET_DIR
+@@ -123,7 +103,7 @@ fi
+ #   exit
+ # fi
+ 
+-$NUMA_RAGS $GDB_ARGS python -u run_squad.py \
++$GDB_ARGS python -u run_squad.py \
+   --model_type bert \
+   --model_name_or_path ${BERT_WEIGHT} \
+   --do_eval \
+diff --git a/models/language_modeling/pytorch/bert_large/inference/gpu/run_squad.py b/models/language_modeling/pytorch/bert_large/inference/gpu/run_squad.py
+index d5ed19a0..602b08e7 100644
+--- a/models/language_modeling/pytorch/bert_large/inference/gpu/run_squad.py
++++ b/models/language_modeling/pytorch/bert_large/inference/gpu/run_squad.py
+@@ -609,7 +609,7 @@ def evaluate(args, model, tokenizer, prefix=""):
+     all_results = []
+ 
+     jit_model = None
+-    jit_trace_path = os.path.join(hub, args.model_type + "_" + args.model_name_or_path.split("_")[1] + "_trace_" + args.dtype + ".zip")
++    jit_trace_path = os.path.join(hub, args.model_type + "_"  + "_trace_" + args.dtype + ".zip")
+ 
+     do_profiling = os.environ.get("PROFILE", "OFF").upper() in ["1", "Y", "ON", "YES", "TRUE"]
+ 

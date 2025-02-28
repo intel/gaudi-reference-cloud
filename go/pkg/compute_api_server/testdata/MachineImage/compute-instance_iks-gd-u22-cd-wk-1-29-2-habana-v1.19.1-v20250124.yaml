@@ -1,0 +1,51 @@
+metadata:
+  name: "iks-gd-u22-cd-wk-1-29-2-habana-v1.19.1-v20250124"
+spec:
+  displayName: IKS Ubuntu 22.04 Worker for GD v1.29.2 released on 2025-01-24
+  description: IKS Ubuntu 22.04 Worker for GD v1.29.2 released on 2025-01-24
+  hidden: true
+  instanceCategories:
+    - BareMetalHost
+  instanceTypes:
+    - bm-icp-gaudi2
+    - bm-spr-gaudi2
+    - bm-icx-gaudi2
+    - bm-icp-gaudi2-sc
+    - bm-icx-gaudi2-sc
+  md5sum: "713d156875fa9793674c34ff432e971f"
+  sha256sum: "c6c3486add4e5db892936b32be9675e35291f626e64c7c3b55b604bc73be2eaa"
+  sha512sum: "6e03c64306829fdf7897a3084baf5548ce60c6db5cdb58b147394b37640f5b095e4f3c0dad9d62de50632d0549233958fede095d7f5038a6b645066c72acdbe9"
+  virtualSizeBytes: 64424509440
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (Baremetal only)
+    kernelVersion: 5.15 (GA - default)
+    iks: "true"
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+    - IKS
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: Intel Gaudi SW
+      type: Software kit
+      version: "1.19.1"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/v1.19.1/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+    - name: Intel Gaudi SW
+      type: Firmware kit
+      version: "1.19.0-561"
+    - name: IKS Core Components
+      type: Software kit
+      version: "1.29.2"
+      description: core set of tools for Kubernetes.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20sthttps://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: sdp

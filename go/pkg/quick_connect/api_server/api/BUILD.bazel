@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "api",
+    srcs = [
+        "config.go",
+        "healthz.go",
+        "proxy.go",
+        "router.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/quick_connect/api_server/api",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/cloudaccount",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/quick_connect/secrets",
+        "//go/pkg/utils",
+        "@com_github_alron_ginlogr//:ginlogr",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_go_resty_resty_v2//:resty",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
+        "@io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin//:otelgin",
+        "@org_golang_google_protobuf//encoding/protojson",
+    ],
+)

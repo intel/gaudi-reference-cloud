@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "kind",
+    srcs = ["kind.go"],
+    data = [
+        "//deployment:test-e2e-common",
+        "@kind_linux_amd64//file",
+        "@kubectl_linux_amd64//file",
+        "@yq_linux_amd64_file//file",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/k8s_provisioner/kind",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/env_config/types",
+        "//go/pkg/universe_deployer/filepaths",
+        "//go/pkg/universe_deployer/util",
+    ],
+)

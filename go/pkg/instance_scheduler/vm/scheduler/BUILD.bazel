@@ -1,0 +1,73 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "scheduler",
+    srcs = [
+        "affinity.go",
+        "clustergroup.go",
+        "eventhandlers.go",
+        "multicluster.go",
+        "schedule_instance.go",
+        "schedule_one.go",
+        "scheduler.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/scheduler",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/tasks",
+        "//go/pkg/instance_operator/util",
+        "//go/pkg/instance_replicator/convert",
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/parallelize",
+        "//go/pkg/instance_scheduler/vm/framework/plugins",
+        "//go/pkg/instance_scheduler/vm/framework/runtime",
+        "//go/pkg/instance_scheduler/vm/internal/cache",
+        "//go/pkg/instance_scheduler/vm/metrics",
+        "//go/pkg/instance_scheduler/vm/profile",
+        "//go/pkg/instance_scheduler/vm/util",
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/k8s/generated/metal3client/clientset/versioned",
+        "//go/pkg/k8s/generated/metal3client/informers/externalversions",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/utils",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/resource",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_apimachinery//pkg/util/sets",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_client_go//informers",
+        "@io_k8s_client_go//informers/core/v1:core",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//tools/cache",
+        "@io_k8s_component_helpers//scheduling/corev1/nodeaffinity",
+    ],
+)
+
+go_test(
+    name = "scheduler_test",
+    srcs = [
+        "clustergroup_test.go",
+        "eventhandlers_test.go",
+        "schedule_one_test.go",
+    ],
+    embed = [":scheduler"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/tasks",
+        "//go/pkg/instance_scheduler/vm/internal/cache",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_stretchr_testify//assert",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/types",
+        "@tools_gotest//assert",
+    ],
+)

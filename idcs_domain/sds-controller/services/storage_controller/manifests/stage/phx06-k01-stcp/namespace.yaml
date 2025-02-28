@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage-controller

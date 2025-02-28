@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "private_cloud_intel_com",
+    srcs = [
+        "factory.go",
+        "interface.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/controllers/private.cloud.intel.com",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/generated/controllers/private.cloud.intel.com/v1alpha1",
+        "@com_github_rancher_lasso//pkg/controller",
+        "@com_github_rancher_wrangler//pkg/generic",
+        "@io_k8s_client_go//rest",
+    ],
+)

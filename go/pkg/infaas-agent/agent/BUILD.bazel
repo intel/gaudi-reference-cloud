@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "agent",
+    srcs = [
+        "agent.go",
+        "worker.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/infaas-agent/agent",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/infaas-agent/inference",
+        "//go/pkg/pb",
+        "@com_github_friendsofgo_errors//:errors",
+        "@com_github_go_logr_logr//:logr",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//backoff",
+        "@org_golang_google_grpc//status",
+        "@org_golang_x_sync//errgroup",
+    ],
+)
+
+go_test(
+    name = "agent_test",
+    srcs = [
+        "agent_test.go",
+        "worker_test.go",
+    ],
+    embed = [":agent"],
+    deps = [
+        "//go/pkg/infaas-agent/inference",
+        "//go/pkg/pb",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)

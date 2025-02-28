@@ -1,0 +1,42 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+#
+# NOT built by Inflow's ImageBuilder automation
+metadata:
+  name: ubuntu-22.04-server-cloudimg-amd64-latest
+spec:
+  displayName: Ubuntu 22.04 LTS (Jammy Jellyfish) v20221204
+  description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+  instanceCategories:
+    - BareMetalHost
+  instanceTypes:
+    - bm-virtual
+    - bm-virtual-sc
+  md5sum: "2944673edc979fb95e07dc4f6741ada8"
+  sha256sum: "9ba87b73fcc4f9bcfaae23c43071924796a36c3e088777c0087d2628533a7c45"
+  virtualSizeBytes: 5242880000
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (Baremetal only)
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - App testing
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: Intel Gaudi SW
+      type: Firmware kit
+      version: "1.17.0-495"
+      description: This image is compatible with firmware version 1.17.0
+      infoUrl: https://docs.habana.ai/en/v1.17.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+    - name: Intel Gaudi SW
+      type: Firmware kit
+      version: "1.18.0-524"
+      description: This version is backward compatible with 1.16.x and 1.17.x gaudi firmware.
+      infoUrl: https://docs.habana.ai/en/v1.18.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  userName: sdp

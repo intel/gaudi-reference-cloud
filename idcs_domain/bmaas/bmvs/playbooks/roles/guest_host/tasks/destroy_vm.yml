@@ -1,0 +1,19 @@
+---
+# Shutdown a Guest Host
+
+# TODO: refactor to use community.libvirt.virt
+
+- name: Block for stopping a Guest Host
+  block:
+  - name: stop Guest Host VM number {{ vmnum }}
+    command: virsh destroy gh-node-{{ vmnum }}
+    changed_when: false
+    failed_when: false
+  - name: Undefine Guest Host VM number {{ vmnum }}
+    command: virsh undefine gh-node-{{ vmnum }} --remove-all-storage
+    changed_when: false
+    failed_when: false
+  become: true
+  vars:
+    ansible_network_os: 'ios'
+  tags: [never, teardown]

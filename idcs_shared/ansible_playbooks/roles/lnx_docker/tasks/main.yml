@@ -1,0 +1,5 @@
+
+---
+  - import_tasks: roles/common/tasks/install_apt_packages.yml
+  - import_tasks: ./set_docker_proxies.yml
+  - import_tasks: ./set_docker_permissions.yml

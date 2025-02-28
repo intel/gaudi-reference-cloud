@@ -1,0 +1,57 @@
+---
+
+# Save Docker image as a package (.tar)
+
+- name: Fetch docker image ID for btower
+  command: docker images --format "{{ '{{.ID}}' }}" btower
+  register: image_id
+
+- name: Create directory to save docker image and checksum file
+  file:
+    path: "{{ playbook_dir }}/roles/build_image/files/images/"
+    state: directory
+
+- name: Save Docker image as .tar in the directory
+  command: docker save -o "{{ playbook_dir }}/roles/build_image/files/images/btower.tar" btower
+
+- name: Calculate and save checksum in the directory
+  shell: sha256sum "{{ playbook_dir }}/roles/build_image/files/images/btower.tar" | awk '{ print $1 }'
+  register: checksum_output
+
+- name: Save checksum
+  copy:
+    content: "{{ checksum_output.stdout }}"
+    dest: "{{ playbook_dir }}/roles/build_image/files/images/checksum.txt"
+
+- name: Print confirmation message
+  debug:
+    msg: "Docker image with ID {{ image_id.stdout }} has been saved as tar with checksum."
+
+- name: Read checksum from saved checksum
+  slurp:
+    src: "{{ playbook_dir }}/roles/build_image/files/images/checksum.txt"
+  register: checksum_file
+
+- name: Validate checksum
+  shell: |
+    if [ "$(sha256sum {{ playbook_dir }}/roles/build_image/files/images/btower.tar | awk '{ print $1 }')" = "$(cat {{ playbook_dir }}/roles/build_image/files/images/checksum.txt)" ]; then
+      echo "Checksum validation passed"
+    else
+      echo "Checksum validation failed"
+    fi
+  register: validation_result
+
+- name: Print validation result
+  debug:
+    msg: "{{ validation_result.stdout }}"
+  
+- name: Fetch btower docker image
+  shell: docker images -q --filter "reference=btower:*"
+  register: btower_images
+  ignore_errors: yes
+
+- name: Remove btower docker image # Remove the originally created image once it's saved successfully 
+  shell: docker rmi -f {{ item }}
+  loop: "{{ btower_images.stdout_lines }}"
+  when: btower_images.stdout_lines|length > 0
+  register: deleted_images

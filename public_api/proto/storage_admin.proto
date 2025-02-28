@@ -1,0 +1,161 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "storage-admin-api-server";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+service StorageAdminService {
+    // GetResourceUsage returns the usage for a cloudaccount
+    rpc GetResourceUsage(google.protobuf.Empty) returns (StorageGetResourceUsageResponse) {
+      option (google.api.http) = {
+        get: "/v1/storage/admin/stats"
+      };
+    };
+
+    rpc InsertStorageQuotaByAccount(InsertStorageQuotaByAccountRequest) returns (StorageQuotaByAccount) {
+        option (google.api.http) = {
+            post: "/v1/storage/admin/storageQuota"
+            body: "*"
+        };
+    };
+
+    rpc UpdateStorageQuotaByAccount(UpdateStorageQuotaByAccountRequest) returns (StorageQuotaByAccount) {
+        option (google.api.http) = {
+            put: "/v1/storage/admin/storageQuota"
+            body: "*"
+        };
+    };
+
+    rpc DeleteStorageQuotaByAccount(DeleteStorageQuotaByAccountRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/storage/admin/storageQuota/{cloudAccountId}"
+        };
+    };
+
+    rpc GetStorageQuotaByAccount(GetStorageQuotaByAccountRequest) returns (StorageQuotasByAccount) {
+        option (google.api.http) = {
+            get: "/v1/storage/admin/storageQuota/{cloudAccountId}"
+        };
+    };
+
+
+    rpc GetAllStorageQuota(google.protobuf.Empty) returns (StorageQuotas) {
+        option (google.api.http) = {
+            get: "/v1/storage/admin/storageQuota"
+        };
+    };
+}
+
+message StorageGetResourceUsageResponse {
+    repeated StorageFilesystemUsageResponse filesystemUsages = 2;
+    repeated StorageBucketUsageResponse bucketUsages = 3;
+}
+
+message StorageFilesystemUsageResponse {
+    // Region name
+    string region = 1;
+    // Cloudaccount Id
+    string cloudAccountId = 2;
+    // Storage tier
+    string accountType = 3; //enum 
+    // User email
+    string email = 4;
+    // Organization ID
+    string orgId = 5;
+    // Number of filesystems
+    string numFilesystems = 6;
+    // Total provisioned size in TB
+    string totalProvisioned = 7;
+    // Cluster where filesystem has been scheduled
+    string clusterScheduled = 8;
+    // Whether storage has any IKS volumes
+    string hasIksVolumes = 9;
+}
+
+message StorageBucketUsageResponse {
+    // Region name
+    string region = 1;
+    // Cloudaccount Id
+    string cloudAccountId = 2;
+    // Storage tier
+    string accountType = 3;
+    // User email
+    string email = 4;
+    // Number of buckets
+    string buckets = 6;
+    // Used Capacity Bytes
+    string usedCapacity = 7;
+    // Total provisioned size in TB
+    string bucketSize = 8;
+    // Cluster where bucket has been scheduled
+    string clusterScheduled = 9;
+}
+
+message StorageQuotas {
+    repeated DefaultQuotaSection defaultQuotaSection =1;
+    repeated StorageQuotaByAccount storageQuotaByAccount = 2;
+}
+
+message StorageQuotaByAccount {
+    string cloudAccountType = 1;
+    string cloudAccountId = 2;
+    string reason = 3;
+    int64 filesizeQuotaInTB = 4;
+    int64 filevolumesQuota = 5;
+    int64 bucketsQuota = 6;
+    bool isDefault = 7; 
+}
+
+message DefaultQuotaSection {
+    string cloudAccountType = 1;
+    int64 filesizeQuotaInTB = 2;
+    int64 filevolumesQuota = 3;
+    int64 bucketsQuota = 4;
+}
+
+
+message InsertStorageQuotaByAccountRequest {
+    string cloudAccountId = 1;
+    string reason = 2;
+    int64 filesizeQuotaInTB = 3;
+    int64 filevolumesQuota = 4;
+    int64 bucketsQuota = 5;
+}
+
+message UpdateStorageQuotaByAccountRequest {
+    string cloudAccountId = 1;
+    string reason = 2;
+    int64 filesizeQuotaInTB = 3;
+    int64 filevolumesQuota = 4;
+    int64 bucketsQuota = 5;
+}
+
+message DeleteStorageQuotaByAccountRequest {
+    string cloudAccountId = 1;
+}
+
+message GetStorageQuotaByAccountRequest {
+    string cloudAccountId = 1;
+}
+
+message StorageQuotasByAccount {
+    StorageQuotaByAccount DefaultQuota = 1;
+    StorageQuotaByAccount UpdatedQuota = 2;
+}

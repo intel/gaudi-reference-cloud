@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-spr-gaudi2
+spec:
+  name: bm-spr-gaudi2
+  displayName: 8 Gaudi2 HL-225H mezzanine cards with 4rd Gen Xeon® processors, 1 TB RAM, 30 TB disk
+  description: 8 Gaudi2 HL-225H mezzanine cards with 4rd Gen Xeon® processors, 1 TB RAM, 30 TB disk
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 48
+    id: "0x806f8"
+    modelName: 4rd Generation Intel® Xeon® Platinum 8468 Processors
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 8
+    modelName: HL-225
+  memory:
+    size: 1024Gi
+    dimmSize: 32Gi
+    dimmCount: 32
+    speed: 4800
+  disks:
+    - size: 2000Gi

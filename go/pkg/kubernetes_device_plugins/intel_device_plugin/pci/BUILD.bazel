@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "pci",
+    srcs = [
+        "pci_device.go",
+        "utils.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/kubernetes_device_plugins/intel_device_plugin/pci",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/kubernetes_device_plugins/deviceplugin/v1beta1",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "@com_github_fsnotify_fsnotify//:fsnotify",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+    ],
+)

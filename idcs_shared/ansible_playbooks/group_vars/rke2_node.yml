@@ -1,0 +1,4 @@
+ansible_user: "sdp"
+ansible_password: "{{ devcloud_default_password }}"
+ansible_sudo_pass: "{{ devcloud_default_password }}"
+ansible_connection: 'ssh'

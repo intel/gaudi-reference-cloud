@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" .}}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    region: {{ .Values.region }}
+    victoriaMetricsAddr: {{ .Values.victoriaMetricsAddr | quote }}
+    remoteWriteBMAddr: {{ .Values.remoteWriteBMAddr | quote }}
+    remoteWriteIKSAddr: {{ .Values.remoteWriteIKSAddr | quote }}
+    insecureSkipVerify: {{ .Values.insecureSkipVerify | quote }}
+    awsVMClusterRegion: {{ .Values.awsVMClusterRegion | quote }}
+    clusterEndpoint: {{ .Values.clusterEndpoint | quote }}
+    enableMetricsBM: {{ .Values.enableMetricsBM | quote }}
+    roleArn: {{ .Values.roleArn | quote }}
+    vMClusterName: {{ .Values.vMClusterName | quote }}
+    remoteReadAddrBM: {{ .Values.remoteReadAddrBM | quote}}

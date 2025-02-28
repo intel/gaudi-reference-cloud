@@ -1,0 +1,12 @@
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: PortChannel
+metadata:
+  labels:
+    app.kubernetes.io/name: portchannel
+    app.kubernetes.io/instance: portchannel-sample
+    app.kubernetes.io/part-of: sdn-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: sdn-controller
+  name: portchannel-sample
+spec:
+  # TODO(user): Add fields here

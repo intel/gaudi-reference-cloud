@@ -1,0 +1,115 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if and ($.Values.components.computeVm.enabled) ($availabilityZone.vmInstanceScheduler.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-vm-instance-scheduler") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeVmInstanceScheduler
+      service: compute-vm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: vm-instance-scheduler
+    chart: idc/vm-instance-scheduler
+    version: {{ readFile (print $helmChartVersionsDir "/vm-instance-scheduler.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+          commonName: {{ $availabilityZone.vmInstanceScheduler.ingress.host | quote }}
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}vm-instance-scheduler@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+            enableBmaasBinpack: {{ $availabilityZone.vmInstanceScheduler.managerConfig.controllerManagerConfigYaml.enableBmaasBinpack }}
+            region: {{ $region.region | quote }}
+            availabilityZone: {{ $availabilityZone.availabilityZone | quote }}
+            overcommitConfig:
+              cpu: {{ $availabilityZone.vmInstanceScheduler.managerConfig.controllerManagerConfigYaml.overcommitConfig.cpu }}
+              memory: {{ $availabilityZone.vmInstanceScheduler.managerConfig.controllerManagerConfigYaml.overcommitConfig.memory }}
+              storage: {{ $availabilityZone.vmInstanceScheduler.managerConfig.controllerManagerConfigYaml.overcommitConfig.storage }}
+            bgpNetworkRequiredInstanceCountThreshold: {{ $availabilityZone.vmInstanceScheduler.managerConfig.controllerManagerConfigYaml.bgpNetworkRequiredInstanceCountThreshold }}
+      - enableValidation: {{ $availabilityZone.vmInstanceScheduler.enableValidation }}
+      - log:
+          level: {{ $availabilityZone.vmInstanceScheduler.log.level | quote }}
+          verbosity: {{ $availabilityZone.vmInstanceScheduler.log.verbosity | quote }}
+      - nodePort: {{ $availabilityZone.vmInstanceScheduler.service.nodePort }}
+      - service:
+          type: {{ $availabilityZone.vmInstanceScheduler.service.type }}
+      - ingress:
+          enabled: {{ $availabilityZone.vmInstanceScheduler.ingress.enabled }}
+          className: {{ $availabilityZone.vmInstanceScheduler.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#ssl-passthrough.
+            nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+          hosts:
+            - host: {{ $availabilityZone.vmInstanceScheduler.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($availabilityZone.vmInstanceScheduler.ingress.host) }}
+          tls:
+            - secretName: {{ $availabilityZone.vmInstanceScheduler.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $availabilityZone.vmInstanceScheduler.ingress.host | quote }}
+          {{- end }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $availabilityZone.availabilityZone }}-vm-instance-scheduler
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+      - clusterIds:
+        {{- range $clusterIndex, $cluster := $availabilityZone.harvesterClusters }}
+          - {{ $cluster.clusterId }}
+        {{- end }}
+      - kubeVirtClusterIds:
+        {{- range $kubevirt_clusterIndex, $kubevirt_cluster := $availabilityZone.kubeVirtClusters }}
+          - {{ $kubevirt_cluster.clusterId}}
+        {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

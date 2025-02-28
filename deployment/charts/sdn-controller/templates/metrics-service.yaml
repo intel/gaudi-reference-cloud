@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idc-common.fullname" . }}-metrics
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.metricsService.type }}
+  selector:
+    {{- include "idc-common.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.metricsService.ports | toYaml | nindent 4 -}}

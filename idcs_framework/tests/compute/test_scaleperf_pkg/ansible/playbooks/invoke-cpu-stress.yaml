@@ -1,0 +1,10 @@
+- name: Invoke the CPU Stress script inside VM
+  hosts: vm
+  become: yes
+  become_method: sudo
+  
+  tasks:
+  - name: Invoke the cpu spike via stress ng
+    shell: stress-ng -c <<no of cores to be loaded>> -l <<% of cpu to be stressed>> --syslog --verbose --timeout <<execution-time>> --metrics-brief > output.txt 2>&1 &
+    async: 10
+    poll: 0

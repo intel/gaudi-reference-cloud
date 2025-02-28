@@ -1,0 +1,17 @@
+filegroup(
+    name = "test-e2e-common",
+    srcs = [
+        "universe_deployer_common",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "universe_deployer_common",
+    srcs = glob([
+        "idc-argocd-initial-data/**",
+    ]),
+    visibility = [
+        "//go/pkg/universe_deployer/deployer:__pkg__",
+    ],
+)

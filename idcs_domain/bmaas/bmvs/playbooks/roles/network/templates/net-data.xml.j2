@@ -1,0 +1,20 @@
+{% if bridge_name is defined %}
+<network>
+  <name>data</name>
+  <forward mode='bridge'></forward>
+  <bridge name='{{ bridge_name }}'/>
+</network>
+{% else %}
+<network>
+  <name>data</name>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='databr0' stp='on' delay='0'/>
+  <ip address='172.16.0.1' netmask='255.255.0.0'>
+  </ip>
+</network>
+{% endif %}
+

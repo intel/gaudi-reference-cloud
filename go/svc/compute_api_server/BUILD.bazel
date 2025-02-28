@@ -1,0 +1,9 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_go_image")
+
+idc_go_image(
+    name = "compute_api_server_image",
+    embed = ["//go/svc/compute_api_server/cmd/compute_api_server:compute_api_server_lib"],
+    visibility = ["//visibility:public"],
+)

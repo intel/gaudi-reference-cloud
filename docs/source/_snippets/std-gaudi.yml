@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: std
+  labels:
+    name: std
+spec:
+  containers:
+  - name: std
+    image: docker.io/rramamu1/std-gaudi:latest
+    securityContext:
+      capabilities:
+        add: ["SYS_NICE"]   
+    ports:
+        - containerPort: 8000
+    resources:
+      limits:
+        habana.ai/gaudi: "1"
+        hugepages-2Mi: 500Mi
+        memory: 60G
+        #cpu: "25"

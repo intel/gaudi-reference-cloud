@@ -1,0 +1,20 @@
+[slurmservers]
+8888-slurmc-1 ansible_host=172.16.3.139
+
+[slurmdbdservers]
+8888-slurmc-1 ansible_host=172.16.3.139
+
+[slurmexechosts]
+8888-slurmd-1 ansible_host=172.16.3.168
+8888-slurmd-2 ansible_host=172.16.0.252
+8888-admin-1 ansible_host=172.16.1.237
+
+[jupyterhub_nodes]
+8888-admin-1 ansible_host=172.16.1.237
+
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -J guest-dev-oneapi@10.7.108.38 -l ubuntu'
+cluster_name="mycluster"
+num_workers=2
+cluster_id="9999"
+cluster_subnet="172.16.0.0/16"

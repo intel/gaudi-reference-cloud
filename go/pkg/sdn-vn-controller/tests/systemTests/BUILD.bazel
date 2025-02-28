@@ -1,0 +1,27 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+# gazelle:exclude systemTests_suite_test.go
+# gazelle:exclude l2_test.go
+# gazelle:exclude l3_test.go
+
+go_library(
+    name = "systemTests",
+    srcs = [
+        "client.go",
+        "config.go",
+        "security.go",
+        "vm.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller/tests/systemTests",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/sdn-vn-controller/api/sdn/v1:sdn",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+    ],
+)

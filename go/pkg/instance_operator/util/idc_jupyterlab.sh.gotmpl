@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+set -eu -o pipefail
+
+run_with_retry() {
+    local attempts=$1
+    local sleep=$2
+    shift 2
+    for i in $(seq 1 ${attempts}); do
+        [ $i -gt 1 ] && echo Failed. Will retry in ${sleep} seconds... && sleep ${sleep}
+        "$@" && s=0 && break || s=$?
+    done
+    return $s
+}
+
+install_jupyterlab_files() {
+    prefix=${1:-""}
+
+    install -D -m 0644 -o root -g root /dev/null ${prefix}/etc/quick-connect-client-ca.pem
+    cat <<'EOF' >${prefix}/etc/quick-connect-client-ca.pem
+{{ .ClientCA }}
+EOF
+
+    install -D -m 0755 -o root -g root /dev/null ${prefix}/opt/idc_jupyterlab/idc_jupyterlab
+    cat <<'EOF' >${prefix}/opt/idc_jupyterlab/idc_jupyterlab
+#!/bin/bash -e
+
+export PATH="/opt/idc_jupyterlab/user_env/bin:/opt/idc_jupyterlab/lab_env/bin:$PATH"
+export JUPYTER_PATH="/opt/idc_jupyterlab/prefix/share/jupyter${JUPYTER_PATH:+:${JUPYTER_PATH}}"
+cd ~
+/opt/idc_jupyterlab/lab_env/bin/jupyter-lab \
+    --no-browser \
+    --allow-root \
+    --ip=0.0.0.0 \
+    --port 57066 \
+    --ServerApp.allow_origin="https://{{ .InstanceId }}.{{ .QuickConnectHost }}" \
+    --ServerApp.base_url="/v1/connect/{{ .CloudAccountId }}/{{ .InstanceId }}" \
+    --ServerApp.token='' \
+    --ServerApp.password='' \
+    --ServerApp.certfile=/opt/idc_jupyterlab/jupyterlab.pem \
+    --ServerApp.keyfile=/opt/idc_jupyterlab/jupyterlab.key \
+    --ServerApp.client_ca=/etc/quick-connect-client-ca.pem
+EOF
+
+    install -D -m 0644 -o root -g root /dev/null ${prefix}/etc/systemd/system/idc_jupyterlab.service
+    cat <<'EOF' >${prefix}/etc/systemd/system/idc_jupyterlab.service
+[Unit]
+Description=Intel Developer Cloud JupyterLab
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=nobody
+Group=nobody
+Restart=always
+RestartSec=15
+ExecStart=/opt/idc_jupyterlab/idc_jupyterlab
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    install -D -m 0644 -o root -g root /dev/null ${prefix}/etc/systemd/system/idc_jupyterlab.service.d/override.conf
+    cat <<'EOF' >${prefix}/etc/systemd/system/idc_jupyterlab.service.d/override.conf
+[Service]
+User={{ .User }}
+Group={{ .User }}
+EOF
+}
+
+uninstall_jupyterlab_files() {
+    rm -f /etc/systemd/system/idc_jupyterlab.service.d/override.conf
+    rm -f /etc/systemd/system/idc_jupyterlab.service
+    rm -f /opt/idc_jupyterlab/idc_jupyterlab
+    rm -f /etc/quick-connect-client-ca.pem
+}
+
+install_jupyterlab() {
+    _install_jupyterlab
+    _configure_jupyterlab
+}
+
+_setup_jupyterlab_first_boot() {
+    if ! [[ -d /opt/idc_jupyterlab ]]; then
+        run_with_retry 5 2 _install_jupyterlab
+    fi
+    _configure_jupyterlab
+}
+
+_install_jupyterlab() {
+    if command -v apt 2>&1 >/dev/null; then
+       apt update
+       DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y python3-venv python3-pip
+    elif command -v zypper 2>&1 >/dev/null; then
+       zypper install -y python3-pip
+    fi
+
+    # Create directory for virtual environment
+    mkdir -p /opt/idc_jupyterlab
+    # Create global virtual environment
+    python3 -m venv /opt/idc_jupyterlab/lab_env
+    # Install jupyterlab into global virtual environment
+    /opt/idc_jupyterlab/lab_env/bin/pip install jupyterlab
+
+    # Create user virtual environment
+    python3 -m venv /opt/idc_jupyterlab/user_env
+    # Install ipykernel into user virtual environment
+    /opt/idc_jupyterlab/user_env/bin/pip install ipykernel
+    # Install ipykernel from user virtual environment as JupyterLab kernel
+    /opt/idc_jupyterlab/user_env/bin/python -m ipykernel install --prefix /opt/idc_jupyterlab/prefix
+}
+
+_configure_jupyterlab() {
+    # Adjust permissions such that the user env is owned by the default user
+    chown -R "{{ .User }}:{{ .User }}" /opt/idc_jupyterlab/user_env
+
+    install_jupyterlab_files
+
+    # Generate self signed certificate
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /opt/idc_jupyterlab/jupyterlab.key \
+      -out /opt/idc_jupyterlab/jupyterlab.pem \
+      -subj '/C=US/ST=Oregon/L=Hillsboro/O=Intel Corporation/OU=ITDC/CN=localhost'
+    chown "root:{{ .User }}" /opt/idc_jupyterlab/jupyterlab.key
+    chmod 0640 /opt/idc_jupyterlab/jupyterlab.key
+
+    # Reload service
+    systemctl daemon-reload
+    systemctl enable --now idc_jupyterlab
+}
+
+uninstall_jupyterlab() {
+    # Ignore systemctl disable error - service could already be disabled
+    systemctl disable --now idc_jupyterlab || true
+    uninstall_jupyterlab_files
+    rm -rf /opt/idc_jupyterlab
+    systemctl daemon-reload
+}
+
+warnings=0
+
+warn() {
+    >&2 echo "WARN $1"
+    warnings=$((warnings+1))
+}
+
+check_jupyterlab() {
+    warnings=0
+
+    # Health check
+
+    # We cannot do a curl since a client certificate is required
+    nc -vz localhost 57066 || warn "idc_jupyterlab service is not listening at port 57066"
+    systemctl is-active --quiet idc_jupyterlab || warn "idc_jupyterlab service is inactive"
+
+    # Diagnostics
+
+    # Are pip and python3 installed?
+    command -v python3 || warn "missing python3 package"
+    command -v pip || warn "missing pip package"
+
+    # Have the installed files been modified?
+    install_jupyterlab_files /tmp/check_jupyterlab
+    for file in $(find /tmp/check_jupyterlab/ -type f); do
+        diff ${file} ${file#/tmp/check_jupyterlab} || warn "${file#/tmp/check_jupyterlab} has been modified"
+    done
+    rm -rf /tmp/check_jupyterlab
+
+    # Are the correct packages installed in the venv?
+    /opt/idc_jupyterlab/lab_env/bin/pip list | grep -w jupyterlab || warn "global venv missing jupyterlab"
+    /opt/idc_jupyterlab/user_env/bin/pip list | grep -w ipykernel || warn "user venv missing ipykernel"
+    # TODO How to check ipykernel installation?
+
+    # Is user venv owned by correct user?
+    [[ $(stat -c "%U:%G" /opt/idc_jupyterlab/user_env/) == "{{ .User }}:{{ .User }}" ]] || warn "incorrect permissions of /opt/idc_jupyterlab/user_env"
+
+    # Is certificate valid?
+    openssl verify -x509_strict -CAfile /opt/idc_jupyterlab/jupyterlab.pem /opt/idc_jupyterlab/jupyterlab.pem || warn "invalid server certificate"
+
+    if [[ warnings -ne 0 ]]; then
+        exit 1
+    fi
+}
+
+case $1 in
+  install) run_with_retry 5 2 install_jupyterlab ;;
+  uninstall) uninstall_jupyterlab ;;
+  check) check_jupyterlab ;;
+  _setup-first-boot) _setup_jupyterlab_first_boot ;;
+esac

@@ -1,0 +1,446 @@
+package cloudaccount_enroll
+
+import (
+	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"fmt"
+
+	// "strings"
+	"testing"
+	"time"
+
+	"github.com/google/uuid"
+	// aria "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_aria"
+	standard "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_standard"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/grpcutil"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/log"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb"
+	"github.com/zitadel/oidc/pkg/crypto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+	"gopkg.in/square/go-jose.v2"
+)
+
+// These tests test the interaction between cloudaccount-enroll,
+// cloudaccount, billing, and all of the billing drivers
+
+func checkEnrollBillingAccount(t *testing.T, req map[string]string,
+	resp *pb.CloudAccountEnrollResponse) {
+	if !resp.GetRegistered() {
+		t.Errorf("account %v not registered", req["email"])
+	}
+	if !resp.GetHaveCloudAccount() {
+		t.Errorf("account %v lacks cloud account", req["email"])
+	} else if resp.GetCloudAccountId() == "" {
+		t.Error("Cloud account id is not populated")
+	}
+	if !resp.GetHaveBillingAccount() {
+		t.Errorf("account %v lacks billling account", req["email"])
+	}
+}
+
+func checkEnroll(t *testing.T, req map[string]string, resp *pb.CloudAccountEnrollResponse) {
+	checkEnrollBillingAccount(t, req, resp)
+	if !resp.Enrolled {
+		t.Errorf("account %v not enrolled", req["email"])
+	}
+	if resp.Action != pb.CloudAccountEnrollAction_ENROLL_ACTION_NONE {
+		t.Errorf("account %v has wrong action %v", req["email"], resp.Action)
+	}
+}
+
+func checkEnrollPremium(t *testing.T, req map[string]string, resp *pb.CloudAccountEnrollResponse) {
+	checkEnrollBillingAccount(t, req, resp)
+	if resp.Enrolled {
+		t.Errorf("premium account %v enrolled when it shouldn't be", req["email"])
+	}
+	if resp.Action != pb.CloudAccountEnrollAction_ENROLL_ACTION_COUPON_OR_CREDIT_CARD {
+		t.Errorf("wrong action: %v", resp.Action)
+	}
+}
+
+// TODO: verify why this is failing
+// func TestBillingAccountTypes(t *testing.T) {
+// 	tests := []struct {
+// 		req       *pb.CloudAccountEnrollRequest
+// 		tokenData map[string]string
+// 		check     func(*testing.T, map[string]string, *pb.CloudAccountEnrollResponse)
+// 	}{
+// 		{
+// 			req: &pb.CloudAccountEnrollRequest{},
+// 			tokenData: map[string]string{
+// 				"groups":       "DevCloud Console Standard",
+// 				"email":        "enrollstandard@example.com",
+// 				"tid":          uuid.NewString(),
+// 				"enterpriseId": uuid.NewString(),
+// 				"idp":          "intelcorpintb2c.onmicrosoft.com",
+// 			},
+// 			check: checkEnroll,
+// 		},
+// 		{
+// 			req: &pb.CloudAccountEnrollRequest{},
+// 			tokenData: map[string]string{
+// 				"groups":       "DevCloud Console Standard",
+// 				"email":        "patrick.gelsinger@intel.com",
+// 				"tid":          uuid.NewString(),
+// 				"enterpriseId": uuid.NewString(),
+// 				"idp":          "intelcorpintb2c.onmicrosoft.com",
+// 			},
+// 			check: checkEnroll,
+// 		},
+// 		{
+// 			req: &pb.CloudAccountEnrollRequest{Premium: true},
+// 			tokenData: map[string]string{
+// 				"groups":       "DevCloud Console Standard",
+// 				"email":        "enrollpremium@example.com",
+// 				"tid":          uuid.NewString(),
+// 				"enterpriseId": uuid.NewString(),
+// 				"idp":          "intelcorpintb2c.onmicrosoft.com",
+// 			},
+// 			check: checkEnrollPremium,
+// 		},
+// 		{
+// 			req: &pb.CloudAccountEnrollRequest{},
+// 			tokenData: map[string]string{
+// 				"groups":       "DevCloud Console Standard",
+// 				"email":        "enrollenterprise@example.com",
+// 				"tid":          uuid.NewString(),
+// 				"enterpriseId": uuid.NewString(),
+// 				"idp":          "https://login.microsoftonline.com/24d2eec2-c04e-4c44-830d-f374a7b9559e/v2.0",
+// 			},
+// 			check: checkEnroll,
+// 		},
+// 	}
+
+// 	for ii := range tests {
+// 		if aria.SkipAriaTests() &&
+// 			(tests[ii].req.Premium || !strings.HasPrefix(tests[ii].tokenData["idp"], "intel")) {
+// 			t.Log("skipping aria tests")
+// 			continue
+// 		}
+
+// 		resp, err := callEnroll(tests[ii].tokenData, tests[ii].req)
+// 		if err != nil {
+// 			t.Error(err)
+// 		}
+// 		tests[ii].check(t, tests[ii].tokenData, resp)
+// 	}
+// }
+
+func callEnroll(tokenData map[string]string, req *pb.CloudAccountEnrollRequest) (*pb.CloudAccountEnrollResponse, error) {
+	jwtToken := "Bearer " + generateJWT(tokenData)
+	header := metadata.New(map[string]string{"authorization": jwtToken})
+	ctx := metadata.NewOutgoingContext(context.Background(), header)
+
+	return enrollClient.Enroll(ctx, req)
+}
+
+func TestEnrollWithHeader(t *testing.T) {
+
+	jwtMap := map[string]string{
+		"tid":          "yyy",
+		"enterpriseId": "xxx",
+		"email":        "test@user1.com",
+		"groups":       "DevCloud Console Standard",
+		"idp":          "intelcorpintb2c.onmicrosoft.com",
+		"countryCode":  "IN",
+	}
+	resp, err := callEnroll(jwtMap, &pb.CloudAccountEnrollRequest{})
+	if err != nil {
+		t.Error(err)
+	}
+	checkEnroll(t, jwtMap, resp)
+}
+
+func TestEnrollWithHeaderInvalidTokens(t *testing.T) {
+	tests := []struct {
+		jwtToken string
+	}{
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "xxx", "email": "test@user1.com",
+				"idp": "intelcorpintb2c.onmicrosoft.com", "groups": "Invalid Group"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "xxx", "email": "test@intel.com",
+				"idp": "intelcorpintb2c.onmicrosoft.com", "groups": ""}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "xxx", "email": "test@user1.com",
+				"idp": "intelcorpintb2c.onmicrosoft.com", "groups": ""}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "", "enterpriseId": "xxx", "email": "test@user1.com",
+				"idp": "intelcorpintb2c.onmicrosoft.com", "groups": "DevCloud Console Standard"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "", "email": "test@user1.com",
+				"idp": "intelcorpintb2c.onmicrosoft.com", "groups": "DevCloud Console Standard"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "xxx", "email": "test@user1.com",
+				"idp": "", "groups": "DevCloud Console Standard"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "xxx", "email": "",
+				"idp": "", "groups": "DevCloud Console Standard"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "xxx", "email": "test@user1.com",
+				"idp": "intelcorpintb2c.onmicrosoft.com"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"tid": "yyy", "enterpriseId": "xxx", "email": "test@user1.com"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"enterpriseId": "xxx", "email": "test@user1.com"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{"email": "test@user1.com"}),
+		},
+		{
+			jwtToken: "Bearer " + generateJWT(map[string]string{}),
+		},
+	}
+
+	for ii := range tests {
+		header := metadata.New(map[string]string{"authorization": tests[ii].jwtToken})
+		ctx := metadata.NewOutgoingContext(context.Background(), header)
+		_, err := enrollClient.Enroll(ctx, &pb.CloudAccountEnrollRequest{Premium: true})
+		if err == nil {
+			t.Error("Expected Invalid arguments")
+		}
+		respStatus, ok := status.FromError(err)
+		if !ok || respStatus.Code() != codes.InvalidArgument {
+			t.Error("Unxpected error observed")
+		}
+	}
+}
+
+func TestEnrollWithBillingAccountError(t *testing.T) {
+	// Force billing account creation to fail
+	standard.CreateAccountError = fmt.Errorf("error for testing")
+	defer func() {
+		standard.CreateAccountError = nil
+	}()
+
+	uid := uuid.NewString()
+	tokenData := map[string]string{
+		"groups":       "DevCloud Console Standard",
+		"tid":          uid,
+		"enterpriseId": uid,
+		"email":        "enroll2@example.com",
+		"idp":          "intelcorpintb2c.onmicrosoft.com",
+	}
+	resp, err := callEnroll(tokenData, &pb.CloudAccountEnrollRequest{})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.HaveBillingAccount {
+		t.Error("billing account should not have been created")
+	}
+	if resp.Action != pb.CloudAccountEnrollAction_ENROLL_ACTION_RETRY {
+		t.Errorf("wrong action %v", resp.Action)
+	}
+}
+
+//We will rollback these tests once Standard to Premium/Enterprise upgrades are supported
+// func TestEnrollwithAlreadyExistingCloudAccount(t *testing.T) {
+
+// 	tests := []struct {
+// 		req *pb.CloudAccountEnrollRequest
+// 		// Cloud account type that is already created.
+// 		cloudAccountType pb.AccountType
+// 		tokenData        map[string]string
+// 		check            func(*testing.T, map[string]string, *pb.CloudAccount, *pb.CloudAccountEnrollResponse)
+// 	}{
+// 		{ // no change
+// 			req:              &pb.CloudAccountEnrollRequest{},
+// 			cloudAccountType: pb.AccountType_ACCOUNT_TYPE_STANDARD,
+// 			tokenData: map[string]string{
+// 				"groups":       "DevCloud Console Standard",
+// 				"email":        "standard@example4.com",
+// 				"tid":          uuid.NewString(),
+// 				"enterpriseId": uuid.NewString(),
+// 				"idp":          "intelcorpintb2c.onmicrosoft.com",
+// 			},
+// 			check: checkStandardCloudAccount,
+// 		},
+// 		{ // no change for Intel account
+// 			req:              &pb.CloudAccountEnrollRequest{},
+// 			cloudAccountType: pb.AccountType_ACCOUNT_TYPE_INTEL,
+// 			tokenData: map[string]string{
+// 				"groups":       "DevCloud Console Standard",
+// 				"email":        "testuser@intel.com",
+// 				"tid":          uuid.NewString(),
+// 				"enterpriseId": uuid.NewString(),
+// 				"idp":          "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/v2.0",
+// 			},
+// 			check: checkIntelCloudAccount,
+// 		},
+// 		// { // Upgrade Standard to Premium during enroll. (This is allowed)
+// 		// 	req:              &pb.CloudAccountEnrollRequest{Premium: true},
+// 		// 	cloudAccountType: pb.AccountType_ACCOUNT_TYPE_STANDARD,
+// 		// 	tokenData: map[string]string{
+// 		// 		"groups":       "DevCloud Console Standard",
+// 		// 		"email":        "standardToPremium@example1.com",
+// 		// 		"tid":          uuid.NewString(),
+// 		// 		"enterpriseId": uuid.NewString(),
+// 		// 		"idp":          "intelcorpintb2c.onmicrosoft.com",
+// 		// 	},
+// 		// 	check: checkPremiumCloudAccount,
+// 		// },
+// 		// { // Attempt to downgrade an already Premium account during enroll (Does not downgrade)
+// 		// 	req:              &pb.CloudAccountEnrollRequest{Premium: false},
+// 		// 	cloudAccountType: pb.AccountType_ACCOUNT_TYPE_PREMIUM,
+// 		// 	tokenData: map[string]string{
+// 		// 		"groups":       "DevCloud Console Standard",
+// 		// 		"email":        "premiumToStandard@example1.com",
+// 		// 		"tid":          uuid.NewString(),
+// 		// 		"enterpriseId": uuid.NewString(),
+// 		// 		"idp":          "intelcorpintb2c.onmicrosoft.com",
+// 		// 	},
+// 		// 	check: checkPremiumCloudAccount,
+// 		// },
+// 	}
+
+// 	for ii := range tests {
+// 		ctx := context.Background()
+// 		mock_billing_enroll := true
+// 		cloudAccId, err := cloudacctClient.Create(ctx, &pb.CloudAccountCreate{
+// 			Tid:                   tests[ii].tokenData["tid"],
+// 			Name:                  tests[ii].tokenData["email"],
+// 			Owner:                 tests[ii].tokenData["email"],
+// 			Type:                  tests[ii].cloudAccountType,
+// 			Oid:                   tests[ii].tokenData["enterpriseId"],
+// 			BillingAccountCreated: &mock_billing_enroll,
+// 			Enrolled:              &mock_billing_enroll,
+// 			PersonId:              "12345678",
+// 		})
+// 		if err != nil {
+// 			t.Errorf("Failed to create cloud account for %v", tests[ii].tokenData["email"])
+// 		}
+
+// 		// Invoke Enroll
+// 		resp, err := callEnroll(tests[ii].tokenData, tests[ii].req)
+// 		if err != nil {
+// 			t.Error(err)
+// 		}
+// 		//Fetch Cloud Acccount after enroll
+// 		cloudAcctAfterEnroll, err := cloudacctClient.GetById(ctx, cloudAccId)
+
+// 		if err != nil {
+// 			t.Errorf("Failed to fetch the cloud acccount %v", err)
+// 		}
+// 		//Verify the response
+// 		tests[ii].check(t, tests[ii].tokenData, cloudAcctAfterEnroll, resp)
+// 	}
+// }
+
+func checkStandardCloudAccount(t *testing.T, req map[string]string, oldCloudAccount *pb.CloudAccount,
+	resp *pb.CloudAccountEnrollResponse) {
+	checkEnroll(t, req, resp)
+	if oldCloudAccount.Type != pb.AccountType_ACCOUNT_TYPE_STANDARD {
+		t.Errorf("Cloud account %v is not standard", oldCloudAccount.Name)
+	}
+	if !oldCloudAccount.Enrolled {
+		t.Errorf("Cloud acccount enrolled flag is not true")
+	}
+	if !oldCloudAccount.BillingAccountCreated {
+		t.Errorf("Cloud acccount Billing account created flag is not true")
+	}
+}
+
+func checkIntelCloudAccount(t *testing.T, req map[string]string, oldCloudAccount *pb.CloudAccount,
+	resp *pb.CloudAccountEnrollResponse) {
+	checkEnroll(t, req, resp)
+	if oldCloudAccount.Type != pb.AccountType_ACCOUNT_TYPE_INTEL {
+		t.Errorf("Cloud account %v is not Intel", oldCloudAccount.Name)
+	}
+	if !oldCloudAccount.Enrolled {
+		t.Errorf("Cloud acccount enrolled flag is not true")
+	}
+	if !oldCloudAccount.BillingAccountCreated {
+		t.Errorf("Cloud acccount Billing account created flag is not true")
+	}
+}
+
+func checkPremiumCloudAccount(t *testing.T, req map[string]string, oldCloudAccount *pb.CloudAccount,
+	resp *pb.CloudAccountEnrollResponse) {
+	checkEnroll(t, req, resp)
+	if oldCloudAccount.Type != pb.AccountType_ACCOUNT_TYPE_PREMIUM {
+		t.Errorf("Cloud account %v is not standard", oldCloudAccount.Name)
+	}
+	if !oldCloudAccount.Enrolled {
+		t.Errorf("Cloud acccount enrolled flag is not true")
+	}
+	if !oldCloudAccount.BillingAccountCreated {
+		t.Errorf("Cloud acccount Billing account created flag is not true")
+	}
+}
+
+func TestChangeAccountName(t *testing.T) {
+	tokenData := map[string]string{
+		"groups":       "DevCloud Console Standard",
+		"tid":          uuid.NewString(),
+		"enterpriseId": uuid.NewString(),
+		"email":        "changefrom@example.com",
+		"idp":          "intelcorpintb2c.onmicrosoft.com",
+	}
+
+	resp, err := callEnroll(tokenData, &pb.CloudAccountEnrollRequest{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkEnroll(t, tokenData, resp)
+
+	tokenData["email"] = "changeto@example.com"
+	resp, err = callEnroll(tokenData, &pb.CloudAccountEnrollRequest{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkEnroll(t, tokenData, resp)
+
+	acct, err := cloudacctClient.GetById(context.Background(),
+		&pb.CloudAccountId{Id: resp.CloudAccountId})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if acct.Name != tokenData["email"] {
+		t.Errorf("cloud account for %v has wrong name %v", tokenData["email"], acct.Name)
+	}
+}
+
+func TestMain(m *testing.M) {
+	log.SetDefaultLogger()
+	ctx := context.Background()
+	EmbedService(ctx)
+	grpcutil.StartTestServices(ctx)
+	defer grpcutil.StopTestServices()
+	m.Run()
+}
+
+// Helper method to generated JWT
+func generateJWT(input map[string]string) string {
+	var kArrayClaims = map[string]bool{"amr": true, "roles": true, "wids": true, "groups": true}
+	claims := map[string]any{}
+	claims["iss"] = "http://issuer:port"
+	now := time.Now().UTC()
+	claims["iat"] = now.Unix()
+	claims["nbf"] = now.Unix()
+	claims["exp"] = now.Add(5 * time.Minute).Unix()
+	for key, val := range input {
+		if kArrayClaims[key] {
+			claims[key] = []string{val}
+		} else {
+			claims[key] = val
+		}
+	}
+
+	rsaTestKey, _ := rsa.GenerateKey(rand.Reader, 2048)
+	signer, _ := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: rsaTestKey}, nil)
+	tok, _ := crypto.Sign(claims, signer)
+	return tok
+}

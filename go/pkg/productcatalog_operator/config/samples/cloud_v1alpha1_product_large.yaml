@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Product
+metadata:
+  name: xeon4.large
+spec:
+  id: "3bc52387-da79-4947-a562-ab7a88c38e1d"
+  vendorId: "4015bb99-0522-4387-b47e-c821596dc735"
+  familyId: "61befbee-0607-47c5-b140-c6b4ea10b9da"
+  description: Xeon4 large
+  matchExpr: service == "BMaaS" && cpu == "xeon4" && mem == "64G"
+  metadata:
+  - key: region
+    value: us-east
+  rates:
+  - accountType: premium
+    unit: dollarsPerMinute
+    usageExpr: time – previous.time
+    rate: ".05"
+  - accountType: enterprise
+    unit: dollarsPerMinute
+    usageExpr: time – previous.time
+    rate: ".03"
+  - accountType: intel
+    unit: dollarsPerMinute
+    usageExpr: time – previous.time
+    rate: ".001"

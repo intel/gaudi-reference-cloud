@@ -1,0 +1,253 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: loadbalancers.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: Loadbalancer
+    listKind: LoadbalancerList
+    plural: loadbalancers
+    shortNames:
+    - lb
+    singular: loadbalancer
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: State status
+      jsonPath: .status.state
+      name: State
+      priority: 1
+      type: string
+    - description: Message
+      jsonPath: .status.message
+      name: Message
+      type: string
+    - description: VIP
+      jsonPath: .status.vip
+      name: VIP
+      type: string
+    - description: Time duration since creation of Loadbalancer
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Loadbalancer is the Schema for the loadbalancers API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: LoadbalancerSpec defines the desired state of Loadbalancer
+            properties:
+              labels:
+                additionalProperties:
+                  type: string
+                description: User defined labels when a new load balancer is created
+                type: object
+              listeners:
+                items:
+                  properties:
+                    owner:
+                      type: string
+                    pool:
+                      description: Define pool configuration
+                      properties:
+                        instanceSelectors:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        loadbalancingmode:
+                          type: string
+                        members:
+                          items:
+                            description: Define member configuration -- part of vPool
+                            properties:
+                              adminState:
+                                type: string
+                              connectionLimit:
+                                type: integer
+                              instanceRef:
+                                type: string
+                              monitorStatus:
+                                type: string
+                              name:
+                                type: string
+                              priorityGroup:
+                                type: integer
+                              ratio:
+                                type: integer
+                            required:
+                            - adminState
+                            - connectionLimit
+                            - instanceRef
+                            - monitorStatus
+                            - priorityGroup
+                            - ratio
+                            type: object
+                          minItems: 0
+                          type: array
+                        minactivemembers:
+                          type: integer
+                        monitor:
+                          type: string
+                        port:
+                          type: integer
+                      required:
+                      - loadbalancingmode
+                      - minactivemembers
+                      - monitor
+                      type: object
+                    vip:
+                      description: define virtual server configuration
+                      properties:
+                        ipprotocol:
+                          type: string
+                        iptype:
+                          type: string
+                        persist:
+                          type: string
+                        port:
+                          type: integer
+                        ssl:
+                          description: SSL is an optional field which allows for SSL
+                            configuration at the vServer
+                          properties:
+                            profile:
+                              description: Profile is the SSL profile configuration
+                                for the specific listener
+                              properties:
+                                id:
+                                  type: integer
+                              type: object
+                          type: object
+                      required:
+                      - ipprotocol
+                      - iptype
+                      - persist
+                      - port
+                      type: object
+                  required:
+                  - owner
+                  - vip
+                  type: object
+                type: array
+              security:
+                properties:
+                  sourceips:
+                    items:
+                      type: string
+                    minItems: 1
+                    type: array
+                required:
+                - sourceips
+                type: object
+            required:
+            - listeners
+            - security
+            type: object
+          status:
+            description: LoadbalancerStatus defines the observed state of Loadbalancer
+            properties:
+              conditions:
+                properties:
+                  firewallRuleCreated:
+                    type: boolean
+                  listeners:
+                    items:
+                      properties:
+                        poolCreated:
+                          type: boolean
+                        port:
+                          type: integer
+                        vipCreated:
+                          type: boolean
+                        vipPoolLinked:
+                          type: boolean
+                      required:
+                      - poolCreated
+                      - port
+                      - vipCreated
+                      - vipPoolLinked
+                      type: object
+                    type: array
+                required:
+                - firewallRuleCreated
+                - listeners
+                type: object
+              listeners:
+                items:
+                  properties:
+                    message:
+                      type: string
+                    name:
+                      type: string
+                    poolID:
+                      type: integer
+                    poolMembers:
+                      items:
+                        properties:
+                          instanceRef:
+                            type: string
+                          ip:
+                            type: string
+                        required:
+                        - instanceRef
+                        - ip
+                        type: object
+                      type: array
+                    port:
+                      type: integer
+                    state:
+                      type: string
+                    vipID:
+                      type: integer
+                  required:
+                  - message
+                  - name
+                  - poolID
+                  - port
+                  - state
+                  - vipID
+                  type: object
+                type: array
+              message:
+                type: string
+              state:
+                description: define observed state of cluster
+                type: string
+              vip:
+                type: string
+            required:
+            - conditions
+            - listeners
+            - message
+            - state
+            - vip
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "metering",
+    srcs = ["create.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/metering",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)

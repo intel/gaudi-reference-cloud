@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- path: /etc/sssd/sssd.conf
+  content: |
+    [sssd]
+    config_file_version = 2
+    domains = {{ Values.ClusterId }}.cluster
+    [domain/{{ Values.ClusterId }}.cluster]
+    id_provider = ldap
+    auth_provider = ldap
+    ldap_uri = ldaps://{{ Values.ClusterId }}-admin-2
+    cache_credentials = True
+    ldap_search_base = dc={{ Values.ClusterId }},dc=cluster
+    krb5_use_enterprise_principal = True
+  permissions: '0600'
+  owner: root
+  group: root
+- path: /etc/ldap/ldap.conf
+  content: |
+    BASE    dc={{ Values.ClusterId }},dc=cluster
+    # TLS certificates (needed for GnuTLS)
+    TLS_CACERT=/usr/local/share/ca-certificates/poc-cacert.crt
+  permissions: '0644'
+  owner: root
+  group: root

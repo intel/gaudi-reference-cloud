@@ -1,0 +1,99 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- if $region.dpai.enabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-dpai") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: dpai
+      service: dpai
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: dpai
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/dpai
+    version: {{ readFile (print $helmChartVersionsDir "/dpai.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}dpai@sha256"
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}
+      - grpcAPIServerAddr: {{ $region.dpai.grpcAPIServerAddr | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - database:
+          service: {{ $region | get "dpai.database.service" (print $region.region "-dpai-db-postgresql") | quote }}
+          arg: {{ $region | get "dpai.database.arg" $.Values.defaults.region.dpai.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-dpai/database"
+      - defaultRegistry:
+          host: {{ $region | get "dpai.defaultRegistry.host" $.Values.defaults.region.dpai.defaultRegistry.host | quote }}
+          username: {{ $region | get "dpai.defaultRegistry.username" $.Values.defaults.region.dpai.defaultRegistry.username | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-dpai/secrets
+      - encryption:
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-dpai/secrets
+      - domainSuffix: {{ $region | get "computeApiServer.domainSuffix" $.Values.defaults.region.computeApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+
+  {{- if $region.dpaiDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-dpai-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: dpai
+      service: dpai
+      database: dpai
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: dpai-db
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-dpai_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-dpai_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region | get "dpaiDb.primary.persistence.enabled" $.Values.defaults.region.dpaiDb.primary.persistence.enabled }}
+  {{- end }}
+
+{{- end }}
+
+{{- end }} 

@@ -1,0 +1,16 @@
+# This file contains targets to build Helm charts.
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+    name = "chart",
+    package_name = "network-operator",  # Must not have underscores.
+    srcs = glob([
+        "*.yaml",
+        "templates/**",
+    ]),
+    chart_deps = ["//deployment/charts/idc-common:chart"],
+    image = "//go/pkg/network/operator:network_operator_image",
+    values_tag_yaml_path = "image.tag",
+    visibility = ["//visibility:public"],
+)

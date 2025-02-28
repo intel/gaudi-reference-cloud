@@ -1,0 +1,437 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.billing.enabled }}
+  - name: billing
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: billing
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: billing
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/billing
+    version: {{ readFile (print $helmChartVersionsDir "/billing.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}billing@sha256"
+      - database:
+          arg: {{ $.Values.global.billing.database.arg | quote }}
+          name: {{ $.Values.global.billing.database.name | quote }}
+          service: {{ $.Values.global.billing.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.billing.database.vaultCredentialsPath | quote }}
+      - creditsInstallSchedulerInterval: {{ .Values.creditsInstallSchedulerInterval }}
+      - reportUsageSchedulerInterval: {{ .Values.reportUsageSchedulerInterval }}
+      - creditsExpiryMinimumInterval: {{ .Values.creditsExpiryMinimumInterval }}
+      - creditUsageSchedulerInterval: {{ .Values.creditUsageSchedulerInterval }}
+      - creditExpirySchedulerInterval: {{ .Values.creditExpirySchedulerInterval }}
+      - premiumCloudCreditThreshold: {{ .Values.premiumCloudCreditThreshold }}
+      - intelCloudCreditThreshold: {{ .Values.intelCloudCreditThreshold }}
+      - enterpriseCloudCreditThreshold: {{ .Values.enterpriseCloudCreditThreshold }}
+      - premiumCloudCreditNotifyBeforeExpiry: {{ .Values.premiumCloudCreditNotifyBeforeExpiry }}
+      - intelCloudCreditNotifyBeforeExpiry: {{ .Values.intelCloudCreditNotifyBeforeExpiry }}
+      - enterpriseCloudCreditNotifyBeforeExpiry: {{ .Values.enterpriseCloudCreditNotifyBeforeExpiry }}
+      - servicesTerminationSchedulerInterval: {{ .Values.servicesTerminationSchedulerInterval }}
+      - servicesTerminationInterval: {{ .Values.servicesTerminationInterval }}
+      - instanceTerminationMeteringDuration: {{ .Values.instanceTerminationMeteringDuration }}
+      - eventExpirySchedulerInterval: {{ .Values.eventExpirySchedulerInterval }}
+      - couponNumberOfUsesThresholdStandard: {{ .Values.couponNumberOfUsesThresholdStandard }}
+      - couponNumberOfUsesThresholdNonStandard: {{ .Values.couponNumberOfUsesThresholdNonStandard }}
+      - runSchedulers: {{ .Values.runSchedulers }}
+      - features:
+          creditInstallScheduler: {{ .Values.features.creditInstallScheduler }}
+          reportUsageScheduler: {{ .Values.features.reportUsageScheduler }}
+          creditUsageScheduler: {{ .Values.features.creditUsageScheduler }}
+          creditExpiryScheduler: {{ .Values.features.creditExpiryScheduler }}
+          servicesTerminationScheduler: {{ .Values.features.servicesTerminationScheduler }}
+          eventExpiryScheduler: {{ .Values.features.eventExpiryScheduler }}
+          creditUsageEmail: {{ .Values.features.creditUsageEmail }}
+          creditExpiryEmail: {{ .Values.features.creditExpiryEmail }}
+          billingUsageMetrics: {{ .Values.features.billingUsageMetrics }}
+          cloudCreditUsageReportScheduler: {{ .Values.features.cloudCreditUsageReportScheduler }}
+          servicesTerminationAccountTypes:
+          {{- range $type := $.Values.global.billing.features.servicesTerminationAccountTypes }}
+            - {{ $type | quote }}
+          {{- end }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          grpcTlsAuthz: 
+            enabled: {{ $.Values.global.billing.tls.grpcTlsAuthz.enabled }}
+            allowedCallers: {{ $.Values.global.billing.tls.grpcTlsAuthz.allowedCallers }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  {{- if $.Values.global.billing.enabled }}
+  - name: billing-schedulers
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: billing
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: billing-schedulers
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/billing-schedulers
+    version: {{ readFile (print $helmChartVersionsDir "/billing-schedulers.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}billing-schedulers@sha256"
+      - database:
+          arg: {{ $.Values.global.billing.database.arg | quote }}
+          name: {{ $.Values.global.billing.database.name | quote }}
+          service: {{ $.Values.global.billing.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.billing.database.vaultCredentialsPath | quote }}
+      - creditsInstallSchedulerInterval: {{ .Values.creditsInstallSchedulerInterval }}
+      - reportUsageSchedulerInterval: {{ .Values.reportUsageSchedulerInterval }}
+      - reportProductUsageSchedulerInterval: {{ .Values.reportProductUsageSchedulerInterval }}
+      - creditsExpiryMinimumInterval: {{ .Values.creditsExpiryMinimumInterval }}
+      - instanceTerminationMeteringDuration: {{ .Values.instanceTerminationMeteringDuration }}
+      - features:
+          creditInstallScheduler: {{ .Values.features.creditInstallScheduler }}
+          reportUsageScheduler: {{ .Values.features.reportUsageScheduler }}
+          creditUsageScheduler: {{ .Values.features.creditUsageScheduler }}
+          creditExpiryScheduler: {{ .Values.features.creditExpiryScheduler }}
+          cloudCreditUsageReportScheduler: {{ .Values.features.cloudCreditUsageReportScheduler }}
+          servicesTerminationScheduler: {{ .Values.features.servicesTerminationScheduler }}
+          eventExpiryScheduler: {{ .Values.features.eventExpiryScheduler }}
+          creditUsageEmail: {{ .Values.features.creditUsageEmail }}
+          creditExpiryEmail: {{ .Values.features.creditExpiryEmail }}
+          servicesTerminationAccountTypes:
+          {{- range $type := $.Values.global.billingSchedulers.features.servicesTerminationAccountTypes }}
+            - {{ $type | quote }}
+          {{- end }}
+          creditUsageEmailAccountTypes:
+          {{- range $type := $.Values.global.billingSchedulers.features.creditUsageEmailAccountTypes }}
+            - {{ $type | quote }}
+          {{- end }}
+          creditExpiryEmailAccountTypes:
+          {{- range $type := $.Values.global.billingSchedulers.features.creditExpiryEmailAccountTypes }}
+            - {{ $type | quote }}
+          {{- end }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+      - notifications:
+          senderEmail: {{  $.Values.global.billingSchedulers.notifications.senderEmail | quote }}
+          consoleUrl: {{  $.Values.global.billingSchedulers.notifications.consoleUrl | quote }}
+          paymentUrl: {{ $.Values.global.billingSchedulers.notifications.paymentUrl | quote }}
+          cloudCreditHundredPercentUsedTemplate: {{ $.Values.global.billingSchedulers.notifications.cloudCreditHundredPercentUsedTemplate | quote }}
+          cloudCreditEightyPercentUsedTemplate: {{ $.Values.global.billingSchedulers.notifications.cloudCreditEightyPercentUsedTemplate | quote }}
+          cloudCreditExpiryTemplate: {{ $.Values.global.billingSchedulers.notifications.cloudCreditExpiryTemplate | quote }}
+          pdlEmail: {{  $.Values.global.billingSchedulers.notifications.pdlEmail | quote }}
+      - resources:
+          limits:
+            cpu: {{ $.Values.global.billingSchedulers.resources.limits.cpu | quote }}
+            memory: {{ $.Values.global.billingSchedulers.resources.limits.memory | quote }}
+          requests:
+            cpu: {{ $.Values.global.billingSchedulers.resources.requests.cpu | quote }}
+            memory: {{ $.Values.global.billingSchedulers.resources.requests.memory | quote }}
+  {{- end }}
+
+  {{- if $.Values.global.billing.enabled }}
+  - name: billing-standard
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: billing
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: billing-standard
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/billing-standard
+    version: {{ readFile (print $helmChartVersionsDir "/billing-standard.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}billing-standard@sha256"
+      - database:
+          arg: {{ $.Values.global.billing.database.arg | quote }}
+          name: {{ $.Values.global.billing.database.name | quote }}
+          service: {{ $.Values.global.billing.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.billing.database.vaultCredentialsPath | quote }}
+      - commonConfig:
+          maxDefaultHistory: {{ (.Values.commonConfig).maxDefaultHistory }}
+          instanceSearchWindow: {{ (.Values.commonConfig).instanceSearchWindow }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          grpcTlsAuthz: 
+            enabled: {{ $.Values.global.billingStandard.tls.grpcTlsAuthz.enabled }}
+            allowedCallers: {{ $.Values.global.billingStandard.tls.grpcTlsAuthz.allowedCallers }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  {{- if $.Values.global.billing.enabled }}
+  - name: billing-aria
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: billing
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: billing-aria
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/billing-aria
+    version: {{ readFile (print $helmChartVersionsDir "/billing-aria.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}billing-aria@sha256"
+      - database:
+          arg: {{ $.Values.global.billing.database.arg | quote }}
+          name: {{ $.Values.global.billing.database.name | quote }}
+          service: {{ $.Values.global.billing.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.billing.database.vaultCredentialsPath | quote }}
+      - clientIdPrefix: {{ env "ARIA_CLIENT_ID_PREFIX" }}
+      - ariasystem:
+         service: {{ $.Values.global.billingAria.ariasystem.service | quote }}
+         vaultCredentialsPath: {{ $.Values.global.billingAria.ariasystem.vaultCredentialsPath | quote }}
+         coreApiSuffix: {{ (.Values.ariasystem).coreApiSuffix }}
+         directPostUrl: {{ (.Values.ariasystem).directPostUrl }}
+         functionMode: {{ (.Values.ariasystem).functionMode }}
+         apiCrtFile: {{ (.Values.ariasystem).apiCrtFile | quote }}
+         apiKeyFile: {{ (.Values.ariasystem).apiKeyFile | quote }}
+         insecureSsl: {{ (.Values.ariasystem).insecureSsl }}
+         taxGroup: {{ (.Values.ariasystem).taxGroup }}
+         clientTaxGroupId: {{ (.Values.ariasystem).clientTaxGroupId }}
+         storageUsageUnitType: {{ .Values.ariasystem.storageUsageUnitType | quote }}
+         inferenceUsageUnitType: {{ .Values.ariasystem.inferenceUsageUnitType | quote }}
+         tokenUsageUnitType: {{ .Values.ariasystem.tokenUsageUnitType | quote }}
+         server:
+          coreApiUrl: {{ (.Values.ariasystem.server).coreApiUrl | quote }}
+          objectApiUrl: {{ (.Values.ariasystem.server).objectApiUrl | quote }}
+          adminApiUrl: {{ (.Values.ariasystem.server).adminApiUrl | quote }}
+      - aws:
+         sqs:
+          region: {{ (.Values.aws.sqs).region | quote }}
+          queueUrl: {{ (.Values.aws.sqs).queueUrl | quote }}
+          vaultCredentialsPath: {{ (.Values.aws.sqs).vaultCredentialsPath | quote }}
+      - billingDriverAria:
+         features:
+            deactivationScheduler: {{ $.Values.global.billingAria.features.deactivationScheduler }}
+            reportUsageScheduler: {{ $.Values.global.billingAria.features.reportUsageScheduler }}
+            reportProductUsageScheduler: {{ $.Values.global.billingAria.features.reportProductUsageScheduler }}
+            syncStoragePlan: {{ $.Values.global.billingAria.features.syncStoragePlan }}
+            syncTokenPlan: {{ $.Values.global.billingAria.features.syncTokenPlan }}
+            syncInferencePlan: {{ $.Values.global.billingAria.features.syncInferencePlan }}
+         productcatalog:
+            storageUsageUnitType: {{ $.Values.global.billingAria.productcatalog.storageUsageUnitType | quote }}
+            tokenUsageUnitType: {{ $.Values.global.billingAria.productcatalog.tokenUsageUnitType | quote }}
+            inferenceUsageUnitType: {{ $.Values.global.billingAria.productcatalog.inferenceUsageUnitType | quote }}
+      - syncInterval: {{ .Values.syncInterval }}
+      - clientIdPrefix: {{ .Values.clientIdPrefix }}
+      - clientPlanId: {{ .Values.clientPlanId }}
+      - usageInterval: {{ .Values.usageInterval }}
+      - clientAcctGroupId: {{ .Values.clientAcctGroupId }}
+      - acctPlanActiveInterval: {{ .Values.acctPlanActiveInterval }}
+      - authorizationEnabled: {{ .Values.authorizationEnabled }}
+      - enterpriseAcctLinkSchedulerInterval: {{ .Values.enterpriseAcctLinkSchedulerInterval }}
+      - paidServicesDeactivationControllerInterval: {{ .Values.paidServicesDeactivationControllerInterval }}
+      - premiumDefaultCreditAmount: {{ .Values.premiumDefaultCreditAmount }}
+      - premiumDefaultCreditExpirationDays: {{ .Values.premiumDefaultCreditExpirationDays }}
+      - instanceSearchWindow: {{ (.Values.commonConfig).instanceSearchWindow }}
+      - storageInstanceTypes:
+        {{- range $type := $.Values.global.billingAria.storageInstanceTypes }}
+          - {{ $type | quote }}
+        {{- end }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          grpcTlsAuthz: 
+            enabled: {{ $.Values.global.billingAria.tls.grpcTlsAuthz.enabled }}
+            allowedCallers: {{ $.Values.global.billingAria.tls.grpcTlsAuthz.allowedCallers }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  {{- if $.Values.global.billing.enabled }}
+  - name: billing-intel
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: billing
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: billing-intel
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/billing-intel
+    version: {{ readFile (print $helmChartVersionsDir "/billing-intel.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}billing-intel@sha256"
+      - database:
+          arg: {{ $.Values.global.billing.database.arg | quote }}
+          name: {{ $.Values.global.billing.database.name | quote }}
+          service: {{ $.Values.global.billing.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.billing.database.vaultCredentialsPath | quote }}
+      - commonConfig:
+          maxDefaultHistory: {{ (.Values.commonConfig).maxDefaultHistory }}
+          instanceSearchWindow: {{ (.Values.commonConfig).instanceSearchWindow }}
+      - tls:
+          grpcTlsAuthz: 
+            enabled: {{ $.Values.global.billingIntel.tls.grpcTlsAuthz.enabled }}
+            allowedCallers: {{ $.Values.global.billingIntel.tls.grpcTlsAuthz.allowedCallers }}
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+
+  {{- if $.Values.global.notifications.enabled }}
+  - name: notification-gateway
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: notification
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: notification-gateway
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/notification-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/notification-gateway.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.notifications.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}notification-gateway@sha256"
+      - database:
+          arg: {{ $.Values.global.notifications.database.arg | quote }}
+          name: {{ $.Values.global.notifications.database.name | quote }}
+          service: {{ $.Values.global.notifications.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.notifications.database.vaultCredentialsPath | quote }}
+      - aws:
+          region: {{ $.Values.global.notifications.aws.region | quote }}
+          vaultCredentialsPath: {{ $.Values.global.notifications.aws.vaultCredentialsPath | quote }}
+          role_arn: {{ $.Values.global.notifications.aws.role_arn | quote }}
+          accountIdFile: {{ $.Values.global.notifications.aws.accountIdFile | quote }}
+          sns:
+              topicArn: {{ $.Values.global.notifications.aws.sns.topicArn | quote }}
+          sqs:
+              queueArn: {{ $.Values.global.notifications.aws.sqs.queueArn | quote }}
+              queueUrl: {{ $.Values.global.notifications.aws.sqs.queueUrl | quote }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  {{- if $.Values.global.notificationsDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: notification-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: notification
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: notification-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.notifications.database.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/notification_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/notification_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.notificationsDb.primary.persistence.enabled }}
+  {{- end }}
+
+  {{- if $.Values.global.billing.enabled }}
+  {{- if $.Values.global.billingDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: billing-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: billing
+      database: billing
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: billing-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.billing.database.dbname | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/billing_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/billing_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.billingDb.primary.persistence.enabled }}
+  {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

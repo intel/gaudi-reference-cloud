@@ -1,0 +1,5 @@
+apiVersion: v2
+name: compute-resources
+description: IDC Compute Custom Resource Objects (BMaaS/VMaaS)
+type: application
+version: 0.1.0

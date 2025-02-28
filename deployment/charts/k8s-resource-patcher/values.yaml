@@ -1,0 +1,51 @@
+autoscaling:
+  enabled: false
+cognito:
+  enabled: false
+# The address of the fleet admin service in format "host:port".
+fleetAdminServerAddr: us-dev-1-fleet-admin-api-server.idcs-system.svc.cluster.local:8443
+# The default value is false which applies patches to the local k8s cluster. If this is set to true,the remoteKubeConfigFilePath must be 
+# specified set enabling the resource patcher to apply patches to a remote Kubernetes cluster
+applyRemoteKubeConfig: false
+# Path inside vault containing KubeConfig file of the remote Harvester cluster.
+remoteKubeConfigFilePath: /vault/secrets/harvester_kubeconfig
+# Interval of time between attempts to obtain the resource patches that needs to be applied on the k8s cluster.
+patchApplyInterval: 60s
+# Set of label prefixes which are allowed to be updated on the remote k8s cluster.
+allowedLabelPrefixes:
+  - instance-type.cloud.intel.com
+  - pool.cloud.intel.com
+# Path for accessing the secrets inside the vault. Update the path if the secret is stored at some other place.
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1a-k8s-resource-patcher
+image:
+  pullPolicy: IfNotPresent
+  registry: internal-placeholder.com
+  repository: intelcloud/k8s-resource-patcher
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "console"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+podAnnotations:
+replicaCount: 1
+resources:
+  limits:
+    cpu: "500m"
+    memory: "128Mi"
+  requests:
+    cpu: "10m"
+    memory: "64Mi"
+
+# The cluster ID that the Instance Scheduler uses to identify the Harvester or Metal3 Kubernetes cluster
+clusterId: harvester1
+region: us-dev-1
+availabilityZone: us-dev-1a
+useKubeVirtCluster: false

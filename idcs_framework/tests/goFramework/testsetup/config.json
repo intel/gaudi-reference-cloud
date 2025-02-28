@@ -1,0 +1,112 @@
+{
+	"baseUrl": "https://<env>internal-placeholder.com",
+	"oidcUrl": "https://<env>internal-placeholder.com",
+	"regionalUrl": "https://<env>internal-placeholder.com",
+	"proxyIP": "",
+    "clusterDetails":{
+        "hostIP":"10.54.69.26",
+        "userName":"testuserva",
+        "sshKeyFile":"C:\\Users\\testuserva\\.ssh\\windows.key"
+    },
+    "productCatalog":{
+        "applyProducts": true,
+        "pcRepo":"https://github.com/intel-innersource/frameworks.cloud.devcloud.services.product-catalog.git",
+        "pcCloneDir":"/home/testuserva/test",       
+        "tag":"prod"
+    },
+
+	"ariaConfig": {
+		"client_no": "",
+		"auth_key": ""
+
+	},
+	"authConfig": {
+
+	},
+	"enrollUsers": [{
+			"userName": "test@intel.com",
+            "eid":"test-01",
+			"password": "XXXXXX",
+			"accType": "ACCOUNT_TYPE_INTEL"
+		},
+		{
+			"userName": "test1@intel.com",
+            "eid":"test1-01",
+			"password": "XXXXXX",
+			"accType": "ACCOUNT_TYPE_INTEL"
+		},
+        {
+            "userName": "test2@intel.com",
+            "eid":"test2-01",
+			"password": "XXXXXX",
+			"accType": "ACCOUNT_TYPE_INTEL"
+        }
+	],
+	"vmInstance": [{
+			"name": "testuservm180",
+			"instanceType": "vm-spr-tny",
+			"machineImage": "ubuntu-2204-jammy-v20230122",
+			"sshKeyName": "testsshk99",
+			"vnetName": "testvnet8900",
+			"userName": "test1@intel.com"
+		},
+        {
+			"name": "testuservm19",
+			"instanceType": "vm-spr-tny",
+			"machineImage": "ubuntu-2204-jammy-v20230122",
+			"sshKeyName": "testsshk99",
+			"vnetName": "testvnet8900",
+			"userName": "test1@intel.com"
+		}
+
+		
+	],
+	"sshKeys": [{
+			"sshKeyName": "testsshk99",
+			"sshKey": "",
+			"userName": "test1@intel.com"
+		},
+		{
+			"sshKeyName": "testsshke99",
+			"sshKey": "",
+			"userName": "test@intel.com"
+		}
+	],
+	"vnet": [{
+			"payload": {
+				"metadata": {
+					"name": "testvnet8900"   
+				},
+				"spec": {
+					"region": "us-dev-1",
+					"availabilityZone": "us-dev-1a",
+					"prefixLength": 22
+				}
+			},
+			"userName": "test1@intel.com"
+
+		},
+		{
+			"payload": {
+				"metadata": {
+					"name": "testvnet8900"
+				},
+				"spec": {
+					"region": "us-dev-1",
+					"availabilityZone": "us-dev-1a",
+					"prefixLength": 22
+				}
+			},
+			"userName": "test@intel.com"
+
+		}
+	],
+	"coupons": [{
+		"payload":{
+        "amount": "800",
+		"creator": "testuser",		
+		"numUses": "2"
+        },		
+		"userName": ["test1@intel.com", "test@intel.com"]
+	}]
+}

@@ -1,0 +1,12 @@
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NodeGroupToPoolMapping
+metadata:
+  labels:
+    app.kubernetes.io/name: nodegrouptopoolmapping
+    app.kubernetes.io/instance: nodegrouptopoolmapping-sample
+    app.kubernetes.io/part-of: sdn-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: sdn-controller
+  name: nodegrouptopoolmapping-sample
+spec:
+  pool: "XBX"

@@ -1,0 +1,20 @@
+# Copy the sdncontroller binary file inside the container to run it
+# Must build the project before making this image
+
+FROM debian:sid
+
+ARG CONFIG_FILE
+WORKDIR /root/
+COPY ./sdncontroller /root/
+COPY ./examples/configs/${CONFIG_FILE} /root/config.yaml
+COPY ./examples/configs/gateways.json /root/
+RUN chmod +x /root/sdncontroller
+
+COPY --chown=root:root ./secrets/sdn-controller-privkey.pem /root/secrets/sdn-controller-privkey.pem
+RUN chmod 600 /root/secrets/sdn-controller-privkey.pem
+COPY ./secrets/sdn-controller-cert.pem /root/secrets/sdn-controller-cert.pem
+COPY ./secrets/cacert.pem /root/secrets/cacert.pem
+COPY ./secrets/sql-passwd /root/secrets/sql-passwd
+
+
+ENTRYPOINT /root/sdncontroller -ip=${OVN_IP} -db-ip=${DB_IP}

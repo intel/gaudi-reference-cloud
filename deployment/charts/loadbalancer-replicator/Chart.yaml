@@ -1,0 +1,6 @@
+apiVersion: v2
+name: loadbalancer-replicator
+description: IDC LoadBalancer Replicator
+type: application
+version: 0.0.1
+appVersion: "0.0.1"

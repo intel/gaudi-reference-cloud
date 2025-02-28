@@ -1,0 +1,15 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+kubeconfigs:
+  kubeconfigpdx: kubeconfigs/data/pdx05-k02-azcp
+  kubeconfigpdxfile: /vault/secrets/kubeconfigpdx
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/dataloader
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+service:
+  type: ClusterIP

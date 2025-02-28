@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.fargateAnnotations }}
+        {{- toYaml .Values.fargateAnnotations | nindent 8 }}
+        {{- end }}
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-secret-redis-password: "{{ .Values.redis.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-config: |-
+          {{`{{- with secret `}}"{{ .Values.redis.vaultCredentialsPath }}"{{` -}}`}}
+          {{`export REDIS_AUTH="{{ .Data.data.password }}"`}}
+          {{`{{- end }}`}}
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/template-static-secret-render-interval: 2m
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.image.repository }}{{ .Values.image.name }}:{{ .Values.image.tag }}
+        command: ['sh', '-c']
+        ports:
+        - containerPort: 8081
+        args:
+          {{- include "idc-common.logArgs" . | nindent 10 }}
+          - source /vault/secrets/config && /bin/ratelimit
+        env:
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        {{- include "idc-common.commonEnv" . | nindent 8 }}
+        {{- include "idc-common.otelEnv" . | nindent 8 }}
+        - name:  {{ .Values.service.logLevel.name   }}
+          value: {{ .Values.service.logLevel.value | quote }}
+        - name: {{ .Values.service.useStatsd.name  }}
+          value: {{ .Values.service.useStatsd.value  | quote }}
+        - name: {{ .Values.service.runTimeRoot.name   }}
+          value: {{ .Values.service.runTimeRoot.value | quote  }}
+        - name: {{ .Values.service.runTimeSub.name  }}
+          value: {{ .Values.service.runTimeSub.value | quote  }}
+        - name: {{ .Values.service.runTimeWatch.name  }}
+          value: {{ .Values.service.runTimeWatch.value | quote  }}
+        - name: {{ .Values.service.configType.name   }}
+          value: {{ .Values.service.configType.value | quote  }}
+        - name: {{ .Values.service.mergeDomain.name  }}
+          value: {{ .Values.service.mergeDomain.value | quote  }}
+        - name: {{ .Values.service.cacheSize.name  }}
+          value: {{ .Values.service.cacheSize.value | quote  }} # 25 MB local cache
+        - name: {{ .Values.service.usePrometheus.name  }}
+          value: {{ .Values.service.usePrometheus.value | quote  }}
+        - name: {{ .Values.service.redisType.name  }}
+          value: {{ .Values.service.redisType.value  | quote }}
+        - name: {{ .Values.service.redisURL.name  }}
+          value: {{ .Values.service.redisURL.value  | quote }}
+        - name: {{ .Values.service.protocol.name   }}
+          value: {{ .Values.service.protocol.value  | quote }}
+        - name: {{ .Values.service.redisPipelineWindow.name  }}
+          value: {{ .Values.service.redisPipelineWindow.value | quote  }}
+        - name: {{ .Values.service.redisPipelineLimit.name  }}
+          value: {{ .Values.service.redisPipelineLimit.value | quote  }}
+        - name: {{ .Values.service.redisHealthCheck.name  }}
+          value: {{ .Values.service.redisHealthCheck.value | quote  }}
+        - name: REDIS_TLS
+          value: "true"
+        - name: REDIS_TLS_CLIENT_CERT
+          value: /vault/secrets/cert.pem
+        - name: REDIS_TLS_CLIENT_KEY
+          value: /vault/secrets/cert.key
+        - name: REDIS_TLS_CACERT
+          value: /vault/secrets/cert.pem
+        - name: REDIS_TLS_SKIP_HOSTNAME_VERIFICATION
+          value: "true"
+        - name: GRPC_SERVER_USE_TLS
+          value: "true"
+        - name: GRPC_SERVER_TLS_KEY
+          value: /vault/secrets/cert.key
+        - name: GRPC_SERVER_TLS_CERT
+          value: /vault/secrets/cert.pem
+        - name: GRPC_CLIENT_TLS_CACERT
+          value: /vault/secrets/cert.pem
+        {{- if .Values.healthcheck.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.healthcheck.readinessProbe.httpGet.path }}
+            port: {{ .Values.healthcheck.readinessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.healthcheck.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthcheck.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthcheck.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.healthcheck.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.healthcheck.readinessProbe.failureThreshold }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.healthcheck.livenessProbe.httpGet.path }}
+            port: {{ .Values.healthcheck.livenessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.healthcheck.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthcheck.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthcheck.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.healthcheck.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.healthcheck.livenessProbe.failureThreshold }}
+        {{- end }}
+        volumeMounts:
+        - name: {{ .Values.service.volumeMounts.name }}
+          mountPath: {{ .Values.service.volumeMounts.value | quote  }}
+        securityContext:
+          readOnlyRootFilesystem: {{ .Values.service.securityContext.readOnlyRootFilesystem }}
+          runAsNonRoot: {{ .Values.service.securityContext.runAsNonRoot }}
+          runAsUser: {{ .Values.service.securityContext.runAsUser }}
+          runAsGroup: {{ .Values.service.securityContext.runAsGroup }}
+      volumes:
+      - configMap:
+          name: {{ include "idc-common.fullname" . }}
+        name: config-volume

@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cloudmonitor_logs",
+    srcs = [
+        "cloudmonitor_logs.go",
+        "cloudmonitor_logs_helper.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudmonitor_logs/api_server/cloudmonitor_logs",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/cloudmonitor_logs/api_server/config",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+    ],
+)

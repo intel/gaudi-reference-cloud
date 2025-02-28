@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "grpc-rest-gateway_lib",
+    srcs = [
+        "grpc-rest-gateway.go",
+        "register.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/grpc-rest-gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/grpc_rest_gateway",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/tlsutil",
+        "@com_github_flowchartsman_swaggerui//:swaggerui",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//keepalive",
+        "@org_golang_google_grpc//metadata",
+        "@org_golang_google_protobuf//encoding/protojson",
+    ],
+)
+
+go_binary(
+    name = "grpc-rest-gateway",
+    embed = [":grpc-rest-gateway_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "grpc-rest-gateway_image",
+    embed = [":grpc-rest-gateway_lib"],
+    visibility = ["//visibility:public"],
+)

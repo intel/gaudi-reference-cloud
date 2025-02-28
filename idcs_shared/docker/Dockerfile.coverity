@@ -1,0 +1,55 @@
+FROM internal-placeholder.com/cache/library/ubuntu:22.04 as base
+ENV http_proxy="http://internal-placeholder.com:912" \
+    https_proxy="http://internal-placeholder.com:912" \
+    no_proxy="127.0.0.1,localhost,intel.com"
+WORKDIR /tmp
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       ca-certificates curl fontconfig g++ git make tar unzip zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -L https://go.dev/dl/go1.23.2.linux-amd64.tar.gz | tar -C /usr/local -xz \
+    && /usr/local/go/bin/go install github.com/bazelbuild/bazelisk@latest \
+    && mv /root/go/bin/bazelisk /usr/local/bin/bazel
+# Install intel certificates
+RUN curl -LO --insecure -s https://internal-placeholder.com/artifactory/it-btrm-local/intel_cacerts/install_intel_cacerts_linux.sh \
+    && chmod +x install_intel_cacerts_linux.sh \
+    && bash ./install_intel_cacerts_linux.sh \
+    && rm ./install_intel_cacerts_linux.sh intel_*.crt
+# Setup Jenkins user
+ARG jenkins_user=jenkins
+RUN adduser --home /home/$jenkins_user --shell /bin/bash --uid 1000 --disabled-password $jenkins_user
+USER $jenkins_user
+ENV PATH="/usr/local/go/bin:${PATH}:/coverity/bin:/coverity/reports/bin"
+
+
+FROM internal-placeholder.com/cache/library/ubuntu:22.04 as builder
+ENV http_proxy="http://internal-placeholder.com:912" \
+    https_proxy="http://internal-placeholder.com:912" \
+    no_proxy="127.0.0.1,localhost,intel.com"
+WORKDIR /tmp
+COPY coverity_files.txt ./
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      curl tar ca-certificates \
+    && curl -LO --insecure -s https://internal-placeholder.com/artifactory/it-btrm-local/intel_cacerts/install_intel_cacerts_linux.sh \
+    && chmod +x install_intel_cacerts_linux.sh \
+    && bash ./install_intel_cacerts_linux.sh \
+    && rm ./install_intel_cacerts_linux.sh \
+    && xargs -a ./coverity_files.txt -L 1 curl -LO -s \
+    && chmod +x ./cov-analysis-linux64-2023.12.0.sh cov-reports-linux64-2023.12.0.sh \
+    && ./cov-analysis-linux64-2023.12.0.sh -q \
+    --installation.dir=/coverity/ \
+    --license.agreement=agree \
+    --license.region=0 --license.type.choice=0 \
+    --license.cov.path=/tmp/license.dat --component.sdk=false \
+    --component.skip.documentation=true \
+    && ./cov-reports-linux64-2023.12.0.sh -q \
+    --installation.dir=/coverity/reports \
+    && rm -r ./*
+
+
+FROM base as final
+COPY --chown=$jenkins_user:$jenkins_user --from=builder /coverity /coverity

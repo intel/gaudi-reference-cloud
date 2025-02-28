@@ -1,0 +1,293 @@
+{
+    "count": 16,
+    "next": "https://netbox.mock.intel.com/api/dcim/devices/?limit=2&offset=2&role=leaf-switch&site=pdx05",
+    "previous": null,
+    "results": [
+        {
+            "id": 13280,
+            "url": "https://netbox.mock.intel.com/api/dcim/devices/13280/",
+            "display": "fxhb3p3r-zal0118a",
+            "name": "fxhb3p3r-zal0118a",
+            "device_type": {
+                "id": 53,
+                "url": "https://netbox.mock.intel.com/api/dcim/device-types/53/",
+                "display": "DCS800",
+                "manufacturer": {
+                    "id": 11,
+                    "url": "https://netbox.mock.intel.com/api/dcim/manufacturers/11/",
+                    "display": "Edge-core",
+                    "name": "Edge-core",
+                    "slug": "edge-core"
+                },
+                "model": "DCS800",
+                "slug": "dcs800"
+            },
+            "role": {
+                "id": 90,
+                "url": "https://netbox.mock.intel.com/api/dcim/device-roles/90/",
+                "display": "Access Leaf Switch",
+                "name": "Access Leaf Switch",
+                "slug": "leaf-switch"
+            },
+            "device_role": {
+                "id": 90,
+                "url": "https://netbox.mock.intel.com/api/dcim/device-roles/90/",
+                "display": "Access Leaf Switch",
+                "name": "Access Leaf Switch",
+                "slug": "leaf-switch"
+            },
+            "tenant": {
+                "id": 1,
+                "url": "https://netbox.mock.intel.com/api/tenancy/tenants/1/",
+                "display": "Intel Developer Cloud",
+                "name": "Intel Developer Cloud",
+                "slug": "idc"
+            },
+            "platform": null,
+            "serial": "951632D2219001",
+            "asset_tag": null,
+            "site": {
+                "id": 45,
+                "url": "https://netbox.mock.intel.com/api/dcim/sites/45/",
+                "display": "S-PDX05",
+                "name": "S-PDX05",
+                "slug": "pdx05"
+            },
+            "location": {
+                "id": 32,
+                "url": "https://netbox.mock.intel.com/api/dcim/locations/32/",
+                "display": "IDC Staging 1.0 V2",
+                "name": "IDC Staging 1.0 V2",
+                "slug": "pdx05",
+                "_depth": 0
+            },
+            "rack": {
+                "id": 1624,
+                "url": "https://netbox.mock.intel.com/api/dcim/racks/1624/",
+                "display": "FH31C3-01A18 (1.18)",
+                "name": "FH31C3-01A18"
+            },
+            "position": 26.0,
+            "face": {
+                "value": "front",
+                "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+                "value": "active",
+                "label": "Active"
+            },
+            "airflow": {
+                "value": "front-to-rear",
+                "label": "Front to rear"
+            },
+            "primary_ip": null,
+            "primary_ip4": null,
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "",
+            "config_template": null,
+            "config_context": {
+                "ddi": "https://internal-placeholder.com",
+                "dns": "10.45.119.42",
+                "ntp": [
+                    "10.45.115.33",
+                    "10.45.115.34"
+                ],
+                "iapm": 41629,
+                "vault": "https://internal-placeholder.com",
+                "ironic": "internal-placeholder.com",
+                "netbox": "https://internal-placeholder.com",
+                "region": "us-staging-1",
+                "search": [
+                    "internal-placeholder.com",
+                    "us-staging-1.cloud.intel.com",
+                    "us-staging-2.cloud.intel.com",
+                    "us-testing1-1.cloud.intel.com"
+                ],
+                "bastion": "internal-placeholder.com",
+                "environment": "staging",
+                "address_space": "<Default>",
+                "availability_zone": "us-staging-1a",
+                "onboarding_settings": {
+                    "awx_instance": "awx-preprod",
+                    "awx_inventory_id": 52,
+                    "awx_job_template_id": 98
+                }
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+                "bkc_rev": null,
+                "bmc_pw": null,
+                "Enclave": null,
+                "gw_ip": null,
+                "idc_id": null,
+                "ccsgid": null,
+                "one_cloud_id": null
+            },
+            "created": "2023-09-25T21:47:25.563290Z",
+            "last_updated": "2024-01-24T02:08:37.384137Z",
+            "console_port_count": 0,
+            "console_server_port_count": 0,
+            "power_port_count": 2,
+            "power_outlet_count": 0,
+            "interface_count": 48,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 0,
+            "inventory_item_count": 0
+        },
+        {
+            "id": 13285,
+            "url": "https://netbox.mock.intel.com/api/dcim/devices/13285/",
+            "display": "FXHB3P3R-ZAL0119A",
+            "name": "FXHB3P3R-ZAL0119A",
+            "device_type": {
+                "id": 53,
+                "url": "https://netbox.mock.intel.com/api/dcim/device-types/53/",
+                "display": "DCS800",
+                "manufacturer": {
+                    "id": 11,
+                    "url": "https://netbox.mock.intel.com/api/dcim/manufacturers/11/",
+                    "display": "Edge-core",
+                    "name": "Edge-core",
+                    "slug": "edge-core"
+                },
+                "model": "DCS800",
+                "slug": "dcs800"
+            },
+            "role": {
+                "id": 90,
+                "url": "https://netbox.mock.intel.com/api/dcim/device-roles/90/",
+                "display": "Access Leaf Switch",
+                "name": "Access Leaf Switch",
+                "slug": "leaf-switch"
+            },
+            "device_role": {
+                "id": 90,
+                "url": "https://netbox.mock.intel.com/api/dcim/device-roles/90/",
+                "display": "Access Leaf Switch",
+                "name": "Access Leaf Switch",
+                "slug": "leaf-switch"
+            },
+            "tenant": {
+                "id": 1,
+                "url": "https://netbox.mock.intel.com/api/tenancy/tenants/1/",
+                "display": "Intel Developer Cloud",
+                "name": "Intel Developer Cloud",
+                "slug": "idc"
+            },
+            "platform": null,
+            "serial": "951632D2219030",
+            "asset_tag": null,
+            "site": {
+                "id": 45,
+                "url": "https://netbox.mock.intel.com/api/dcim/sites/45/",
+                "display": "S-PDX05",
+                "name": "S-PDX05",
+                "slug": "pdx05"
+            },
+            "location": {
+                "id": 32,
+                "url": "https://netbox.mock.intel.com/api/dcim/locations/32/",
+                "display": "IDC Staging 1.0 V2",
+                "name": "IDC Staging 1.0 V2",
+                "slug": "pdx05",
+                "_depth": 0
+            },
+            "rack": {
+                "id": 1625,
+                "url": "https://netbox.mock.intel.com/api/dcim/racks/1625/",
+                "display": "FH31C3-01A19 (1.19)",
+                "name": "FH31C3-01A19"
+            },
+            "position": 26.0,
+            "face": {
+                "value": "front",
+                "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+                "value": "active",
+                "label": "Active"
+            },
+            "airflow": {
+                "value": "front-to-rear",
+                "label": "Front to rear"
+            },
+            "primary_ip": null,
+            "primary_ip4": null,
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "",
+            "config_template": null,
+            "config_context": {
+                "ddi": "https://internal-placeholder.com",
+                "dns": "10.45.119.42",
+                "ntp": [
+                    "10.45.115.33",
+                    "10.45.115.34"
+                ],
+                "iapm": 41629,
+                "vault": "https://internal-placeholder.com",
+                "ironic": "internal-placeholder.com",
+                "netbox": "https://internal-placeholder.com",
+                "region": "us-staging-1",
+                "search": [
+                    "internal-placeholder.com",
+                    "us-staging-1.cloud.intel.com",
+                    "us-staging-2.cloud.intel.com",
+                    "us-testing1-1.cloud.intel.com"
+                ],
+                "bastion": "internal-placeholder.com",
+                "environment": "staging",
+                "address_space": "<Default>",
+                "availability_zone": "us-staging-1a",
+                "onboarding_settings": {
+                    "awx_instance": "awx-preprod",
+                    "awx_inventory_id": 52,
+                    "awx_job_template_id": 98
+                }
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+                "bkc_rev": null,
+                "bmc_pw": null,
+                "Enclave": null,
+                "gw_ip": null,
+                "idc_id": null,
+                "ccsgid": null,
+                "one_cloud_id": null
+            },
+            "created": "2023-09-25T21:49:22.928923Z",
+            "last_updated": "2024-01-24T02:08:38.731609Z",
+            "console_port_count": 0,
+            "console_server_port_count": 0,
+            "power_port_count": 2,
+            "power_outlet_count": 0,
+            "interface_count": 48,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 0,
+            "inventory_item_count": 0
+        }
+    ]
+}

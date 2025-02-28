@@ -1,0 +1,222 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: networknodes.idcnetwork.intel.com
+spec:
+  group: idcnetwork.intel.com
+  names:
+    kind: NetworkNode
+    listKind: NetworkNodeList
+    plural: networknodes
+    shortNames:
+    - nn
+    singular: networknode
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.frontEndFabric.mode
+      name: FEMode
+      type: string
+    - jsonPath: .spec.frontEndFabric.vlanId
+      name: FEVLAN
+      type: string
+    - jsonPath: .spec.frontEndFabric.trunkGroups
+      name: FETG
+      type: string
+    - jsonPath: .status.frontEndFabricStatus.readiness
+      name: FEReadiness
+      type: string
+    - jsonPath: .spec.acceleratorFabric.vlanId
+      name: AccelVLAN
+      type: string
+    - jsonPath: .status.acceleratorFabricStatus.readiness
+      name: AccelReadiness
+      type: string
+    - jsonPath: .spec.storageFabric.vlanId
+      name: STRVLAN
+      type: string
+    - jsonPath: .status.storageFabricStatus.readiness
+      name: STRReadiness
+      type: string
+    - jsonPath: .metadata.labels.groupId
+      name: group
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: NetworkNode is the Schema for the networknodes API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: NetworkNodeSpec defines the desired state of NetworkNode
+            properties:
+              acceleratorFabric:
+                description: AcceleratorFabric
+                properties:
+                  mode:
+                    type: string
+                  nativeVlan:
+                    default: -1
+                    format: int64
+                    type: integer
+                  switchPorts:
+                    description: SwitchPortName is a list of SwitchPort CR names,
+                      ie, []{"ethernet27-1.internal-placeholder.com"}
+                    items:
+                      type: string
+                    type: array
+                  trunkGroups:
+                    items:
+                      type: string
+                    type: array
+                  vlanId:
+                    default: -1
+                    format: int64
+                    type: integer
+                type: object
+              frontEndFabric:
+                description: FrontEndFabric
+                properties:
+                  mode:
+                    description: 'note: when Mode is "", controller will not push
+                      the change to the downstream SwitchPort CR'
+                    type: string
+                  nativeVlan:
+                    default: -1
+                    description: 'note: when NativeVlan is -1, controller will not
+                      push the change to the downstream SwitchPort CR'
+                    format: int64
+                    type: integer
+                  switchPort:
+                    description: SwitchPort is the name of a SwitchPort CR, ie, "ethernet27-1.internal-placeholder.com"
+                    type: string
+                  trunkGroups:
+                    description: |-
+                      note: when TrunkGroups is nil, controller will not push the change to the downstream SwitchPort CR
+                      when TrunkGroups is NOT nil and TrunkGroups is empty, remove trunk groups for this switch port, if any.
+                    items:
+                      type: string
+                    type: array
+                  vlanId:
+                    default: -1
+                    format: int64
+                    type: integer
+                type: object
+              storageFabric:
+                description: StorageFabric
+                properties:
+                  mode:
+                    type: string
+                  nativeVlan:
+                    default: -1
+                    format: int64
+                    type: integer
+                  switchPorts:
+                    items:
+                      type: string
+                    type: array
+                  trunkGroups:
+                    items:
+                      type: string
+                    type: array
+                  vlanId:
+                    default: -1
+                    format: int64
+                    type: integer
+                type: object
+            type: object
+          status:
+            description: NetworkNodeStatus defines the observed state of NetworkNode
+            properties:
+              acceleratorFabricStatus:
+                properties:
+                  readiness:
+                    type: string
+                  switchPorts:
+                    items:
+                      properties:
+                        lastObservedMode:
+                          type: string
+                        lastObservedNativeVlan:
+                          format: int64
+                          type: integer
+                        lastObservedTrunkGroups:
+                          items:
+                            type: string
+                          type: array
+                        lastObservedVlanId:
+                          format: int64
+                          type: integer
+                        switchPort:
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              frontEndFabricStatus:
+                properties:
+                  lastObservedMode:
+                    type: string
+                  lastObservedNativeVlan:
+                    format: int64
+                    type: integer
+                  lastObservedTrunkGroups:
+                    items:
+                      type: string
+                    type: array
+                  lastObservedVlanId:
+                    format: int64
+                    type: integer
+                  readiness:
+                    type: string
+                  switchPort:
+                    type: string
+                type: object
+              storageFabricStatus:
+                properties:
+                  readiness:
+                    type: string
+                  switchPorts:
+                    items:
+                      properties:
+                        lastObservedMode:
+                          type: string
+                        lastObservedNativeVlan:
+                          format: int64
+                          type: integer
+                        lastObservedTrunkGroups:
+                          items:
+                            type: string
+                          type: array
+                        lastObservedVlanId:
+                          format: int64
+                          type: integer
+                        switchPort:
+                          type: string
+                      type: object
+                    type: array
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

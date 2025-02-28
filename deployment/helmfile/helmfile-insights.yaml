@@ -1,0 +1,200 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- $securityInsightsServiceAddr := print ($region | get "grpcProxy.internal.ingress.host" $.Values.defaults.region.grpcProxy.internal.ingress.host) ":443" }}
+
+{{- $insightsEnabled := $region.insights.enabled }}
+
+
+{{- if $insightsEnabled }}
+
+  {{- if ($region.insightsDb.enabled) }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-insights-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: insights
+      service: insights
+      database: insights
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: insights-db
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-insights_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-insights_db_user_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region | get "insights.primary.persistence.enabled" $.Values.components.insightsDb.primary.persistence.enabled }}
+  {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-security-insights") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: insights
+      service: insights
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: security-insights
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/security-insights
+    version: {{ readFile (print $helmChartVersionsDir "/security-insights.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}security-insights@sha256"
+      - vNetService:
+          subnetConsumerIdPattern: {{ $region | get "vNetService.subnetConsumerIdPattern" "" | quote }}
+      - nodePort: {{ $region | get "computeApiServer.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "computeApiServer.service.type" $.Values.defaults.region.computeApiServer.service.type | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.iks.otel.exporter.otlp.endpoint | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}
+      - database:
+          service: {{ $region | get "insights.database.service" (print $region.region "-insights-db-postgresql") | quote }}
+          arg: {{ $region | get "insights.database.arg" $.Values.defaults.region.insights.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-security-insights/database"
+      - resources:
+          {{- if not $.Values.zeroResources }}
+          requests:
+            memory: {{ $region.iks.resources.requests.memory | quote }}
+            cpu: {{ $region.iks.resources.requests.cpu | quote }}
+          limits:
+            memory: {{ $region.iks.resources.limits.memory | quote }}
+            cpu: {{ $region.iks.resources.limits.cpu | quote }}
+          {{- end }}
+      - domainSuffix: {{ $region | get "computeApiServer.domainSuffix" $.Values.defaults.region.computeApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-kubescore") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: insights
+      service: insights
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: kubescore
+    chart: idc/kubescore
+    version: {{ readFile (print $helmChartVersionsDir "/kubescore.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}kubescore@sha256"
+      - region: {{ $region.region | quote }}
+      - securityInsightsServiceAddr: {{ $securityInsightsServiceAddr | quote }}
+      - github: # used by kubescore service for github access
+          githubVaultPath: "controlplane/data/{{ $region.region }}-kubescore/github_key"
+      - domainSuffix: {{ $region | get "computeApiServer.domainSuffix" $.Values.defaults.region.computeApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-security-scanner") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: insights
+      service: insights
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: security-scanner
+    chart: idc/security-scanner
+    version: {{ readFile (print $helmChartVersionsDir "/security-scanner.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}security-scanner@sha256"
+          debug: true
+      - region: {{ $region.region | quote }}
+      - securityInsightsServiceAddr: {{ $securityInsightsServiceAddr | quote }}
+      - github: # used by -security-scanner service for github access
+          githubVaultPath: "controlplane/data/{{ $region.region }}-security-scanner/github_key"
+      - domainSuffix: {{ $region | get "computeApiServer.domainSuffix" $.Values.defaults.region.computeApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+{{- end }}  
+{{- end }}
+

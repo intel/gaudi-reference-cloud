@@ -1,0 +1,39 @@
+metadata:
+  name: "iks-a100-u24-cd-wk-1-30-3-v20250129"
+spec:
+  displayName: IKS Ubuntu 24.04 Worker for BM v1.30.3 released on 2025-01-29
+  description: IKS Ubuntu 24.04 Worker for BM v1.30.3 released on 2025-01-29
+  hidden: true
+  instanceCategories:
+    - BareMetalHost
+  instanceTypes:
+    - bm-spr-a100-4
+  md5sum: "605a974da8e1864e45beb6430c77ca64"
+  sha256sum: "625a52709bef9dc2f405ce8a0529da7f61129e2f2fa6d2f1753813b81513be8b"
+  sha512sum: "a6ea49af04954c3b739368a92c1391e21c740a47993af14793f04ed97e8a7124ef67862a04268d95ff363e556b10c15490a5c9042d2efc7953c6289ba4bcea5e"
+  virtualSizeBytes: 64424509440
+  labels:
+    family: ubuntu-2404-lts
+    architecture: X86_64 (Baremetal only)
+    kernelVersion: 6.8 (GA - default)
+    iks: "true"
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+    - IKS
+  components:
+    - name: Ubuntu 24.04 LTS
+      type: OS
+      version: "24.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/ubuntu-24-04-lts-noble-numbat-release-notes/39890?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/2024-05/newsroom-v2-intel-xeon-6.jpg.rendition.intel.web.368.207.jpg
+    - name: IKS Core Components
+      type: Software kit
+      version: "1.30.3"
+      description: core set of tools for Kubernetes.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20sthttps://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: sdp

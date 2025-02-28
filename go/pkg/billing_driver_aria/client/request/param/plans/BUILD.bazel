@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "plans",
+    srcs = [
+        "plan_instance_field.go",
+        "plan_update_service.go",
+        "schedule.go",
+        "service.go",
+        "supplemental_object_field.go",
+        "tier.go",
+        "tier_schedule.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_aria/client/request/param/plans",
+    visibility = ["//visibility:public"],
+)

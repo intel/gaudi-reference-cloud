@@ -1,0 +1,45 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-2204-gaudi2-1.17.0-vm-v1
+spec:
+  displayName: ubuntu-2204-gaudi2-1.17.0-vm-v1
+  description: ubuntu-2204-gaudi2-1.17.0-vm-v1
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes:
+    - vm-icp-gaudi2-1
+    - vm-icp-gaudi2-8
+    - vm-icp-gaudi2-slurm-1
+  md5sum: "67aaa35b5867e83c673b67c87b8f6d3e"
+  sha256sum: "e20d03a552e8f69692e46b2ddbfa7a5fd944529794cef5e76cf79915d15e94dc"
+  sha512sum: "cb444c5445263356ed9d4cd562926c62ca3abaf05aa2269ba06e6c86ea90fe500374b835330cce7d4f06f8d5531c9616ff55ba76c8017d8ff93ec7b2482ab03b"
+  virtualSizeBytes: 34359738368
+  labels:
+    family: ubuntu-2204-server-cloudimg
+    architecture: X86_64 (VM only)
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+  components:
+    - name: Ubuntu 22.04 Server Cloudimg
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://releases.ubuntu.com/jammy
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: Intel Gaudi SW
+      type: Software kit
+      version: "1.17.0"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/v1.17.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+    - name: Intel Gaudi SW
+      type: Firmware kit
+      version: "1.18.0-524"
+      description: This version is backward compatible with 1.16.x and 1.17.x gaudi firmware.
+      infoUrl: https://docs.habana.ai/en/v1.18.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  userName: ubuntu

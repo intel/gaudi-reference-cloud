@@ -1,0 +1,41 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+//
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://protobuf.dev/programming-guides/proto3/
+syntax = "proto3";
+package proto;
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "annotations.proto";
+option (idc.file).deploy = regional;
+option (idc.file).service = "storage-kms";
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+// Private Storage KMS Service.
+service StorageKMSPrivateService {
+  // Store the secrets
+  rpc Put(StoreSecretRequest) returns (google.protobuf.Empty) {};
+  // Get the secrets
+  rpc Get(GetSecretRequest) returns (GetSecretResponse) {};
+  // PingPrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+    rpc Delete(DeleteSecretRequest) returns (google.protobuf.Empty) {};
+
+}
+message StoreSecretRequest {
+  string keyPath =1;
+  map<string, string> secrets = 2; 
+}
+message GetSecretRequest {
+  string keyPath =1;
+}
+message DeleteSecretRequest {
+  string keyPath =1;
+}
+message GetSecretResponse {
+  map<string, string> secrets = 2; 
+}

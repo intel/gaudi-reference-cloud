@@ -1,0 +1,62 @@
+apiVersion: v1
+items:
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    creationTimestamp: "2025-02-06T15:00:04Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 1
+    name: pdx04-c01-bmas141
+    namespace: metal3-3
+    resourceVersion: "190379486"
+    uid: 7e0379e5-825b-45a2-bbeb-b0efb219be95
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: ipmi://100.64.167.78
+      credentialsName: pdx04-c01-bmas141-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 10:70:fd:26:48:22
+    bootMode: UEFI
+    image:
+      checksum: http://100.64.34.43:6180/images/cirros-disk.img.md5sum
+      url: http://100.64.34.43:6180/images/cirros-disk.img
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: pdx04-c01-bmas141-bmc-secret
+        namespace: metal3-3
+      credentialsVersion: "190379265"
+    hardwareProfile: unknown
+    lastUpdated: "2025-02-06T15:00:19Z"
+    operationHistory:
+      deprovision:
+        end: null
+        start: null
+      inspect:
+        end: null
+        start: "2025-02-06T15:00:19Z"
+      provision:
+        end: null
+        start: null
+      register:
+        end: "2025-02-06T15:00:19Z"
+        start: "2025-02-06T15:00:04Z"
+    operationalStatus: OK
+    poweredOn: false
+    provisioning:
+      ID: 31162f6e-6b0f-4a85-8096-a754459c63ac
+      bootMode: UEFI
+      image:
+        url: ""
+      state: inspecting
+    triedCredentials:
+      credentials:
+        name: pdx04-c01-bmas141-bmc-secret
+        namespace: metal3-3
+      credentialsVersion: "190379265"

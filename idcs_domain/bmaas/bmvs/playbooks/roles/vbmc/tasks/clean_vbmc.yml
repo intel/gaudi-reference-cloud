@@ -1,0 +1,20 @@
+---
+# Clean up a vBMC for a Guest Host
+
+- name: Include common variables
+  include_vars:
+    file: sushy_files.yml
+
+- name: Block for cleaning up a vBMC
+  block:
+    - name: Remove the config file
+      become: true
+      ansible.builtin.file:
+        path: "{{ sushy_conf_file }}"
+        state: absent
+    - name: Remove the log file
+      become: true
+      ansible.builtin.file:
+        path: "{{ sushy_log_file }}"
+        state: absent
+  tags: [never, clean]

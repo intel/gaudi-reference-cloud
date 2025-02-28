@@ -1,0 +1,58 @@
+@use "sass:map";
+
+.dropdown-toggle.btn-simple {
+    color: var(--dropdown-simple-color);
+}
+
+.dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: map.get($spacers, "s4");
+    background: var(--dropdown-item-background);
+    color: var(--dropdown-item-color);
+    @extend .py-s3;
+    @extend .px-s6;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background: var(--dropdown-item-hover-background);
+    color: var(--dropdown-item-hover-color);
+}
+
+.dropdown-menu .dropdown-item:active,
+.dropdown-menu .dropdown-item.active {
+    background: var(--dropdown-item-active-background);
+    color: var(--dropdown-item-active-color);
+}
+
+.dropdown:has(.btn-simple) .dropdown-menu .dropdown-item:hover,
+.dropdown:has(.btn-icon-simple) .dropdown-menu .dropdown-item:hover {
+    background: var(--dropdown-item-simple-hover-background);
+    color: var(--dropdown-item-simple-hover-color);
+}
+
+.dropdown:has(.btn-simple) .dropdown-menu .dropdown-item:active,
+.dropdown:has(.btn-simple) .dropdown-menu .dropdown-item.active,
+.dropdown:has(.btn-icon-simple) .dropdown-menu .dropdown-item:active,
+.dropdown:has(.btn-icon-simple) .dropdown-menu .dropdown-item.active {
+    background: var(--dropdown-item-simple-active-background);
+    color: var(--dropdown-item-simple-active-color);
+}
+
+.dropdown-menu .dropdown-item:disabled {
+    color: var(--dropdown-item-disabled-color);
+}
+
+.dropdown-menu:not(.show) * {
+    display: none;
+}
+
+.siteContainer:not(.sideNavBarMargingStart):not(.learningBarMargingEnd) .dropdown-menu.show[x-placement="top-start"] {
+    z-index: 1029;    
+}
+
+@media (min-width: 576px) {
+    .dropdown-menu.show[x-placement="top-start"] {
+        z-index: 1029;
+    }
+}

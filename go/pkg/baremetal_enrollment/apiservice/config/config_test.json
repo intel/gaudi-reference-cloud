@@ -1,0 +1,22 @@
+{
+    "jobplaybookimage": "baremetal-enrollment:latest",
+    "jobbackofflimit": 2,
+    "provisioningDuration": 3600,
+    "deprovisioningDuration": 3600,
+    "jobCleanupDelay": 30,
+    "vaultAddress": "http://vault.vault.svc.cluster.local:8200",
+    "vaultAuthPath": "auth/cluster-auth",
+    "vaultApproleSecretsPath": "controlplane/data/us-dev-1/baremetal/enrollment/approle",
+    "vaultAuthRole": "us-dev-1-enrollment-role",
+    "netboxaddress": "netbox.idcs-enrollment.svc.cluster.local",
+    "dhcpProxy": {
+        "enabled": true,
+        "url": "http://172.18.0.2:50100"
+    },
+    "menAndMice": {
+    "enabled": false,
+    "url": "https://1.2.3.5/",
+    "tftpServerIp": "1.1.1.1"
+    },
+    "enrollmentRegion": "us-dev-1"
+}

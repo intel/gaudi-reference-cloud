@@ -1,0 +1,31 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "notification-gateway_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/notification-gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/notification_gateway",
+        "//go/pkg/notification_gateway/config",
+        "//go/pkg/observability",
+    ],
+)
+
+go_binary(
+    name = "notification-gateway",
+    embed = [":notification-gateway_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "notification-gateway_image",
+    embed = [":notification-gateway_lib"],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,51 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("//build/helpers:go_proto_library.bzl", "write_go_generated_source_files")
+
+# gazelle:exclude filesystem.pb.go
+# gazelle:exclude statefulclient.pb.go
+# gazelle:proto disable
+
+proto_library(
+    name = "filesystem",
+    srcs = ["filesystem.proto"],
+    deps = [
+        "//go/pkg/storage/storagecontroller/api:common",
+        "//go/pkg/storage/storagecontroller/api:namespace",
+    ],
+)
+
+proto_library(
+    name = "statefulclient",
+    srcs = ["statefulclient.proto"],
+    deps = [
+        "//go/pkg/storage/storagecontroller/api:cluster",
+    ],
+)
+
+go_proto_library(
+    name = "go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api/weka",
+    protos = [
+        ":filesystem",
+        ":statefulclient",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/storage/storagecontroller/api:go_proto",
+    ],
+)
+
+# Generates files for IDE support, and put them into api folder
+write_go_generated_source_files(
+    name = "write_gen",
+    output_files = [
+        "filesystem.pb.go",
+        "statefulclient.pb.go",
+    ],
+    target = ":go_proto",
+    visibility = ["//visibility:public"],
+)

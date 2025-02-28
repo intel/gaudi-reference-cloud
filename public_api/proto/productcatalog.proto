@@ -1,0 +1,893 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "cloudaccount.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/struct.proto";
+import "validate/validate.proto";
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+service ProductVendorService {
+  rpc Read(VendorFilter) returns (VendorResponse) {
+    option (google.api.http) = {
+      get: "/v1/vendors"
+    };
+    option (idc.method).authz.user = true;
+  };
+}
+
+message VendorFilter {
+  optional string name = 1;
+  optional string id = 2;
+}
+
+message Vendor {
+  string name = 1;
+  string id = 2;
+  google.protobuf.Timestamp created = 3;
+  string description = 4;
+  repeated ProductFamily families = 5;
+}
+
+message ProductFamily {
+  string name = 1;
+  string id = 2;
+  google.protobuf.Timestamp created = 3;
+  string description = 4;
+}
+
+service ProductCatalogService {
+  // admin read call
+  rpc AdminRead(ProductFilter) returns (ProductResponse) {
+    option (google.api.http) = {
+      post: "/v1/products/admin"
+      body: "*"
+    };
+  };
+
+  // user read call
+  rpc UserRead(ProductUserFilter) returns (ProductResponse) {
+    option (google.api.http) = {
+      post: "/v1/products"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  // external user read call 
+  rpc UserReadExternal(ProductUserFilter) returns (ProductResponse) {
+    option (google.api.http) = {
+      post: "/v1/api/products"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc SetStatus(SetProductStatusRequest) returns (google.protobuf.Empty) {} 
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message ProductUserFilter {
+  string cloudaccountId = 1[
+    (idc.field).cloudAccount = true
+  ];
+  ProductFilter productFilter = 2;
+}
+
+message ProductFilter {
+  optional string name = 1;
+  optional string id = 2;
+  optional string vendorId = 3;
+  optional string familyId = 4;
+  map<string, string> metadata = 5;
+  optional string eccn = 6;
+  optional string pcq = 7;
+  optional string matchExpr = 8;
+  optional AccountType accountType = 9;
+  optional string region = 10;
+};
+
+message Product {
+  string name = 1;
+  string id = 2;
+  google.protobuf.Timestamp created = 3;
+  string vendorId = 4;
+  string familyId = 5;
+  string description = 6;
+  map<string, string> metadata = 7;
+  string eccn = 8;
+  string pcq = 9;
+  string matchExpr = 10;
+  repeated Rate rates = 11;
+  string status = 12;
+  string access = 13;
+}
+
+// Expand as more product types such as storage and networking are added.
+enum RateUnit {
+  RATE_UNIT_UNSPECIFIED = 0;
+  RATE_UNIT_DOLLARS_PER_MINUTE = 1;
+  RATE_UNIT_DOLLARS_PER_TB_PER_HOUR = 2;
+  RATE_UNIT_DOLLARS_PER_INFERENCE = 3;
+  RATE_UNIT_DOLLARS_PER_MILLION_TOKENS = 4;
+}
+
+message Rate {
+  AccountType accountType = 1;
+  RateUnit unit = 2;
+  string rate = 3;
+  string usageExpr = 4;
+}
+
+message ProductResponse {
+  repeated Product products = 1;
+}
+
+message VendorResponse {
+  repeated Vendor vendors = 1;
+}
+
+enum ProductStatus { 
+  PRODUCT_STATUS_UNSPECIFIED = 0; 
+  PRODUCT_STATUS_READY = 1; 
+  PRODUCT_STATUS_PROVISIONING = 2; 
+  PRODUCT_STATUS_ERROR = 3; 
+} 
+
+message SetProductStatus { 
+  string vendorId = 1; 
+  string familyId = 2; 
+  string productId = 3; 
+  ProductStatus status = 4; 
+  string error = 5; 
+} 
+
+message SetProductStatusRequest { 
+  repeated SetProductStatus status = 1; 
+} 
+
+// only used by admin
+service ProductAccessService {
+  rpc ReadAccess(GetAccessRequest) returns (GetAccessResponse) {
+    option (google.api.http) = {
+      get: "/v1/products/acl"
+    };
+  };
+
+  rpc AddAccess(ProductAccessRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/products/acl/add"
+      body: "*"
+    };
+  };
+
+  rpc RemoveAccess(DeleteAccessRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/products/acl/delete"
+    };
+  };
+
+  rpc CheckProductAccess(ProductAccessCheckRequest) returns (google.protobuf.BoolValue) {
+    option (google.api.http) = {
+      get: "/v1/products/acl/access"
+    };
+  };
+}
+
+message GetAccessRequest {
+  optional string cloudaccountId = 1;
+}
+
+message GetAccessResponse {
+  repeated ProductAccessResponse acl = 1;
+}
+message ProductAccessRequest {
+  string cloudaccountId = 1;
+  string vendorId = 2;
+  string familyId = 3;
+  string productId = 4;
+  string adminName = 5;
+  google.protobuf.Timestamp created = 6;
+}
+
+message ProductAccessCheckRequest {
+  string cloudaccountId = 1;
+  string productId = 2;
+}
+
+message DeleteAccessRequest {
+  string cloudaccountId = 1;
+  string vendorId = 2;
+  string productId = 3;
+}
+
+message ProductAccessResponse {
+  string cloudaccountId = 1;
+  string vendorId = 2;
+  string familyId = 3;
+  string productId = 4;
+  string adminName = 5;
+  google.protobuf.Timestamp created = 6;
+};
+
+
+// regions api
+service RegionService {
+  rpc Add(AddRegionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/regions/add"
+      body: "*"
+    };
+  };
+  rpc AdminRead(RegionFilter) returns (RegionResponse) {
+    option (google.api.http) = {
+      post: "/v1/regions/admin"
+      body: "*"
+    };
+  };
+  rpc UserRead(RegionUserFilter) returns (RegionUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/regions"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  rpc Update(UpdateRegionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/regions/{name}" 
+      body: "*" 
+    };
+  };  
+  rpc Delete(DeleteRegionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/regions/{name}"
+    };
+  };
+}
+
+message AddRegionRequest {
+  string name = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string friendly_name = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string type = 3 [(validate.rules).string = {in: ["open", "controlled"]}];
+  string subnet = 4 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string availability_zone = 5 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  int32 prefix = 6 [(validate.rules).int32 = {gte: 0}];
+  bool is_default = 7;
+  string api_dns = 8 [(validate.rules).string = { pattern: "^(https?:\\/\\/)([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(:\\d+)?(\\/[a-zA-Z0-9-._~%!$&'()*+,;=:@/]+)+$" }];
+  string vnet = 9;
+}
+
+message RegionUserFilter {
+  string cloudaccountId = 1[
+    (idc.field).cloudAccount = true
+  ];
+  RegionFilter regionFilter = 2;
+}
+
+message RegionFilter {
+  optional string name = 1;
+  optional string friendly_name = 2;
+  optional string type = 3 [(validate.rules).string = {min_len: 1, pattern: "^(open|controlled)$"}];
+  optional string subnet = 4;
+  optional string availability_zone = 5;
+  optional int32 prefix = 6;
+  optional bool is_default = 7;
+  optional string api_dns = 8;
+  optional string vnet = 9;
+  optional string adminName = 10;
+};
+
+message Region {
+  string name = 1;
+  string friendly_name = 2;
+  string type = 3;
+  string subnet = 4;
+  string availability_zone = 5;
+  int32 prefix = 6;
+  bool is_default = 7;
+  string api_dns = 8;
+  string vnet = 9;
+  string adminName = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+message RegionUser {
+  string name = 1;
+  string friendly_name = 2;
+  string type = 3;
+  string subnet = 4;
+  string availability_zone = 5;
+  int32 prefix = 6;
+  bool is_default = 7;
+  string api_dns = 8;
+  string vnet = 9;
+}
+
+message RegionResponse {
+  repeated Region regions = 1;
+}
+
+message RegionUserResponse {
+  repeated RegionUser regions = 1;
+}
+
+message UpdateRegionRequest {
+  string name = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  optional string friendly_name = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  optional string type = 3 [(validate.rules).string = {in: ["open", "controlled"]}];
+  optional string subnet = 4 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  optional string availability_zone = 5 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  optional int32 prefix = 6 [(validate.rules).int32 = {gte: 0}];
+  optional bool is_default = 7;
+  optional string api_dns = 8 [(validate.rules).string = { pattern: "^(https?:\\/\\/)([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(:\\d+)?(\\/[a-zA-Z0-9-._~%!$&'()*+,;=:@/]+)+$" }];
+  optional string vnet = 9;
+}
+
+message DeleteRegionRequest {
+  string name = 1 [(validate.rules).string = {min_len: 1, pattern: "^[a-z0-9]+([-.][a-z0-9]+)*$"}];
+}
+
+// only used by admin
+service RegionAccessService {
+  rpc ReadAccess(GetRegionAccessRequest) returns (GetRegionAccessResponse) {
+    option (google.api.http) = {
+      get: "/v1/regions/acl"
+    };
+  };
+
+  rpc AddAccess(RegionAccessRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/regions/acl/add"
+      body: "*"
+    };
+  };
+
+  rpc RemoveAccess(DeleteRegionAccessRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/regions/acl/delete"
+    };
+  };
+
+  rpc CheckRegionAccess(RegionAccessCheckRequest) returns (google.protobuf.BoolValue) {
+    option (google.api.http) = {
+      get: "/v1/regions/acl/access"
+    };
+  };
+}
+
+message GetRegionAccessRequest {
+  optional string cloudaccountId = 1;
+  optional string regionAccessType = 2; 
+}
+
+message GetRegionAccessResponse {
+  repeated RegionAccessResponse acl = 1;
+}
+
+message RegionAccessRequest {
+  string cloudaccountId = 1;
+  string regionName = 2;
+  google.protobuf.Timestamp created = 3;
+}
+
+message RegionAccessCheckRequest {
+  string cloudaccountId = 1;
+  string regionName = 2;
+}
+
+message DeleteRegionAccessRequest {
+  string cloudaccountId = 1;
+  string regionName = 2;
+}
+
+message RegionAccessResponse {
+  string cloudaccountId = 1;
+  string regionName = 2;
+  string adminName = 3;
+  google.protobuf.Timestamp created = 4;
+}
+
+message DefaultRegionSpec {
+  string name = 1;
+  string friendly_name = 2;
+  string type = 3;
+  string subnet = 4;
+  string availability_zone = 5;
+  int32 prefix = 6;
+  bool is_default = 7;
+  string api_dns = 8;
+  string environment = 9; 
+}
+
+// ****** productcatalog v2 api ******
+
+// product synchronizer
+service ProductSyncService {
+  rpc SearchStream(DefaultProductSearchRequest) returns (stream DefaultProduct);
+  rpc Put(DefaultProduct) returns (google.protobuf.Empty);
+  rpc Delete(DefaultProductDeleteRequest ) returns (google.protobuf.Empty);
+  rpc Get(DefaultProductGetRequest) returns (DefaultProduct) {
+    option (google.api.http) = {
+      get: "/v1/pc/productsync/{id}"
+    };
+    option (idc.method).authz.user = true;
+  };
+}
+
+message DefaultProduct {
+  string apiVersion = 1;//apiVersion and kind fields only used to keep compatibility with existing yamls files
+  string kind = 2;
+  message Metadata {
+    string name = 3 [(validate.rules).string = {min_len: 1, pattern: "^[a-z0-9]+([-.][a-z0-9]+)*$"}];
+  }
+  Metadata metadata = 4 [(validate.rules).message = {required: true}];
+  ProductSpec spec = 5 [(validate.rules).message = {required: true}];
+}
+
+message ProductSpec {
+  string name = 1;
+  string id = 2 [(validate.rules).string = {min_len: 1, pattern: "^[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}$"}];
+  google.protobuf.Timestamp created = 3;
+  string vendorId = 4 [(validate.rules).string = {min_len: 1, uuid: true}];
+  string familyId = 5 [(validate.rules).string = {min_len: 1, uuid: true}];
+  string description = 6 [(validate.rules).string = {min_len: 1, max_len: 100, pattern: "^[\\w\\s\\pP\\pS]+$"}];
+  repeated KeyValue metadata = 7 [(validate.rules).repeated.min_items = 1];
+  string eccn = 8;// [(validate.rules).string.pattern = "^[0-9A-Z]{5,6}$"];
+  string pcq = 9;// [(validate.rules).string.pattern = "^[0-9]+$"];
+  string matchExpr = 10 [(validate.rules).string.min_len = 1];
+  repeated DefaultRate rates = 11 [(validate.rules).repeated.min_items = 4];
+  string status = 12;
+  string access = 13;
+}
+
+message DefaultRate {
+  string accountType = 1 [(validate.rules).string = {min_len: 1, pattern: "^(standard|premium|enterprise|intel)$"}];
+  string unit = 2 [(validate.rules).string = {min_len: 1, pattern: "^(dollarsPerMinute|dollarsPerTBPerHour|dollarsPerInference|dollarsPerMillionTokens)$"}];
+  string rate = 3 [(validate.rules).string = {min_len: 1, pattern: "^[0-9]+(\\.[0-9]+)?$"}];
+  string usageExpr = 4 [(validate.rules).string = {min_len: 1, pattern:"^(time – previous\\.time)$"}];
+}
+
+message KeyValue {
+  string key = 1 [(validate.rules).string.min_len = 1];
+  string value = 2;
+}
+
+message DefaultProductDeleteRequest {
+  string id = 1;
+}
+message DefaultProductSearchRequest {
+  string id = 1;
+}
+message DefaultProductGetRequest {
+  string id = 1;
+}
+
+// vendor synchronizer
+service VendorSyncService {
+  rpc SearchStream(DefaultVendorSearchRequest) returns (stream DefaultVendor);
+  rpc Put(DefaultVendor) returns (google.protobuf.Empty);
+  rpc Delete(DefaultVendortDeleteRequest ) returns (google.protobuf.Empty);
+  rpc Get(DefaultVendorGetRequest) returns (DefaultVendor) {
+    option (google.api.http) = {
+      get: "/v1/pc/vendorsync/{id}"
+    };
+    option (idc.method).authz.user = true;
+  };
+}
+message DefaultVendor {
+  string apiVersion = 1;//apiVersion and kind fields only used to keep compatibility with existing yamls files
+  string kind = 2;
+  message Metadata {
+    string name = 3;
+  }
+  Metadata metadata = 4;
+  VendorSpec spec = 5;
+}
+
+message VendorSpec {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated DefaultFamily families = 4;
+ // google.protobuf.Timestamp created = 5;
+}
+
+message DefaultFamily {
+  string name = 1;
+  string id = 2;
+  string description = 3;
+}
+
+//TODO fix typo
+message DefaultVendortDeleteRequest {
+  string id = 1;
+}
+message DefaultVendorSearchRequest {
+  string id = 1;
+}
+message DefaultVendorGetRequest {
+  string id = 1;
+}
+
+
+
+//TODO all this code from here needs to be updated andd some removed to keep backwards compatibility with current admin/user reads
+
+
+message FamilyRequest {
+  string id = 1;
+  optional string vendor_id = 2;
+  optional string name = 3;
+  optional string description = 4;
+  optional string adminName = 5;
+  optional bool enabled = 6;
+}
+
+message FamilyResponse {
+  repeated Family families = 1;
+}
+
+message Family {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  bool enabled = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+
+message FamilyFilter {
+  string name = 1;
+  string id = 2;
+}
+
+message ListFamiliesByVendorRequest {
+  string vendor_id = 1;
+}
+
+// families api
+service FamilyService {
+  rpc Read(FamilyRequest) returns (FamilyResponse) {
+    option (google.api.http) = {
+      get: "/v1/pc/families"
+    };
+  };
+
+  // only used by admin
+  rpc Add(FamilyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/families",
+      body: "*"
+    };
+  };
+
+  rpc Update(FamilyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/pc/families/id/{id}" 
+      body: "*" 
+    };
+  };
+  rpc GetById(FamilyFilter) returns (FamilyResponse) {
+    option (google.api.http) = {
+      get: "/v1/pc/families/id/{id}" 
+    };
+  };
+}
+
+message VendorRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional string adminName = 4;
+  optional bool enabled = 5;
+}
+
+message VendorRequestFilter {
+  optional string id = 1;
+  optional string name = 2;
+  optional bool enabled = 3;
+}
+
+message VendorId {
+  string id = 1;
+}
+
+// vendors api
+service VendorService {
+    //to be used by billing
+  rpc Read(VendorFilter) returns (VendorResponse) {
+    option (google.api.http) = {
+      get: "/v1/pc/vendors"
+    };
+    option (idc.method).authz.user = true;
+  };
+  rpc Add(VendorRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/vendors/add"
+      body: "*"
+    };
+  };
+  rpc Update(VendorRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/pc/vendors/id/{id}" 
+      body: "*" 
+    };
+  };
+  rpc GetById(VendorId) returns (VendorResponse) {
+    option (google.api.http) = {
+      get: "/v1/pc/vendors/id/{id}"
+    };
+  };
+}
+
+// products api
+service ProductCatalogServiceV2 {
+      //to be used by billing
+  rpc AdminRead(ProductFilter) returns (ProductResponse) {
+    option (google.api.http) = {
+      post: "/v1/pc/products/admin"
+      body: "*"
+    };
+  };
+  rpc UserRead(ProductUserFilter) returns (ProductResponse) {
+    option (google.api.http) = {
+      post: "/v1/pc/products"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  // external user read call 
+  rpc UserReadExternal(ProductUserFilter) returns (ProductResponse) {
+    option (google.api.http) = {
+      post: "/v1/api/pc/products"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc SetStatus(SetProductStatusRequest) returns (google.protobuf.Empty) {} 
+  
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message RegionalRateFilter{
+  string productId = 1;
+  string regionId = 2;
+}
+
+message ProductAccessRequestV2 {
+  string cloudaccountId = 1;
+  string productId = 2;
+  string regionId = 3;
+  string adminName = 4;
+  google.protobuf.Timestamp createdAt = 5;
+}
+
+message DeleteAccessRequestV2 {
+  string cloudaccountId = 1;
+  string regionId = 2;
+  string productId = 3;
+}
+
+message GetAccessResponseV2 {
+  repeated ProductAccessResponseV2 acl = 1;
+}
+
+message ProductAccessResponseV2 {
+  string cloudaccountId = 1;
+  string regionId = 2;
+  string productId = 3;
+  string adminName = 4;
+  google.protobuf.Timestamp createdAt = 5;
+};
+
+// product access api - only used by admin
+service AccessService {
+  rpc ReadAccess(GetAccessRequest) returns (GetAccessResponseV2) {
+    option (google.api.http) = {
+      get: "/v1/pc/products/acl"
+    };
+  };
+
+  rpc AddAccess(ProductAccessRequestV2) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/products/acl/add"
+      body: "*"
+    };
+  };
+
+  rpc RemoveAccess(DeleteAccessRequestV2) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/pc/products/acl/delete"
+    };
+  };
+}
+
+message RateData {
+  optional string productId = 1;
+  optional string regionId = 2;
+  optional string accountType = 3;
+  optional string rate = 4;
+  optional string unit = 5;
+  optional string usageExpr = 6;
+}
+
+message ProductData {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional string familyId = 4;
+  optional string vendorId = 5; 
+  optional string pcq = 6;
+  optional string eccn = 7;
+  optional string matchExpr = 8;
+  optional string serviceName = 9;
+  optional string serviceType = 10;
+  optional string instanceType = 11;
+  optional string instanceMode = 12;
+  optional string instanceCategory = 13;
+  optional string displayName = 14;
+  optional string displayCategory = 15;
+  optional string displayDesc = 16;
+  optional string displayInfo = 17;
+  optional string displayHighlight = 18;
+  optional string accountTypesBlocked = 19;
+  optional bool accountWhitelist = 20;
+  optional bool billingEnable = 21;
+  optional string releaseStatus = 22;
+  optional string usecase = 23;
+  optional string metadata = 24;
+  optional string status = 25;
+  optional bool enabled = 26;
+}
+
+message ProposedData {
+  ProductData product = 1;
+  repeated RateData rates = 2;
+}
+
+enum ChangeRequestType { 
+  create = 0; 
+  update = 1; 
+  enable = 2; 
+} 
+
+enum ChangeRequestStatus { 
+  pending = 0; 
+  approved = 1; 
+  denied = 2; 
+} 
+
+message ProductChangeRequest {
+  int32 id = 1;
+  string requestType = 2;
+  string requestStatus = 3;
+  string proposedData = 4;
+  string requester = 5;
+  string reviewer = 6;
+  google.protobuf.Timestamp createdAt = 7;
+  google.protobuf.Timestamp updatedAt = 8;
+}
+
+message ProductChangeRequestResponse {
+  int32 id = 1;
+  ChangeRequestType requestType = 2;
+  ChangeRequestStatus requestStatus = 3;
+  ProposedData proposedData = 4;
+  string requester = 5;
+  string reviewer = 6;
+  google.protobuf.Timestamp createdAt = 7;
+  google.protobuf.Timestamp updatedAt = 8;
+}
+
+message ProductChangeRequestResponseList {
+  repeated ProductChangeRequestResponse productChangeRequests = 1;
+}
+
+message ProductChangeRequestFilter {
+  optional int32 id = 1;
+  optional ChangeRequestStatus requestStatus = 2; 
+}
+
+message ReviewProductChangeRequestFilter {
+  int32 id = 1;
+  optional bool approve = 2; // optional to be able to check if its nil
+}
+
+message EnableProductFilter {
+  string productId = 1;
+  optional bool enable = 2; // optional to be able to check if its nil
+}
+
+service ProductChangeRequestService {
+  rpc AddProductDataInChangeRequest(ProposedData) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/products/cr"
+      body: "*"
+    };
+  };
+  rpc UpdateProductDataInChangeRequest(ProposedData) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/products/cr/{product.id}"
+      body: "*"
+    };
+  };
+  rpc ReviewProductChangeRequest(ReviewProductChangeRequestFilter) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/products/cr/review"
+      body: "*"
+    };
+  };
+  rpc EnableProductInChangeRequest(EnableProductFilter) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/products/cr/enable/{productId}"
+      body: "*"
+    };
+  };
+  rpc ReadProductChangeRequest(ProductChangeRequestFilter) returns (ProductChangeRequestResponseList) {
+    option (google.api.http) = {
+      get: "/v1/pc/products/cr"
+    };
+  };
+}
+
+message ProductInterestRequest {
+  int32 id = 1;
+  string cloudaccount_id = 2;
+  string user_email = 3;
+  string product_id = 4;
+  string region_id = 5;  
+  string description = 6;
+}
+
+message ProductInterestFilter {
+  string cloudaccount_id = 1;
+  string user_email = 2;
+  string product_id = 3;
+  string region_id = 4;  
+}
+
+message ProductInterestResponse {
+  repeated ProductInterest product_interests = 1;
+}
+
+message ProductInterest {
+  int32 id = 1;
+  string cloudaccount_id = 2;
+  string user_email = 3;
+  string product_id = 4;
+  string region_id = 5;  
+  string description = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+// product interests api
+service ProductInterestService {
+  rpc Read(ProductInterestFilter) returns (ProductInterestResponse) {
+    option (google.api.http) = {
+      get: "/v1/pc/products/interests"
+    };
+  };
+
+  // only used by admin
+  rpc Add(ProductInterestRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/pc/products/interests",
+      body: "*"
+    };
+  };
+}

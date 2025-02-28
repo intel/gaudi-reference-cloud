@@ -1,0 +1,42 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "switch-clients",
+    srcs = [
+        "arista_eapi_switch_client.go",
+        "mock_switch_client.go",
+        "switch_client.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/pkg/switch-clients",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/sdn-controller/api/v1alpha1",
+        "//go/pkg/sdn-controller/pkg/utils",
+        "@com_github_aristanetworks_goeapi//:goeapi",
+        "@com_github_aristanetworks_goeapi//module",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@in_gopkg_yaml_v2//:yaml_v2",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics",
+        "@io_k8s_utils//strings/slices",
+        "@io_opentelemetry_go_otel//codes",
+        "@org_golang_x_exp//maps",
+    ],
+)
+
+go_test(
+    name = "switch-clients_test",
+    srcs = [
+        "arista_eapi_client_test.go",
+        "arista_eapi_switch_client_test.go",
+    ],
+    embed = [":switch-clients"],
+    deps = [
+        "@com_github_aristanetworks_goeapi//:goeapi",
+        "@com_github_aristanetworks_goeapi//module",
+        "@com_github_google_go_cmp//cmp",
+    ],
+)

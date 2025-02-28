@@ -1,0 +1,29 @@
+---
+- name: Setup Docker container for Deepspeed execution
+  hosts: hosts
+  gather_facts: false
+  tasks:
+    - name: Create directory for optimum-habana repository
+      shell: docker exec btower bash -c "mkdir -p /validation/optimum-habana"
+
+    - name: Clone optimum-habana repository
+      shell: docker exec btower bash -c "if [ ! -d /validation/optimum-habana/.git ]; then git clone https://github.com/huggingface/optimum-habana.git /validation/optimum-habana; fi"
+      register: clone_output
+      ignore_errors: yes
+
+    - debug:
+        msg: "Repository cloned: {{ clone_output.rc == 0 }}"
+
+    - name: Install optimum-habana dependencies inside Docker
+      shell: |
+        docker exec -it btower bash -c "\
+          pip install --upgrade-strategy eager optimum[habana] && \
+          pip install git+https://github.com/HabanaAI/DeepSpeed.git@{{ deepspeed_version }} && \
+          pip install git+https://github.com/huggingface/optimum-habana.git && \
+          cd /validation/optimum-habana/examples/contrastive-image-text/ && \
+          pip install -r requirements.txt"
+
+    - name: Upgrade Transformers
+      shell: |
+        docker exec -it btower bash -c "\
+          pip install --upgrade transformers=={{ transformers_version }}"

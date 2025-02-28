@@ -1,0 +1,850 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+//
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://protobuf.dev/programming-guides/proto3/
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "annotations.proto";
+import "compute.proto";
+import "validate/validate.proto";
+import "fleet_common.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "compute-api-server";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+// Private Instance Service.
+service InstancePrivateService {
+  // Launch a new baremetal or virtual machine instance.
+  // Similar to InstanceService.Create with the following differences:
+  //   - Caller can provide serviceType.
+  //   - Caller can provide resourceId.
+  //   - Caller can provide a private instanceType (not implemented).
+  //   - Caller can provide a custom instanceTypeSpec (not implemented).
+  //   - Caller can provide private network interface fields (not implemented).
+  rpc CreatePrivate(InstanceCreatePrivateRequest) returns (InstancePrivate) {};
+  // Launch one or more new baremetal or virtual machine instances.
+  // This method succeeds only if prerequisites are satisified to begin launching all of the requested instances.
+  // In particular, if there is insufficient capacity to launch all of the requested instances, then no instances will be created.
+  // If this method returns an error, then no instances will be created.
+  rpc CreateMultiplePrivate(InstanceCreateMultiplePrivateRequest) returns (InstanceCreateMultiplePrivateResponse) {};
+  // Update the specification of a private instance.
+  rpc UpdatePrivate(InstanceUpdatePrivateRequest) returns (google.protobuf.Empty) {};
+  // Update the resource status.
+  rpc UpdateStatus(InstanceUpdateStatusRequest) returns (google.protobuf.Empty) {};
+  // Remove finalizer from an instance that was previously requested to be deleted.
+  // After this returns, the record will no longer be visible to users or controllers.
+  // Used by Instance Replicator.
+  rpc RemoveFinalizer(InstanceRemoveFinalizerRequest) returns (google.protobuf.Empty) {};
+  // List instances.
+  rpc SearchPrivate(InstanceSearchPrivateRequest) returns (InstanceSearchPrivateResponse) {};
+  // List instances as a stream.
+  // This returns all non-deleted instances as messages with WatchDeltaType=Updated,
+  // followed by a single WatchDeltaType=Bookmark with the last-seen resourceVersion.
+  // Used by Instance Replicator.
+  rpc SearchStreamPrivate(InstanceSearchStreamPrivateRequest) returns (stream InstanceWatchResponse) {};
+  // Return a stream of changes to instances using messages with WatchDeltaType=Updated or Deleted.
+  // Messages with WatchDeltaType=Bookmark and the last-seen resourceVersion will be sent periodically.
+  // Used by Instance Replicator.
+  rpc Watch(InstanceWatchRequest) returns (stream InstanceWatchResponse) {
+    option (idc.method).streamForever = true;
+  };
+  // PingPrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // DeletePrivate deletes an instance, including one which belongs to an instance group.
+  rpc DeletePrivate(InstanceDeletePrivateRequest) returns (google.protobuf.Empty) {};
+}
+
+message LoadBalancerSearchStreamPrivateRequest {
+}
+
+message LoadBalancerWatchRequest {
+  string resourceVersion = 1;
+}
+
+// Private only.
+message LoadBalancerWatchResponse {
+  WatchDeltaType type = 1;
+  LoadBalancerPrivate object = 2;
+}
+
+message InstanceCreatePrivateRequest {
+  InstanceMetadataCreatePrivate metadata = 1;
+  InstanceSpecPrivate spec = 2;
+}
+
+message InstanceMetadataCreatePrivate {
+  string cloudAccountId = 1;
+  // Name will be generated if empty. Optional.
+  string name = 2;
+  // If provided, this must be a UUID. Optional,
+  string resourceId = 3;
+  // Not implemented.
+  map<string, string> labels = 4;
+  // If true, quota check will be skipped
+  bool skipQuotaCheck = 5;
+}
+
+message InstanceCreateMultiplePrivateRequest {
+  repeated InstanceCreatePrivateRequest instances = 1;
+  bool dryRun = 2;
+}
+
+message InstanceCreateMultiplePrivateResponse {
+  repeated InstancePrivate instances = 1;
+}
+
+message InstanceUpdateStatusRequest {
+  InstanceIdReference metadata = 1;
+  InstanceStatusPrivate status = 2;
+}
+
+message InstanceUpdatePrivateRequest {
+  InstanceMetadataUpdate metadata = 1;
+  InstanceSpecPrivate spec = 2;
+}
+
+message InstanceSearchPrivateRequest {
+  InstanceMetadataSearch metadata = 1;
+}
+
+message InstanceSearchPrivateResponse {
+  repeated InstancePrivate items = 1;
+}
+
+message InstanceSearchStreamPrivateRequest {
+}
+
+message InstanceWatchRequest {
+  string resourceVersion = 1;
+}
+
+// Private only.
+message InstanceWatchResponse {
+  WatchDeltaType type = 1;
+  InstancePrivate object = 2;
+}
+
+enum WatchDeltaType {
+  // Record has been created or updated.
+  // This includes an update to the deletionTimestamp field which indicates the desire to delete the record.
+  Updated = 0;
+  // Record has been deleted.
+  // It will no longer be represented in future InstanceWatchResponse messages.
+  Deleted = 1;
+  // Indicates that all updates up to and including the ResourceVersion have been sent.
+  // The object contains only the ResourceVersion.
+  Bookmark = 3;
+}
+
+message InstanceRemoveFinalizerRequest {
+  InstanceIdReference metadata = 1;
+}
+
+message InstanceIdReference {
+  string cloudAccountId = 1;
+  string resourceId = 2;
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 3;
+}
+
+// This message (and contained messages) must remain compatible with Instance.
+// In particular, an InstancePrivate binary Protobuf message must be deserializable as an Instance.
+message InstancePrivate {
+  InstanceMetadataPrivate metadata = 1;
+  InstanceSpecPrivate spec = 2;
+  InstanceStatusPrivate status = 3;
+}
+
+message InstanceMetadataPrivate {
+  string cloudAccountId = 1;
+  string name = 2;
+  string resourceId = 3;
+  // resourceVersion can be provided with Update and Delete for concurrency control.
+  string resourceVersion = 4;
+  // Map of string keys and values that can be used to organize and categorize instances.
+  // This is also used by TopologySpreadConstraints.
+  map<string, string> labels = 5;
+  // Not implemented.
+  google.protobuf.Timestamp creationTimestamp = 6;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 7;
+  // Timestamp when resource was deleted.
+  google.protobuf.Timestamp deletedTimestamp = 8;
+  // If true, quota check will be skipped
+  bool skipQuotaCheck = 9;
+}
+
+message InstanceDeletePrivateRequest {
+  InstanceMetadataReference metadata = 1;
+}
+
+// -------------------------------------------------------------------------------------------
+// InstanceSpecPrivate should match InstanceSpec in /go/pkg/k8s/apis/private.cloud/v1alpha1/instance_types.go.
+// -------------------------------------------------------------------------------------------
+
+message InstanceSpecPrivate {
+  // -------------------------------------------------------------------------
+  // Public: Below fields should be identical to InstanceSpec.
+  // Message types can be different if wire compatible.
+  // -------------------------------------------------------------------------
+
+  // Not implemented.
+  string availabilityZone = 1;
+  // The name of an InstanceType.
+  string instanceType = 2;
+  // The name of a MachineImage.
+  // Not implemented.
+  string machineImage = 3;
+  // Controls the instance power state.
+  RunStrategy runStrategy = 4;
+  // The name of a previously stored SSH public key.
+  // Users can use the corresponding SSH private key to SSH to this instance.
+  repeated string sshPublicKeyNames = 5;
+  // Not implemented.
+  repeated NetworkInterfacePrivate interfaces = 6;
+  // This controls how instances are spread across the failure domains within the availability zone.
+  // This can help to achieve high availability.
+  // If this contains at least one key/value pair in matchLabels, then instances that have all of these key/value pairs
+  // will be placed evenly across failure domains.
+  repeated TopologySpreadConstraints topologySpreadConstraints = 15;
+  // The cloud-config for this instance
+  string userData = 17;
+  // If not empty, this instance is part of the named instance group.
+  string instanceGroup = 18;
+  // Number of instances in the instance group.
+  int32 instanceGroupSize = 19;
+  // If True, Quick Connect will be enabled.
+  // If False, Quick Connect will be disabled.
+  // If Undefined during instance creation, Quick Connect will be disabled.
+  // If Undefined during instance update, the Quick Connect state will be unchanged.
+  TriState quickConnectEnabled = 22;
+
+  // -------------------------------------------------------------------------
+  // Private: Below fields are private only.
+  // -------------------------------------------------------------------------
+
+  // Private only.
+  InstanceTypeSpec instanceTypeSpec = 7;
+  // Private only.
+  MachineImageSpec machineImageSpec = 8;
+  // Expected to be in the same order as sshPublicKeyNames.
+  // Private only.
+  repeated SshPublicKeySpec sshPublicKeySpecs = 9;
+  // Not implemented.
+  // Private only.
+  string clusterGroupId = 10;
+  // For VM instances, the ID of the Harvester cluster that this instance should run on.
+  // Private only.
+  string clusterId = 11;
+  // Private only
+  string region = 12;
+  // For VM instances, the ID of the Harvester node that this instance should run on.
+  // Private only.
+  string nodeId = 13;
+  // Private only.
+  InstanceServiceType serviceType = 14;
+  // Private only.
+  // The partition within the region/availabilityZone/clusterGroupId/clusterId.
+  // Nodes in different partitions do not share underlying hardware.
+  // The partition must be unique within the region.
+  string partition = 16;
+  // Private only.
+  // This is a list of zero or more compute node pool IDs.
+  // When this field is passed to InstancePrivateService.CreatePrivate:
+  //   - The CreatePrivate RPC first identifies the compute node pools that the Cloud Account is authorized for
+  //     by calling FleetAdminService.SearchComputeNodePoolsForInstanceScheduling.
+  //   - If this field has one or more elements, then the authorized compute node pools are filtered.
+  // When this field is passed to InstanceSchedulingService.Schedule:
+  //   - If this field has one or more elements, the instance will be scheduled on a node labeled with at least one of these compute node pool IDs.
+  //   - If this field has no elements, instance scheduling will not consider these node labels.
+  // When this field is stored in the compute database:
+  //   - This field is the intersection of the compute node pools passed to the scheduler (authorized and filtered)
+  //     and the compute node pools that the selected node was labeled with at the time of instance creation.
+  repeated string computeNodePools = 20;
+  // Private only.
+  // The network mode for the instance.
+  string networkMode = 21;
+  // Private only.
+  // The ID of the compute group that this instance should run on.
+  string superComputeGroupId = 23;
+}
+
+message NetworkInterfacePrivate {
+  // -------------------------------------------------------------------------
+  // Public: Below fields should be identical to NetworkInterface.
+  // -------------------------------------------------------------------------
+
+  // Name of the network interface as known by the operating system.
+  // Not implemented.
+  string name = 1;
+  // Name of the VNet that the network interface connects to.
+  string vNet = 2;
+
+  // -------------------------------------------------------------------------
+  // Private: Below fields are private only.
+  // -------------------------------------------------------------------------
+
+  // Fully qualified domain name (FQDN) of interface.
+  // Private only.
+  string dnsName = 3;
+  // Private only
+  repeated string nameservers = 5;
+}
+
+// -------------------------------------------------------------------------------------------
+// InstanceStatusPrivate should match InstanceStatus in /go/pkg/k8s/apis/private.cloud/v1alpha1/instance_types.go.
+// -------------------------------------------------------------------------------------------
+
+message InstanceStatusPrivate {
+  // Instance phase.
+  InstancePhase phase = 1;
+  // Additional details about the state or any error conditions.
+  string message = 2;
+  // A list of network interfaces, along with the private IP address assigned to the interface.
+  repeated InstanceInterfaceStatusPrivate interfaces = 3;
+  // Parameters required to connect to the SSH proxy.
+  SshProxyTunnelStatus sshProxy = 4;
+  // The user name that should be used to SSH into the instance.
+  string userName = 5;
+}
+
+message InstanceInterfaceStatusPrivate {
+  // -------------------------------------------------------------------------
+  // Public: Below fields should be identical to InstanceInterfaceStatus.
+  // -------------------------------------------------------------------------
+
+  // Not implemented.
+  string name = 1;
+  // Name of the VNet that the network interface connects to.
+  string vNet = 2;
+  // Fully qualified domain name (FQDN) of interface.
+  string dnsName = 3;
+  // Subnet prefix length.
+  int32 prefixLength = 4;
+  // List of IP addresses.
+  repeated string addresses = 5;
+  // Subnet IP address in format "1.2.3.4".
+  string subnet = 6;
+  // Gateway IP address.
+  string gateway = 7;
+
+  // -------------------------------------------------------------------------
+  // Private: Below fields are private only.
+  // -------------------------------------------------------------------------
+
+  // VLAN ID.
+  int32 vlanId = 8;
+}
+
+// Private InstanceGroup Service
+service InstanceGroupPrivateService {
+  // Launch a new instance group.
+  rpc CreatePrivate(InstanceGroupCreatePrivateRequest) returns (InstanceGroupPrivateCreateResponse) {};
+}
+
+message InstanceGroupCreatePrivateRequest {
+  InstanceGroupMetadataCreatePrivate metadata = 1;
+  InstanceGroupSpecPrivate spec = 2;
+  // If true, the instances will not be created.
+  bool dryRun = 3;
+}
+
+message InstanceGroupMetadataCreatePrivate {
+  string cloudAccountId = 1;
+  // Name of the instance group.
+  string name = 2;
+  // Not implemented.
+  map<string, string> labels = 3;
+  // If true, quota check will be skipped
+  bool skipQuotaCheck = 4;
+}
+
+message InstanceGroupSpecPrivate {
+  // The number of instances in the instance group.
+  int32 instanceCount = 1;
+  // The specification of the instances in the instance group.
+  InstanceSpecPrivate instanceSpecPrivate = 2;
+  // The desired locations of instances in the instance group.
+  // Effective only for superComputeGroupIds if specified.
+  InstanceGroupPlacement placement = 3;
+}
+
+message InstanceGroupPlacement {
+  // The target locations of supercompute clusters within an availability zone in which the instances may be created.
+  // Multiple locations can be specified but the instances can be created in a single supercompute location.
+  repeated string superComputeGroupIds = 1;
+  // The group IDs of clusters in which the instances may be placed.
+  repeated string clusterGroupIds = 2;
+  // The cluster IDs in which the instances may be placed.
+  repeated string clusterIds = 3;
+  // The node IDs that the instances may consume.
+  repeated string nodeIds = 4;
+}
+
+message InstanceGroupPrivateCreateResponse {
+  InstanceGroupMetadataCreatePrivate metadata = 1;
+  InstanceGroupPlacement placement = 2;
+  repeated InstancePrivate instances = 3;
+}
+
+enum InstanceServiceType {
+  ComputeAsAService = 0;
+  KubernetesAsAService = 1;
+  SuperComputingAsAService = 2;
+}
+
+service InstanceSchedulingService {
+  // Schedule one or more resources (instances).
+  // All resources will be reserved or, if an error is returned, none will.
+  rpc Schedule(ScheduleRequest) returns (ScheduleResponse) {};
+  // Returns a successful response when the service is ready to handle schedule requests.
+  rpc Ready(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // GetStatistics retrieves the current statistical data of all nodes.
+  rpc GetStatistics(google.protobuf.Empty) returns (SchedulerStatistics) {};  
+}
+
+message ScheduleRequest {
+  repeated InstancePrivate instances = 1;
+  // If true, the resources will not be reserved.
+  bool dryRun = 2;
+}
+
+message ScheduleResponse {
+  repeated ScheduleInstanceResult instanceResults = 1;
+}
+
+message ScheduleInstanceResult {
+  string clusterId = 1;
+  string nodeId = 2;
+  // If the schedule request had a non-empty TopologySpreadConstraints,
+  // this will contain the partition that the instance must run on.
+  string partition = 3;
+  string groupId = 4;
+  // Intersection of compute node pool IDs in the request and those in the recommended node.
+  repeated string computeNodePools = 5;
+  string networkMode = 6;
+  string superComputeGroupId = 7;
+  }
+
+// -------------------------------------------------------------------------------------------
+// IP Resource Manager Service
+// -------------------------------------------------------------------------------------------
+
+service IpResourceManagerService {
+  // Create or update a subnet and its address records.
+  // Updates an existing subnet with matching region, availabilityZone, addressSpace, and subnet.
+  // Creates a new subnet if a matching subnet is not found.
+  // Adds and deletes addresses to match the request.
+  // subnetConsumerId of an existing subnet is not changed.
+  // addressConsumerId of existing addresses is not changed.
+  // This is idempotent.
+  rpc PutSubnet(CreateSubnetRequest) returns (CreateSubnetResponse) {};
+  // Unreserve and delete a subnet and address records.
+  // This is idempotent.
+  rpc DeleteSubnet(DeleteSubnetRequest) returns (google.protobuf.Empty) {};
+  // List subnets as a stream.
+  rpc SearchSubnetStream(SearchSubnetRequest) returns (stream Subnet) {};
+
+  // Reserve a subnet for a generic consumer.
+  // A subnet specifies the CIDR and VLAN ID.
+  // Try to find the subnet record with a matching subnetConsumerId.
+  // If not found, find a subnet record with empty subnetConsumerId but same parameters (region, availabilityZone, prefixLength),
+  // then set subnetConsumerId.
+  // This is idempotent.
+  // Returns ResourceExhausted if no subnet is available.
+  // Notes:
+  // Accelerator/Gaudi cluster network
+  // VlanDomain field helps to allocate a VLAN or BGP community ID when reserving a subnet to the accelerator network
+  //
+  // Accelerator network - L2 mode (VVV)
+  // ----------------------------------
+  // VlanDomain value is set to the value of cluster group ID.
+  // Cluster group ID uniquely identify an accelerator Cluster in L2 setup.
+  // SDN controller use the VLAN ID to setup the accelerator network.
+  //
+  // Accelerator network - L3 mode (XBX)
+  // ----------------------------------
+  // VLAN ID value is set to the value of BGP community ID.
+  // BGP community ID uniquely identify an accelerator cluster in L3 setup.
+  // SDN controller use the BGP community ID to setup the accelerator network
+  //
+  rpc ReserveSubnet(ReserveSubnetRequest) returns (Subnet) {};
+  // Release (unreserve) a subnet previously reserved with ReserveSubnet.
+  // This is idempotent.
+  // Returns NotFound if a subnet with this subnetConsumerId does not exist.
+  // Returns FailedPrecondition if the subnet has consumed addresses.
+  rpc ReleaseSubnet(ReleaseSubnetRequest) returns (google.protobuf.Empty) {};
+
+  // Reserve (allocate, claim) an IP address in the subnet.
+  // The subnet must have been reserved with ReserveSubnet.
+  // This is idempotent.
+  // Returns ResourceExhausted if no address is available.
+  // Returns NotFound if subnet with this subnetConsumerId does not exist.
+  rpc ReserveAddress(ReserveAddressRequest) returns (ReserveAddressResponse) {};
+  // Release (unallocate, free) an IP address previously reserved with ReserveAddress.
+  // This is idempotent.
+  // Returns NotFound if a subnet with this subnetConsumerId does not exist.
+  // Returns NotFound if an address with this addressConsumerId does not exist in the subnet.
+  rpc ReleaseAddress(ReleaseAddressRequest) returns (google.protobuf.Empty) {};
+  // GetSubnetStatistics returns the total number subnets and the total number of consumed subnets 
+  // for each of the corresponding region, availability zone, address space, vlan domain and prefixlength.
+  rpc GetSubnetStatistics(google.protobuf.Empty) returns (GetSubnetStatisticsResponse) {};
+
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message CreateSubnetRequest {
+  string region = 1;
+  string availabilityZone = 2;
+  // Corresponds to the address space in Men & Mice.
+  // Used to allow overlapping subnets in an availability zone.
+  // This can be empty.
+  string addressSpace = 3;
+  // Subnet IP address with optional prefix length.
+  // Can be in CIDR format "1.2.3.4" or non-CIDR "1.2.3.4/24".
+  string subnet = 4;
+  // If zero, use prefix length in subnet.
+  int32 prefixLength = 5;
+  // Gateway IP address.
+  // Can be generated based on generateAddressesMethod.
+  string gateway = 6;
+  int32 vlanId = 7;
+  GenerateAddressesMethod generateAddressesMethod = 8;
+  // The list of IP addresses in this subnet, in format "1.2.3.4".
+  // Can be generated based on generateAddressesMethod.
+  repeated string address = 9;
+  string vlanDomain = 10;
+}
+
+enum GenerateAddressesMethod {
+  // Generate standard addresses and gateway if address list is empty.
+  Auto = 0;
+  // Generate standard addresses and gateway.
+  GenerateStandardHostAddresses = 1;
+  // Do not generate addresses and gateway.
+  NoGeneration = 2;
+}
+
+message CreateSubnetResponse {
+}
+
+message DeleteSubnetRequest {
+  string region = 1;
+  string availabilityZone = 2;
+  // Corresponds to the address space in Men & Mice.
+  // Used to allow overlapping subnets in an availability zone.
+  // This can be empty.
+  string addressSpace = 3;
+  // Subnet IP address with optional prefix length.
+  // Can be in CIDR format "1.2.3.4" or non-CIDR "1.2.3.4/24".
+  string subnet = 4;
+  // If zero, use prefix length in subnet.
+  int32 prefixLength = 5;
+}
+
+message SearchSubnetRequest {
+}
+
+message ReserveSubnetRequest {
+  message Spec {
+    string region = 1;
+    string availabilityZone = 2;
+    // The reserved subnet will have a prefix length with this value or less.
+    int32 prefixLengthHint = 3;
+    string vlanDomain = 4;
+    string addressSpace = 5;
+  }
+  SubnetReference subnetReference = 1;
+  Spec spec = 2;
+}
+
+message ReleaseSubnetRequest {
+  SubnetReference subnetReference = 1;
+}
+
+message SubnetReference {
+  // A user-defined string that uniquely identifies this consumed subnet.
+  // For example, VNets use the pattern "{resourceId}.{cloudAccountId}.vnet".
+  string subnetConsumerId = 1;
+}
+
+message Subnet {
+  string region = 1;
+  string availabilityZone = 2;
+  string addressSpace = 8;
+  // Subnet in format "1.2.3.0".
+  string subnet = 3;
+  int32 prefixLength = 4;
+  // Gateway in format "1.2.3.1".
+  string gateway = 5;
+  int32 vlanId = 6;
+  string vlanDomain = 9;
+  string subnetConsumerId = 7;
+}
+
+message ReserveAddressRequest {
+  SubnetReference subnetReference = 1;
+  AddressReference addressReference = 2;
+}
+
+message ReleaseAddressRequest {
+  SubnetReference subnetReference = 1;
+  AddressReference addressReference = 2;
+}
+
+message AddressReference {
+  // A user-defined string that uniquely identifies this consumed address within the subnet.
+  // Generally, this should be an FQDN that resolves to this address.
+  string addressConsumerId = 1;
+  // IP address to consume, in format "1.2.3.4". Optional.
+  string address = 2;
+}
+
+message ReserveAddressResponse {
+  // IP address in format "1.2.3.4".
+  string address = 1;
+}
+
+message SubnetStatisticsRecord {
+  string region = 1;
+  string availabilityZone = 2;
+  string addressSpace = 3;
+  int32 prefixLength = 4;
+  string vlanDomain = 5;
+  int32 totalSubnets = 6;
+  int32 totalConsumedSubnets = 7;
+}
+
+message GetSubnetStatisticsResponse {
+  repeated SubnetStatisticsRecord subnetStatistics = 1; 
+}
+
+// -------------------------------------------------------------------------------------------
+// VNet Private Service
+// -------------------------------------------------------------------------------------------
+
+service VNetPrivateService {
+  // Reserve a subnet for a VNet.
+  // A subnet specifies the CIDR and VLAN ID.
+  // If the VNet already has a reserved subnet, this returns that subnet.
+  // If the VNet does not already have a reserved subnet, then find a subnet with an empty subnetConsumerId but the same parameters
+  // (region, availabilityZone, prefixLength), then set subnetConsumerId.
+  // This is idempotent.
+  // Returns ResourceExhausted if no subnet is available.
+  rpc ReserveSubnet(VNetReserveSubnetRequest) returns (VNetPrivate) {};
+  // Release (unreserve) a subnet previously reserved with ReserveSubnet.
+  // This is idempotent.
+  // Returns NotFound if the VNet does not have a reserved subnet.
+  // Returns FailedPrecondition if the VNet has consumed addresses.
+  rpc ReleaseSubnet(VNetReleaseSubnetRequest) returns (google.protobuf.Empty) {};
+
+  // Reserve (allocate, claim) an IP address in the VNet.
+  // The subnet must have been reserved with ReserveSubnet.
+  // This is idempotent.
+  // Returns ResourceExhausted if no address is available.
+  // Returns NotFound if the VNet does not have a reserved subnet.
+  rpc ReserveAddress(VNetReserveAddressRequest) returns (VNetReserveAddressResponse) {};
+  // Release (unallocate, free) an IP address previously reserved with ReserveAddress.
+  // This is idempotent.
+  // Returns NotFound if the VNet does not have a reserved subnet.
+  // Returns NotFound if the address with this addressConsumerId does not exist in the subnet.
+  rpc ReleaseAddress(VNetReleaseAddressRequest) returns (google.protobuf.Empty) {};
+
+  // PingPrivate always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message VNetReserveSubnetRequest {
+  VNetReference vNetReference = 1;
+  string vlanDomain = 2;
+  string addressSpace = 3;
+  // If non-zero, the reserved subnet will have a prefix length with this value or less.
+  int32 maximumPrefixLength = 4;
+}
+
+message VNetReleaseSubnetRequest {
+  VNetReference vNetReference = 1;
+}
+
+message VNetReference {
+  string cloudAccountId = 1;
+  // VNet name.
+  string name = 2;
+}
+
+message VNetPrivate {
+  message Metadata {
+    string cloudAccountId = 1;
+    // VNet name.
+    string name = 2;
+    // VNet resourceId.
+    string resourceId = 3;
+  }
+  Metadata metadata = 1;
+  VNetSpecPrivate spec = 2;
+}
+
+message VNetSpecPrivate {
+  string region = 1;
+  string availabilityZone = 2;
+  string subnet = 3;
+  int32 prefixLength = 4;
+  string gateway = 5;
+  int32 vlanId = 6;
+  string vlanDomain = 7;
+  string addressSpace = 8;
+}
+
+message VNetReserveAddressRequest {
+  VNetReference vNetReference = 1;
+  VNetAddressReference addressReference = 2;
+}
+
+message VNetReleaseAddressRequest {
+  VNetReference vNetReference = 1;
+  VNetAddressReference addressReference = 2;
+}
+
+message VNetAddressReference {
+  // A user-defined string that uniquely identifies this consumed address within the VNet.
+  // Generally, this should be an FQDN that resolves to this address.
+  string addressConsumerId = 3;
+  // IP address to consume, in format "1.2.3.4". Optional.
+  string address = 4;
+}
+
+message VNetReserveAddressResponse {
+  // IP address in format "1.2.3.4".
+  string address = 1;
+}
+
+// Load Balancer
+
+// Private LoadBalancer Service.
+service LoadBalancerPrivateService {
+  // Launch a load balancer.
+  rpc CreatePrivate(LoadBalancerCreatePrivateRequest) returns (LoadBalancerPrivate) {};
+  // Update the resource status.
+  rpc UpdateStatus(LoadBalancerUpdateStatusRequest) returns (google.protobuf.Empty) {};
+  // Remove finalizer from an load balancer that was previously requested to be deleted.
+  // After this returns, the record will no longer be visible to users or controllers.
+  // Used by Compute Replicator.
+  rpc RemoveFinalizer(LoadBalancerRemoveFinalizerRequest) returns (google.protobuf.Empty) {};
+  // PingPrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // DeletePrivate deletes a loadbalancer.
+  rpc DeletePrivate(LoadBalancerDeletePrivateRequest) returns (google.protobuf.Empty) {};
+  // List loadbalancers as a stream.
+  // This returns all non-deleted load balancers as messages with WatchDeltaType=Updated,
+  // followed by a single WatchDeltaType=Bookmark with the last-seen resourceVersion.
+  // Used by Compute Replicator.
+  rpc SearchStreamPrivate(LoadBalancerSearchStreamPrivateRequest) returns (stream LoadBalancerWatchResponse) {};
+  // Return a stream of changes to load balancers using messages with WatchDeltaType=Updated or Deleted.
+  // Messages with WatchDeltaType=Bookmark and the last-seen resourceVersion will be sent periodically.
+  // Used by Compute Replicator.
+  rpc Watch(LoadBalancerWatchRequest) returns (stream LoadBalancerWatchResponse) {
+    option (idc.method).streamForever = true;
+  };
+}
+
+message LoadBalancerCreatePrivateRequest {
+  LoadBalancerMetadataCreatePrivate metadata = 1;
+  LoadBalancerSpecPrivate spec = 2;
+}
+
+message LoadBalancerMetadataCreatePrivate {
+  string cloudAccountId = 1;
+  // Name will be generated if empty. Optional.
+  string name = 2;
+  // If provided, this must be a UUID. Optional,
+  string resourceId = 3;
+  // Not implemented.
+  map<string, string> labels = 4;
+  // If true, quota check will be skipped
+  bool skipQuotaCheck = 5;
+}
+
+message LoadBalancerUpdateStatusRequest {
+  LoadBalancerIdReference metadata = 1;
+  LoadBalancerStatusPrivate status = 2;
+}
+
+message LoadBalancerPrivate {
+  LoadBalancerMetadataPrivate metadata = 1;
+  LoadBalancerSpecPrivate spec = 2;
+  LoadBalancerStatusPrivate status = 3;
+}
+
+message LoadBalancerMetadataPrivate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  string resourceId = 3;
+  // resourceVersion can be provided with Update and Delete for concurrency control.
+  string resourceVersion = 4;
+	// Map of string keys and values that can be used to organize and categorize load balancers.
+  map<string, string> labels = 5;
+  // Not implemented
+  google.protobuf.Timestamp creationTimestamp = 6;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 7;
+  // Timestamp when resource was deleted.
+  google.protobuf.Timestamp deletedTimestamp = 8;
+}
+
+message LoadBalancerRemoveFinalizerRequest {
+  LoadBalancerIdReference metadata = 1;
+}
+
+message LoadBalancerIdReference {
+  string cloudAccountId = 1;
+  string resourceId = 2;
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 3;
+}
+
+message LoadBalancerDeletePrivateRequest {
+  LoadBalancerMetadataReference metadata = 1;
+}
+
+// -------------------------------------------------------------------------------------------
+// LoadBalancerSpecPrivate should match LoadBalancerSpec
+// -------------------------------------------------------------------------------------------
+
+message LoadBalancerSpecPrivate {
+  repeated LoadBalancerListener listeners = 1;
+  // Security options which apply to the load balancer.
+  LoadBalancerSecurity security = 2;  
+}
+
+// -------------------------------------------------------------------------------------------
+// LoadBalancerStatusPrivate should match LoadBalancerStatus.
+// -------------------------------------------------------------------------------------------
+
+message LoadBalancerStatusPrivate {
+  LoadBalancerConditionsStatus conditions=1;
+  repeated LoadBalancerListenerStatus listeners=2;
+  string state=3;
+  string vip=4;
+  string message=5;
+}

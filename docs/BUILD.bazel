@@ -1,0 +1,7 @@
+filegroup(
+    name = "docs",
+    srcs = [
+        "//docs/source:private_docs"
+    ],
+    visibility = ["//visibility:public"],
+)

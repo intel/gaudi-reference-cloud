@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: v1
+kind: Service
+metadata:
+  name: storage-controller
+spec:
+  selector:
+    name: storage-controller
+  ports:
+    - name: grpc-server
+      port: 50051
+      targetPort: 50051
+    - name: metrics-server
+      port: 9099
+      targetPort: 9099

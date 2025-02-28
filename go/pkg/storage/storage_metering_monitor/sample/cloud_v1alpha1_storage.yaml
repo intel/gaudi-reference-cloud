@@ -1,0 +1,47 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Storage
+metadata:
+  labels:
+    app.kubernetes.io/name: storage
+    app.kubernetes.io/instance: storage-sample
+    app.kubernetes.io/part-of: storage
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: storage
+  name: storage-sample
+  namespace: idcs-system
+spec:
+  availabilityZone: az1
+  request:
+    storage: "2073741827"
+  accessModes: Regular
+  mountProtocol: Weka
+  encrypted: false
+  filesystemSchedule:
+    filesystemName: storage-test-fs-1
+    assignedCluster:
+      name: storage-test-1
+      version: "1"
+    assignedNamespace:
+      name: storage-controller
+      user: intel
+      password: Intel12345
+    assignedUser:
+      user: intel
+      password: Intel12345
+
+status:
+  mount:
+    fileSystemName: "fs1"
+    dnsName: pdx03-az1-rg01.idc.com
+  namespace:
+    name: ns01348
+    user: nsu123456789199
+    password: "213#dfka11h"
+  user:
+    user: u123456789199
+    password: "g^snmdasd@10"
+  
+
+  

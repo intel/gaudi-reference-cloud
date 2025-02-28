@@ -1,0 +1,4 @@
+# Do not show diffs of generated files.
+*.pb.go -diff linguist-generated
+*.pb.gw.go -diff linguist-generated
+*.pb.validate.go -diff linguist-generated

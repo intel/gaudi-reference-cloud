@@ -1,0 +1,272 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+{{- if $.Values.components.networkCluster.enabled }}
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- $sdnControllerEnabled := $availabilityZone.sdnController.enabled }}
+  {{- if $sdnControllerEnabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-nw-sdn-controller") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+    labels:
+      component: sdn
+      geographicScope: az-network
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+      applicationName: sdn-controller
+    chart: idc/sdn-controller
+    version: {{ readFile (print $helmChartVersionsDir "/sdn-controller.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - proxy:
+          http_proxy: {{ $availabilityZone.networkCluster.proxy.http_proxy | quote }}
+          https_proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          no_proxy: "{{ $availabilityZone.networkCluster.proxy.no_proxy }},{{ $availabilityZone.otel.exporter.otlp.endpoint }}"
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}sdn-controller@sha256"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - log:
+          level: {{ $availabilityZone | get "sdnController.log.level" $.Values.log.level | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-network-ca
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+          proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $region.region }}/{{ $availabilityZone.availabilityZone }}/nw-sdn-controller
+      - managerConfig:
+          controllerManagerConfigYaml:
+            controllerConfig:
+              switchBackendMode: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.switchBackendMode | quote }}
+              enableReadOnlyMode: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.enableReadOnlyMode | quote }}
+              switchSecretsPath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.switchSecretsPath | quote }}
+              dataCenter: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.dataCenter | quote }}
+              maxConcurrentReconciles: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.maxConcurrentReconciles | quote }}
+              portResyncPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.portResyncPeriodInSec | quote }}
+              switchResyncPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.switchResyncPeriodInSec | quote }}
+              bmhResyncPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.bmhResyncPeriodInSec | quote }}
+              networkNodeResyncPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.networkNodeResyncPeriodInSec | quote }}
+              nodeGroupResyncPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.nodeGroupResyncPeriodInSec | quote }}
+              switchImportPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.switchImportPeriodInSec | quote }}
+              statusReportPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.statusReportPeriodInSec | quote }}
+              statusReportAcceleratedPeriodInSec: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.statusReportAcceleratedPeriodInSec | quote }}
+              bmhClusterKubeConfigFilePath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.bmhClusterKubeConfigFilePath | quote }}
+              poolsConfigFilePath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.poolsConfigFilePath | quote }}
+              nodeGroupToPoolMappingConfigFilePath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.nodeGroupToPoolMappingConfigFilePath | quote }}
+              nodeGroupToPoolMappingSource: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.nodeGroupToPoolMappingSource | quote }}
+              useDefaultValueInPoolForMovingNodeGroup: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.useDefaultValueInPoolForMovingNodeGroup | quote }}
+              switchImportSource: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.switchImportSource | quote }}
+              switchPortImportSource: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.switchPortImportSource | quote }}
+              bgpCommunityIncomingGroupName: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.bgpCommunityIncomingGroupName | quote }}
+              allowedTrunkGroups: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedTrunkGroups | toJson }}
+              allowedModes: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedModes | toJson }}
+              allowedVlanIds: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedVlanIds | quote }}
+              allowedNativeVlanIds: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedNativeVlanIds | quote }}
+              allowedCountAccInterfaces: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedCountAccInterfaces | quote }}
+              portChannelsEnabled: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.portChannelsEnabled | quote }}
+              provisioningVlanIds: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.provisioningVlanIds | quote }}
+              netboxServer: "{{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxProtocol }}://{{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxServer }}"
+              netboxTokenPath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxTokenPath | quote }}
+              netboxProviderServersFilterFilePath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxProviderServersFilterFilePath | quote }}
+              netboxProviderInterfacesFilterFilePath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxProviderInterfacesFilterFilePath | quote }}
+              netboxSwitchesFilterFilePath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxSwitchesFilterFilePath | quote }}
+              netboxClientInsecureSkipVerify: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxClientInsecureSkipVerify | quote }}
+              netboxSwitchFQDNDomainName: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxSwitchFQDNDomainName | quote }}
+            ravenConfig:
+              environment: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.ravenConfig.environment | quote }}
+              credentialsFilePath: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.ravenConfig.credentialsFilePath | quote }}
+              host: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.ravenConfig.host | quote }}
+          groupToPoolMappingConfigJson:
+              {{ $availabilityZone.sdnController.managerConfig.groupToPoolMappingConfigJson | toJson | indent 4 }}
+      - netbox: {{ $availabilityZone.sdnController.netbox | toJson }}
+      - serviceMonitor:
+          enabled: {{ $availabilityZone.sdnController.serviceMonitor.enabled }}
+      {{- if $.Values.zeroResources }}
+      - kubeRBACProxyResources:
+      {{- end }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-nw-sdn-controller-crds") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+    labels:
+      component: sdn
+      crd: true
+      geographicScope: az-network
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+      applicationName: sdn-controller-crds
+    chart: idc/sdn-controller-crds
+    version: {{ readFile (print $helmChartVersionsDir "/sdn-controller-crds.version") | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-sdn-restricted-sa") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+    labels:
+      component: sdn
+      restrictedServiceaccount: true
+      geographicScope: az-network
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+      applicationName: sdn-restricted-sa
+    chart: idc/sdn-restricted-sa
+    version: {{ readFile (print $helmChartVersionsDir "/sdn-restricted-sa.version") | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-nw-sdn-integrity-checker") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+    labels:
+      component: sdn
+      geographicScope: az-network
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+      applicationName: sdn-integrity-checker
+    chart: idc/sdn-integrity-checker
+    version: {{ readFile (print $helmChartVersionsDir "/sdn-integrity-checker.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - integrityCheckerConfig:
+          ravenEnv: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.ravenConfig.environment | quote }}
+          datacenter: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.dataCenter | quote }}
+      - proxy:
+          http_proxy: {{ $availabilityZone.networkCluster.proxy.http_proxy | quote }}
+          https_proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          no_proxy: "{{ $availabilityZone.networkCluster.proxy.no_proxy }},{{ $availabilityZone.otel.exporter.otlp.endpoint }}"
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}sdn-integrity-checker@sha256"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - log:
+          level: {{ $availabilityZone | get "sdnController.log.level" $.Values.log.level | quote }}
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+          proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $region.region }}/{{ $availabilityZone.availabilityZone }}/nw-sdn-controller
+
+  {{- if $availabilityZone.sdnController.restAPI.enabled }}
+    # Only for testing / building. Should be deployed to a "regional" cluster in staging / production.
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-provider-sdn-controller-rest") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+    labels:
+      component: sdn
+      geographicScope: az-network
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+      applicationName: sdn-controller-rest
+    chart: idc/sdn-controller-rest
+    version: {{ readFile (print $helmChartVersionsDir "/sdn-controller-rest.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - proxy:
+          http_proxy: {{ $availabilityZone.networkCluster.proxy.http_proxy | quote }}
+          https_proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          no_proxy: "{{ $availabilityZone.networkCluster.proxy.no_proxy }},{{ $availabilityZone.otel.exporter.otlp.endpoint }}"
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}sdn-controller-rest@sha256"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - log:
+          level: {{ $availabilityZone | get "sdnController.log.level" $.Values.log.level | quote }}
+      - tls:
+          client:
+            rootCa: {{ $region.region }}-network-ca
+          issueCa: {{ $region.region }}-network-ca
+      #          commonName: "psdn.us-dev-1.cloud.intel.com"
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+          proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $region.region }}/provider-sdn-controller
+      - restConfig:
+          dataCenter: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.dataCenter | quote }}
+          allowedTrunkGroups: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedTrunkGroups | toJson }}
+          allowedModes: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedModes | toJson }}
+          allowedVlanIds: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedVlanIds | quote }}
+          allowedNativeVlanIds: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedNativeVlanIds | quote }}
+          portChannelsEnabled: {{ $availabilityZone.sdnController.managerConfig.controllerManagerConfigYaml.controllerConfig.portChannelsEnabled | quote }}
+    #      - ingress:
+    #          enabled: true
+    #          className: "nginx"
+    #          hosts:
+    #            - host: psdn.us-dev-1.cloud.intel.com
+    #              paths:
+    #                - path: /
+    #                  pathType: Prefix
+  {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-nw-switch-config-saver") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+    labels:
+      component: sdn
+      geographicScope: az-network
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+      applicationName: switch-config-saver
+    chart: idc/switch-config-saver
+    version: {{ readFile (print $helmChartVersionsDir "/switch-config-saver.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - proxy:
+          http_proxy: {{ $availabilityZone.networkCluster.proxy.http_proxy | quote }}
+          https_proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          no_proxy: "{{ $availabilityZone.networkCluster.proxy.no_proxy }},{{ $availabilityZone.otel.exporter.otlp.endpoint }}"
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}switch-config-saver@sha256"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - log:
+          level: {{ $availabilityZone | get "sdnController.log.level" $.Values.log.level | quote }}
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+          proxy: {{ $availabilityZone.networkCluster.proxy.https_proxy | quote }}
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $region.region }}/{{ $availabilityZone.availabilityZone }}/nw-sdn-controller
+
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,53 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "compute",
+    srcs = ["compute_test_helper.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/test/compute",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/compute_api_server/openapi",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/tlsutil",
+        "//go/pkg/tools/ssh",
+        "//go/test/common",
+        "//go/test/compute/restyclient",
+        "//go/test/kindtestenv",
+        "@com_github_go_resty_resty_v2//:resty",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_tidwall_gjson//:gjson",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)
+
+go_library(
+    name = "helper",
+    srcs = ["compute_test_helper.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/test/compute/helper",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/compute_api_server/openapi",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/tlsutil",
+        "//go/pkg/tools/ssh",
+        "//go/test/common",
+        "//go/test/compute/restyclient",
+        "//go/test/kindtestenv",
+        "@com_github_go_resty_resty_v2//:resty",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_tidwall_gjson//:gjson",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

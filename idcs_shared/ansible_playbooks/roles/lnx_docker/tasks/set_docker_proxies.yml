@@ -1,0 +1,26 @@
+
+---
+- name: Create directory /etc/systemd/system/docker.service.d
+  become: true
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: docker
+    mode: 0600
+
+- name: Setting Docker service proxies
+  become: true
+  copy:
+    src: ./roles/lnx_docker/files/docker_proxy.conf
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+    owner: root
+    group: docker
+    mode: 0600
+  notify:
+    - reload docker
+    - restart docker
+
+- name: Run gpasswd for {{ docker_user }}
+  become: true
+  shell: gpasswd -a {{ docker_user }} docker

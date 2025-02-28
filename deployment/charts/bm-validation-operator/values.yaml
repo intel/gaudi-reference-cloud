@@ -1,0 +1,100 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/bm-validation-operator@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 10m
+        memory: 256Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+enabledInstanceTypes:
+  - bm-virtual
+  - bm-virtual-sc
+managerConfig:
+  controllerManagerConfigYaml:
+    health:
+      healthProbeBindAddress: :8081
+    instanceOperator:
+      # The address of the Compute API Server in format "host:port".
+      # This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+      computeApiServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+    # Validation task Repository base URL
+    validationTaskRepositoryURL: http://172.16.0.1:50001
+    validationTaskVersion:
+      clusterVersionMap: {}
+      instanceVersionMap: {}
+    leaderElection:
+      leaderElect: false
+      resourceName: 761e26fd.cloud.intel.com
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    sshConfig:
+      waitForSSHAccess: true
+      privateKeyFilePath: /vault/secrets/privatekey
+      publicKeyFilePath: /vault/secrets/publickey
+      hostPublicKeyFilePath: /vault/secrets/host_public_key
+    envConfiguration:
+      region: us-dev-1
+      availabilityZone: us-dev-1a
+      subnetPrefixLength: 22
+      netboxAddress: netbox.idcs-enrollment.svc.cluster.local
+      netboxKeyFilePath: /vault/secrets/netbox_key
+      huggingFaceTokenFilePath: /vault/secrets/huggingface_token
+    validationReportS3Config:
+      bucketName: idc-bmaas-validator-testing
+      accessKeyFilePath: /vault/secrets/aws_access_key
+      secretAccessKeyFilePath: /vault/secrets/aws_secret_access_key
+      httpsProxy: ""
+      cloudfrontPrefix: ""
+    featureFlags:
+      deProvisionPostValidationFailure: true
+      groupValidation: true
+    webhook:
+      port: 9443
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https
+vault:
+  agent:
+    inject:
+      secret: 
+        path: ""

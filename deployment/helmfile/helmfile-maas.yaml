@@ -1,0 +1,91 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+
+releases:
+
+{{- if $.Values.components.maas.enabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- $globalServicesAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $dispatcherServerAddr := print $region.maas.dispatcher.dispatcherServerAddr }}
+{{- $productId := print $region.maas.product.productId }}
+{{- $serviceMonitorEnabled := print $region.maas.serviceMonitor.enabled }}
+
+
+  #added for infaas
+  {{- if ($region.maas.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-maas-gateway") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: maas
+      service: maas-gateway
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: maas-gateway
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/maas-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/maas-gateway.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - serviceMonitor:
+          enabled: {{ $serviceMonitorEnabled }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}maas-gateway@sha256"
+      - metering:
+          usageServerAddr: {{ $globalServicesAddr | quote }}
+      - dispatcher:
+          dispatcherServerAddr: {{ $dispatcherServerAddr | quote }}
+      - product:
+          productId: {{ $productId | quote }}
+          productCatalogServerAddr: {{ $globalServicesAddr | quote }}
+      - cognito: # used for global:metering access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-maas-gateway/cognito
+          {{- end }}
+      - apiServer:
+          ingress:
+            issueCa: {{ $region.region }}-ca
+            enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+            className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}
+      - domainSuffix: {{ $region | get "computeApiServer.domainSuffix" $.Values.defaults.region.computeApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}a-maas-ca
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+  {{- end }}
+
+
+{{- end }}
+{{- end }}

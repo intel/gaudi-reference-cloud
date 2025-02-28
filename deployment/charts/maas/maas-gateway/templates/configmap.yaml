@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+data:
+  config.yaml: |
+    listenPort: {{ include "idc-common.listenPort" . }}
+    region: {{ .Values.region }}
+    usageServerAddr:  {{ .Values.metering.usageServerAddr }}
+    usageServerTimeout:  {{ .Values.metering.usageServerTimeout }}
+    dispatcherServerAddr: {{ .Values.dispatcher.dispatcherServerAddr}}
+    productCatalogServerAddr: {{ .Values.product.productCatalogServerAddr }}
+    productId: {{ .Values.product.productId }}
+    grpcHealthCheckExecutionPeriod: {{ .Values.health.grpcHealthCheckExecutionPeriod }}
+    grpcHealthCheckExecutionTimeout: {{ .Values.health.grpcHealthCheckExecutionTimeout }}
+    modelsProductIds:
+      {{ .Values.modelsProductIds | toYaml | nindent 6 }}
+    retryAttempts: {{ .Values.retryAttempts }}
+    familyId: {{ .Values.familyId }}
+    metrics:
+      enabled: {{ .Values.serviceMonitor.enabled }}
+      metricsPort: {{ .Values.metrics.port }}
+      promCredentialsPath: {{ .Values.metrics.promCredentialsPath }}

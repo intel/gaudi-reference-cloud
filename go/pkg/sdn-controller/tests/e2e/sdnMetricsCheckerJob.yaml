@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sdn-e2e-metrics-checker
+  namespace: idcs-system
+spec:
+  template:
+    spec:
+      serviceAccountName: "us-dev-1a-nw-sdn-controller"
+      containers:
+        - name: sdn-e2e-metrics-checker
+          image: curlimages/curl
+          command: ["sh", "-c", "curl https://us-dev-1a-nw-sdn-controller-metrics.idcs-system.svc.cluster.local:8443/metrics --insecure -v -H \"Authorization: Bearer `cat /var/run/secrets/kubernetes.io/serviceaccount/token`\""]
+      restartPolicy: Never
+  backoffLimit: 1

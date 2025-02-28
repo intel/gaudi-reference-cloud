@@ -1,0 +1,1022 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  - name: grpc-rest-gateway
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: grpc-rest-gateway
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-rest-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-rest-gateway.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.grpcRestGateway.replicaCount }}
+      - swagger:
+          enabled: {{ $.Values.global.grpcRestGateway.swagger.enabled }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - deployment: {{ $.Values.global.grpcProxy.deployment | quote }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}grpc-rest-gateway@sha256"
+      - ingress:
+          enabled: {{ $.Values.global.grpcRestGateway.ingress.enabled }}
+          {{- if $.Values.global.grpcRestGateway.ingress.enabled }}
+          className: {{ $.Values.global.grpcRestGateway.ingress.className | quote }}
+          annotations:
+          {{- if (eq $.Values.global.grpcRestGateway.ingress.className "nginx") }}
+            nginx.ingress.kubernetes.io/enable-cors: "true"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          {{- else if (eq $.Values.global.grpcRestGateway.ingress.className "alb") }}
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+            alb.ingress.kubernetes.io/backend-protocol: HTTPS
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+            alb.ingress.kubernetes.io/target-type: ip
+          {{- end }}
+            {{- range $key, $value := $.Values.global.grpcRestGateway.ingress.annotations }}
+            {{ $key }}: {{ $value | quote }}
+            {{- end }}
+          hosts:
+            - host: {{ $.Values.global.grpcRestGateway.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $.Values.global.grpcRestGateway.ingress.host }}
+          tls:
+            - secretName: {{ $.Values.global.grpcRestGateway.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $.Values.global.grpcRestGateway.ingress.host | quote }}
+          {{- end }}
+          {{- end }}
+      - targetAddr: grpc-proxy-external.idcs-system.svc.cluster.local:8443
+      - tls:
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+
+  {{- if $.Values.global.grpcInternalRestGateway.enabled }}
+  - name: grpc-internal-rest-gateway
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: grpc-internal-rest-gateway
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-rest-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-rest-gateway.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.grpcInternalRestGateway.replicaCount }}
+      - swagger:
+          enabled: {{ $.Values.global.grpcInternalRestGateway.swagger.enabled }}
+      - fullnameOverride: grpc-internal-rest-gateway
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - deployment: {{ $.Values.global.grpcProxy.deployment | quote }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}grpc-rest-gateway@sha256"
+      - ingress:
+          enabled: {{ $.Values.global.grpcInternalRestGateway.ingress.enabled }}
+          {{- if $.Values.global.grpcInternalRestGateway.ingress.enabled }}
+          className: {{ $.Values.global.grpcInternalRestGateway.ingress.className | quote }}
+          annotations:
+          {{- if (eq $.Values.global.grpcInternalRestGateway.ingress.className "nginx") }}
+            nginx.ingress.kubernetes.io/enable-cors: "true"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          {{- else if (eq $.Values.global.grpcInternalRestGateway.ingress.className "alb") }}
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+            alb.ingress.kubernetes.io/backend-protocol: HTTPS
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+            alb.ingress.kubernetes.io/target-type: ip
+          {{- end }}
+            {{- range $key, $value := $.Values.global.grpcInternalRestGateway.ingress.annotations }}
+            {{ $key }}: {{ $value | quote }}
+            {{- end }}
+          hosts:
+            - host: {{ $.Values.global.grpcInternalRestGateway.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $.Values.global.grpcInternalRestGateway.ingress.host }}
+          tls:
+            - secretName: {{ $.Values.global.grpcInternalRestGateway.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $.Values.global.grpcInternalRestGateway.ingress.host | quote }}
+          {{- end }}
+          {{- end }}
+      - targetAddr: grpc-proxy-internal.idcs-system.svc.cluster.local:8443
+      - tls:
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  # grpc-proxy-internal is for internal use only. It is used for requests from trusted IDC services.
+  # It currently performs no authorization.
+  - name: grpc-proxy-internal
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: grpc-proxy-internal
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-proxy.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - proxy.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.grpcProxy.internal.replicaCount }}
+      - rateLimit:
+          enabled: {{ and $.Values.global.grpcProxy.internal.rateLimit.enabled $.Values.global.rateLimit.enabled }}
+      - deployment: {{ $.Values.global.grpcProxy.deployment | quote }}
+      - enableJwtValidation: {{ not $.Values.global.grpcProxy.internal.insecureSkipJwtValidation }}
+      - enabledServices:
+      {{- range $key, $value := $.Values.enabledServices }}
+        {{- if $value }}
+        - {{ $key | quote }}
+        {{- end }}
+      {{- end }}
+      - adminJwtOpaRules:
+          insecureAlwaysAllowAdminToken: {{ $.Values.global.adminJwtOpaRules.insecureAlwaysAllowAdminToken }}
+      - opa:
+          enabled: {{ $.Values.global.grpcProxy.internal.opa.enabled }}
+          files: {{ $.Values.global.grpcProxy.internal.opa.files }}
+      - envoy:
+          image:
+            tag: {{ ($.Values.envoy).version }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}opa@sha256"
+      - ingress:
+          enabled: {{ $.Values.global.grpcProxy.internal.ingress.enabled }}
+          {{ if $.Values.global.grpcProxy.internal.ingress.enabled }}
+          externalSecret:
+            enabled: {{ $.Values.global.grpcProxy.internal.ingress.externalSecret.enabled }}
+          className: {{ $.Values.global.grpcProxy.internal.ingress.className | quote }}
+          annotations:
+          {{- if (eq $.Values.global.grpcProxy.internal.ingress.className "nginx") }}
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminates TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+          {{- else if (eq $.Values.global.grpcProxy.internal.ingress.className "alb") }}
+            alb.ingress.kubernetes.io/backend-protocol: HTTPS
+            alb.ingress.kubernetes.io/backend-protocol-version: GRPC
+            alb.ingress.kubernetes.io/healthcheck-protocol: HTTPS
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+            alb.ingress.kubernetes.io/target-type: ip
+          {{- end }}
+            {{- range $key, $value := $.Values.global.grpcProxy.internal.ingress.annotations }}
+            {{ $key }}: {{ $value | quote }}
+            {{- end }}
+          hosts:
+            - host: {{ $.Values.global.grpcProxy.internal.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $.Values.global.grpcProxy.internal.ingress.host }}
+          tls:
+            - secretName: {{ $.Values.global.grpcProxy.internal.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $.Values.global.grpcProxy.internal.ingress.host | quote }}
+          {{- end }}
+          {{- end }}
+      - oidc:
+          servers:
+            {{- if $.Values.cognito.enabled }}
+              # internal proxy receives traffic only from trusted IDC services with Cognito Access Token
+              - issueURL: {{ $.Values.cognito.oidc.issueURL | quote }}
+                keyURL: {{ $.Values.cognito.oidc.keyURL | quote }}
+                server: {{ $.Values.cognito.oidc.server | quote }}
+                port: {{ $.Values.cognito.oidc.port | quote }}
+            {{- end }}
+      - opalclient:
+          imageRegistry: {{ (.Values.dockerIo).registry | quote }}
+          repository: "{{ (.Values.dockerIo).repositoryPrefix }}permitio/opal-client-standalone@sha256"
+          tag: "b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e"
+      - service:
+          type: {{ $.Values.global.grpcProxy.internal.service.type }}
+      - statsd:
+          enabled: {{ $.Values.global.grpcProxy.internal.statsd.enabled }}
+          prefix: {{ $.Values.global.grpcProxy.internal.statsd.prefix }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+          refreshInterval: {{ $.Values.global.grpcProxy.internal.ingress.externalSecret.refreshInterval | quote }}
+
+  # grpc-proxy-external can be used for external (public) requests.
+  # Requests must provide a valid JWT which will be used for authorization.
+  - name: grpc-proxy-external
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: grpc-proxy-external
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-proxy.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - proxy.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.grpcProxy.external.replicaCount }}
+      - rateLimit:
+          enabled: {{ and $.Values.global.grpcProxy.external.rateLimit.enabled $.Values.global.rateLimit.enabled }}
+          claim: {{ $.Values.global.grpcProxy.external.rateLimit.claim }}
+      - environmentName: {{ $.Values.global.environmentName }}
+      - enabledServices:
+      {{- range $key, $value := $.Values.enabledServices }}
+        {{- if $value }}
+        - {{ $key | quote }}
+        {{- end }}
+      {{- end }}
+      - adminJwtOpaRules:
+          insecureAlwaysAllowAdminToken: {{ $.Values.global.adminJwtOpaRules.insecureAlwaysAllowAdminToken }}
+      - authz:
+          enabled: {{ $.Values.global.authz.enabled }}
+      - deployment: {{ $.Values.global.grpcProxy.deployment | quote }}
+      - enableJwtValidation: {{ not $.Values.global.grpcProxy.external.insecureSkipJwtValidation }}
+      - opa:
+          enabled: {{ $.Values.global.grpcProxy.external.opa.enabled }}
+          files: {{ $.Values.global.grpcProxy.external.opa.files }}
+      - envoy:
+          image:
+            tag: {{ ($.Values.envoy).version }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}opa@sha256"
+      - oidc:
+          servers:
+            {{- range $server := $.Values.global.grpcProxy.external.oidc.servers }}
+              - {{ $server | toJson }}
+            {{- end }}
+            {{- if and $.Values.global.grpcProxy.external.insecureDevEnvironment $.Values.global.oidc.insecureEnabled }}
+              - {{- range $key, $value := $.Values.global.grpcProxy.external.oidc.insecureDevServer }}
+                  {{ $key }}: {{ $value | toJson }}
+                {{- end }}
+                  keyURL: http://{{ $.Values.global.oidc.ingress.host }}:80/keys
+                  server: {{ $.Values.global.oidc.ingress.host | quote }}
+            {{- end }}
+      - opalclient:
+          imageRegistry: {{ (.Values.dockerIo).registry | quote }}
+          repository: "{{ (.Values.dockerIo).repositoryPrefix }}permitio/opal-client-standalone@sha256"
+          tag: "b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e"
+      - resources:
+        {{- if not $.Values.zeroResources }}
+          limits:
+            cpu: {{ $.Values.global.grpcProxy.external.resources.limits.cpu | quote }}
+            memory: {{ $.Values.global.grpcProxy.external.resources.limits.memory | quote }}
+          requests:
+            cpu: {{ $.Values.global.grpcProxy.external.resources.requests.cpu | quote }}
+            memory: {{ $.Values.global.grpcProxy.external.resources.requests.memory | quote }}
+        {{- end }}
+      - statsd:
+          enabled: {{ $.Values.global.grpcProxy.external.statsd.enabled }}
+          prefix: {{ $.Values.global.grpcProxy.external.statsd.prefix }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+
+  - name: grpc-reflect
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: grpc-reflect
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-reflect
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-reflect.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}grpc-reflect@sha256"
+      - deployment: {{ $.Values.global.grpcProxy.deployment | quote }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+
+{{- if $.Values.global.appClientApiGrpcProxy.external.enabled }}
+  # app-client-api-grpc-proxy-external can be used for external (public) requests.
+  # Requests must provide a valid JWT which will be used for authorization.
+  - name: app-client-api-grpc-proxy-external
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: app-client-api-grpc-proxy-external
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-proxy.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - proxy.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.appClientApiGrpcProxy.external.replicaCount }}
+      - rateLimit:
+          enabled: {{ and $.Values.global.appClientApiGrpcProxy.external.rateLimit.enabled $.Values.global.rateLimit.enabled }}
+          claim: {{ $.Values.global.appClientApiGrpcProxy.external.rateLimit.claim }}
+      - environmentName: {{ $.Values.global.environmentName }}
+      - authz:
+          enabled: {{ $.Values.global.authz.enabled }}
+      - deployment: {{ $.Values.global.appClientApiGrpcProxy.deployment | quote }}
+      - enableJwtValidation: {{ not $.Values.global.appClientApiGrpcProxy.external.insecureSkipJwtValidation }}
+      - enabledServices:
+      {{- range $key, $value := $.Values.enabledServices }}
+        {{- if $value }}
+        - {{ $key | quote }}
+        {{- end }}
+      {{- end }}
+      - adminJwtOpaRules:
+          insecureAlwaysAllowAdminToken: false
+      - envoy:
+          config:
+            suffix: "-appclient"
+          image:
+            tag: {{ ($.Values.envoy).version }}
+      - opa:
+          enabled: {{ $.Values.global.appClientApiGrpcProxy.external.opa.enabled }}
+          files: {{ $.Values.global.appClientApiGrpcProxy.external.opa.files }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}opa@sha256"
+      - oidc:
+          servers:
+            {{- if and $.Values.global.grpcProxy.external.insecureDevEnvironment $.Values.global.oidc.insecureEnabled }}
+              - {{- range $key, $value := $.Values.global.grpcProxy.external.oidc.insecureDevServer }}
+                  {{ $key }}: {{ $value | toJson }}
+                {{- end }}
+                  keyURL: http://{{ $.Values.global.oidc.ingress.host }}:80/keys
+                  server: {{ $.Values.global.oidc.ingress.host | quote }}
+            {{- end }}
+            {{- if $.Values.global.appClientApiGrpcProxy.external.cognito.oidc.enabled }}
+              - issueURL: {{ $.Values.global.appClientApiGrpcProxy.external.cognito.oidc.issueURL | quote }}
+                keyURL: {{ $.Values.global.appClientApiGrpcProxy.external.cognito.oidc.keyURL | quote }}
+                server: {{ $.Values.global.appClientApiGrpcProxy.external.cognito.oidc.server | quote }}
+                port: {{ $.Values.global.appClientApiGrpcProxy.external.cognito.oidc.port | quote }}
+            {{- end }}
+      - opalclient:
+          imageRegistry: {{ (.Values.dockerIo).registry | quote }}
+          repository: "{{ (.Values.dockerIo).repositoryPrefix }}permitio/opal-client-standalone@sha256"
+          tag: "b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e"
+      - resources:
+        {{- if not $.Values.zeroResources }}
+          limits:
+            cpu: {{ $.Values.global.grpcProxy.external.resources.limits.cpu | quote }}
+            memory: {{ $.Values.global.grpcProxy.external.resources.limits.memory | quote }}
+          requests:
+            cpu: {{ $.Values.global.grpcProxy.external.resources.requests.cpu | quote }}
+            memory: {{ $.Values.global.grpcProxy.external.resources.requests.memory | quote }}
+        {{- end }}
+      - statsd:
+          enabled: {{ $.Values.global.appClientApiGrpcProxy.external.statsd.enabled }}
+          prefix: {{ $.Values.global.appClientApiGrpcProxy.external.statsd.prefix }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+{{- end }}
+
+
+{{- if $.Values.global.appClientApiGrpcRestGateway.enabled }}
+  - name: app-client-api-grpc-rest-gateway
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: app-client-api-grpc-rest-gateway
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-rest-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-rest-gateway.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.appClientApiGrpcRestGateway.replicaCount }}
+      - swagger:
+          enabled: {{ $.Values.global.appClientApiGrpcRestGateway.swagger.enabled }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - deployment: {{ $.Values.global.grpcProxy.deployment | quote }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}grpc-rest-gateway@sha256"
+      - ingress:
+          enabled: {{ $.Values.global.appClientApiGrpcRestGateway.ingress.enabled }}
+          {{- if $.Values.global.appClientApiGrpcRestGateway.ingress.enabled }}
+          className: {{ $.Values.global.appClientApiGrpcRestGateway.ingress.className | quote }}
+          annotations:
+          {{- if (eq $.Values.global.appClientApiGrpcRestGateway.ingress.className "nginx") }}
+            nginx.ingress.kubernetes.io/enable-cors: "true"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          {{- else if (eq $.Values.global.appClientApiGrpcRestGateway.ingress.className "alb") }}
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+            alb.ingress.kubernetes.io/backend-protocol: HTTPS
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+            alb.ingress.kubernetes.io/target-type: ip
+          {{- end }}
+            {{- range $key, $value := $.Values.global.appClientApiGrpcRestGateway.ingress.annotations }}
+            {{ $key }}: {{ $value | quote }}
+            {{- end }}
+          hosts:
+            - host: {{ $.Values.global.appClientApiGrpcRestGateway.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $.Values.global.appClientApiGrpcRestGateway.ingress.host }}
+          tls:
+            - secretName: {{ $.Values.global.appClientApiGrpcRestGateway.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $.Values.global.appClientApiGrpcRestGateway.ingress.host | quote }}
+          {{- end }}
+          {{- end }}
+      - targetAddr: app-client-api-grpc-proxy-external.idcs-system.svc.cluster.local:8443
+      - tls:
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+{{- end }}
+
+
+{{- if $.Values.global.appClientTokenGrpcProxy.external.enabled }}
+  - name: client-token-grpc-proxy-external
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      kubeContext: {{ $.Values.global.kubeContext }}
+      applicationName: client-token-grpc-proxy-external
+      environmentName: {{ $.Values.global.environmentName }}
+    chart: idc/grpc-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-proxy.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.appClientTokenGrpcProxy.external.replicaCount }}
+      - rateLimit:
+          enabled: {{ and $.Values.global.appClientTokenGrpcProxy.external.rateLimit.enabled $.Values.global.rateLimit.enabled }}
+          claim: {{ $.Values.global.appClientTokenGrpcProxy.external.rateLimit.claim }}
+      - environmentName: {{ $.Values.global.environmentName }}
+      - authz:
+          enabled: {{ $.Values.global.authz.enabled }}
+      - deployment: {{ $.Values.global.appClientTokenGrpcProxy.deployment | quote }}
+      - enableJwtValidation: {{ not $.Values.global.appClientTokenGrpcProxy.external.insecureSkipJwtValidation }}
+      - enabledServices:
+      {{- range $key, $value := $.Values.enabledServices }}
+        {{- if $value }}
+        - {{ $key | quote }}
+        {{- end }}
+      {{- end }}
+      - opa:
+          enabled: {{ $.Values.global.appClientTokenGrpcProxy.external.opa.enabled }}
+          policyName: {{ $.Values.global.appClientTokenGrpcProxy.external.opa.policyName }}
+      - envoy:
+          image:
+            tag: {{ ($.Values.envoy).version }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}opa@sha256"
+      - oidc:
+          servers:
+            {{- range $server := $.Values.global.grpcProxy.external.oidc.servers }}
+              - {{ $server | toJson }}
+            {{- end }}
+            {{ if and $.Values.global.grpcProxy.external.insecureDevEnvironment $.Values.global.oidc.insecureEnabled }}
+              - {{- range $key, $value := $.Values.global.grpcProxy.external.oidc.insecureDevServer }}
+                  {{ $key }}: {{ $value | toJson }}
+                {{- end }}
+                  keyURL: http://{{ $.Values.global.oidc.ingress.host }}:80/keys
+                  server: {{ $.Values.global.oidc.ingress.host | quote }}
+            {{- end }}
+      - opalclient:
+          imageRegistry: {{ ($.Values.dockerIo).registry | quote }}
+          repository: "{{ ($.Values.dockerIo).repositoryPrefix }}permitio/opal-client-standalone@sha256"
+          tag: "b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e"
+      - resources:
+        {{- if not $.Values.zeroResources }}
+          limits:
+            cpu: {{ $.Values.global.grpcProxy.external.resources.limits.cpu | quote }}
+            memory: {{ $.Values.global.grpcProxy.external.resources.limits.memory | quote }}
+          requests:
+            cpu: {{ $.Values.global.grpcProxy.external.resources.requests.cpu | quote }}
+            memory: {{ $.Values.global.grpcProxy.external.resources.requests.memory | quote }}
+        {{- end }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+{{- end }}
+
+{{- if $.Values.global.appClientTokenGrpcRestGateway.enabled }}
+  - name: app-client-token-grpc-rest-gateway
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: app-client-token-grpc-rest-gateway
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/grpc-rest-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-rest-gateway.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.appClientTokenGrpcRestGateway.replicaCount }}
+      - swagger:
+          enabled: {{ $.Values.global.appClientTokenGrpcRestGateway.swagger.enabled }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - deployment: {{ $.Values.global.grpcProxy.deployment | quote }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}grpc-rest-gateway@sha256"
+      - ingress:
+          enabled: {{ $.Values.global.appClientTokenGrpcRestGateway.ingress.enabled }}
+          {{- if $.Values.global.appClientTokenGrpcRestGateway.ingress.enabled }}
+          className: {{ $.Values.global.appClientTokenGrpcRestGateway.ingress.className | quote }}
+          annotations:
+          {{- if (eq $.Values.global.appClientTokenGrpcRestGateway.ingress.className "nginx") }}
+            nginx.ingress.kubernetes.io/enable-cors: "true"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          {{- else if (eq $.Values.global.appClientTokenGrpcRestGateway.ingress.className "alb") }}
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+            alb.ingress.kubernetes.io/backend-protocol: HTTPS
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+            alb.ingress.kubernetes.io/target-type: ip
+          {{- end }}
+            {{- range $key, $value := $.Values.global.appClientTokenGrpcRestGateway.ingress.annotations }}
+            {{ $key }}: {{ $value | quote }}
+            {{- end }}
+          hosts:
+            - host: {{ $.Values.global.appClientTokenGrpcRestGateway.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $.Values.global.appClientTokenGrpcRestGateway.ingress.host }}
+          tls:
+            - secretName: {{ $.Values.global.appClientTokenGrpcRestGateway.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $.Values.global.appClientTokenGrpcRestGateway.ingress.host | quote }}
+          {{- end }}
+          {{- end }}
+      - targetAddr: client-token-grpc-proxy-external.idcs-system.svc.cluster.local:8443
+      - tls:
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $cloudAccountAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $authzAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $productCatalogAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- if $region.grpc.enabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-grpc-rest-gateway") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: grpc-rest-gateway
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/grpc-rest-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-rest-gateway.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - deployment: regional
+      - adminJwtOpaRules:
+          insecureAlwaysAllowAdminToken: {{ $.Values.global.adminJwtOpaRules.insecureAlwaysAllowAdminToken }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}grpc-rest-gateway@sha256"
+      - swagger:
+          enabled: {{ $region.grpcRestGateway.swagger.enabled }}
+      - ingress:
+          enabled: {{ $region.grpcRestGateway.ingress.enabled }}
+          className: "nginx"
+          annotations:
+            nginx.ingress.kubernetes.io/enable-cors: "true"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          hosts:
+            - host: {{ $region.grpcRestGateway.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $region.grpcRestGateway.ingress.host }}
+          tls:
+            - secretName: {{ $region.grpcRestGateway.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.grpcRestGateway.ingress.host | quote }}
+          {{- end }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - targetAddr: {{ $region.region }}-grpc-proxy-external.idcs-system.svc.cluster.local:8443
+      - tls:
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-grpc-proxy-internal") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: grpc-proxy-internal
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/grpc-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-proxy.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - cloudAccountAddr: {{ $cloudAccountAddr | quote }}
+      - rateLimit:
+          enabled: {{ and $region.grpcProxy.internal.rateLimit.enabled $region.rateLimit.enabled }}
+      - productCatalogAddr: {{ $productCatalogAddr | quote }}
+      - deployment: regional
+      - enableJwtValidation: {{ not ($region.grpcProxy.internal.skipJwtValidation) }}
+      - enabledServices:
+      {{- range $key, $value := $.Values.enabledServices }}
+        {{- if $value }}
+        - {{ $key | quote }}
+        {{- end }}
+      {{- end }}
+      - adminJwtOpaRules:
+          insecureAlwaysAllowAdminToken: {{ $.Values.global.adminJwtOpaRules.insecureAlwaysAllowAdminToken }}
+      - opa:
+          enabled: {{ $region.grpcProxy.internal.opa.enabled }}
+          files: {{ $region.grpcProxy.internal.opa.files }}
+      - statsd:
+          enabled: {{ $region.grpcProxy.internal.statsd.enabled }}
+          prefix: {{ $region.grpcProxy.internal.statsd.prefix }}
+          image:
+            repository: {{ $region.grpcProxy.internal.statsd.image.repository }}
+      - envoy:
+          image:
+            tag: {{ ($.Values.envoy).version }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}opa@sha256"
+      - ingress:
+          enabled: {{ $region.grpcProxy.internal.ingress.enabled }}
+          className: {{ $region.grpcProxy.internal.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminates TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#ssl-passthrough.
+            nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region.grpcProxy.internal.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region.grpcProxy.internal.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region.grpcProxy.internal.ingress.host) }}
+          tls:
+            - secretName: {{ $region.grpcProxy.internal.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.grpcProxy.internal.ingress.host | quote }}
+          {{- end }}
+      - opalclient:
+          imageRegistry: {{ ($.Values.dockerIo).registry | quote }}
+          repository: "{{ ($.Values.dockerIo).repositoryPrefix }}permitio/opal-client-standalone@sha256"
+          tag: "b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - productCatalogAddr: {{ $productCatalogAddr | quote }}
+      - regionName: {{ $region.region }}
+      - targetAddressPrefix: {{ $region.region }}-
+      - tls:
+          issueCa: {{ $region.region }}-ca
+          commonName: {{ $region.grpcProxy.internal.ingress.host | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-grpc-proxy-external") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: grpc-proxy-external
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/grpc-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-proxy.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - cloudAccountAddr: {{ $cloudAccountAddr | quote }}
+      - rateLimit:
+          enabled: {{ and $region.grpcProxy.external.rateLimit.enabled $region.rateLimit.enabled }}
+          claim: {{ $region.grpcProxy.external.rateLimit.claim }}
+      - productCatalogAddr: {{ $productCatalogAddr | quote }}
+      - authzAddr: {{ $authzAddr | quote }}
+      - environmentName: {{ $.Values.global.environmentName }}
+      - adminJwtOpaRules:
+          insecureAlwaysAllowAdminToken: {{ $.Values.global.adminJwtOpaRules.insecureAlwaysAllowAdminToken }}
+      - authz:
+          enabled: {{ $.Values.global.authz.enabled }}
+      - deployment: regional
+      - enableJwtValidation: {{ not $.Values.global.grpcProxy.external.insecureSkipJwtValidation }}
+      - enabledServices:
+      {{- range $key, $value := $.Values.enabledServices }}
+        {{- if $value }}
+        - {{ $key | quote }}
+        {{- end }}
+      {{- end }}
+      - opa:
+          enabled: {{ $region.grpcProxy.external.opa.enabled }}
+          files: {{ $region.grpcProxy.external.opa.files }}
+      - statsd:
+          enabled: {{ $region.grpcProxy.external.statsd.enabled }}
+          prefix: {{ $region.grpcProxy.external.statsd.prefix }}
+          image:
+            repository: {{ $region.grpcProxy.external.statsd.image.repository }}
+      - envoy:
+          image:
+            tag: {{ ($.Values.envoy).version }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}opa@sha256"
+      - oidc:
+          servers:
+            {{- range $server := $.Values.global.grpcProxy.external.oidc.servers }}
+              - {{ $server | toJson }}
+            {{- end }}
+            {{ if and $.Values.global.grpcProxy.external.insecureDevEnvironment $.Values.global.oidc.insecureEnabled }}
+              - {{- range $key, $value := $.Values.global.grpcProxy.external.oidc.insecureDevServer }}
+                  {{ $key }}: {{ $value | toJson }}
+                {{- end }}
+                  keyURL: http://{{ $.Values.global.oidc.ingress.host }}:80/keys
+                  server: {{ $.Values.global.oidc.ingress.host | quote }}
+            {{- end }}
+      - opalclient:
+          imageRegistry: {{ ($.Values.dockerIo).registry | quote }}
+          repository: "{{ ($.Values.dockerIo).repositoryPrefix }}permitio/opal-client-standalone@sha256"
+          tag: "b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - productCatalogAddr: {{ $productCatalogAddr | quote }}
+      - authzAddr: {{ $authzAddr | quote }}
+      - regionName: {{ $region.region }}
+      - targetAddressPrefix: {{ $region.region }}-
+      - tls:
+          issueCa: {{ $region.region }}-ca
+          server:
+            requireClientCertificate: false
+      - cognito: # used by grpc-proxy:opa-envoy for global:cloudacount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-grpc-proxy-external/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-grpc-reflect") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: grpc-reflect
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/grpc-reflect
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-reflect.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}grpc-reflect@sha256"
+      - deployment: regional
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+{{- if $region.appClientApiGrpcProxy.external.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-app-client-api-grpc-proxy-external") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: app-client-api-grpc-proxy-external
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/grpc-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-proxy.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - cloudAccountAddr: {{ $cloudAccountAddr | quote }}
+      - rateLimit:
+          enabled: {{ and $region.appClientApiGrpcProxy.external.rateLimit.enabled $region.rateLimit.enabled }}
+          claim: {{ $region.appClientApiGrpcProxy.external.rateLimit.claim }}
+      - productCatalogAddr: {{ $productCatalogAddr | quote }}
+      - authzAddr: {{ $authzAddr | quote }}
+      - environmentName: {{ $.Values.global.environmentName }}
+      - authz:
+          enabled: {{ $.Values.global.authz.enabled }}
+      - deployment: regional
+      - enableJwtValidation: {{ not $region.appClientApiGrpcProxy.external.insecureSkipJwtValidation }}
+      - enabledServices:
+      {{- range $key, $value := $.Values.enabledServices }}
+        {{- if $value }}
+        - {{ $key | quote }}
+        {{- end }}
+      {{- end }}
+      - adminJwtOpaRules:
+          insecureAlwaysAllowAdminToken: false
+      - envoy:
+          config:
+            suffix: "-appclient"
+          image:
+            tag: {{ ($.Values.envoy).version }}
+      - opa:
+          enabled: {{ $region.appClientApiGrpcProxy.external.opa.enabled }}
+          files: {{ $region.appClientApiGrpcProxy.external.opa.files }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}opa@sha256"
+      - oidc:
+          servers:
+            {{ if and $.Values.global.grpcProxy.external.insecureDevEnvironment $.Values.global.oidc.insecureEnabled }}
+              - {{- range $key, $value := $.Values.global.grpcProxy.external.oidc.insecureDevServer }}
+                  {{ $key }}: {{ $value | toJson }}
+                {{- end }}
+                  keyURL: http://{{ $.Values.global.oidc.ingress.host }}:80/keys
+                  server: {{ $.Values.global.oidc.ingress.host | quote }}
+            {{- end }}
+            {{- if $region.appClientApiGrpcProxy.external.cognito.oidc.enabled }}
+              - issueURL: {{ $region.appClientApiGrpcProxy.external.cognito.oidc.issueURL | quote }}
+                keyURL: {{ $region.appClientApiGrpcProxy.external.cognito.oidc.keyURL | quote }}
+                server: {{ $region.appClientApiGrpcProxy.external.cognito.oidc.server | quote }}
+                port: {{ $region.appClientApiGrpcProxy.external.cognito.oidc.port | quote }}
+            {{- end }}
+      - opalclient:
+          imageRegistry: {{ ($.Values.dockerIo).registry | quote }}
+          repository: "{{ ($.Values.dockerIo).repositoryPrefix }}permitio/opal-client-standalone@sha256"
+          tag: "b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e"
+      - regionName: {{ $region.region }}
+      - targetAddressPrefix: {{ $region.region }}-
+      - tls:
+          issueCa: {{ $region.region }}-ca
+          server:
+            requireClientCertificate: false
+      - cognito: # used by grpc-proxy:opa-envoy for global:cloudacount access
+          enabled: {{ $region.appClientApiGrpcProxy.external.cognito.enabled }}
+          {{- if $region.appClientApiGrpcProxy.external.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-app-client-api-grpc-proxy-external/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+{{- end }}
+{{- if $region.appClientApiGrpcRestGateway.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-app-client-api-grpc-rest-gateway") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: grpc
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: app-client-api-grpc-rest-gateway
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/grpc-rest-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/grpc-rest-gateway.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - deployment: regional
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}grpc-rest-gateway@sha256"
+      - swagger:
+          enabled: {{ $region.appClientApiGrpcRestGateway.swagger.enabled }}
+      - ingress:
+          enabled: {{ $region.appClientApiGrpcRestGateway.ingress.enabled }}
+          {{- if $region.appClientApiGrpcRestGateway.ingress.enabled }}
+          className: "nginx"
+          annotations:
+            nginx.ingress.kubernetes.io/enable-cors: "true"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          hosts:
+            - host: {{ $region.appClientApiGrpcRestGateway.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $region.appClientApiGrpcRestGateway.ingress.host }}
+          tls:
+            - secretName: {{ $region.appClientApiGrpcRestGateway.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.appClientApiGrpcRestGateway.ingress.host | quote }}
+          {{- end }}
+          {{- end }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - targetAddr: {{ $region.region }}-app-client-api-grpc-proxy-external.idcs-system.svc.cluster.local:8443
+      - tls:
+          server:
+            requireClientCertificate: false
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+{{- end }}
+
+{{- end }}
+{{- end }}

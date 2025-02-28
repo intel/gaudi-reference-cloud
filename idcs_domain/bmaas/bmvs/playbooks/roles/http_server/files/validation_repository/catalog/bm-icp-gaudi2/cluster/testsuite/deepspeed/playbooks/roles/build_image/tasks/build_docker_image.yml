@@ -1,0 +1,14 @@
+---
+
+# Build docker image from Dockerfile
+
+- name: Build docker image from Dockerfile
+  command: docker build --rm -f "{{ val_dir }}/Dockerfile" -t btower .
+  args:
+    chdir: "{{ val_dir }}"
+  register: build_output
+
+- name: Deepspeed Docker Image created successfully
+  debug:
+    msg: "Image created successfully"
+  when: build_output.stdout is search("Successfully built|Successfully tagged")

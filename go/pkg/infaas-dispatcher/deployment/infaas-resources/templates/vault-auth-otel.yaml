@@ -1,0 +1,13 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-otel-auth
+  namespace: idcs-otel
+spec:
+  method: kubernetes
+  mount: cluster-auth
+  kubernetes:
+    role: {{ .Values.region }}-maas-otel-role
+    serviceAccount: otel-agent-opentelemetry-collector-agent
+    audiences:
+      - https://kubernetes.default.svc

@@ -1,0 +1,15 @@
+# This file contains targets to build Helm charts.
+# See https://github.com/masmovil/bazel-rules
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml", 
+    "crds/**",
+  ]),
+
+  package_name = "kubernetes-crds",
+  visibility = ["//visibility:public"],
+)

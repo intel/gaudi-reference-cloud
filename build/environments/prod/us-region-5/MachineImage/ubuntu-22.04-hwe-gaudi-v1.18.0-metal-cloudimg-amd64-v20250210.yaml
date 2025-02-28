@@ -1,0 +1,49 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-22.04-hwe-gaudi-v1.18.0-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 22.04
+  description: Ubuntu 22.04.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-spr-gaudi3-dell
+  - bm-emr-gaudi3-dell
+  - bm-gnr-gaudi3-smc
+  md5sum: 565f07de77e196b8a7ac9b38bca03752
+  sha256sum: f10c58992545fc1aaabefb32a537ae264120ee83e6768fc6645b196175021ab9
+  sha512sum: 20aa15976e88350a11c8b42e964832022e78ac42be777c3d05ede3573da4162d1b69373e18c916b92b17bf22fd6feec390b6dd331aeb338fcfa12799f08584b8
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    kernelVersion: 6.5 (HWE)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: Intel Gaudi SW
+    type: Software kit
+    version: 1.18.0
+    description: Designed to facilitate high-performance DL training on Habana’s Gaudi
+      accelerators.
+    infoUrl: https://docs.habana.ai/en/v1.18.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  - name: Intel Gaudi SW
+    type: Firmware kit
+    version: 1.18.0-524
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

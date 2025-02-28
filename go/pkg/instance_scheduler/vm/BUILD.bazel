@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_container_image")
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "vm_instance_scheduler_image",
+    entrypoint = ["/vm_instance_scheduler"],
+    files = [
+        "//go/pkg/instance_scheduler/vm/cmd/vm_instance_scheduler",
+    ],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,940 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+
+// Cluster Request
+message ClusterRequest{
+  string name = 1;
+  optional string description = 2;
+  string k8sversionname = 3;
+  string runtimename = 4;
+  optional Network network = 5;
+  repeated Annotations annotations = 6;
+  repeated KeyValuePair tags = 7;
+  string cloudAccountId = 8 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string clustertype = 9;
+  string instanceType = 10 [
+    (idc.field).product = true,
+    (idc.field).gtsCheck = true
+  ];
+}
+
+message ClusterResponse {
+  repeated ClusterResponseForm clusters = 1;
+}
+
+message ClusterCreateResponseForm {
+  string uuid = 1;
+  string name = 2;
+  string clusterstate = 3;
+  string k8sversionname = 4;
+}
+
+
+
+// Cluster Response Format
+message ClusterResponseForm {
+  string name = 1;
+  string description = 2;
+  string uuid = 3;
+  string clusterstate = 4;
+  ClusterStatus clusterstatus = 5;
+  string createddate = 6;
+  string k8sversion = 7;
+  bool upgradeavailable = 8;
+  repeated string upgradek8sversionavailable = 9;
+  optional Network network = 10;
+  repeated KeyValuePair tags = 11;
+  //repeated KeyValuePair labels = 12;
+  repeated GetVipResponse vips = 12;
+  repeated Annotations annotations = 13;
+  repeated ProvisioningLog provisioningLog = 14;
+  repeated NodeGroupResponseForm nodegroups = 15;
+  bool storageenabled = 16;
+  repeated ClusterStorageStatus storages = 17;
+  string clustertype = 18;
+}
+
+message ClusterStorageStatus {
+  string storageprovider = 1;
+  string size = 2;
+  string state = 3;
+  string reason = 4;
+  string message = 5;
+}
+
+//CreateNodeGroupRequest
+message CreateNodeGroupRequest {
+  string clusteruuid = 1;
+  string name = 2;
+  optional string description = 3;
+  string instancetypeid = 4;
+  repeated Vnet vnets = 5;
+  int32 count = 6;
+  repeated SshKey sshkeyname = 7;
+  repeated KeyValuePair tags = 8;
+  optional UpgradeStrategy upgradestrategy = 9;
+  repeated Annotations annotations = 10;
+  string cloudAccountId = 11 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string userdataurl = 12;
+  optional string nodegrouptype = 13;
+  string instanceType = 14 [
+    (idc.field).product = true,
+    (idc.field).gtsCheck = true
+  ];
+}
+
+message Vnet {
+  string availabilityzonename = 1;
+  string networkinterfacevnetname = 2 ;
+}
+
+message SshKey {
+  string sshkey = 1 [(validate.rules).string = {
+    pattern: "^[a-zA-Z0-9-_]+$",
+    max_bytes: 63,
+  }];
+}
+// NodeGroupResponseForm
+message NodeGroupResponseForm {
+  string nodegroupuuid = 1;
+  string clusteruuid = 2;
+  string name = 3;
+  optional string description = 4;
+  string instancetypeid = 5;
+  string nodegroupstate = 6;
+  string createddate = 7;
+  Nodegroupstatus nodegroupstatus = 8;
+  int32 count = 9;
+  repeated Vnet vnets = 10;
+  repeated SshKey sshkeyname = 11;
+  optional UpgradeStrategy upgradestrategy = 12;
+  string networkinterfacename = 13;
+  repeated KeyValuePair tags = 14;
+  repeated NodeStatus nodes = 15;
+  string imiid = 16;
+  repeated string upgradeimiid = 17;
+  bool upgradeavailable = 18;
+  repeated Annotations annotations = 19;
+  optional string userdataurl = 20;
+  optional string nodegrouptype = 21;
+  string clustertype = 22;
+}
+
+//NodeGroupResponse
+message NodeGroupResponse{
+  repeated NodeGroupResponseForm nodegroups = 1;
+}
+
+// UpdateNodeGroupRequest
+message UpdateNodeGroupRequest {
+  string clusteruuid = 1;
+  string nodegroupuuid = 2;
+  optional string name = 3;
+  optional string description = 4;
+  optional int32 count = 5;
+  optional UpgradeStrategy upgradestrategy = 6;
+  repeated KeyValuePair tags = 7;
+  repeated Annotations annotations = 8;
+  string cloudAccountId = 9 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string nodegrouptype = 10;
+}
+
+message DeleteNodeGroupInstanceRequest{
+  string clusteruuid = 1;
+  string nodegroupuuid = 2;
+  string instanceName = 3;
+  optional bool downsize = 4;
+  string cloudAccountId = 5 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+// NodeGroupid
+message NodeGroupid {
+  string clusteruuid = 1;
+  string nodegroupuuid = 2;
+  string cloudAccountId = 3 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string nodegrouptype = 4;
+}
+
+// Provisioning Log Table
+message ProvisioningLog {
+  string logentry = 1;
+  string loglevel = 2;
+  string logobject = 3;
+  string timestamp = 4;
+}
+
+// Generic Key-Value pair
+message KeyValuePair {
+  string key = 1;
+  string value = 2;
+}
+
+message Annotations {
+  string key = 1;
+  string value = 2;
+}
+// Cluster ID
+message ClusterID {
+  string clusteruuid = 1;
+  string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string clustertype = 3;
+}
+message GetNodeGroupsRequest{
+  string clusteruuid = 1;
+  optional bool nodes = 2;
+  string cloudAccountId = 3 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+// NodeGroup ID
+message NodeGroupID {
+  string nodegroupuuid = 1;
+}
+
+// Cluster ID
+message UpgradeClusterRequest {
+  string clusteruuid = 1;
+  optional string k8sversionname = 2;
+  string cloudAccountId = 3 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+// Status Response Format
+message ClusterStatus {
+  string name = 1;
+  string clusteruuid = 2;
+  string state = 3;
+  string lastupdate = 4;
+  string reason = 5;
+  string message = 6;
+  int32 errorcode = 7;
+}
+
+// Nodegroupstatus
+message Nodegroupstatus {
+  string name = 1;
+  string clusteruuid = 2;
+  string nodegroupuuid = 3;
+  int32 count = 4;
+  string state = 5;
+  string reason = 6;
+  string message = 7;
+  int32 errorcode = 8;
+  repeated NodeStatus nodestatus = 9;
+  optional NodegroupSummary nodegroupsummary = 10;
+}
+
+// NodegroupSummary
+message NodegroupSummary {
+  int32 activenodes = 1;
+  int32 provisioningnodes = 2;
+  int32 errornodes = 3;
+  int32 deletingnodes = 4;
+}
+
+message NodeStatus {
+  string name = 1;
+  string ipaddress = 2;
+  string dnsname = 3;
+  string imi = 4;
+  string state = 5;
+  string createddate = 6;
+  string instanceimi = 7;
+  string reason = 8;
+  string message = 9;
+  int32 errorcode = 10;
+  bool unschedulable = 11;
+  WekaStorageStatus wekaStorage = 12;
+}
+
+
+// Instance
+message ClusterInstance {
+  string instanceos = 1 [(validate.rules).string.min_len = 1];
+  string instancetype = 2 [(validate.rules).string.min_len = 1];
+}
+
+// Taint
+message Taint {
+  string key = 1;
+  string operator = 2;
+  string value = 3 [(validate.rules).string = {
+    pattern:   "^([a-zA-Z])[a-zA-Z0-9-_]*$",
+    max_bytes: 253,
+  }];
+  string effect = 4;
+}
+
+// UpgradeStrategy
+message UpgradeStrategy {
+  bool drainnodes = 1;
+  int32 maxunavailablepercentage = 2;
+}
+
+// Network
+message Network{
+  bool enableloadbalancer = 1;
+  string region = 2;
+  optional string servicecidr = 3;
+  optional string clustercidr = 4;
+  optional string clusterdns = 5; // url
+}
+
+//// AddOns
+//message AddOn {
+//  string addonversionname = 1 [(validate.rules).string.min_len= 1];
+//  repeated KeyValuePair addonargs = 4;
+//}
+//
+//// Addonarg
+//message AddOnArg {
+//  string name = 1;
+//  string value = 2 [(validate.rules).string = {
+//    pattern:   "^([a-zA-Z])[a-zA-Z0-9-_]*$",
+//    max_bytes: 253,
+//  }];
+//}
+//
+//// CreateAddonRequest
+//message CreateAddonRequest {
+//   int32 clusterid = 1;
+//   AddOn addon = 2;
+//}
+//// AddOnResponse
+//message AddOnResponseForm {
+//  int32 addonid = 1;
+//  repeated AddOn addons = 2;
+//}
+//
+////AddOnResponse
+//message AddOnResponse {
+//  repeated AddOnResponseForm addons = 1;
+//}
+// EncryptionConfig
+message EncryptionConfig {
+  string source = 1;
+  string encrytionalgorithm = 2;
+  string externalkms = 3;
+}
+
+// AdvancedConfig
+message AdvancedConfig {
+  repeated KeyValuePair kubeapiserverArgs = 1;
+  repeated KeyValuePair kubeproxyargs = 2;
+  repeated KeyValuePair kubecontrollerargs = 3;
+  repeated KeyValuePair kubeschedularargs = 4;
+  repeated KeyValuePair kubeletargs = 5;
+}
+
+// Member
+message Member {
+  string kubeconfig = 1;
+  string cloudaccount = 2;
+  // ??? DO WE NEED ROLES []
+}
+
+// GetNodegroupRequest
+message GetNodeGroupRequest {
+  string clusteruuid = 1;
+  string nodegroupuuid = 2;
+  optional bool nodes = 3;
+  string cloudAccountId = 4 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+//// GetAddOnRequest
+//message GetAddOnRequest {
+//  int32 clusterid = 1;
+//  string addonname = 2;
+//}
+//
+//// UpdateAddOnRequest
+//message UpdateAddOnRequest {
+//  int32 clusterid = 1;
+//  int32 addonid = 2;
+//  AddOn addon = 3;
+//}
+//
+//// AddonRequest
+//message AddOnRequest {
+//  int32 clusterid = 1;
+//  int32 addonid = 2;
+//}
+//
+////AddonStatusResponse
+//message AddonStatusResponse {
+//   int32 addonid = 1;
+//   string status = 2;
+//}
+
+// UpdateClusterRequest
+message UpdateClusterRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clusteruuid = 2;
+  optional string name = 3;
+  optional string description = 4;
+  repeated Annotations annotations = 5;
+  repeated KeyValuePair tags = 6;
+
+}
+
+// ClustersResponse
+message ClustersResponse {
+  repeated ClusterResponseForm clusters = 1;
+  ResourceLimits resourcelimits = 2;
+
+}
+
+message ResourceLimits {
+  int32 maxclusterpercloudaccount = 1;
+  int32 maxnodegroupspercluster = 2;
+  int32 maxvipspercluster = 3;
+  int32 maxnodespernodegroup = 4;
+  int32 maxclustervm = 5;
+}
+
+message GetPublicK8sversionResponse {
+  string k8sversionname = 1;
+  repeated string runtimename = 2;
+}
+
+message GetPublicAllK8sversionResponse{
+  repeated GetPublicK8sversionResponse k8sversions = 1;
+}
+
+message GetPublicRuntimeResponse {
+  string runtimename = 1;
+  repeated string k8sversionname = 2;
+}
+
+message GetPublicAllRuntimeResponse {
+  repeated GetPublicRuntimeResponse runtimes = 1;
+}
+
+message GetPublicInstancetypeResponse {
+  string instancetypename = 1;
+  int32 memory = 2;
+  int32 cpu = 3;
+  int32 storage = 4;
+  string displayname = 5;
+  string description = 6;
+  string instancecategory = 7;
+}
+
+message GetPublicAllInstancetypeResponse {
+  repeated GetPublicInstancetypeResponse instancetypes = 1;
+}
+
+/*
+message GetPublicAllNetworks {
+  repeated GetPublicNetworkResponse networks = 1;
+}
+message GetPublicNetworkResponse {
+  int32 availabilityzoneid = 1;
+  int32 idcvnetid = 2;
+  int32 regionid = 3;
+}
+*/
+
+message GetKubeconfigRequest {
+  string clusteruuid = 1;
+  string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+  optional bool readonly = 3;
+}
+
+message GetKubeconfigResponse {
+  int32 clusterid = 1;
+  string kubeconfig = 2;
+}
+
+message IksCloudAccountId {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+
+}
+
+message VipCreateRequest {
+  string clusteruuid = 1;
+  string name = 2;
+  string description = 3;
+  int32 port = 4;
+  string viptype = 5;
+  string cloudAccountId = 6 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message VipResponse {
+  int32 vipid = 1;
+  string name = 2;
+  string description = 3;
+  string vipstate = 4;
+  int32 port = 5;
+  int32 poolport = 6;
+  string viptype = 7;
+  repeated string dnsalias = 8;
+}
+
+message VipStatus {
+  string name = 1;
+  string vipstate = 2;
+  string message = 3;
+  int32 poolid = 4;
+  string vipid = 5;
+  int32 errorcode = 6;
+}
+
+message GetVipResponse {
+  int32 vipid = 1;
+  string name = 2;
+  string description = 3;
+  string vipstate = 4;
+  optional string vipIp = 5;
+  int32 port = 6;
+  int32 poolport = 7;
+  string viptype = 8;
+  repeated string dnsalias = 9;
+  repeated Members members = 10;
+  VipStatus vipstatus = 11;
+  string createddate = 12;
+}
+
+message Members{
+  repeated string ipaddresses = 1;
+}
+
+message GetVipsResponse {
+  repeated GetVipResponse response = 1;
+}
+
+message VipId {
+  string clusteruuid = 1;
+  int32 vipid = 2;
+  string cloudAccountId = 3 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message ClusterStorageRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clusteruuid = 2;
+  bool enablestorage = 3;
+  string storagesize = 4;
+}
+
+message ClusterStorageUpdateRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clusteruuid = 2;
+  string storagesize = 3;
+}
+
+
+message WekaStorageStatus {
+  string clientId = 1;
+  string status = 2;
+  string customStatus = 3;
+  string message = 4;
+}
+
+message FirewallRuleResponse {
+  repeated string sourceip = 1;
+  string state = 2;
+  string destinationip = 3;
+  int32 port = 4;
+  int32 vipid = 5;
+  string vipname = 6;
+  string viptype = 7;
+  repeated string protocol = 8;
+  int32 internalport = 9;
+}
+
+message GetFirewallRuleRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clusteruuid = 2;
+}
+
+message GetFirewallRuleResponse {
+  repeated FirewallRuleResponse getfirewallresponse = 1;
+}
+
+message UpdateFirewallRuleRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clusteruuid = 2;
+  repeated string sourceip = 3;
+  string internalip = 4;
+  int32 port = 5;
+  repeated string protocol = 6;
+}
+
+message DeleteFirewallRuleRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clusteruuid = 2;
+  int32 vipid = 3;
+}
+
+service Iks{
+  // CLUSTERS
+  rpc CreateNewCluster(ClusterRequest) returns (ClusterCreateResponseForm) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.gtsCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetClusters(IksCloudAccountId) returns (ClustersResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetCluster(ClusterID) returns (ClusterResponseForm) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc PutCluster(UpdateClusterRequest) returns (ClusterCreateResponseForm) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc UpgradeCluster(UpgradeClusterRequest) returns (ClusterStatus) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/upgrade"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc EnableClusterStorage (ClusterStorageRequest) returns (ClusterStorageStatus) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/storage"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+
+  rpc UpdateClusterStorage (ClusterStorageUpdateRequest) returns (ClusterStorageStatus) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/storage"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+
+  rpc DeleteCluster(ClusterID) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetClusterStatus(ClusterID) returns (ClusterStatus) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/status"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+
+  // NODEGROUPS
+  rpc CreateNodeGroup(CreateNodeGroupRequest) returns (NodeGroupResponseForm) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.gtsCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetNodeGroups(GetNodeGroupsRequest) returns (NodeGroupResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc GetNodeGroup(GetNodeGroupRequest) returns (NodeGroupResponseForm) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc PutNodeGroup(UpdateNodeGroupRequest) returns (Nodegroupstatus) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc UpgradeNodeGroup(NodeGroupid) returns (Nodegroupstatus) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}/upgrade"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc DeleteNodeGroup(NodeGroupid) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetNodeGroupStatus(NodeGroupid) returns (Nodegroupstatus) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}/status"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc DeleteNodeGroupInstance(DeleteNodeGroupInstanceRequest) returns (Nodegroupstatus) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}/instance/{instanceName}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+
+  // ADDONS
+  //rpc CreateNewAddOn(CreateAddonRequest) returns (AddOnResponseForm) {
+  // option (google.api.http) = {
+  //    post: "/v1/cloudaccount/{cloudAccountId}/clusters/{clusterid}/addons"
+  //    body: "*"
+  //  };
+  //}
+  //rpc GetAddOns(ClusterID) returns (AddOnResponse) {
+  // option (google.api.http) = {
+  //    get: "/v1/cloudaccount/{cloudAccountId}/clusters/{id}/addons"
+  //  };
+  //}
+  //rpc GetAddOn(GetAddOnRequest) returns (AddOnResponseForm) {
+  // option (google.api.http) = {
+  //    get: "/v1/cloudaccount/{cloudAccountId}/clusters/{clusterid}/addons/{addonname}"
+  //  };
+  //}
+  //rpc PutAddOn(UpdateAddOnRequest) returns (AddOnResponseForm) {
+  // option (google.api.http) = {
+  //    patch: "/v1/cloudaccount/{cloudAccountId}/clusters/{clusterid}/addons/{addonid}"
+  //    body: "*"
+  //  };
+  //}
+  //rpc DeleteAddOn(AddOnRequest) returns (google.protobuf.Empty) {
+  // option (google.api.http) = {
+  //    delete: "/v1/cloudaccount/{cloudAccountId}/clusters/{clusterid}/addons/{addonid}"
+  //  };
+  //}
+  //rpc GetAddOnStatus(AddOnRequest) returns (AddonStatusResponse) {
+  // option (google.api.http) = {
+  //    get: "/v1/cloudaccount/{cloudAccountId}/clusters/{clusterid}/addons/{addonid}/status"
+  //  };
+  //}
+
+  // METADATA
+  rpc GetPublicK8sVersions(IksCloudAccountId) returns (GetPublicAllK8sversionResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/metadata/k8sversions"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetPublicRuntimes(IksCloudAccountId) returns (GetPublicAllRuntimeResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/metadata/runtimes"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc GetPublicInstanceTypes(IksCloudAccountId) returns (GetPublicAllInstancetypeResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/metadata/instancetypes"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  // Deprecated: Use RetrieveKubeConfig instead.
+  rpc GetKubeConfig(ClusterID) returns (GetKubeconfigResponse) {
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc RetrieveKubeConfig(GetKubeconfigRequest) returns (GetKubeconfigResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/kubeconfig"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  // Load Balancer
+  rpc CreateNewVip(VipCreateRequest) returns (VipResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/vips"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetVips(ClusterID) returns (GetVipsResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/vips"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetVip(VipId) returns (GetVipResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/vips/{vipid}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc DeleteVip(VipId) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/vips/{vipid}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc UpdateFirewallRule(UpdateFirewallRuleRequest) returns (FirewallRuleResponse) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/security"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc GetFirewallRule(ClusterID) returns (GetFirewallRuleResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/security"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+  rpc DeleteFirewallRule(DeleteFirewallRuleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{cloudAccountId}/iks/clusters/{clusteruuid}/security/{vipid}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  }
+}
+
+// -------------------------------------------------------------------------------------------
+// IKS - SuperCompute Service
+// -------------------------------------------------------------------------------------------
+/* PROPOSED NEW ENDPOINTS*/
+service IksSuperCompute{
+  // CLUSTERS
+  rpc SuperComputeCreateCluster(SuperComputeClusterCreateRequest) returns (ClusterCreateResponseForm) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/iks/supercompute/clusters"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.gtsCheck = true;
+  }
+}
+message SuperComputeClusterCreateRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  ClusterSpec clusterspec = 2;
+  repeated NodegroupSpec nodegroupspec = 3;
+  StorageSpec storagespec = 4;
+  string clustertype = 5;
+  string instanceType = 6 [
+    (idc.field).product = true,
+    (idc.field).gtsCheck = true
+  ];
+}
+
+message StorageSpec {
+  string storagesize = 1;
+  bool enablestorage = 2;
+}
+
+message ClusterSpec {
+  string name = 1 [(validate.rules).string = {
+    pattern: "^[a-zA-Z0-9-_]+$",
+    max_bytes: 63,
+  }];
+  optional string description = 2 [(validate.rules).string = {
+    pattern:   "^[a-zA-Z0-9-_ ]*$",
+    max_bytes: 253,
+  }];
+  string k8sversionname = 3;
+  string runtimename = 4;
+  optional Network network = 5;
+  repeated Annotations annotations = 6;
+  repeated KeyValuePair tags = 7;
+}
+
+message NodegroupSpec {
+  string name = 1 [(validate.rules).string = {
+    pattern: "^[a-zA-Z0-9-_]+$",
+    max_bytes: 63,
+  }];
+  optional string description = 2 [(validate.rules).string = {
+    pattern:   "^[a-zA-Z0-9-_ ]*$",
+    max_bytes: 253,
+  }];
+  string instancetypeid = 3 [(validate.rules).string.min_len = 1];
+  repeated Vnet vnets = 4;
+  int32 count = 5 [(validate.rules).int32 = {gte: 0,  lte: 10}];
+  repeated SshKey sshkeyname = 6;
+  repeated KeyValuePair tags = 7;
+  optional UpgradeStrategy upgradestrategy = 8;
+  repeated Annotations annotations = 9;
+  optional string userdataurl = 10 [(validate.rules).string = {
+    ignore_empty: true,
+    uri: true
+  }];
+  string nodegrouptype = 11;
+}

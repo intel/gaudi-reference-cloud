@@ -1,0 +1,50 @@
+{
+  "REACT_APP_API_GLOBAL_SERVICE": "https://staging.api.idcservice.net/v1",
+  "REACT_APP_API_REGIONAL_SERVICES": [
+    "https://staging-idc-us-1.eglb.intel.com/v1",
+    "https://staging-idc-us-3.eglb.intel.com/v1",
+    "https://staging-idc-us-4.eglb.intel.com/v1"
+  ],
+  "REACT_APP_DEFAULT_REGIONS": [
+    "us-staging-1",
+    "us-staging-3",
+    "us-staging-4"
+  ],
+  "REACT_APP_SELECTED_REGION": "us-staging-1",
+  "REACT_APP_API_PREVIEW_SERVICE": "https://staging-previewapi.cloud.intel.com/v1",
+  "REACT_APP_AGS_GLOBAL_ADMIN": "IDC Administrator - Test",
+  "REACT_APP_AGS_SRE_ADMIN": "IDC Admin SRE - Test",
+  "REACT_APP_AGS_IKS_ADMIN": "IDC Admin IKS - Test",
+  "REACT_APP_AGS_COMPUTE_ADMIN": "IDC Admin Compute - Test",
+  "REACT_APP_AGS_SLURM_ADMIN": "IDC Admin Slurm  - Test",
+  "REACT_APP_AGS_PRODUCT_ADMIN": "IDC Admin Product  - Test",
+  "REACT_APP_AGS_STORAGE_ADMIN": "IDC Admin Storage Quota- Test",
+  "REACT_APP_AGS_QUOTA_ADMIN": "IDC Admin Quota - Test",
+  "REACT_APP_AXIOS_TIMEOUT": 60000,
+  "REACT_APP_TOAST_DELAY": 3000,
+  "REACT_APP_TOAST_ERROR_DELAY": 10000,
+  "REACT_APP_GUI_DOMAIN": "https://staging.console.idcservice.net",
+  "REACT_APP_AZURE_CLIENT_API_SCOPE": "api://5cf0ff86-a5ea-47ab-a3fc-29934041d044/Read",
+  "REACT_APP_AZURE_CLIENT_AUTHORITY": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d",
+  "REACT_APP_AZURE_CLIENT_ID": "5cf0ff86-a5ea-47ab-a3fc-29934041d044",
+  "REACT_APP_AZURE_LANDING_PAGE_URL": "https://cqpreview.intel.com/content/www/us/en/test/idz/barbs-test-folder/developer-cloud-2023-updates/landing-2023-v1.html",
+  "REACT_APP_KNOWLEDGE_BASE": "https://www.intel.com/content/www/us/en/support/products/231482/software/software-services/intel-developer-cloud.html",
+  "REACT_APP_SUBMIT_TICKET": "https://supporttickets.intel.com/s/supportrequest?language=en_US",
+  "REACT_APP_SUPPORT_PAGE": "https://www.intel.com/content/www/us/en/developer/get-help/overview.html#gs.7ugbur",
+  "REACT_APP_FEATURE_BANNER_MANAGEMENT": 1,
+  "REACT_APP_FEATURE_NODE_POOL_MANAGEMENT": 1,
+  "REACT_APP_FEATURE_STORAGE_MANAGEMENT": 1,
+  "REACT_APP_FEATURE_PRODUCT_CATALOG": 1,
+  "REACT_APP_FEATURE_REGION_MANAGEMENT": 1,
+  "REACT_APP_FEATURE_KUBE_SCORE": 1,
+  "REACT_APP_BANNER_AWS_ROLE_ARN": "arn:aws:iam::390677890188:role/s3_banner_access",
+  "REACT_APP_AWS_REGION": "us-west-2",
+  "REACT_APP_AWS_S3_BUCKET_NAME": "s3-idc-console-staging-spa",
+  "REACT_APP_COMPANY_LONG_NAME": "© Intel Corporation",
+  "REACT_APP_REGION_BLOCKED_FEATURES": {
+    "REACT_APP_FEATURE_KUBE_SCORE": [
+      "us-staging-3",
+      "us-staging-4"
+    ]
+  }
+}

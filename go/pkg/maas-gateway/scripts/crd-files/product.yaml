@@ -1,0 +1,67 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Product
+metadata:
+  name: inf-text-processing
+spec:
+  id: "ba5d2874-dc83-425e-af98-c810f11dad79"
+  vendorId: "4015bb99-0522-4387-b47e-c821596dc735"
+  familyId: "4004b07c-14b8-446a-8e63-ed7f1508ee1b"
+  description: Intel Inference Text Processing
+  matchExpr: serviceType == "INFaas" && processingType == "text"
+  metadata:
+    - key: region
+      value: "global"
+    - key: billingEnable
+      value: "false"
+    - key: service
+      value: "Inference"
+    - key: category
+      value: "AIPlayground"
+    - key: family.displayName
+      value: "AI Playground"
+    - key: product.family.description
+      value: "AI Playground"
+    - key: family.displayDescription
+      value: ""
+    - key: displayName
+      value: "INFaas Text Processing"
+    - key: displayCatalogDesc
+      value: "Infaas display catalog description"
+    - key: displayInHomepage
+      value: "true"
+    - key: homepageDisplayGroup
+      value: "Gen AI Essentials"
+    - key: displayPicture
+      value: ""
+    - key: detail.shortDesc
+      value: |
+        Infaas short descr
+    - key: detail.productURL
+      value: ""
+    - key: detail.helpURL
+      value: ""
+    - key: access
+      value: "open"
+    - key: usage.unit
+      value: "per Million Tokens"
+    - key: processingType
+      value: "text"
+  rates:
+    - accountType: standard
+      unit: dollarsPerMillionTokens
+      usageExpr: time – previous.time
+      rate: "0.00"
+    - accountType: premium
+      unit: dollarsPerMillionTokens
+      usageExpr: time – previous.time
+      rate: "0.00"
+    - accountType: enterprise
+      unit: dollarsPerMillionTokens
+      usageExpr: time – previous.time
+      rate: "0.00"
+    - accountType: intel
+      unit: dollarsPerMillionTokens
+      usageExpr: time – previous.time
+      rate: "0.05"

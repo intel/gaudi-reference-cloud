@@ -1,0 +1,81 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Cluster
+metadata:
+  name: cl-1234efgh-ej
+  namespace: default
+spec:
+  instanceIMI: iks-u22-cd-cp-1-27-4-23-8-8
+  instanceType: vm-spr-tny
+  kubernetesProvider: iks
+  sshKey: 
+    - iks-cp-key
+  cloudaccountid: "880517119809"
+  vnets:
+    - availabilityzone: us-dev-1a
+      networkvnet: us-dev-1a-default
+  kubernetesVersion: v1.27.4
+  nodeProvider: Compute
+  runtime: runc
+  network:
+    serviceCIDR: "100.66.0.0/16"
+    podCIDR: "100.68.0.0/16"
+    clusterDNS: "100.66.0.10"
+    region: "us-dev-1"
+  ilbs:
+    - name: etcd
+      description: "Etcd members loadbalancer"
+      port: 443
+      environment: 182
+      usergroup: 2802
+      owner: system
+      pool:
+        name: etcd
+        port: 2379
+    - name: apiserver
+      description: "Kube-apiserver members loadbalancer"
+      port: 443
+      environment: 182
+      usergroup: 2802
+      owner: system
+      pool:
+        name: apiserver
+        port: 6443
+    - name: konnectivity
+      description: "Konnectivity members loadbalancer"
+      port: 443
+      environment: 182
+      usergroup: 2802
+      owner: system
+      pool:
+        name: konnectivity
+        port: 8132
+  addons:
+    - name: kube-proxy
+      type: kubectl-apply
+      artifact: http://100.64.16.76:7071/kube-proxy-k1271-1.template
+    - name: coredns
+      type: kubectl-apply
+      artifact: http://100.64.16.76:7071/coredns-171-k1271-1.template
+    - name: calico-operator
+      type: kubectl-replace
+      artifact: http://100.64.16.76:7071/calico-operator-3260-k1271-1.template
+    - name: calico-config
+      type: kubectl-apply
+      artifact: http://100.64.16.76:7071/calico-config-3260-k1271-1.template
+    - name: konnectivity-agent
+      type: kubectl-apply
+      artifact: http://100.64.16.76:7071/konnectivity-agent.template
+  nodegroups:
+    - name: ng-1234efgh-ej 
+      count: 1
+      instanceIMI: iks-u22-cd-wk-1-27-4-23-8-8
+      instanceType: vm-spr-tny
+      cloudaccountid: "294773536207"
+      sshKey:
+        - user2@acme.com
+      vnets:
+        - availabilityzone: us-dev-1a
+          networkvnet: us-dev-1a-default
+    

@@ -1,0 +1,485 @@
+{{ `{{- $trust_chain_verification := "VERIFY_TRUST_CHAIN" }}` }}
+{{ `{{- if $.Values.tls.client.insecureSkipVerify }}` }}
+{{ `{{- $trust_chain_verification := "ACCEPT_UNTRUSTED" }}` }}
+{{ `{{- end }}` }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ print "{{" }} include "idc-common.fullname" . {{ print "}}" }}{{ .ConfigMapNameSuffix }}
+  namespace: {{ print "{{" }} include "idc-common.namespace" . {{ print "}}" }}
+  annotations:
+    # Add important parameters as annotations so that an administrator can easily see the effective values in this ConfigMap.
+    # These annotations have no effect.
+    deployment: {{ `{{ $.Values.deployment | quote }}` }}
+    enableJwtValidation: {{ `{{ $.Values.enableJwtValidation | quote }}` }}
+    tls.client.insecureSkipVerify: {{ `{{ $.Values.tls.client.insecureSkipVerify | quote }}` }}
+    tls.enabled: {{ `{{ $.Values.tls.enabled | quote }}` }}
+    tls.server.requireClientCertificate: {{ `{{ $.Values.tls.server.requireClientCertificate | quote }}` }}
+data:
+{{ print "{{-"}} if $.Values.tls.enabled {{ print "}}"}}
+  sds.yaml: |
+    resources:
+      - "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
+        name: tls_sds
+        tls_certificate:
+          certificate_chain:
+            filename: "/vault/secrets/cert.pem"
+          private_key:
+            filename: "/vault/secrets/cert.key"
+          watched_directory:
+            path: /vault/secrets
+{{ print "{{- end }}"}}
+  envoy.yaml: |
+    node:
+      id: "grpc-proxy"
+      cluster: "grpc-proxy"
+{{ print "{{-"}} if eq $.Values.envoy.image.tag "v1.26.8" {{ print "}}"}}
+    # disable the async cert validation for version [v1.24.0 to v1.26.8]
+    layered_runtime:
+      layers:
+      - name: static_layer
+        static_layer:
+          envoy.reloadable_features.tls_async_cert_validation: false
+{{ print "{{- end }}"}}
+    static_resources:
+      listeners:
+      - name: listener_0
+        address:
+          socket_address:
+            address: {{ print "{{" }} .Values.listenAddress {{ print "}}" }}
+            port_value: {{ print "{{" }} include "idc-common.listenPort" . {{ print "}}" }}
+        filter_chains:
+        - filters:
+          - name: envoy.filters.network.http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              # maximum request headers size for incoming connections
+              # max_request_headers_kb: 1024
+              # time that Envoy will wait for the entire request to be received
+              common_http_protocol_options:
+                idle_timeout: 600s # Maximum idle time for connections.
+              request_timeout: 120s
+              access_log:
+              - name: envoy.access_loggers.stdout
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+{{ print "{{-"}} if eq $.Values.envoy.image.tag "v1.26.8" {{ print "}}"}}
+                  log_format:
+                    text_format_source: 
+                      inline_string: "[%START_TIME%] %REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL% %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% %REQ(X-FORWARDED-FOR)% %REQ(USER-AGENT)% %REQ(X-REQUEST-ID)% %REQ(:AUTHORITY)% %UPSTREAM_HOST% [ %DOWNSTREAM_TRANSPORT_FAILURE_REASON% %UPSTREAM_TRANSPORT_FAILURE_REASON% ]\n"
+{{ print "{{- end }}"}}
+              http_filters:
+              # - name: envoy.filters.http.buffer
+              #  typed_config:
+              #    "@type": type.googleapis.com/envoy.extensions.filters.http.buffer.v3.Buffer
+              #    # maximum request size that the filter will buffer before the connection manager
+              #    max_request_bytes: 16777216 # 16 MiB (16 * 1024 * 1024 bytes)
+{{ print "{{-"}} if .Values.oidc.servers {{ print "}}"}}
+              - name: envoy.filters.http.jwt_authn
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+                  providers:
+{{ print "{{-"}} range $key, $value := $.Values.oidc.servers {{ print "}}"}}
+                    oidc_provider_{{ print "{{"}} $key {{ print "}}"}}:
+                      issuer: {{ print "{{" }} $value.issueURL {{ print "}}" }}
+{{ print "{{-"}} if $value.audiences {{ print "}}"}}
+                      audiences:
+{{ print "{{-"}} range $value.audiences {{ print "}}"}}
+                      - {{ print "{{"}} . {{ print "}}"}}
+{{ print "{{- end }}"}}
+{{ print "{{- end }}"}}
+                      forward: "true"
+                      from_headers:
+                        - name: Authorization
+                          value_prefix: "Bearer "
+                      remote_jwks:
+                        http_uri:
+                          uri: {{ print "{{" }} $value.keyURL {{ print "}}" }}
+                          cluster: oidc_cluster_{{ print "{{"}} $key {{ print "}}"}}
+                          timeout: 5s
+                        cache_duration:
+                          seconds: 300
+{{ print "{{- end }}"}}
+{{ print "{{-"}} if .Values.enableJwtValidation {{ print "}}"}}
+                  rules:
+                  - match:
+                      prefix: "/"
+                    requires:
+{{ print "{{-"}} if eq (len .Values.oidc.servers) 1 {{ print "}}"}}
+                      provider_name: oidc_provider_0
+{{ print "{{-"}} else {{ print "}}"}}
+                      requires_any:
+                        requirements:
+{{ print "{{-"}} range $key, $value := $.Values.oidc.servers {{ print "}}"}}
+                        - provider_name: oidc_provider_{{ print "{{"}} $key {{ print "}}"}}
+{{ print "{{- end }}"}}
+{{ print "{{- end }}"}}
+{{ print "{{-"}} end {{ print "}}"}}
+{{ print "{{-"}} end {{ print "}}"}}
+{{ print "{{-"}} if .Values.rateLimit.enabled {{ print "}}"}}
+              - name: envoy.filters.http.lua
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                  inline_code: |
+                    function envoy_on_request(request_handle)
+                        local auth_header = request_handle:headers():get("Authorization")
+                        -- request_handle:logInfo("rate_limit: authorization header: " .. (auth_header or "nil"))
+                        -- Extract and parse the JWT
+                        if auth_header then
+                            local jwt = string.match(auth_header, "Bearer%s+(.+)")
+                            -- request_handle:logInfo("rate_limit: extracted JWT " .. (jwt or "nil"))
+                            if jwt then
+                                -- Split JWT into header, payload, and signature
+                                local _, payload, _ = jwt:match("([^%.]+)%.([^%.]+)%.([^%.]+)")
+                                -- request_handle:logInfo("rate_limit: base64 payload " .. (payload or "nil"))
+                                if payload then
+                                    -- Decode the payload using the base64_decode function
+                                    local decoded_payload = base64_decode(payload)
+                                    -- request_handle:logInfo("rate_limit: decoded payload  " .. (decoded_payload or "nil"))
+                                    if decoded_payload then
+                                        local claim_variable = {{ `{{ $.Values.rateLimit.claim | quote }}` }}
+                                        -- request_handle:logInfo("rate_limit: claim variable " .. claim_variable)
+                                        local claim_value = decoded_payload:match('"' .. claim_variable .. '"%s*:%s*"([^"]+)"')
+                                        -- request_handle:logInfo("rate_limit: extracted claim value " .. (claim_value or "nil"))
+                                        if claim_value then
+                                            -- Add the claim value as user ID to the header
+                                            request_handle:headers():add("X-User-ID", claim_value)
+                                            -- request_handle:logInfo("rate_limit: user ID added to headers.")
+                                        else
+                                            request_handle:logInfo("rate_limit: user ID not found in JWT payload.")
+                                        end
+
+                                      else
+                                          request_handle:logInfo("rate_limit: failed to decode the payload.")
+                                    end
+                                else
+                                    request_handle:logInfo("rate_limit: failed to split JWT parts correctly.")
+                                end
+                            else
+                                request_handle:logInfo("rate_limit: failed JWT not found in authorization header.")
+                            end
+                        else
+                            request_handle:logInfo("rate_limit: authorization header not found.")
+                        end
+                    end
+
+                    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+                    function base64_decode(data)
+                        -- Adjust for padding
+                        data = string.gsub(data, '[^' .. b .. '=]', '')
+                        data = string.gsub(data, '[-_]', function(x)
+                            return (x == '-' and '+') or '/'
+                        end)
+                        
+                        local padding = #data % 4
+                        if padding > 0 then
+                            data = data .. string.rep('=', 4 - padding)
+                        end
+                        return (data:gsub('.', function(x)
+                            if x == '=' then return '' end
+                            local r, f = '', (b:find(x) - 1)
+                            for i = 6, 1, -1 do
+                                r = r .. ((f % 2 ^ i - f % 2 ^ (i - 1) > 0) and '1' or '0')
+                            end
+                            return r
+                        end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+                            if #x ~= 8 then return '' end
+                            local c = 0
+                            for i = 1, 8 do
+                                c = c + ((x:sub(i, i) == '1') and 2 ^ (8 - i) or 0)
+                            end
+                            return string.char(c)
+                        end))
+                    end
+{{ print "{{- end }}"}}
+              - name: envoy.filters.http.health_check
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.health_check.v3.HealthCheck
+                  pass_through_mode: false
+                  headers:
+                  - name: ":path"
+                    string_match:
+                      exact: "/healthz"
+                  - name: "x-envoy-livenessprobe"
+                    string_match:
+                      exact: "healthz"
+{{ print "{{-"}} if .Values.opa.enabled {{ print "}}"}}                 
+              - name: envoy.ext_authz
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+                  transport_api_version: V3
+                  with_request_body:
+                    max_request_bytes: 8192
+                    allow_partial_message: true
+                    pack_as_bytes: true
+                  failure_mode_allow: false
+                  grpc_service:
+                    google_grpc:
+                      target_uri: 127.0.0.1:{{ print "{{-" }} .Values.opa.grpcPort {{ print "}}" }}
+                      stat_prefix: ext_authz
+                    timeout: 15s
+{{ print "{{- end }}"}}
+{{ print "{{-"}} if .Values.rateLimit.enabled {{ print "}}"}}
+              - name: envoy.filters.http.ratelimit
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
+                  domain: idc
+                  request_type: external
+                  # stage: 0
+                  rate_limited_as_resource_exhausted: {{ `{{ $.Values.rateLimit.rateLimitedAsResourceExhausted }}` }}
+                  failure_mode_deny: {{ `{{ $.Values.rateLimit.failureModeDeny }}` }}
+                  enable_x_ratelimit_headers: {{ `{{ $.Values.rateLimit.enableXRateLimitHeaders }}` }}
+                  rate_limit_service:
+                    grpc_service:
+                      envoy_grpc:
+                        cluster_name: rate_limit_cluster
+                    transport_api_version: V3
+{{ print "{{- end }}"}}
+              - name: envoy.filters.http.router
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+              codec_type: AUTO
+              stat_prefix: ingress_http
+              route_config:
+                name: local_route
+                virtual_hosts:
+                - name: http
+                  domains:
+                  - "*"
+{{ print "{{-"}} if .Values.rateLimit.enabled {{ print "}}"}}
+                  rate_limits:
+                    - actions:
+                        - request_headers:
+                            header_name: "X-User-ID"
+                            descriptor_key: "user_id"
+                        - request_headers:
+                            header_name: ":path"
+                            descriptor_key: "path"
+                        - request_headers:
+                            header_name: ":method"
+                            descriptor_key: "method"
+{{ print "{{- end }}"}}
+                  routes:
+                  - match:
+                      prefix: "/grpc.reflection.v1alpha.ServerReflection/"
+                    route:
+                      auto_host_rewrite: true
+                      cluster: "grpc-reflect"
+                    typed_per_filter_config:
+                      envoy.filters.http.ext_authz:
+                        "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
+                        disabled: true
+{{- range .Methods }}
+{{ print "{{-"}} if and (has "{{ .Service }}" $.Values.enabledServices)  (or (eq $.Values.deployment "all") (eq $.Values.deployment "{{.Deployment}}")) {{ print "}}"}}
+                  - match:
+                      prefix: "/proto.{{ .Service }}/{{ .Name }}"
+                    route:
+                      auto_host_rewrite: true
+{{- if .StreamForever }}                      
+                      timeout: 0s
+                      idle_timeout: 0s
+{{- else }}
+                      timeout: 60s
+{{- end}}
+                      cluster: "{{ .Cluster }}"
+{{ print "{{- end }}"}}
+{{- end}}
+          transport_socket:
+            name: envoy.transport_sockets.raw_buffer
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.raw_buffer.v3.RawBuffer
+{{ print "{{-"}} if $.Values.tls.enabled {{ print "}}"}}
+              tcp_keepalive:
+                keepalive_probes: 10              # Number of keepalive probes sent before the connection is considered dead.
+                keepalive_time: 120               # Time (in seconds) between subsequent keepalive probes.
+                keepalive_interval: 30            # Time (in seconds) between the first keepalive probe and the first retransmission.
+          transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+              require_client_certificate: {{ `{{ $.Values.tls.server.requireClientCertificate }}` }}
+              common_tls_context:
+                tls_certificate_sds_secret_configs:
+                  name: tls_sds
+                  sds_config:
+                    path: /etc/envoy/sds.yaml
+                validation_context:
+                  trusted_ca:
+                    filename: /vault/secrets/ca.pem
+                  watched_directory:
+                    path: /vault/secrets
+                  trust_chain_verification: {{ `{{ $trust_chain_verification }}` }}
+{{ print "{{- end }}"}}
+      clusters:
+{{ print "{{-"}} if .Values.rateLimit.enabled {{ print "}}"}}
+      - name: rate_limit_cluster
+        connect_timeout: 0.25s
+        type: STRICT_DNS
+        lb_policy: ROUND_ROBIN
+        http2_protocol_options: {}
+        load_assignment:
+          cluster_name: rate_limit_cluster
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: {{ print "{{ .Values.targetAddressPrefix }}rate-limit{{ .Values.targetAddressSuffix }}" }}
+                    port_value: 8081
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            common_tls_context:
+              tls_certificates:
+                - certificate_chain:
+                    filename: /vault/secrets/cert.pem
+                  private_key:
+                    filename: /vault/secrets/cert.key
+              validation_context:
+                trusted_ca:
+                  filename: /vault/secrets/ca.pem
+                watched_directory:
+                  path: /vault/secrets
+                trust_chain_verification: {{ `{{ $trust_chain_verification }}` }}
+{{ print "{{- end }}"}}
+{{ print "{{-"}} range $key, $value := $.Values.oidc.servers {{ print "}}"}}
+      - name: oidc_cluster_{{ print "{{"}} $key  {{ print "}}"}}
+        connect_timeout: {{ print "{{" }} $.Values.oidc.oidcServerConnectTimeout {{ print "}}" }}
+        type: LOGICAL_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        load_assignment:
+          cluster_name: oidc_cluster_{{ print "{{"}} $key  {{ print "}}"}}
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: {{ print "{{" }} $value.server {{ print "}}" }}
+                    port_value: {{ print "{{" }} $value.port {{ print "}}" }}
+{{ print "{{-"}} if ne (index $value "useTls") false {{ print "}}"}}
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            sni: {{ print "{{" }} $value.server {{ print "}}" }}
+{{ print "{{- end }}"}}
+{{ print "{{- end }}"}}
+      - name: "grpc-reflect"
+        connect_timeout: 0.5s
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        http2_protocol_options: {}
+        load_assignment:
+          cluster_name: "grpc-reflect"
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: {{ print "{{ .Values.targetAddressPrefix }}grpc-reflect{{ .Values.targetAddressSuffix }}" }}
+                    port_value: 8443
+        health_checks:
+          timeout: 1s
+          interval: 10s
+          unhealthy_threshold: 2
+          healthy_threshold: 2
+          tcp_health_check: {}
+{{ print "{{-"}} if $.Values.tls.enabled {{ print "}}"}}
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            sni: grpc-reflect.idcs-system.svc.cluster.local
+            common_tls_context:
+              tls_certificate_sds_secret_configs:
+                name: tls_sds
+                sds_config:
+                  path: /etc/envoy/sds.yaml
+              validation_context:
+                trusted_ca:
+                  filename: /vault/secrets/ca.pem
+                watched_directory:
+                  path: /vault/secrets
+                trust_chain_verification: {{ `{{ $trust_chain_verification }}` }}
+{{ print "{{- end }}"}}
+{{- range .Clusters}}
+{{ print "{{-"}} if or (eq $.Values.deployment "all") (eq $.Values.deployment "{{- .Deployment }}") {{ print "}}"}}
+      - name: {{.Name}}
+        connect_timeout: 0.5s
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        http2_protocol_options: {}
+        load_assignment:
+          cluster_name: {{.Name}}
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: {{ print "{{ .Values.targetAddressPrefix }}" }}{{ .Service }}{{ print "{{ .Values.targetAddressSuffix }}" }}
+                    port_value: 8443
+        health_checks:
+          timeout: 1s
+          interval: 10s
+          unhealthy_threshold: 2
+          healthy_threshold: 2
+          tcp_health_check: {}
+{{ print "{{-"}} if $.Values.tls.enabled {{ print "}}"}}
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+{{ print "{{-"}} if (eq $.Values.deployment "all") {{ print "}}"}}
+{{ print "{{-"}} if or (eq "{{- .Name }}" "compute") (eq "{{- .Name }}" "compute_private") {{ print "}}"}}
+            sni:  {{ print "{{ .Values.targetAddressPrefix }}" }}compute-api-server{{ print "{{ .Values.targetAddressSuffix }}" }}
+{{ print "{{-"}} else   {{ print "}}"}}
+            sni:  {{ print "{{ .Values.targetAddressPrefix }}" }}{{.Name}}{{ print "{{ .Values.targetAddressSuffix }}" }}
+{{ print "{{- end }}"}}
+{{ print "{{- end }}"}}
+            common_tls_context:
+              tls_certificate_sds_secret_configs:
+                name: tls_sds
+                sds_config:
+                  path: /etc/envoy/sds.yaml
+              validation_context:
+                trusted_ca:
+                  filename: /vault/secrets/ca.pem
+                watched_directory:
+                  path: /vault/secrets
+                trust_chain_verification: {{ `{{ $trust_chain_verification }}` }} 
+{{ print "{{- end }}"}}
+{{ print "{{- end }}"}}
+{{- end}}
+{{ print "{{-"}} if .Values.statsd.enabled {{ print "}}"}}
+      - name: statsd-exporter
+        connect_timeout: 0.25s
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        http2_protocol_options: {}
+        load_assignment:
+          cluster_name: statsd-exporter
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: {{ print "{{ .Values.statsd.address }}" }}
+                    port_value: {{ print "{{ .Values.statsd.port }}" }}
+    stats_sinks:
+      - name: envoy.stat_sinks.statsd
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.metrics.v3.StatsdSink
+          tcp_cluster_name: statsd-exporter
+          prefix: {{ print "{{ .Values.statsd.prefix }}" }}
+{{ print "{{- end }}"}}
+    admin:
+      access_log_path: /dev/stdout
+      address:
+        socket_address:
+          address: 127.0.0.1
+          port_value: 8090

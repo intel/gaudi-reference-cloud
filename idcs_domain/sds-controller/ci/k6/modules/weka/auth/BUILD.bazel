@@ -1,0 +1,39 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "auth",
+    srcs = [
+        "fake_jws.go",
+        "jwt_authenticator.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/ci/k6/modules/weka/auth",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_deepmap_oapi_codegen_v2//pkg/ecdsafile",
+        "@com_github_getkin_kin_openapi//openapi3filter",
+        "@com_github_lestrrat_go_jwx//jwa",
+        "@com_github_lestrrat_go_jwx//jwk",
+        "@com_github_lestrrat_go_jwx//jws",
+        "@com_github_lestrrat_go_jwx//jwt",
+        "@com_github_oapi_codegen_echo_middleware//:echo-middleware",
+    ],
+)
+
+go_test(
+    name = "auth_test",
+    srcs = [
+        "fake_jws_test.go",
+        "jwt_authenticator_test.go",
+    ],
+    embed = [":auth"],
+    deps = [
+        "@com_github_getkin_kin_openapi//openapi3filter",
+        "@com_github_labstack_echo_v4//:echo",
+        "@com_github_oapi_codegen_echo_middleware//:echo-middleware",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

@@ -1,0 +1,64 @@
+.imgShadow {
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1)
+}
+
+.maw-900 {
+    max-width: 900px;
+}
+
+.miw-80 {
+ min-width: 22rem
+}
+
+.buttonGroupGap {
+  gap: 0.5rem !important
+}
+
+.w-80 {
+ width: 80%
+}
+
+.errorColor {
+    color: var(--secondary);
+}
+
+.bannerBackground {
+  	max-width: 32rem;
+     
+
+}
+
+.chatWindow {
+    max-width: 48rem;
+}
+
+.chatPanel {
+    min-width: 25rem;
+}
+
+.chatBox {
+    display: flex;
+    min-width: 18.75rem;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+}
+
+.chatBox input {
+    border-radius: 0.25rem 0rem 0rem 0.25rem;
+    border-top: 1px solid var(--gray-400);
+    border-bottom: 1px solid var(--gray-400);
+    border-left: 1px solid var(--gray-400);
+    border-right: 0px ;
+}
+
+.chatBox .btn-icon-simple,
+.chatBox .btn-icon-simple:focus,
+.chatBox .btn-icon-simple:focus-visible,
+.chatBox .btn-icon-simple:focus:active {
+    border-radius: 0rem 0.25rem 0.25rem 0rem;
+    border-top: 1px solid var(--gray-400);
+    border-bottom: 1px solid var(--gray-400);
+    border-right: 1px solid var(--gray-400);
+    border-left: 0px ;
+}

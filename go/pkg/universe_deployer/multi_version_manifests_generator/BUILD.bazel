@@ -1,0 +1,46 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "multi_version_manifests_generator",
+    srcs = [
+        "config.go",
+        "multi_version_manifests_generator.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/multi_version_manifests_generator",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/log/store_forward_logger",
+        "//go/pkg/universe_deployer/artifactory",
+        "//go/pkg/universe_deployer/cache",
+        "//go/pkg/universe_deployer/filepaths",
+        "//go/pkg/universe_deployer/manifests_generator",
+        "//go/pkg/universe_deployer/universe_config",
+        "//go/pkg/universe_deployer/util",
+        "@com_github_google_uuid//:uuid",
+    ],
+)
+
+go_test(
+    name = "multi_version_manifests_generator_test",
+    srcs = [
+        "multi_version_manifests_generator_test.go",
+        "suite_test.go",
+    ],
+    data = glob(["testdata/**"]) + [
+        "//deployment/universe_deployer/deployment_artifacts:deployment_artifacts_tar",
+    ],
+    embed = [":multi_version_manifests_generator"],
+    rundir = ".",
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/artifactory",
+        "//go/pkg/universe_deployer/filepaths",
+        "//go/pkg/universe_deployer/universe_config",
+        "//go/pkg/universe_deployer/util",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

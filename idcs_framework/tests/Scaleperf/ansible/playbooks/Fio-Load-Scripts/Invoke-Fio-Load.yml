@@ -1,0 +1,10 @@
+- name: Invoke the FIO script inside VM
+  hosts: vm
+  become: yes
+  become_method: sudo
+  
+  tasks:
+  - name: Invoke the Fio script
+    shell: fio --name=fiotest --filename=/home/ubuntu/test_5gb --size=5Gb --rw=randrw --bs=4K --rate=4k --direct=1 --numjobs=2 --ioengine=libaio --iodepth=4 --group_reporting --runtime=90 --startdelay=10 >>/home/ubuntu/output_5gb.txt 2>&1 &
+    async: 10
+    poll: 0

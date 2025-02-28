@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "metal3_io",
+    srcs = ["interface.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/metal3client/informers/externalversions/metal3.io",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/generated/metal3client/informers/externalversions/internalinterfaces",
+        "//go/pkg/k8s/generated/metal3client/informers/externalversions/metal3.io/v1alpha1",
+    ],
+)

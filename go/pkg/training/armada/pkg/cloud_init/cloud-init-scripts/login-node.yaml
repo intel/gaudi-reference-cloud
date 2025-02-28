@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+#cloud-init
+packages:
+  - nfs-common
+  - nfs4-acl-tools
+  - whois
+  - sssd-ldap
+  - ldap-utils
+  - slurm-client
+  - slurm-wlm-doc
+  - slurm-wlm
+write_files:
+  {{ Values.Common.LdapFiles | indent:2 }}
+runcmd:
+  {{ Values.Common.WekaStorage | indent:2 }}
+  {{ Values.Common.LdapRunCmd | indent:2 }}
+  - sudo chown ubuntu:ubuntu /home/ubuntu

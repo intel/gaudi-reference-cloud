@@ -1,0 +1,5 @@
+apiVersion: v2
+name: sdn-restricted-sa
+description: IDC SDN-Controller Service Accounts
+type: application
+version: 0.1.0

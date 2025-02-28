@@ -1,0 +1,36 @@
+log:
+  # Zap log encoding (one of 'json' or 'console'). Use json with ELK.
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "debug"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic').
+  stacktraceLevel: "error"
+
+image:
+  repository: internal-placeholder.com
+
+tls:
+  # If false, TLS will be disabled.
+  enabled: true
+  # The vault CA for issuing the certificate for this service.
+  # This certificate is used for both client and server connections.
+  issueCa: ""
+  # The certificate common name requested for the certificate for this service.
+  commonName: ""
+  # Parameters used by TLS clients.
+  client:
+    # The vault CA used for validating server certificates.
+    rootCa: ""
+    # insecureSkipVerify controls whether a client verifies the server's
+    # certificate chain and host name. If insecureSkipVerify is true, the client
+    # accepts any certificate presented by the server and any host name in that
+    # certificate. In this mode, TLS is susceptible to machine-in-the-middle
+    # attacks. This should be used only for testing.
+    insecureSkipVerify: false
+  # Parameters used by TLS servers.
+  server:
+    # The vault CA used for validating client certificates.
+    # (Not implemented. `client.rootCa` is used for this purpose.)
+    rootCa: ""
+    # If true, this service requires clients to provide a valid certificate.
+    requireClientCertificate: true

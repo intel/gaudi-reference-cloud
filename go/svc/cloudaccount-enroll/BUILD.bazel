@@ -1,0 +1,30 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "cloudaccount-enroll_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/cloudaccount-enroll",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/cloudaccount_enroll",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/observability",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+    ],
+)
+
+go_binary(
+    name = "cloudaccount-enroll",
+    embed = [":cloudaccount-enroll_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "cloudaccount-enroll_image",
+    embed = [":cloudaccount-enroll_lib"],
+    visibility = ["//visibility:public"],
+)

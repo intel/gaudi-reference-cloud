@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "conf",
+    srcs = ["conf.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/conf",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_knadh_koanf//:koanf",
+        "@com_github_knadh_koanf//parsers/yaml",
+        "@com_github_knadh_koanf//providers/file",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//tools/clientcmd",
+    ],
+)
+
+go_test(
+    name = "conf_test",
+    srcs = ["conf_test.go"],
+    data = ["conf_test.yaml"],
+    embed = [":conf"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

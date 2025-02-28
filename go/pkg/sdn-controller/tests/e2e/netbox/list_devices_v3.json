@@ -1,0 +1,469 @@
+{
+  "count": 31,
+  "next": "https://internal-placeholder.com/api/dcim/devices/?limit=2&offset=2&role=cluster-network-leaf-switch&site=phx02&status=active",
+  "previous": null,
+  "results": [
+    {
+      "id": 21917,
+      "url": "https://internal-placeholder.com/api/dcim/devices/21917/",
+      "display": "phx02-c01-acsw001 (JPA2416P39N)",
+      "name": "phx02-c01-acsw001",
+      "device_type": {
+        "id": 471,
+        "url": "https://internal-placeholder.com/api/dcim/device-types/471/",
+        "display": "DCS-7050CX4M-48D8",
+        "manufacturer": {
+          "id": 12,
+          "url": "https://internal-placeholder.com/api/dcim/manufacturers/12/",
+          "display": "Arista",
+          "name": "Arista",
+          "slug": "arista"
+        },
+        "model": "DCS-7050CX4M-48D8",
+        "slug": "dcs-7050cx4m-48d8"
+      },
+      "role": {
+        "id": 261,
+        "url": "https://internal-placeholder.com/api/dcim/device-roles/261/",
+        "display": "Cluster Network Leaf Switch",
+        "name": "Cluster Network Leaf Switch",
+        "slug": "cluster-network-leaf-switch"
+      },
+      "device_role": {
+        "id": 261,
+        "url": "https://internal-placeholder.com/api/dcim/device-roles/261/",
+        "display": "Cluster Network Leaf Switch",
+        "name": "Cluster Network Leaf Switch",
+        "slug": "cluster-network-leaf-switch"
+      },
+      "tenant": {
+        "id": 1,
+        "url": "https://internal-placeholder.com/api/tenancy/tenants/1/",
+        "display": "Intel Developer Cloud",
+        "name": "Intel Developer Cloud",
+        "slug": "idc"
+      },
+      "platform": {
+        "id": 9,
+        "url": "https://internal-placeholder.com/api/dcim/platforms/9/",
+        "display": "Arista EOS",
+        "name": "Arista EOS",
+        "slug": "arista-eos"
+      },
+      "serial": "JPA2416P39N",
+      "asset_tag": "JPA2416P39N",
+      "site": {
+        "id": 41,
+        "url": "https://internal-placeholder.com/api/dcim/sites/41/",
+        "display": "P-PHX02",
+        "name": "P-PHX02",
+        "slug": "phx02"
+      },
+      "location": {
+        "id": 726,
+        "url": "https://internal-placeholder.com/api/dcim/locations/726/",
+        "display": "PHX02-DC401-ROW-E",
+        "name": "PHX02-DC401-ROW-E",
+        "slug": "phx02-dc401-row-e",
+        "_depth": 0
+      },
+      "rack": {
+        "id": 1728,
+        "url": "https://internal-placeholder.com/api/dcim/racks/1728/",
+        "display": "IM1401-01A05 (BX14)",
+        "name": "IM1401-01A05"
+      },
+      "position": 37,
+      "face": {
+        "value": "front",
+        "label": "Front"
+      },
+      "latitude": null,
+      "longitude": null,
+      "parent_device": null,
+      "status": {
+        "value": "active",
+        "label": "Active"
+      },
+      "airflow": {
+        "value": "front-to-rear",
+        "label": "Front to rear"
+      },
+      "primary_ip": {
+        "id": 70752,
+        "url": "https://internal-placeholder.com/api/ipam/ip-addresses/70752/",
+        "display": "10.140.224.98/27",
+        "family": 4,
+        "address": "10.140.224.98/27"
+      },
+      "primary_ip4": {
+        "id": 70752,
+        "url": "https://internal-placeholder.com/api/ipam/ip-addresses/70752/",
+        "display": "10.140.224.98/27",
+        "family": 4,
+        "address": "10.140.224.98/27"
+      },
+      "primary_ip6": null,
+      "oob_ip": null,
+      "cluster": null,
+      "virtual_chassis": null,
+      "vc_position": null,
+      "vc_priority": null,
+      "description": "",
+      "comments": "",
+      "config_template": null,
+      "config_context": {
+        "ddi": "https://internal-placeholder.com",
+        "dns": "10.140.240.8",
+        "iapm": 42988,
+        "vault": "https://internal-placeholder.com",
+        "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+        "netbox": "https://netbox-us-region-3.cloud.intel.com",
+        "region": "us-region-3",
+        "search": [
+          "us-region-3.cloud.intel.com"
+        ],
+        "bastion": "bastion.cloud.us-region-3.intel.com",
+        "environment": "production",
+        "address_space": "phx02",
+        "availability_zone": "us-region-3a",
+        "onboarding_settings": {
+          "awx_instance": "awx-prod",
+          "awx_inventory_id": 59,
+          "awx_job_template_id": 153
+        }
+      },
+      "local_context_data": null,
+      "tags": [],
+      "custom_fields": {
+        "bkc_rev": null,
+        "bmc_pw": null,
+        "Enclave": null,
+        "gw_ip": null,
+        "idc_id": null,
+        "ccsgid": null,
+        "one_cloud_id": null
+      },
+      "created": "2024-05-31T02:28:51.289688Z",
+      "last_updated": "2024-08-29T03:07:02.055187Z",
+      "console_port_count": 1,
+      "console_server_port_count": 0,
+      "power_port_count": 2,
+      "power_outlet_count": 0,
+      "interface_count": 61,
+      "front_port_count": 0,
+      "rear_port_count": 0,
+      "device_bay_count": 0,
+      "module_bay_count": 0,
+      "inventory_item_count": 0
+    },
+    {
+      "id": 11881,
+      "url": "https://internal-placeholder.com/api/dcim/devices/11881/",
+      "display": "phx02-a01-acsw001",
+      "name": "phx02-a01-acsw001",
+      "device_type": {
+        "id": 116,
+        "url": "https://internal-placeholder.com/api/dcim/device-types/116/",
+        "display": "DCS-7060DX4-32",
+        "manufacturer": {
+          "id": 12,
+          "url": "https://internal-placeholder.com/api/dcim/manufacturers/12/",
+          "display": "Arista",
+          "name": "Arista",
+          "slug": "arista"
+        },
+        "model": "DCS-7060DX4-32",
+        "slug": "dcs-7060dx4-32"
+      },
+      "role": {
+        "id": 257,
+        "url": "https://internal-placeholder.com/api/dcim/device-roles/257/",
+        "display": "Accelerator Network Leaf Switch",
+        "name": "Accelerator Network Leaf Switch",
+        "slug": "accelerator-network-leaf-switch"
+      },
+      "device_role": {
+        "id": 257,
+        "url": "https://internal-placeholder.com/api/dcim/device-roles/257/",
+        "display": "Accelerator Network Leaf Switch",
+        "name": "Accelerator Network Leaf Switch",
+        "slug": "accelerator-network-leaf-switch"
+      },
+      "tenant": {
+        "id": 1,
+        "url": "https://internal-placeholder.com/api/tenancy/tenants/1/",
+        "display": "Intel Developer Cloud",
+        "name": "Intel Developer Cloud",
+        "slug": "idc"
+      },
+      "platform": {
+        "id": 9,
+        "url": "https://internal-placeholder.com/api/dcim/platforms/9/",
+        "display": "Arista EOS",
+        "name": "Arista EOS",
+        "slug": "arista-eos"
+      },
+      "serial": "FGN23230DKN",
+      "asset_tag": null,
+      "site": {
+        "id": 41,
+        "url": "https://internal-placeholder.com/api/dcim/sites/41/",
+        "display": "P-PHX02",
+        "name": "P-PHX02",
+        "slug": "phx02"
+      },
+      "location": {
+        "id": 726,
+        "url": "https://internal-placeholder.com/api/dcim/locations/726/",
+        "display": "PHX02-DC401-ROW-E",
+        "name": "PHX02-DC401-ROW-E",
+        "slug": "phx02-dc401-row-e",
+        "_depth": 0
+      },
+      "rack": {
+        "id": 1731,
+        "url": "https://internal-placeholder.com/api/dcim/racks/1731/",
+        "display": "IM1401-01A02 (CA14)",
+        "name": "IM1401-01A02"
+      },
+      "position": 21,
+      "face": {
+        "value": "front",
+        "label": "Front"
+      },
+      "latitude": null,
+      "longitude": null,
+      "parent_device": null,
+      "status": {
+        "value": "active",
+        "label": "Active"
+      },
+      "airflow": {
+        "value": "front-to-rear",
+        "label": "Front to rear"
+      },
+      "primary_ip": {
+        "id": 75719,
+        "url": "https://internal-placeholder.com/api/ipam/ip-addresses/75719/",
+        "display": "10.140.224.101/27",
+        "family": 4,
+        "address": "10.140.224.101/27"
+      },
+      "primary_ip4": {
+        "id": 75719,
+        "url": "https://internal-placeholder.com/api/ipam/ip-addresses/75719/",
+        "display": "10.140.224.101/27",
+        "family": 4,
+        "address": "10.140.224.101/27"
+      },
+      "primary_ip6": null,
+      "oob_ip": null,
+      "cluster": null,
+      "virtual_chassis": null,
+      "vc_position": null,
+      "vc_priority": null,
+      "description": "",
+      "comments": "",
+      "config_template": null,
+      "config_context": {
+        "ddi": "https://internal-placeholder.com",
+        "dns": "10.140.240.8",
+        "iapm": 42988,
+        "vault": "https://internal-placeholder.com",
+        "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+        "netbox": "https://netbox-us-region-3.cloud.intel.com",
+        "region": "us-region-3",
+        "search": [
+          "us-region-3.cloud.intel.com"
+        ],
+        "bastion": "bastion.cloud.us-region-3.intel.com",
+        "environment": "production",
+        "address_space": "phx02",
+        "availability_zone": "us-region-3a",
+        "onboarding_settings": {
+          "awx_instance": "awx-prod",
+          "awx_inventory_id": 59,
+          "awx_job_template_id": 153
+        }
+      },
+      "local_context_data": null,
+      "tags": [],
+      "custom_fields": {
+        "bkc_rev": null,
+        "bmc_pw": null,
+        "Enclave": null,
+        "gw_ip": null,
+        "idc_id": null,
+        "ccsgid": null,
+        "one_cloud_id": null
+      },
+      "created": "2023-07-05T13:41:31.559501Z",
+      "last_updated": "2024-08-29T03:05:43.041938Z",
+      "console_port_count": 3,
+      "console_server_port_count": 0,
+      "power_port_count": 2,
+      "power_outlet_count": 0,
+      "interface_count": 100,
+      "front_port_count": 0,
+      "rear_port_count": 0,
+      "device_bay_count": 0,
+      "module_bay_count": 0,
+      "inventory_item_count": 0
+    },
+    {
+      "id": 11894,
+      "url": "https://internal-placeholder.com/api/dcim/devices/11894/",
+      "display": "phx02-a01-acsw002",
+      "name": "phx02-a01-acsw002",
+      "device_type": {
+        "id": 116,
+        "url": "https://internal-placeholder.com/api/dcim/device-types/116/",
+        "display": "DCS-7060DX4-32",
+        "manufacturer": {
+          "id": 12,
+          "url": "https://internal-placeholder.com/api/dcim/manufacturers/12/",
+          "display": "Arista",
+          "name": "Arista",
+          "slug": "arista"
+        },
+        "model": "DCS-7060DX4-32",
+        "slug": "dcs-7060dx4-32"
+      },
+      "role": {
+        "id": 257,
+        "url": "https://internal-placeholder.com/api/dcim/device-roles/257/",
+        "display": "Accelerator Network Leaf Switch",
+        "name": "Accelerator Network Leaf Switch",
+        "slug": "accelerator-network-leaf-switch"
+      },
+      "device_role": {
+        "id": 257,
+        "url": "https://internal-placeholder.com/api/dcim/device-roles/257/",
+        "display": "Accelerator Network Leaf Switch",
+        "name": "Accelerator Network Leaf Switch",
+        "slug": "accelerator-network-leaf-switch"
+      },
+      "tenant": {
+        "id": 1,
+        "url": "https://internal-placeholder.com/api/tenancy/tenants/1/",
+        "display": "Intel Developer Cloud",
+        "name": "Intel Developer Cloud",
+        "slug": "idc"
+      },
+      "platform": {
+        "id": 9,
+        "url": "https://internal-placeholder.com/api/dcim/platforms/9/",
+        "display": "Arista EOS",
+        "name": "Arista EOS",
+        "slug": "arista-eos"
+      },
+      "serial": "FGN23230DK5",
+      "asset_tag": null,
+      "site": {
+        "id": 41,
+        "url": "https://internal-placeholder.com/api/dcim/sites/41/",
+        "display": "P-PHX02",
+        "name": "P-PHX02",
+        "slug": "phx02"
+      },
+      "location": {
+        "id": 726,
+        "url": "https://internal-placeholder.com/api/dcim/locations/726/",
+        "display": "PHX02-DC401-ROW-E",
+        "name": "PHX02-DC401-ROW-E",
+        "slug": "phx02-dc401-row-e",
+        "_depth": 0
+      },
+      "rack": {
+        "id": 1727,
+        "url": "https://internal-placeholder.com/api/dcim/racks/1727/",
+        "display": "IM1401-01A06 (BW14)",
+        "name": "IM1401-01A06"
+      },
+      "position": 21,
+      "face": {
+        "value": "front",
+        "label": "Front"
+      },
+      "latitude": null,
+      "longitude": null,
+      "parent_device": null,
+      "status": {
+        "value": "active",
+        "label": "Active"
+      },
+      "airflow": {
+        "value": "front-to-rear",
+        "label": "Front to rear"
+      },
+      "primary_ip": {
+        "id": 75851,
+        "url": "https://internal-placeholder.com/api/ipam/ip-addresses/75851/",
+        "display": "10.140.224.130/27",
+        "family": 4,
+        "address": "10.140.224.130/27"
+      },
+      "primary_ip4": {
+        "id": 75851,
+        "url": "https://internal-placeholder.com/api/ipam/ip-addresses/75851/",
+        "display": "10.140.224.130/27",
+        "family": 4,
+        "address": "10.140.224.130/27"
+      },
+      "primary_ip6": null,
+      "oob_ip": null,
+      "cluster": null,
+      "virtual_chassis": null,
+      "vc_position": null,
+      "vc_priority": null,
+      "description": "",
+      "comments": "",
+      "config_template": null,
+      "config_context": {
+        "ddi": "https://internal-placeholder.com",
+        "dns": "10.140.240.8",
+        "iapm": 42988,
+        "vault": "https://internal-placeholder.com",
+        "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+        "netbox": "https://netbox-us-region-3.cloud.intel.com",
+        "region": "us-region-3",
+        "search": [
+          "us-region-3.cloud.intel.com"
+        ],
+        "bastion": "bastion.cloud.us-region-3.intel.com",
+        "environment": "production",
+        "address_space": "phx02",
+        "availability_zone": "us-region-3a",
+        "onboarding_settings": {
+          "awx_instance": "awx-prod",
+          "awx_inventory_id": 59,
+          "awx_job_template_id": 153
+        }
+      },
+      "local_context_data": null,
+      "tags": [],
+      "custom_fields": {
+        "bkc_rev": null,
+        "bmc_pw": null,
+        "Enclave": null,
+        "gw_ip": null,
+        "idc_id": null,
+        "ccsgid": null,
+        "one_cloud_id": null
+      },
+      "created": "2023-07-05T13:41:42.620007Z",
+      "last_updated": "2024-08-29T03:05:43.906326Z",
+      "console_port_count": 3,
+      "console_server_port_count": 0,
+      "power_port_count": 2,
+      "power_outlet_count": 0,
+      "interface_count": 100,
+      "front_port_count": 0,
+      "rear_port_count": 0,
+      "device_bay_count": 0,
+      "module_bay_count": 0,
+      "inventory_item_count": 0
+    }
+  ]
+}

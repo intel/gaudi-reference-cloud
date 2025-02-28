@@ -1,0 +1,38 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "instance",
+    srcs = [
+        "instance.go",
+        "instance_sql_transformer.go",
+        "instance_watch.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/compute_api_server/instance",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/tasks",
+        "//go/pkg/cloudaccount",
+        "//go/pkg/compute_api_server/common",
+        "//go/pkg/compute_api_server/config",
+        "//go/pkg/compute_api_server/pbconvert",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/protodb",
+        "//go/pkg/utils",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
+        "@com_github_jackc_pgx_v5//pgconn",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_client_go//util/retry",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+        "@org_golang_x_exp//slices",
+    ],
+)

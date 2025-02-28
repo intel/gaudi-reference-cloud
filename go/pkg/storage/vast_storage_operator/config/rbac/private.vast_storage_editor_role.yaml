@@ -1,0 +1,32 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# permissions for end users to edit instances.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vast-storage-editor-role
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - vaststorages
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - vaststorages/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

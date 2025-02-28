@@ -1,0 +1,36 @@
+server:
+  listen_address: "[::]:50051"
+  model_id: "/app/models/llm"
+  inference:
+    defaults:
+      max_new_tokens: 20
+      temperature: 0.1
+      endpoint: "chat/completions"
+    use_fast:
+      meta-llama: True
+      mistralai: False
+      Qwen: True
+    inst_tokens:
+      - "[/INST]"
+      - "<|start_header_id|>assistant<|end_header_id|>"
+      - "<|im_start|>assistant"
+  safeguard:
+    model_id: "/app/models/safeguard"
+    headers:
+      Content-Type: "application/json"
+    timeout: 20
+    harm_categories:
+      S1: "Violent Crimes"
+      S2: "Non-Violent Crimes"
+      S3: "Sex-Related Crimes"
+      S4: "Child Sexual Exploitation"
+      S5: "Defamation"
+      S6: "Specialized Advice"
+      S7: "Privacy"
+      S8: "Intellectual Property"
+      S9: "Indiscriminate Weapons"
+      S10: "Hate"
+      S11: "Suicide & Self-Harm"
+      S12: "Sexual Content"
+      S13: "Elections"
+      S14: "Code Interpreter Abuse"

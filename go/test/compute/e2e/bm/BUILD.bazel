@@ -1,0 +1,103 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+# Define Helm chart dependencies used by helmfile environment test-e2e-compute-bm.
+# Since Helm charts contain the container image sha256 hash, there is a transitive dependency on the container image.
+CHARTS = [
+    "authz",
+    "baremetal-enrollment-api",
+    "baremetal-enrollment-task",
+    "baremetal-operator-ns",
+    "baremetal-operator",
+    "billing-aria",
+    "billing-intel",
+    "billing-schedulers",
+    "billing-standard",
+    "billing",
+    "cloudcredits",
+    "bm-dnsmasq",
+    "bm-instance-operator",
+    "bm-validation-operator",
+    "cloudaccount-enroll",
+    "cloudaccount",
+    "compute-api-server",
+    "compute-crds",
+    "compute-metering-monitor",
+    "debug-tools",
+    "dhcp-proxy",
+    "fleet-admin-api-server",
+    "git-to-grpc-synchronizer",
+    "grpc-proxy",
+    "grpc-reflect",
+    "grpc-rest-gateway",
+    "instance-replicator",
+    "k8s-resource-patcher",
+    "metal3-crds",
+    "metallb-custom-resources",
+    "metering",
+    "netbox",
+    "notification-gateway",
+    "oidc",
+    "productcatalog-crds",
+    "productcatalog-operator",
+    "productcatalog",
+    "rate-limit",
+    "rate-limit-redis",
+    "ssh-proxy-operator",
+    "usage",
+    "user-credentials",
+    "vm-instance-operator",
+    "vm-instance-scheduler",
+]
+
+suite_data = [
+    "//:local_secrets_test-e2e-compute-bm",
+    "//deployment:test-e2e-compute-bm",
+    "//deployment/helmfile:test-e2e-compute-bm",
+    "//go/pkg/compute_api_server:testdata",
+] + ["//deployment:%s_chart_version" % chart for chart in CHARTS]
+
+suite_env_inherit = [
+    "DOCKER_REGISTRY",
+    "DOCKER_IMAGE_PREFIX",
+    "HELM_REGISTRY",
+    "http_proxy",
+    "https_proxy",
+    "LOCAL_REGISTRY_NAME",
+    "LOCAL_REGISTRY_PORT",
+    "no_proxy",
+    "SKIP_TEAR_DOWN",  # Set to "1" to keep kind cluster running after the test.
+    "SSH_PROXY_USER",
+    "USER",
+]
+
+# This target runs the full test suite.
+# To see the full list of dependencies, run: BAZEL_QUERY_DEPS=//go/test/compute/e2e/bm:bm_test make bazel-query-deps
+go_test(
+    name = "bm_test",
+    size = "enormous",
+    srcs = [
+        "compute_e2e_bm_test.go",
+        "compute_e2e_group_bm_test.go",
+        "suite_test.go",
+    ],
+    data = suite_data,
+    env_inherit = suite_env_inherit,
+    rundir = ".",
+    tags = [
+        "jenkins",
+        "manual",
+    ],
+    deps = [
+        "//go/pkg/log",
+        "//go/test/common",
+        "//go/test/compute/helper",
+        "//go/test/compute/helper/netbox_validation",
+        "//go/test/kindtestenv",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_ginkgo_v2//types",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_tidwall_gjson//:gjson",
+    ],
+)

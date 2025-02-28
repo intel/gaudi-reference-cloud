@@ -1,0 +1,26 @@
+
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SDNControllerConfig
+controllerConfig:
+  enableReadOnlyMode: false
+  switchBackendMode: "mock"
+  switchSecretsPath: "../../../../../vault/secrets/eapi"
+  dataCenter: "fxhb3p3r:fxhb3p3s:clab"
+  portResyncPeriodInSec: 300
+  switchResyncPeriodInSec: 300
+  bmhResyncPeriodInSec: 300
+  networkNodeResyncPeriodInSec: 300
+  nodeGroupResyncPeriodInSec: 300
+  switchImportPeriodInSec: 300
+  maxConcurrentReconciles: 30
+  maxConcurrentSwitchReconciles: 10
+  maxConcurrentNetworkNodeReconciles: 10
+  maxConcurrentNodeGroupReconciles: 10
+  bmhClusterKubeConfigFilePath: "../../../../../.kube/config"
+  poolsConfigFilePath: "tests/config/big_cluster_conf/pools.json"
+  nodeGroupToPoolMappingConfigFilePath: "tests/config/big_cluster_conf/mappings.json"
+  nodeGroupToPoolMappingSource: "local"
+  switchImportSource: none
+  switchPortImportSource: bmh
+  statusReportPeriodInSec: 300
+  statusReportAcceleratedPeriodInSec: 10

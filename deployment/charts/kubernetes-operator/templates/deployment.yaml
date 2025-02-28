@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kubernetes-operator.fullname" . }}
+  labels:
+    app.kubernetes.io/component: manager
+    app.kubernetes.io/created-by: kubernetes
+    app.kubernetes.io/part-of: kubernetes
+    control-plane: controller-manager
+  {{- include "kubernetes-operator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.controllerManager.replicas }}
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+    {{- include "kubernetes-operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+      {{- include "kubernetes-operator.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        kubectl.kubernetes.io/default-container: manager
+        vault.hashicorp.com/agent-inject-containers: "manager"
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-secret-config.yaml: {{ .Values.vaultAgentSecretPath }}/config
+        vault.hashicorp.com/agent-inject-template-config.yaml: |-
+          {{`{{- with secret `}}"{{ .Values.vaultAgentSecretPath }}/config"{{` -}}`}}
+          {{`{{ .Data.data.config }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-bootstrap-iks-controlplane.sh: {{ .Values.vaultAgentSecretPath }}/bootstrap-iks-controlplane
+        vault.hashicorp.com/agent-inject-template-bootstrap-iks-controlplane.sh: |-
+          {{`{{- with secret `}}"{{ .Values.vaultAgentSecretPath }}/bootstrap-iks-controlplane"{{` -}}`}}
+          {{`{{ index .Data.data "bootstrap-iks-controlplane" }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-bootstrap-iks-worker.sh: {{ .Values.vaultAgentSecretPath }}/bootstrap-iks-worker
+        vault.hashicorp.com/agent-inject-template-bootstrap-iks-worker.sh: |-
+          {{`{{- with secret `}}"{{ .Values.vaultAgentSecretPath }}/bootstrap-iks-worker"{{` -}}`}}
+          {{`{{ index .Data.data "bootstrap-iks-worker" }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-bootstrap-rke2.sh: {{ .Values.vaultAgentSecretPath }}/bootstrap-rke2
+        vault.hashicorp.com/agent-inject-template-bootstrap-rke2.sh: |-
+          {{`{{- with secret `}}"{{ .Values.vaultAgentSecretPath }}/bootstrap-rke2"{{` -}}`}}
+          {{`{{ index .Data.data "bootstrap-rke2" }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-command-config.yaml: |
+          kill -TERM $(pidof kubernetes_operator)
+        vault.hashicorp.com/agent-inject-command-bootstrap-iks-controlplane.sh: |
+          kill -TERM $(pidof kubernetes_operator)
+        vault.hashicorp.com/agent-inject-command-bootstrap-iks-worker.sh: |
+          kill -TERM $(pidof kubernetes_operator)
+        vault.hashicorp.com/auth-path: auth/cluster-auth
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - arm64
+                - ppc64le
+                - s390x
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
+      containers:
+      - args: {{- toYaml .Values.controllerManager.kubeRbacProxy.args | nindent 8 }}
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        {{- include "idc-common.otelEnv" . | nindent 8 }}
+        image: {{ .Values.controllerManager.kubeRbacProxy.image.repository }}:{{ .Values.controllerManager.kubeRbacProxy.image.tag
+          | default .Chart.AppVersion }}
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        resources: {{- toYaml .Values.controllerManager.kubeRbacProxy.resources | nindent
+          10 }}
+        securityContext: {{- toYaml .Values.controllerManager.kubeRbacProxy.containerSecurityContext
+          | nindent 10 }}
+      - args: {{- toYaml .Values.controllerManager.manager.args | nindent 8 }}
+        command:
+        - /kubernetes_operator
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        {{- include "idc-common.otelEnv" . | nindent 8 }}
+        image: {{ .Values.controllerManager.manager.image.repository }}:{{ .Values.controllerManager.manager.image.tag
+          | default .Chart.AppVersion }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources: {{- toYaml .Values.controllerManager.manager.resources | nindent 10
+          }}
+        securityContext: {{- toYaml .Values.controllerManager.manager.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: {{ include "kubernetes-operator.fullname" . }}
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: tmp
+        emptyDir: {}

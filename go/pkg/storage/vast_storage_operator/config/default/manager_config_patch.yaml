@@ -1,0 +1,12 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: us-dev-1a-vast-storage-operator
+  namespace: idcs-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager

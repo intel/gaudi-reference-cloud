@@ -1,0 +1,1005 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if or $.Values.components.storageFile.enabled $.Values.components.storageObject.enabled }}
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $storageEnabled := or $region.storageConfig.objectStore.enabled $region.storageConfig.fileStore.enabled }}
+{{- $cloudaccountServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $productCatalogAddr := print ($.Values | get "global.grpcProxy.internal.ingress.host" "") ":443" }}
+{{- $authzAddr := print ($.Values | get "global.grpcProxy.internal.ingress.host" "") ":443" }}
+{{- $authzEnabled := $.Values.global.authz.enabled}}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+{{- $computeApiServerAddr := print ($region | get "grpcProxy.internal.ingress.host" $.Values.defaults.region.grpcProxy.internal.ingress.host) ":443" }}
+{{- $availabilityZone0 := ($region.availabilityZones | get (keys $region.availabilityZones | sortAlpha | first)) }}
+{{- $availabilityZone0 := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone0 }}
+{{- $storageSchedulerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $storageAPIServerAddr := print ($region | get "grpcProxy.internal.ingress.host" $.Values.defaults.region.grpcProxy.internal.ingress.host) ":443" }}
+{{- $iksStorageEnabled := $region.storageConfig.fileStore.iksStorageEnabled}}
+{{- $generalPurposeVASTEnabled := $region.storageConfig.fileStore.generalPurposeVASTEnabled}}
+{{- $storageMetricEnabled := $region.storageConfig.metric.enabled }}
+{{- $storageCleanerEnabled := $region.storageResourceCleaner.service.enabled }}
+{{- $storageFileEnabled := $region.storageConfig.fileStore.enabled }}
+{{- $storageObjectEnabled := $region.storageConfig.objectStore.enabled }}
+{{- $objectStoreEnabled := $.Values.components.storageObject.enabled}}
+{{- $billingServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $meteringAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $notificationAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $storageApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $customQuotaMaxAllowedInTB := $region.storageAdminApiServer.customQuotaMaxAllowedInTB}}
+{{- $maxVolumesAllowed := $region.storageAdminApiServer.maxVolumesAllowed}}
+{{- $maxBucketsAllowed := $region.storageAdminApiServer.maxBucketsAllowed}}
+{{- $selectedRegion := $region.storageAdminApiServer.selectedRegion}}
+{{- $storageAdminEnabled := $region.storageAdminApiServer.enabled }}
+{{- $quotaManagementEnabled := $region.quotaManagementService.enabled }}
+
+  {{- if ($region.storageDb.enabled) }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      database: storage
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: storage-db
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-storage_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-storage_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region | get "storageDb.primary.persistence.enabled" $.Values.defaults.region.storageDb.primary.persistence.enabled }}
+  {{- end }}
+
+{{- if $storageEnabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-api-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: regional
+      applicationName: storage-api-server
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/storage-api-server
+    version: {{ readFile (print $helmChartVersionsDir "/storage-api-server.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-api-server@sha256"
+      - nodePort: {{ $region | get "storageApiServer.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "storageApiServer.service.type" $.Values.defaults.region.storageApiServer.service.type | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+                {{- end }}
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}
+      - config:
+          vaultAddress: {{ $.Values.vault.service | quote }}
+          vaultAuthPath: {{ $region.vault.authPath | quote }}
+          vaultAuthRole: {{ $region.region }}-storage-api-server-role
+          vaultApproleSecretsPath: controlplane/data/{{ $region.region }}-storage/enrollment/approle
+      - vault: 
+          enable: true
+          annotations:
+            vault.hashicorp.com/agent-inject-secret-secret-id: "controlplane/data/{{ $region.region }}/storage/enrollment/approle"
+            vault.hashicorp.com/agent-inject-secret-role-id: "controlplane/data/{{ $region.region }}/storage/enrollment/approle"
+            vault.hashicorp.com/role: "{{ $region.region }}-storage-api-server-role"
+            vault.hashicorp.com/agent-inject-template-secret-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/storage/enrollment/approle" }}
+                {{ `{{- .Data.data.secret_id -}}` }}
+                {{ `{{- end -}}` }}
+            vault.hashicorp.com/agent-inject-template-role-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/storage/enrollment/approle" }}
+                {{ `{{- .Data.data.role_id -}}` }}
+                {{ `{{- end -}}` }}
+      - domainSuffix: {{ $region | get "storageApiServer.domainSuffix" $.Values.defaults.region.storageApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+          appRole: {{ $region.region }}-storage-role
+          vaultApproleSecretsPath: controlplane/data/{{ $region.region }}-storage/enrollment/approle
+      - target: {{ $computeApiServerAddr | quote }}
+      - storageSchedulerServerAddr: {{ $region.storageConfig.serviceAddresses.storageSchedulerServerAddr | quote }}
+      - cloudaccountServerAddr: {{ $cloudaccountServerAddr| quote }}
+      - computeAPIServerAddr: {{ $computeApiServerAddr| quote }}
+      - productcatalogServerAddr: {{ $productCatalogAddr| quote }}
+      - authzServerAddr: {{ $authzAddr| quote }}
+      - authzEnabled: {{ $authzEnabled| quote }}
+      - storageKmsServerAddr:   {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - cloudAccountQuota: {{ $region.computeApiServer.cloudAccountQuota | toJson }}
+      - storageUserServerAddr: {{ $region.storageConfig.serviceAddresses.storageUserServerAddr | quote }}
+      - quotaManagementServerAddr: {{ $region.storageConfig.serviceAddresses.quotaManagementServerAddr | quote }}
+      - objectStoreEnabled: {{ $objectStoreEnabled }}
+      - iksStorageEnabled: {{ $iksStorageEnabled }}
+      - generalPurposeVASTEnabled: {{ $generalPurposeVASTEnabled }}
+      - quotaManagementEnabled: {{ $quotaManagementEnabled }}
+      - defaultBucketSizeInGB: {{ $region.storageConfig.objectStore.defaultBucketSizeInGB }}
+      - database:
+          service: {{ $region | get "storageApiServer.database.service" (print $region.region "-storage-db-postgresql") | quote }}
+          arg: {{ $region | get "storageApiServer.database.arg" $.Values.defaults.region.storageApiServer.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-storage-api-server/database"
+      - cognito: # used by storage-api-server for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-storage-api-server/cognito
+          {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-scheduler") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: storage-scheduler
+    chart: idc/storage-scheduler
+    version: {{ readFile (print $helmChartVersionsDir "/storage-scheduler.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-scheduler@sha256"
+      - nodePort: {{ $region | get "storageScheduler.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "storageScheduler.service.type" $.Values.defaults.region.storageScheduler.service.type | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - region: {{ $region.region | quote }}
+      - storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+      - storageKmsServerAddr:   {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - generalPurposeVASTEnabled: {{ $generalPurposeVASTEnabled }}
+      - domainSuffix: {{ $region | get "storageScheduler.domainSuffix" $.Values.defaults.region.storageScheduler.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+      - target: {{ $computeApiServerAddr | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-user") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: storage-user
+    chart: idc/storage-user
+    version: {{ readFile (print $helmChartVersionsDir "/storage-user.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-user@sha256"
+      - nodePort: {{ $region | get "storageUser.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "storageUser.service.type" $.Values.defaults.region.storageUser.service.type | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - region: {{ $region.region | quote }}
+      - storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+      - storageKmsServerAddr:   {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - objectStoreEnabled: {{ $objectStoreEnabled }}
+      - storageAPIServerAddr: {{ $storageAPIServerAddr }}
+      - scheduleSubnetMonitorInterval: {{ $region.storageConfig.objectStore.scheduleSubnetMonitorInterval }}
+      - domainSuffix: {{ $region | get "storageUser.domainSuffix" $.Values.defaults.region.storageUser.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+      - target: {{ $computeApiServerAddr | quote }}
+
+
+  {{- if $storageAdminEnabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-admin-api-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: storage-admin-api-server
+    chart: idc/storage-admin-api-server
+    version: {{ readFile (print $helmChartVersionsDir "/storage-admin-api-server.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-admin-api-server@sha256"
+      - nodePort: {{ $region | get "storageAdminApiServer.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "storageAdminApiServer.service.type" $.Values.defaults.region.storageAdminApiServer.service.type | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - region: {{ $region.region | quote }}
+      - storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+      - storageKmsServerAddr:   {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - quotaMangementServerAddr: {{ $region.storageConfig.serviceAddresses.quotaManagementServerAddr | quote }}
+      - quotaManagementEnabled: {{ $quotaManagementEnabled }}
+      - objectStoreEnabled: {{ $objectStoreEnabled }}
+      - storageAPIServerAddr: {{ $storageAPIServerAddr | quote }}
+      - scheduleSubnetMonitorInterval: {{ $region.storageConfig.objectStore.scheduleSubnetMonitorInterval }}
+      - domainSuffix: {{ $region | get "storageAdminApiServer.domainSuffix" $.Values.defaults.region.storageAdminApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault: 
+          enable: true
+          annotations:
+            vault.hashicorp.com/agent-inject-secret-secret-id: "controlplane/data/{{ $region.region }}/storage/enrollment/approle"
+            vault.hashicorp.com/agent-inject-secret-role-id: "controlplane/data/{{ $region.region }}/storage/enrollment/approle"
+            vault.hashicorp.com/role: "{{ $region.region }}-storage-admin-api-server-role"
+            vault.hashicorp.com/agent-inject-template-secret-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/storage/enrollment/approle" }}
+                {{ `{{- .Data.data.secret_id -}}` }}
+                {{ `{{- end -}}` }}
+            vault.hashicorp.com/agent-inject-template-role-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/storage/enrollment/approle" }}
+                {{ `{{- .Data.data.role_id -}}` }}
+                {{ `{{- end -}}` }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+      - target: {{ $computeApiServerAddr | quote }}
+      - storageSchedulerServerAddr: {{ $region.storageConfig.serviceAddresses.storageSchedulerServerAddr | quote }}
+      - cloudaccountServerAddr: {{ $cloudaccountServerAddr| quote }}
+      - computeAPIServerAddr: {{ $computeApiServerAddr| quote }}
+      - productcatalogServerAddr: {{ $productCatalogAddr| quote }}
+      - storageKmsServerAddr:   {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - cloudAccountQuota: {{ $region.computeApiServer.cloudAccountQuota | toJson }}
+      - storageUserServerAddr: {{ $region.storageConfig.serviceAddresses.storageUserServerAddr | quote }}
+      - objectStoreEnabled: {{ $objectStoreEnabled }}
+      - iksStorageEnabled: {{ $iksStorageEnabled }}
+      - customQuotaMaxAllowedInTB : {{ $customQuotaMaxAllowedInTB }}
+      - maxVolumesAllowed : {{ $maxVolumesAllowed }}
+      - maxBucketsAllowed : {{ $maxBucketsAllowed }}
+      - selectedRegion:  {{ $selectedRegion }}
+      - defaultBucketSizeInGB: {{ $region.storageConfig.objectStore.defaultBucketSizeInGB }}
+      - database:
+          service: {{ $region | get "storageApiServer.database.service" (print $region.region "-storage-db-postgresql") | quote }}
+          arg: {{ $region | get "storageApiServer.database.arg" $.Values.defaults.region.storageApiServer.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-storage-admin-api-server/database"
+      - cognito: # used by storage-api-server for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-storage-admin-api-server/cognito
+          {{- end }}
+  {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-kms") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: storage-scheduler
+    chart: idc/storage-kms
+    version: {{ readFile (print $helmChartVersionsDir "/storage-kms.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-kms@sha256"
+      - config:
+          vaultAddress: {{ $.Values.vault.service | quote }}
+          vaultAuthPath: {{ $region.vault.authPath | quote }}
+          vaultApproleSecretsPath: "controlplane/data/{{ $region.region }}/storage/kms/approle"
+          vaultAuthRole: "{{ $region.region }}-storage-kms-role"
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - domainSuffix: {{ $region | get "storageKMS.domainSuffix" $.Values.defaults.region.storageKMS.domainSuffix | quote }}
+      - region: {{ $region.region | quote }}
+      - target: {{ $computeApiServerAddr | quote }}
+      - vault: 
+          enable: true
+          annotations:
+            vault.hashicorp.com/agent-inject: "true"
+            vault.hashicorp.com/agent-inject-status: "update"
+            vault.hashicorp.com/agent-inject-secret-secret-id: "controlplane/data/{{ $region.region }}/storage/kms/approle"
+            vault.hashicorp.com/agent-inject-secret-role-id: "controlplane/data/{{ $region.region }}/storage/kms/approle"
+            vault.hashicorp.com/role: "{{ $region.region }}-storage-kms-role"
+            vault.hashicorp.com/agent-inject-template-secret-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/storage/kms/approle" }}
+                {{ `{{- .Data.data.secret_id -}}` }}
+                {{ `{{- end -}}` }}
+            vault.hashicorp.com/agent-inject-template-role-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/storage/kms/approle" }}
+                {{ `{{- .Data.data.role_id -}}` }}
+                {{ `{{- end -}}` }} 
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $region.region }}/storage/kms/approle
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+
+{{- if $storageCleanerEnabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-resource-cleaner") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: storage-resource-cleaner
+    chart: idc/storage-resource-cleaner
+    version: {{ readFile (print $helmChartVersionsDir "/storage-resource-cleaner.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-resource-cleaner@sha256"
+      - nodePort: {{ $region | get "storageResourceCleaner.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "storageResourceCleaner.service.type" $.Values.defaults.region.storageResourceCleaner.service.type | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - region: {{ $region.region | quote }}
+      - serviceEnabled: {{ $region.storageResourceCleaner.service.enabled }}
+      - dryRun: {{$region.storageResourceCleaner.service.dryRun}}
+      - storageAPIServerAddr: {{ $storageAPIServerAddr }}
+      - billingServerAddr: {{ $billingServerAddr| quote }}
+      - notificationAddr: {{ $notificationAddr | quote }}
+      - serviceInterval: {{ $region.storageResourceCleaner.schedule.interval }}
+      - cleanUpThreshold: {{ $region.storageResourceCleaner.schedule.threshold }}
+      - templateName: {{ $region.storageResourceCleaner.template | quote }}
+      - senderEmail: {{  $.Values.global.notifications.senderEmail | quote }}
+      - consoleUrl: {{  $.Values.global.notifications.consoleUrl | quote }}
+      - paymentUrl: {{ $.Values.global.notifications.paymentUrl | quote }}
+      - domainSuffix: {{ $region | get "storageResourceCleaner.domainSuffix" $.Values.defaults.region.storageResourceCleaner.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+      - cognito: # used by storage-resource-cleaner for global:billing/notification access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-storage-resource-cleaner/cognito
+          {{- end }}
+      - target: {{ $computeApiServerAddr | quote }}
+      
+{{- end }}
+
+  {{- if $storageMetricEnabled}}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-storage-custom-metrics-service") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: storage-custom-metrics-service
+    chart: idc/storage-custom-metrics-service
+    version: {{ readFile (print $helmChartVersionsDir "/storage-custom-metrics-service.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-custom-metrics-service@sha256"
+      - nodePort: {{ $region | get "storageCustomMetricsService.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "storageCustomMetricsService.service.type" $.Values.defaults.region.storageCustomMetricsService.service.type | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - region: {{ $region.region | quote }}
+      - storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+      - storageKmsServerAddr:   {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - metricUpdateIntervalMinutes: {{ $region.storageConfig.metric.metricUpdateIntervalMinutes }}
+      - bucketMetricEnabled: {{ $region.storageConfig.metric.bucketMetricEnabled }}
+      - storageAPIServerAddr: {{ $storageAPIServerAddr | quote}}
+      - domainSuffix: {{ $region | get "storageCustomMetricsService.domainSuffix" $.Values.defaults.region.storageCustomMetricsService.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+      - target: {{ $computeApiServerAddr | quote }}
+      - serviceMonitor:
+          enabled: {{ $region.storageCustomMetricsService.serviceMonitor.enabled }}
+  {{- end }}
+
+{{- end }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+{{- if $storageFileEnabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-storage-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: storage-operator
+    chart: idc/storage-operator
+    version: {{ readFile (print $helmChartVersionsDir "/storage-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}storage-operator@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            storageControllerServerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+            storageKmsServerAddr: {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+            storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+      - storageKmsServerAddr: {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - vault: 
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}  
+      - vault: 
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+
+  {{- if $generalPurposeVASTEnabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-vast-storage-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: vast-storage-operator
+    chart: idc/vast-storage-operator
+    version: {{ readFile (print $helmChartVersionsDir "/vast-storage-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}vast-storage-operator@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            storageControllerServerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+            storageKmsServerAddr: {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+            storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - storageControllerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+      - storageKmsServerAddr: {{ $region.storageConfig.serviceAddresses.storageKmsServerAddr | quote }}
+      - vault: 
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}  
+      - vault: 
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+  {{- end }}
+
+  - name: {{ $availabilityZone.availabilityZone }}-storage-replicator
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: storage-replicator
+    chart: idc/storage-replicator
+    version: {{ readFile (print $helmChartVersionsDir "/storage-replicator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}storage-replicator@sha256"
+      - storageApiServerAddr: {{ $storageApiServerAddr | quote }}
+      - generalPurposeVASTEnabled: {{ $generalPurposeVASTEnabled }}
+      - log:
+          level: {{ $availabilityZone | get "storageReplicator.log.level" $.Values.log.level | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone | get "otel.exporter.otlp.endpoint" $.Values.defaults.availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-storage-metering-monitor") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: storage-metering-monitor
+    chart: idc/storage-metering-monitor
+    version: {{ readFile (print $helmChartVersionsDir "/storage-metering-monitor.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}storage-metering-monitor@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            meteringServerAddr: {{ $meteringAddr | quote }}
+            serviceType: {{$region.storageConfig.fileStore.serviceType | quote}}
+            region: {{ $region.region | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone | get "otel.exporter.otlp.endpoint" $.Values.defaults.availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - cognito: # used for global:metering access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-storage-metering-monitor/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+
+  {{- if $generalPurposeVASTEnabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-vast-metering-monitor") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: vast-metering-monitor
+    chart: idc/vast-metering-monitor
+    version: {{ readFile (print $helmChartVersionsDir "/vast-metering-monitor.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}vast-metering-monitor@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            meteringServerAddr: {{ $meteringAddr | quote }}
+            serviceType: {{$region.storageConfig.fileStore.serviceType | quote}}
+            region: {{ $region.region | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone | get "otel.exporter.otlp.endpoint" $.Values.defaults.availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - cognito: # used for global:metering access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-vast-metering-monitor/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+{{- end }}
+{{- end }}
+
+{{- if $storageObjectEnabled }}
+
+  - name: {{ $availabilityZone.availabilityZone }}-object-store-operator
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: object-store
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: object-store-operator
+    chart: idc/object-store-operator
+    version: {{ readFile (print $helmChartVersionsDir "/object-store-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}object-store-operator@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            storageControllerServerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+            storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+      - config:
+          vaultAddress: {{ $.Values.vault.service | quote }}
+          vaultAuthPath: {{ $region.vault.authPath | quote }}
+          vaultAuthRole: {{ $region.region }}-storage-role
+          vaultApproleSecretsPath: controlplane/data/{{ $region.region }}-storage/enrollment/approle
+      - storageControllerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+      - vault: 
+          enable: true
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $availabilityZone.availabilityZone }}-object-store-operator
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone | get "otel.exporter.otlp.endpoint" $.Values.defaults.availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+    
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-bucket-metering-monitor") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: bucket-metering-monitor
+    chart: idc/bucket-metering-monitor
+    version: {{ readFile (print $helmChartVersionsDir "/bucket-metering-monitor.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}bucket-metering-monitor@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            meteringServerAddr: {{ $meteringAddr | quote }}
+            storageControllerServerAddr: {{ $region.storageConfig.storageController.storageControllerServerAddr | quote }}
+            storageControllerServerUseMtls: {{ $region.storageConfig.storageController.storageControllerServerUseMtls }}
+            region: {{ $region.region | quote }}
+            serviceType: {{$region.storageConfig.objectStore.serviceType | quote}}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone | get "otel.exporter.otlp.endpoint" $.Values.defaults.availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - cognito: # used for global:metering access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-bucket-metering-monitor/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+  
+  - name: {{ $availabilityZone.availabilityZone }}-bucket-replicator
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: storage
+      service: storage
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: bucket-replicator
+    chart: idc/bucket-replicator
+    version: {{ readFile (print $helmChartVersionsDir "/bucket-replicator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}bucket-replicator@sha256"
+      - storageApiServerAddr: {{ $storageApiServerAddr | quote }}
+      - log:
+          level: {{ $availabilityZone | get "storageReplicator.log.level" $.Values.log.level | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone | get "otel.exporter.otlp.endpoint" $.Values.defaults.availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          authPath: {{ $availabilityZone | get "vault.authPath" $.Values.defaults.availabilityZone.vault.authPath | quote }}
+
+{{- end }}
+
+
+{{- end }}
+{{- end }}
+{{- end }}

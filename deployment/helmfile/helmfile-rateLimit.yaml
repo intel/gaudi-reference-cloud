@@ -1,0 +1,146 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.rateLimit.enabled }}
+  - name: rate-limit
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: rateLimit
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: rate-limit
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/rate-limit
+    version: {{ readFile (print $helmChartVersionsDir "/rate-limit.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.rateLimit.replicaCount }}
+      - image:
+          repository: {{ print $.Values.dockerIo.registry "/" $.Values.dockerIo.repositoryPrefix | quote }}
+      - redis:
+          image:
+            repository: {{ print $.Values.dockerIo.registry "/" $.Values.dockerIo.repositoryPrefix | quote }}
+          vaultCredentialsPath: controlplane/data/rate-limit-redis/credentials
+      - service:
+          redisURL:
+            name: REDIS_URL
+            value: rate-limit-redis-0.rate-limit-redis-headless:6379,rate-limit-redis-1.rate-limit-redis-headless:6379,rate-limit-redis-2.rate-limit-redis-headless:6379,rate-limit-redis-3.rate-limit-redis-headless:6379,rate-limit-redis-4.rate-limit-redis-headless:6379,rate-limit-redis-5.rate-limit-redis-headless:6379
+      - serviceMonitor:
+          enabled: {{ $.Values.global.rateLimit.serviceMonitor.enabled }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+
+  - name: rate-limit-redis
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: rateLimit
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: rate-limit-redis
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/rate-limit-redis
+    version: {{ readFile (print $helmChartVersionsDir "/rate-limit-redis.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - global:
+          redis:
+            vaultCredentialsPath: controlplane/data/rate-limit-redis/credentials
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- if $region.rateLimit.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-rate-limit") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: rateLimit
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: rate-limit
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/rate-limit
+    version: {{ readFile (print $helmChartVersionsDir "/rate-limit.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - replicaCount: {{ $region.rateLimit.replicaCount }}
+      - image:
+          repository: {{ print $.Values.dockerIo.registry "/" $.Values.dockerIo.repositoryPrefix | quote }}
+      - redis:
+          image:
+            repository: {{ print $.Values.dockerIo.registry "/" $.Values.dockerIo.repositoryPrefix | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-rate-limit-redis/credentials
+      - service:
+          redisURL:
+            name: REDIS_URL
+            value: {{ $region.region }}-rate-limit-redis-0.{{ $region.region }}-rate-limit-redis-headless:6379,{{ $region.region }}-rate-limit-redis-1.{{ $region.region }}-rate-limit-redis-headless:6379,{{ $region.region }}-rate-limit-redis-2.{{ $region.region }}-rate-limit-redis-headless:6379,{{ $region.region }}-rate-limit-redis-3.{{ $region.region }}-rate-limit-redis-headless:6379,{{ $region.region }}-rate-limit-redis-4.{{ $region.region }}-rate-limit-redis-headless:6379,{{ $region.region }}-rate-limit-redis-5.{{ $region.region }}-rate-limit-redis-headless:6379
+      - serviceMonitor:
+          enabled: {{ $region.rateLimit.serviceMonitor.enabled }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-rate-limit") }}-redis
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: rateLimit
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: rate-limit-redis
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/rate-limit-redis
+    version: {{ readFile (print $helmChartVersionsDir "/rate-limit-redis.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - global:
+          redis:
+            vaultCredentialsPath: controlplane/data/{{ $region.region }}-rate-limit-redis/credentials
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+{{- end }}
+
+{{- end }}

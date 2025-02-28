@@ -1,0 +1,4 @@
+# Do not show diffs of generated files.
+configmap.yaml -diff linguist-generated
+configmap-authzuser.yaml -diff linguist-generated
+configmap-authzservice.yaml -diff linguist-generated

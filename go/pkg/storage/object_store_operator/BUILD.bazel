@@ -1,0 +1,40 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_container_image")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "object_store_operator_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/object_store_operator",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "//go/pkg/storage/object_store_operator/controllers",
+        "//go/pkg/storage/storagecontroller",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//plugin/pkg/client/auth",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/healthz",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
+    ],
+)
+
+go_binary(
+    name = "object_store_operator",
+    embed = [":object_store_operator_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_container_image(
+    name = "object_store_operator_image",
+    files = [
+        "//go/pkg/storage/object_store_operator",
+    ],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,22 @@
+filegroup(
+    name = "universe_deployer",
+    srcs = glob([
+        "**/*",
+        ],
+    ),
+    visibility = [
+        "//deployment/universe_deployer/deployment_artifacts:__pkg__",
+        "//go/pkg/universe_deployer/cmd/deploy_all_in_kind:__pkg__",
+        "//go/pkg/universe_deployer/manifests_generator:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "vault-jwk-validation-public-keys",
+    srcs = glob([
+        "*/vault-jwk-validation-public-keys/**/*"
+    ]),
+    visibility = [
+        "//go/pkg/universe_deployer/deployer:__pkg__",
+    ],
+)

@@ -1,0 +1,31 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "mockinference.go",
+        "root.go",
+        "server.go",
+    ],
+    embedsrcs = ["random-words"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/infaas-agent/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/infaas-agent/agent",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_friendsofgo_errors//:errors",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_pkg_errors//:errors",
+        "@com_github_spf13_cobra//:cobra",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//health",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+    ],
+)

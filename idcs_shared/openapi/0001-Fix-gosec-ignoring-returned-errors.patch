@@ -1,0 +1,128 @@
+From 1db7587c7cb199bfa59c493638a3a4d94adaf76d Mon Sep 17 00:00:00 2001
+From: Mark Horn <mark.d.horn@intel.com>
+Date: Thu, 27 Jul 2023 17:43:22 +0000
+Subject: [PATCH] Fix gosec ignoring returned errors
+
+Signed-off-by: Mark Horn <mark.d.horn@intel.com>
+---
+ .../src/main/resources/go/api.mustache            |  5 ++++-
+ .../src/main/resources/go/client.mustache         | 15 ++++++++++++---
+ .../src/main/resources/go/model_anyof.mustache    |  8 ++++----
+ .../src/main/resources/go/model_oneof.mustache    |  8 ++++----
+ 4 files changed, 24 insertions(+), 12 deletions(-)
+
+diff --git a/modules/openapi-generator/src/main/resources/go/api.mustache b/modules/openapi-generator/src/main/resources/go/api.mustache
+index 44fbbcf4f955..333cd2a1e653 100644
+--- a/modules/openapi-generator/src/main/resources/go/api.mustache
++++ b/modules/openapi-generator/src/main/resources/go/api.mustache
+@@ -348,11 +348,14 @@ func (a *{{{classname}}}Service) {{nickname}}Execute(r {{#structPrefix}}{{&class
+ 	}
+ 
+ 	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+-	localVarHTTPResponse.Body.Close()
++	closeErr := localVarHTTPResponse.Body.Close()
+ 	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+ 	if err != nil {
+ 		return {{#returnType}}localVarReturnValue, {{/returnType}}localVarHTTPResponse, err
+ 	}
++	if closeErr != nil {
++		return {{#returnType}}localVarReturnValue, {{/returnType}}localVarHTTPResponse, closeErr
++	}
+ 
+ 	if localVarHTTPResponse.StatusCode >= 300 {
+ 		newErr := &GenericOpenAPIError{
+diff --git a/modules/openapi-generator/src/main/resources/go/client.mustache b/modules/openapi-generator/src/main/resources/go/client.mustache
+index d5e45dfb03c3..54350ea502a6 100644
+--- a/modules/openapi-generator/src/main/resources/go/client.mustache
++++ b/modules/openapi-generator/src/main/resources/go/client.mustache
+@@ -244,7 +244,10 @@ func (c *APIClient) prepareRequest(
+ 						return nil, err
+ 					}
+ 				} else { // form value
+-					w.WriteField(k, iv)
++					err = w.WriteField(k, iv)
++						if err != nil {
++							return nil, err
++						}
+ 				}
+ 			}
+ 		}
+@@ -267,7 +270,10 @@ func (c *APIClient) prepareRequest(
+ 
+ 		// Set Content-Length
+ 		headerParams["Content-Length"] = fmt.Sprintf("%d", body.Len())
+-		w.Close()
++		err := w.Close()
++		if err != nil {
++		    return nil, err
++		}
+ 	}
+ 
+ 	if strings.HasPrefix(headerParams["Content-Type"], "application/x-www-form-urlencoded") && len(formParams) > 0 {
+@@ -275,7 +281,10 @@ func (c *APIClient) prepareRequest(
+ 			return nil, errors.New("Cannot specify postBody and x-www-form-urlencoded form at the same time.")
+ 		}
+ 		body = &bytes.Buffer{}
+-		body.WriteString(formParams.Encode())
++		_, err := body.WriteString(formParams.Encode())
++		if err != nil {
++			return nil, err
++		}
+ 		// Set Content-Length
+ 		headerParams["Content-Length"] = fmt.Sprintf("%d", body.Len())
+ 	}
+diff --git a/modules/openapi-generator/src/main/resources/go/model_anyof.mustache b/modules/openapi-generator/src/main/resources/go/model_anyof.mustache
+index 3b221d80fb61..3445c6fea932 100644
+--- a/modules/openapi-generator/src/main/resources/go/model_anyof.mustache
++++ b/modules/openapi-generator/src/main/resources/go/model_anyof.mustache
+@@ -31,8 +31,8 @@ func (dst *{{classname}}) UnmarshalJSON(data []byte) error {
+ 		// try to unmarshal JSON data into {{{modelName}}}
+ 		err = json.Unmarshal(data, &dst.{{{modelName}}});
+ 		if err == nil {
+-			json{{{modelName}}}, _ := json.Marshal(dst.{{{modelName}}})
+-			if string(json{{{modelName}}}) == "{}" { // empty struct
++			json{{{modelName}}}, jsonErr := json.Marshal(dst.{{{modelName}}})
++			if string(json{{{modelName}}}) == "{}" || jsonErr != nil { // empty struct
+ 				dst.{{{modelName}}} = nil
+ 			} else {
+ 				return nil // data stored in dst.{{{modelName}}}, return on the first match
+@@ -48,8 +48,8 @@ func (dst *{{classname}}) UnmarshalJSON(data []byte) error {
+ 	// try to unmarshal JSON data into {{{.}}}
+ 	err = json.Unmarshal(data, &dst.{{{.}}});
+ 	if err == nil {
+-		json{{{.}}}, _ := json.Marshal(dst.{{{.}}})
+-		if string(json{{{.}}}) == "{}" { // empty struct
++		json{{{.}}}, jsonErr := json.Marshal(dst.{{{.}}})
++		if string(json{{{.}}}) == "{}" || jsonErr != nil { // empty struct
+ 			dst.{{{.}}} = nil
+ 		} else {
+ 			return nil // data stored in dst.{{{.}}}, return on the first match
+diff --git a/modules/openapi-generator/src/main/resources/go/model_oneof.mustache b/modules/openapi-generator/src/main/resources/go/model_oneof.mustache
+index 3f70f611683a..3850432464b0 100644
+--- a/modules/openapi-generator/src/main/resources/go/model_oneof.mustache
++++ b/modules/openapi-generator/src/main/resources/go/model_oneof.mustache
+@@ -58,8 +58,8 @@ func (dst *{{classname}}) UnmarshalJSON(data []byte) error {
+         // try to unmarshal data into {{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}}
+         err = json.Unmarshal(data, &dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}})
+         if err == nil {
+-                json{{{.}}}, _ := json.Marshal(dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}})
+-                if string(json{{{.}}}) == "{}" { // empty struct
++                json{{{.}}}, jsonErr := json.Marshal(dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}})
++                if string(json{{{.}}}) == "{}" || jsonErr != nil { // empty struct
+                         dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}} = nil
+                 } else {
+                         match++
+@@ -89,8 +89,8 @@ func (dst *{{classname}}) UnmarshalJSON(data []byte) error {
+ 	// try to unmarshal data into {{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}}
+ 	err = newStrictDecoder(data).Decode(&dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}})
+ 	if err == nil {
+-		json{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}}, _ := json.Marshal(dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}})
+-		if string(json{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}}) == "{}" { // empty struct
++		json{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}}, jsonErr := json.Marshal(dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}})
++		if string(json{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}}) == "{}" || jsonErr != nil { // empty struct
+ 			dst.{{#lambda.type-to-name}}{{{.}}}{{/lambda.type-to-name}} = nil
+ 		} else {
+ 			match++
+-- 
+2.34.1
+

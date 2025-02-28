@@ -1,0 +1,30 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/user-credentials
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  service: cloudaccount-db-postgresql
+  vaultCredentialsPath: database/static-creds/us-dev-1-cloudaccount-db-client
+
+otel:
+  otelAnnotations: false
+
+proxy:
+  enabled: true
+
+emailExclusionPattern: "!#$%^&*()+=[]{};':\"\\|<>/?"
+aws:
+  vaultCredentialsPath: controlplane/data/user-credentials/awssecrets
+  region: "us-west-2"
+  accountId: /vault/secrets/accountid
+  userPool: "us-west-2_UYbIELOby"
+  customScope: "dev-idc-global-dev-internal/read"
+  cognitoUrl: "https://dev-idc-global-dev-internal.auth.us-west-2.amazoncognito.com/oauth2/token"
+  role_arn: arn:aws:iam::390677890188:role/user-credentials-irsa-dev-role

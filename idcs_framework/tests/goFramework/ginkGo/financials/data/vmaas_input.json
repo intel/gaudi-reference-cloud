@@ -1,0 +1,73 @@
+{
+  "baseUrl": "https://internal-placeholder.com",
+  "computeUrl":"https://internal-placeholder.com",
+	"consoleUrl":"https://dev1-internal-placeholder.com/",
+  "tokenUrl": "https://oidc/token?",
+  "cloudaccount_payload":{
+
+  },
+  "vnetName":"us-dev-1a-default",
+  "metering_search_payload": {
+    "resourceId": "<<resourceId>>",
+    "cloudAccountId": "<<cloudAccountId>>"
+  },
+
+  "metering_create_payload": {
+    "transactionId": "<<transactionId>>",
+    "resourceId": "<<resourceId>>",
+    "cloudAccountId": "<<cloudAccountId>>",
+    "timestamp": "<<timestamp>>",
+    "properties": {
+                    "availabilityZone": "us-dev-1a",
+                    "clusterId": "harvester1",
+                    "deleted": "false",
+                    "instanceType": "<<instanceType>>",
+                    "region": "us-dev-1",
+                    "runningSeconds": "<<runningSeconds>>",
+                    "instanceName": "<<instanceName>>",
+                    "serviceType": "ComputeAsAService"
+    }
+  },
+  "vnet_payload": {
+    "metadata": {
+      "name": "us-dev-1a-default"
+    },
+    "spec": {
+      "region": "us-dev-1",
+      "availabilityZone": "us-dev-1a",
+      "prefixLength": 22
+    }
+  },
+
+  "sshpublickey_payload":{
+      "metadata": {
+          "name": "<<ssh-key-name>>"
+      },
+      "spec": {
+          "sshPublicKey": "<<ssh-user-public-key>>"
+      }
+  },
+
+  "instance_payload":{
+      "metadata": {
+        "name": "<<instance-name>>"
+      },
+      "spec": {
+        "availabilityZone": "us-dev-1a",
+        "instanceType": "<<instance-type>>",
+        "machineImage": "<<machine-image>>",
+        "runStrategy": "RerunOnFailure",
+        "sshPublicKeyNames": [
+          "<<ssh-public-key>>"
+        ],
+        "interfaces": [
+          {
+            "name": "eth0",
+            "vNet": "<<vnet-name>>"
+          }
+        ]
+      }
+  }
+
+}
+

@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-spr-gaudi3-dell
+spec:
+  name: bm-spr-gaudi3-dell
+  displayName: 8 Gaudi HL-325H mezzanine cards with 4rd Gen Xeon® processors, 2 TB RAM
+  description: 8 Gaudi HL-325H mezzanine cards with 4rd Gen Xeon® processors, 2 TB RAM
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 56
+    id: "0x806f8"
+    modelName: 4rd Generation Intel® Xeon® Platinum 8468+ Processors
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 8
+    modelName: HL-325
+  memory:
+    size: 2048Gi
+    dimmSize: 64Gi
+    dimmCount: 32
+    speed: 5600
+  disks:
+    - size: 57231Gi

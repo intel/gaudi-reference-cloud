@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "main_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/quota_management/cmd/main",
+    visibility = ["//visibility:private"],
+    deps = ["//go/pkg/quota_management/pkg/server"],
+)
+
+go_binary(
+    name = "main",
+    embed = [":main_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "quota-management-service_image",
+    embed = [
+        ":main_lib",
+    ],
+    visibility = ["//visibility:public"],
+)

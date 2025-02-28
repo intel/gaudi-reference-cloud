@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.fargateAnnotations }}
+        {{- toYaml .Values.fargateAnnotations | nindent 8 }}
+        {{- end }}
+        {{- if .Values.otel.otelAnnotations }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        {{- end }}
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.globalDBSSLCerts" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-secret-db_username: "{{ .Values.database.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-db_username: |-
+          {{`{{- with secret `}}"{{ .Values.database.vaultCredentialsPath }}"{{` -}}`}}
+          {{`{{ .Data.data.username }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-db_password: "{{ .Values.database.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-db_password: |-
+          {{`{{- with secret `}}"{{ .Values.database.vaultCredentialsPath }}"{{` -}}`}}
+          {{`{{ .Data.data.password }}`}}
+          {{`{{- end }}`}}
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/template-static-secret-render-interval: 2m
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "idc-common.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--config=/config.yaml"
+            {{- include "idc-common.logArgs" . | nindent 12 }}
+          ports:
+            {{- include "idc-common.grpcPorts" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- include "idc-common.proxyEnv" . | nindent 12 }}
+            {{- include "idc-common.commonEnv" . | nindent 12 }}
+            {{- include "idc-common.otelEnv" . | nindent 12 }}
+          volumeMounts:
+          - mountPath: /config.yaml
+            name: config
+            subPath: config.yaml
+      volumes:
+      - configMap:
+          name: {{ include "idc-common.fullname" . }}
+        name: config
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

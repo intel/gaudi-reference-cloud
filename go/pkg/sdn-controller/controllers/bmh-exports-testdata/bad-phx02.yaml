@@ -1,0 +1,382 @@
+apiVersion: v1
+items:
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468V
+      storage.mac.cloud.intel.com/eth1-0: 58:a2:e1:d0:76:66
+    creationTimestamp: "2025-01-07T19:48:56Z"
+    finalizers:
+      - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "8"
+      cloud.intel.com/host-gpu-model: gpu-max-1550
+      cloud.intel.com/host-memory-size: 2048Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/ready-to-test: "true"
+      pool.cloud.intel.com/general: "true"
+    name: phx02-d00-bmas0133
+    namespace: metal3-2
+    resourceVersion: "232388615"
+    uid: 3ad497d2-9bb9-4f73-b14f-c9e820fad5d9
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.140.138/redfish/v1/Systems/1
+      credentialsName: phx02-d00-bmas0133-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 58:a2:e1:d0:75:b7
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: phx02-d00-bmas0133-bmc-secret
+        namespace: metal3-2
+      credentialsVersion: "204004950"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2401
+        count: 192
+        flags:
+          - 3dnowprefetch
+          - abm
+          - acpi
+          - adx
+          - aes
+          - amx_bf16
+          - amx_int8
+          - amx_tile
+          - aperfmperf
+          - apic
+          - arat
+          - arch_capabilities
+          - arch_lbr
+          - arch_perfmon
+          - art
+          - avx
+          - avx2
+          - avx512_bf16
+          - avx512_bitalg
+          - avx512_fp16
+          - avx512_vbmi2
+          - avx512_vnni
+          - avx512_vpopcntdq
+          - avx512bw
+          - avx512cd
+          - avx512dq
+          - avx512f
+          - avx512ifma
+          - avx512vbmi
+          - avx512vl
+          - avx_vnni
+          - bmi1
+          - bmi2
+          - bts
+          - bus_lock_detect
+          - cat_l2
+          - cat_l3
+          - cdp_l2
+          - cdp_l3
+          - cldemote
+          - clflush
+          - clflushopt
+          - clwb
+          - cmov
+          - constant_tsc
+          - cpuid
+          - cpuid_fault
+          - cqm
+          - cqm_llc
+          - cqm_mbm_local
+          - cqm_mbm_total
+          - cqm_occup_llc
+          - cx16
+          - cx8
+          - dca
+          - de
+          - ds_cpl
+          - dtes64
+          - dtherm
+          - dts
+          - enqcmd
+          - epb
+          - erms
+          - est
+          - f16c
+          - flush_l1d
+          - fma
+          - fpu
+          - fsgsbase
+          - fsrm
+          - fxsr
+          - gfni
+          - ht
+          - ibpb
+          - ibrs
+          - ibrs_enhanced
+          - ida
+          - intel_ppin
+          - intel_pt
+          - invpcid
+          - invpcid_single
+          - la57
+          - lahf_lm
+          - lm
+          - mba
+          - mca
+          - mce
+          - md_clear
+          - mmx
+          - monitor
+          - movbe
+          - movdir64b
+          - movdiri
+          - msr
+          - mtrr
+          - nonstop_tsc
+          - nopl
+          - nx
+          - ospke
+          - pae
+          - pat
+          - pbe
+          - pcid
+          - pclmulqdq
+          - pconfig
+          - pdcm
+          - pdpe1gb
+          - pebs
+          - pge
+          - pku
+          - pln
+          - pni
+          - popcnt
+          - pse
+          - pse36
+          - pts
+          - rdpid
+          - rdrand
+          - rdseed
+          - rdt_a
+          - rdtscp
+          - rep_good
+          - sdbg
+          - sep
+          - serialize
+          - sha_ni
+          - smap
+          - smep
+          - smx
+          - split_lock_detect
+          - ss
+          - ssbd
+          - sse
+          - sse2
+          - sse4_1
+          - sse4_2
+          - ssse3
+          - stibp
+          - syscall
+          - tm
+          - tm2
+          - tme
+          - tsc
+          - tsc_adjust
+          - tsc_deadline_timer
+          - tsc_known_freq
+          - tsxldtrk
+          - umip
+          - vaes
+          - vme
+          - vpclmulqdq
+          - waitpkg
+          - wbnoinvd
+          - x2apic
+          - xgetbv1
+          - xsave
+          - xsavec
+          - xsaveopt
+          - xsaves
+          - xtopology
+          - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468V
+      firmware:
+        bios:
+          date: 03/21/2024
+          vendor: American Megatrends International, LLC.
+          version: "2.2"
+      hostname: ubuntu
+      nics:
+        - lldp: {}
+          mac: 8e:f1:44:44:5c:4a
+          name: usb0
+        - lldp: {}
+          mac: 7c:c2:55:7b:cf:25
+          model: 0x8086 0x1563
+          name: enp171s0f1
+        - lldp: {}
+          mac: 58:a2:e1:d0:76:66
+          model: 0x15b3 0x101d
+          name: enp86s0f0np0
+        - lldp: {}
+          mac: 58:a2:e1:d0:76:67
+          model: 0x15b3 0x101d
+          name: enp86s0f1np1
+        - lldp: {}
+          mac: 58:a2:e1:d0:75:b6
+          model: 0x15b3 0x101d
+          name: enp168s0f0np0
+        - ip: 100.65.135.70
+          lldp:
+            switch_chassis_id: 60:6b:5b:94:4b:79
+            switch_port_description: phx02-d00-bmas0133_net0/0
+            switch_port_id: Ethernet3/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.31.4M running on
+              an Arista Networks DCS-7050CX4M-48D8
+            switch_system_name: phx02-c01-acsw030.us-region-3.cloud.intel.com
+          mac: 58:a2:e1:d0:75:b7
+          model: 0x15b3 0x101d
+          name: enp168s0f1np1
+          pxe: true
+        - ip: fe80::5aa2:e1ff:fed0:75b7%enp168s0f1np1
+          lldp:
+            switch_chassis_id: 60:6b:5b:94:4b:79
+            switch_port_description: phx02-d00-bmas0133_net0/0
+            switch_port_id: Ethernet3/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.31.4M running on
+              an Arista Networks DCS-7050CX4M-48D8
+            switch_system_name: phx02-c01-acsw030.us-region-3.cloud.intel.com
+          mac: 58:a2:e1:d0:75:b7
+          model: 0x15b3 0x101d
+          name: enp168s0f1np1
+          pxe: true
+        - lldp: {}
+          mac: 7c:c2:55:7b:cf:24
+          model: 0x8086 0x1563
+          name: enp171s0f0
+      ramMebibytes: 2097152
+      storage:
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme2n1
+          serialNumber: XDJ0A03M0LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee3007650f0
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme3n1
+          serialNumber: XDJ0A0410LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee30076547e
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme4n1
+          serialNumber: 2E50A0610LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee300c024cb
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme1n1
+          serialNumber: S665NS0T800268
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548002680025385300000001
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme0n1
+          serialNumber: S665NS0T800270
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548002700025385300000001
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme7n1
+          serialNumber: XDJ0A0490LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee300765686
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme6n1
+          serialNumber: 2E50A0630LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee300c0254d
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme5n1
+          serialNumber: 2E50A0650LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee300c025cf
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme10n1
+          serialNumber: 2E50A0620LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee300c0250c
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme8n1
+          serialNumber: XDJ0A03Z0LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee3007653fc
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme9n1
+          serialNumber: XDJ0A03Q0LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee3007651b3
+        - model: KIOXIA KCMYXRUG1T92
+          name: /dev/nvme11n1
+          serialNumber: 2E50A05Z0LL3
+          sizeBytes: 1920383410176
+          type: NVME
+          wwn: eui.01000000000000008ce38ee300c02449
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-821GV-TNR (0x1D2E15D9)
+        serialNumber: A897292X4509388
+    hardwareProfile: unknown
+    lastUpdated: "2025-01-29T13:47:40Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-07T20:34:35Z"
+        start: "2025-01-07T20:14:44Z"
+      inspect:
+        end: "2025-01-07T20:12:37Z"
+        start: "2025-01-07T19:49:11Z"
+      provision:
+        end: "2025-01-07T20:14:39Z"
+        start: "2025-01-07T20:12:40Z"
+      register:
+        end: "2025-01-07T19:49:11Z"
+        start: "2025-01-07T19:48:57Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 5eaf6452-9f7a-409d-b964-cb725be86240
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: phx02-d00-bmas0133-bmc-secret
+        namespace: metal3-2
+      credentialsVersion: "204004950"

@@ -1,0 +1,34 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: apple-app
+  namespace: idcs-system
+  labels:
+    app.kubernetes.io/name: apple-app
+    app.kubernetes.io/instance: apple-app
+    app: apple-app
+    service: apple-app
+    version: 1.1.8
+spec:
+  containers:
+    - name: apple-app
+      image: hashicorp/http-echo
+      args:
+        - "-text=apple"
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: apple-service
+  namespace: idcs-system
+spec:
+  selector:
+    app.kubernetes.io/name: apple-app
+    app.kubernetes.io/instance: apple-app
+    app: apple-app
+    service: apple-app
+    version: 1.1.8
+  ports:
+    - port: 5678 # Default port for image

@@ -1,0 +1,85 @@
+# This file contains targets to build container images and Helm charts.
+# Containers will be tagged with the contents of the file /build/dynamic/DOCKER_TAG.
+# Helm chart versions will be prefixed with the contents of the file /build/dynamic/HELM_CHART_VERSION
+# except for idc-versions whose version will be the contents of the file /build/dynamic/IDC_FULL_VERSION.
+#
+# See /deployment/push/BUILD.bzl for targets for pushing container images and Helm charts.
+#
+# See https://github.com/bazelbuild/rules_docker
+# See https://github.com/masmovil/bazel-rules
+
+load(":deployment.bzl", "idc_container", "idc_chart", "CONTAINERS", "CHARTS", "CHARTS_EXCEPT_IDC_VERSIONS", "COMPONENT_TO_CHARTS_DICT")
+
+[idc_container(
+    name = name,
+    target = target,
+) for name, target in CONTAINERS.items()]
+
+[idc_chart(
+    name = name,
+    target = target,
+) for name, target in CHARTS.items()]
+
+[filegroup(
+    name = "%s_chart_versions" % component,
+    srcs = ["//deployment:%s_chart_version" % chart for chart in charts],
+    visibility = ["//deployment/universe_deployer/deployment_artifacts:__pkg__"],
+) for component, charts in COMPONENT_TO_CHARTS_DICT.items()]
+
+# Define a filegroup that includes all chart version files except idc-versions.
+# The idc-versions chart should generally be excluded from build targets because it depends on the commit hash.
+filegroup(
+  name = "all_chart_versions_except_idc_versions",
+  srcs = [":%s_chart_version" % k for k, v in CHARTS_EXCEPT_IDC_VERSIONS.items()],
+  visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "universe_deployer_common",
+    srcs = [
+        "common/deploy-on-k8s.sh",
+        "common/freeport.py",
+        "common/vault/configure.sh",
+        "common/vault/get-kubernetes-public-keys.sh",
+        "common/vault/jwk-to-vault.py",
+        "common/vault/load-secrets.sh",
+        "common/vault/make-secrets.sh",
+        "common/vault/public/aws-rds-global-bundle.pem",
+        "common/vault/vault-operator-init.sh",
+        "common/vault/vault-operator-init-with-cli.sh",
+        "kind/deploy-kind.sh",
+        "kind/ingress-nginx.yaml",
+    ],
+    visibility = [
+        "//go/pkg/universe_deployer/deployer:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "test-e2e-common",
+    srcs = [
+        "//deployment/argocd:test-e2e-common",
+        "//deployment/helmfile:test-e2e-common",
+        "common/deploy-on-k8s.sh",
+        "common/freeport.py",
+        "common/vault/configure.sh",
+        "common/vault/get-kubernetes-public-keys.sh",
+        "common/vault/jwk-to-vault.py",
+        "common/vault/load-secrets.sh",
+        "common/vault/make-secrets.sh",
+        "common/vault/public/aws-rds-global-bundle.pem",
+        "common/vault/vault-operator-init.sh",
+        "common/vault/vault-operator-init-with-cli.sh",
+        "kind/deploy-kind.sh",
+        "kind/ingress-nginx.yaml",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "test-e2e-compute-bm",
+    srcs = [
+        "common/netbox/populate_samples.sh",
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "artifactory_curl_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/cmd/artifactory_curl",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/artifactory",
+        "//go/pkg/universe_deployer/util",
+        "@com_github_spf13_pflag//:pflag",
+    ],
+)
+
+go_binary(
+    name = "artifactory_curl",
+    embed = [":artifactory_curl_lib"],
+    visibility = ["//visibility:public"],
+)

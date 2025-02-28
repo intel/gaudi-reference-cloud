@@ -1,0 +1,16 @@
+.errorModal {
+  .modal-header {
+    .btn-close {
+      margin-bottom: calc(-0.5 * var(--bs-modal-header-padding-y));
+      color: var(--body-color);
+    }
+
+    svg {
+      color: var(--danger);
+    }
+    border-bottom-color: var(--gray-300);
+  }
+  .modal-footer {
+    border-top-color: var(--gray-300);
+  }
+}

@@ -1,0 +1,20 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "commit_runner_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/cmd/commit_runner",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/util",
+    ],
+)
+
+go_binary(
+    name = "commit_runner",
+    embed = [":commit_runner_lib"],
+    visibility = ["//visibility:public"],
+)

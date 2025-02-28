@@ -1,0 +1,74 @@
+{
+  "sdnController": "127.0.0.1",
+  "cp_deploy": [{
+    "name" : "pdx74",
+    "type": "docker-compose",
+    "file": "../../assets/docker/no_ovn.yaml",
+    "ovnCentalIP" : "100.64.20.53"
+  }],
+  "chassis": [
+    {
+      "chassis_id": "102E00007E90",
+      "ip": "100.64.20.100",
+      "ssh_user": "root",
+      "ssh_key_path": "~/.ssh/id_rsa"
+    },
+    {
+      "chassis_id": "102E00021840",
+      "ip": "100.64.20.101",
+      "ssh_user": "root",
+      "ssh_key_path": "~/.ssh/id_rsa"
+    },
+    {
+      "chassis_id": "102E0001F590",
+      "ip": "100.64.20.102",
+      "ssh_user": "root",
+      "ssh_key_path": "~/.ssh/id_rsa"
+    }
+  ],
+  "vms": [
+    {
+      "name": "vm1",
+      "chassis": "102E00007E90",
+      "interface": "enp0s1f0d2",
+      "device_id": 3,
+      "MAC": "10:2e:00:00:7e:93"
+    },
+    {
+      "name": "vm2",
+      "chassis": "102E00021840",
+      "interface": "enp0s1f0d2",
+      "device_id": 3,
+      "MAC": "10:2e:00:02:18:43"
+    },
+    {
+      "name": "vm3",
+      "chassis": "102E00007E90",
+      "interface": "enp0s1f0d3",
+      "device_id": 4,
+      "MAC": "00:0a:00:03:39:18" 
+    },
+
+    {
+      "name": "vm4",
+      "chassis": "102E00021840",
+      "interface": "enp0s1f0d3",
+      "device_id": 4,
+      "MAC": "00:0a:00:03:70:18"
+    },
+    {
+      "name": "vm5",
+      "chassis": "102E0001F590",
+      "interface": "enp0s1f0d2",
+      "device_id": 3,
+      "MAC": "10:2e:00:01:f5:93"
+    },
+    {
+      "name": "vm6",
+      "chassis": "102E0001F590",
+      "interface": "enp0s1f0d3",
+      "device_id": 4,
+      "MAC": "00:0a:00:03:72:18"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{{- if .Values.apiServer.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "baremetal-enrollment-api.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "baremetal-enrollment-api.fullname" . }}
+  {{- with .Values.apiServer.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.apiServer.ingress.className }}
+  ingressClassName: {{ .Values.apiServer.ingress.className }}
+  {{- end }}
+  {{- if .Values.apiServer.ingress.tls }}
+  tls:
+    {{- range .Values.apiServer.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- $svcname := include "baremetal-enrollment-api.fullname" . -}}
+    {{- range .Values.apiServer.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $svcname }}
+                port:
+                  number: {{ $.Values.apiServer.service.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}

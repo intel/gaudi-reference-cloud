@@ -1,0 +1,2557 @@
+apiVersion: v1
+items:
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-27T14:48:31Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 5
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      last-associated-instance: 79d42a4f-152f-47db-9e17-17608f363b3f
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas002
+    namespace: metal3-1
+    resourceVersion: "15853212"
+    uid: d93d72ee-baab-4c72-aa1f-e4cd11433441
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.130.240/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas002-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 3c:ec:ef:5c:a5:22
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 6
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas002-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10244414"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_ppin
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 06/01/2023
+          vendor: American Megatrends International, LLC.
+          version: "1.3"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 3c:ec:ef:5c:a4:97
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - lldp: {}
+        mac: d6:0d:91:8b:dc:7f
+        name: usb0
+      - ip: 100.65.131.6
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c5:43
+          switch_port_description: cmh02-d00-bmas002_net0/0
+          switch_port_id: Ethernet2/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw013.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:a5:22
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::3eec:efff:fe5c:a522%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c5:43
+          switch_port_description: cmh02-d00-bmas002_net0/0
+          switch_port_id: Ethernet2/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw013.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:a5:22
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - lldp: {}
+        mac: 3c:ec:ef:5c:a5:23
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      - lldp: {}
+        mac: 3c:ec:ef:5c:a4:96
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 232841CFB6C9
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752341cfb6c9
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 232841CFB701
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752341cfb701
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X3830849
+    hardwareProfile: unknown
+    lastUpdated: "2025-02-01T01:03:18Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-28T19:38:15Z"
+        start: "2025-01-28T19:33:12Z"
+      inspect:
+        end: "2025-01-27T14:56:02Z"
+        start: "2025-01-27T14:48:46Z"
+      provision:
+        end: "2025-01-28T18:15:59Z"
+        start: "2025-01-28T18:06:28Z"
+      register:
+        end: "2025-02-01T01:03:18Z"
+        start: "2025-01-31T22:51:20Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 3946f361-1805-4148-be4b-1146fa8e2092
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas002-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10244414"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-27T15:21:34Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas004
+    namespace: metal3-1
+    resourceVersion: "15851559"
+    uid: 611e3f4c-c784-4872-845b-973424f421c4
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.130.216/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas004-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 7c:c2:55:42:60:82
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 6
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas004-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10273372"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 02/02/2023
+          vendor: American Megatrends International, LLC.
+          version: "1.1"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 7c:c2:55:42:60:b0
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      - lldp: {}
+        mac: 7c:c2:55:42:60:b1
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - lldp: {}
+        mac: f6:76:3d:ac:a4:2f
+        name: usb0
+      - ip: 100.65.131.8
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c5:43
+          switch_port_description: cmh02-d00-bmas004_net0/0
+          switch_port_id: Ethernet4/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw013.us-region-5.cloud.intel.com
+        mac: 7c:c2:55:42:60:82
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::7ec2:55ff:fe42:6082%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c5:43
+          switch_port_description: cmh02-d00-bmas004_net0/0
+          switch_port_id: Ethernet4/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw013.us-region-5.cloud.intel.com
+        mac: 7c:c2:55:42:60:82
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - lldp: {}
+        mac: 7c:c2:55:42:60:83
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 22523D5F01AC
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a075223d5f01ac
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 22523D5F011E
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a075223d5f011e
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X3600519
+    hardwareProfile: unknown
+    lastUpdated: "2025-02-01T01:01:14Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-27T15:35:12Z"
+        start: "2025-01-27T15:30:41Z"
+      inspect:
+        end: "2025-01-27T15:29:05Z"
+        start: "2025-01-27T15:21:48Z"
+      provision:
+        end: "2025-01-27T15:30:39Z"
+        start: "2025-01-27T15:29:07Z"
+      register:
+        end: "2025-02-01T01:01:14Z"
+        start: "2025-01-31T22:51:18Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 2e584bf6-9256-49a5-b180-396c6fda397d
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas004-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10273372"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-27T15:48:27Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas007
+    namespace: metal3-1
+    resourceVersion: "15837383"
+    uid: 3234a3d0-3079-423e-9b9e-32966bc155a3
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.130.209/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas007-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 7c:c2:55:42:61:5e
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 6
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas007-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10296919"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 02/02/2023
+          vendor: American Megatrends International, LLC.
+          version: "1.1"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 7c:c2:55:42:61:fa
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      - lldp: {}
+        mac: 7c:c2:55:42:61:fb
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - lldp: {}
+        mac: be:e7:77:cc:5e:a4
+        name: usb0
+      - ip: 100.65.131.11
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c5:43
+          switch_port_description: cmh02-d00-bmas007_net0/0
+          switch_port_id: Ethernet7/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw013.us-region-5.cloud.intel.com
+        mac: 7c:c2:55:42:61:5e
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::7ec2:55ff:fe42:615e%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c5:43
+          switch_port_description: cmh02-d00-bmas007_net0/0
+          switch_port_id: Ethernet7/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw013.us-region-5.cloud.intel.com
+        mac: 7c:c2:55:42:61:5e
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - lldp: {}
+        mac: 7c:c2:55:42:61:5f
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 22523D5F0EF0
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a075223d5f0ef0
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 22523D5F0EA6
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a075223d5f0ea6
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X3600362
+    hardwareProfile: unknown
+    lastUpdated: "2025-02-01T00:45:41Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-27T16:02:15Z"
+        start: "2025-01-27T15:57:34Z"
+      inspect:
+        end: "2025-01-27T15:55:58Z"
+        start: "2025-01-27T15:48:41Z"
+      provision:
+        end: "2025-01-27T15:57:31Z"
+        start: "2025-01-27T15:56:00Z"
+      register:
+        end: "2025-02-01T00:45:41Z"
+        start: "2025-01-31T22:52:06Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 27157307-70ee-426b-af0d-6b5ab10417f2
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas007-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10296919"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-27T15:58:06Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas010
+    namespace: metal3-1
+    resourceVersion: "15742580"
+    uid: 7eaca69a-ccf1-465f-848e-56d15c30c952
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.131.28/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas010-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 3c:ec:ef:5c:c8:4e
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas010-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10305430"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_ppin
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 08/10/2023
+          vendor: American Megatrends International, LLC.
+          version: "1.4"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 3c:ec:ef:5c:ca:9d
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - ip: 100.65.131.68
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c9:5b
+          switch_port_description: cmh02-d00-bmas010_net0/0
+          switch_port_id: Ethernet3/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw014.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:c8:4e
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::3eec:efff:fe5c:c84e%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:94:c9:5b
+          switch_port_description: cmh02-d00-bmas010_net0/0
+          switch_port_id: Ethernet3/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw014.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:c8:4e
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - lldp: {}
+        mac: be:7b:68:1d:dc:a4
+        name: usb0
+      - lldp: {}
+        mac: 3c:ec:ef:5c:c8:4f
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      - lldp: {}
+        mac: 3c:ec:ef:5c:ca:9c
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 233442AA24F6
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752342aa24f6
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 233442AA2499
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752342aa2499
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X3A24395
+    hardwareProfile: unknown
+    lastUpdated: "2025-01-31T22:44:28Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-27T16:12:10Z"
+        start: "2025-01-27T16:07:40Z"
+      inspect:
+        end: "2025-01-27T16:05:53Z"
+        start: "2025-01-27T15:58:21Z"
+      provision:
+        end: "2025-01-27T16:07:38Z"
+        start: "2025-01-27T16:05:55Z"
+      register:
+        end: "2025-01-27T15:58:21Z"
+        start: "2025-01-27T15:58:07Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 8018bd30-3334-41b4-b407-918e83be74ec
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas010-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10305430"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-30T17:05:57Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas015
+    namespace: metal3-1
+    resourceVersion: "15742585"
+    uid: 9c770efe-b682-44f3-9c4c-8be83f81a98d
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.131.82/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas015-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 3c:ec:ef:5c:a5:ca
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas015-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "14183191"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_ppin
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 12/07/2023
+          vendor: American Megatrends International, LLC.
+          version: "2.1"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 3c:ec:ef:5c:a5:50
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      - lldp: {}
+        mac: 3c:ec:ef:5c:a5:51
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - lldp: {}
+        mac: 4a:59:5d:27:88:e0
+        name: usb0
+      - ip: 100.65.131.135
+        lldp:
+          switch_chassis_id: 60:6b:5b:97:50:2b
+          switch_port_description: cmh02-d00-bmas015_net0/0
+          switch_port_id: Ethernet1/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw015.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:a5:ca
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::3eec:efff:fe5c:a5ca%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:97:50:2b
+          switch_port_description: cmh02-d00-bmas015_net0/0
+          switch_port_id: Ethernet1/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw015.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:a5:ca
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - lldp: {}
+        mac: 3c:ec:ef:5c:a5:cb
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 2411479E01CE
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a07524479e01ce
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 2411479E01E1
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a07524479e01e1
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X4510037
+    hardwareProfile: unknown
+    lastUpdated: "2025-01-31T22:44:29Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-30T17:20:09Z"
+        start: "2025-01-30T17:15:27Z"
+      inspect:
+        end: "2025-01-30T17:13:29Z"
+        start: "2025-01-30T17:06:11Z"
+      provision:
+        end: "2025-01-30T17:15:25Z"
+        start: "2025-01-30T17:13:31Z"
+      register:
+        end: "2025-01-30T17:06:11Z"
+        start: "2025-01-30T17:05:58Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: b45613bb-ee9b-4f7f-8de2-6f171ea0c624
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas015-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "14183191"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-29T22:29:19Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas018
+    namespace: metal3-1
+    resourceVersion: "15742877"
+    uid: 049b6f3b-74dc-46ec-bf86-b9688115538f
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.131.95/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas018-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 3c:ec:ef:5c:c7:34
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas018-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "13194470"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_ppin
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 12/07/2023
+          vendor: American Megatrends International, LLC.
+          version: "2.1"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 3c:ec:ef:5c:c7:35
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      - lldp: {}
+        mac: e2:7f:90:e6:bb:d0
+        name: usb0
+      - lldp: {}
+        mac: 3c:ec:ef:5c:c6:f6
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      - lldp: {}
+        mac: 3c:ec:ef:5c:c6:f7
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - ip: 100.65.131.131
+        lldp:
+          switch_chassis_id: 60:6b:5b:97:50:2b
+          switch_port_description: cmh02-d00-bmas018_net0/0
+          switch_port_id: Ethernet4/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw015.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:c7:34
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::3eec:efff:fe5c:c734%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:97:50:2b
+          switch_port_description: cmh02-d00-bmas018_net0/0
+          switch_port_id: Ethernet4/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw015.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:c7:34
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 234845C411FB
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752345c411fb
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 234845C411D4
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752345c411d4
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X4118302
+    hardwareProfile: unknown
+    lastUpdated: "2025-01-31T22:44:50Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-29T22:42:32Z"
+        start: "2025-01-29T22:38:03Z"
+      inspect:
+        end: "2025-01-29T22:36:17Z"
+        start: "2025-01-29T22:29:33Z"
+      provision:
+        end: "2025-01-29T22:38:01Z"
+        start: "2025-01-29T22:36:19Z"
+      register:
+        end: "2025-01-29T22:29:33Z"
+        start: "2025-01-29T22:29:19Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 2927cf0e-4a8e-419a-9e5b-ed06c125af5c
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas018-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "13194470"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-27T17:42:15Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas021
+    namespace: metal3-1
+    resourceVersion: "15742823"
+    uid: dec27226-28c3-4ca2-b865-f826a6016a14
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.131.85/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas021-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 3c:ec:ef:5c:c7:7c
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas021-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10396671"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_ppin
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 12/07/2023
+          vendor: American Megatrends International, LLC.
+          version: "2.1"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 3c:ec:ef:5c:c7:7d
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      - lldp: {}
+        mac: 2a:8d:6e:a6:1a:8e
+        name: usb0
+      - lldp: {}
+        mac: 3c:ec:ef:5c:ca:bc
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      - lldp: {}
+        mac: 3c:ec:ef:5c:ca:bd
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - ip: 100.65.131.133
+        lldp:
+          switch_chassis_id: 60:6b:5b:97:50:2b
+          switch_port_description: cmh02-d00-bmas021_net0/0
+          switch_port_id: Ethernet7/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw015.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:c7:7c
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::3eec:efff:fe5c:c77c%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:97:50:2b
+          switch_port_description: cmh02-d00-bmas021_net0/0
+          switch_port_id: Ethernet7/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw015.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:c7:7c
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 234845C5397F
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752345c5397f
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 234845C539BF
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752345c539bf
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X4118255
+    hardwareProfile: unknown
+    lastUpdated: "2025-01-31T22:44:46Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-27T17:56:18Z"
+        start: "2025-01-27T17:51:48Z"
+      inspect:
+        end: "2025-01-27T17:50:02Z"
+        start: "2025-01-27T17:42:29Z"
+      provision:
+        end: "2025-01-27T17:51:46Z"
+        start: "2025-01-27T17:50:04Z"
+      register:
+        end: "2025-01-27T17:42:29Z"
+        start: "2025-01-27T17:42:15Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 164b683a-b8e1-470e-aec9-6d4bb79e66b5
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas021-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10396671"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    annotations:
+      cloud.intel.com/host-cpu-model: Intel(R) Xeon(R) Platinum 8468
+    creationTimestamp: "2025-01-27T19:55:02Z"
+    finalizers:
+    - baremetalhost.metal3.io
+    generation: 2
+    labels:
+      cloud.intel.com/hbm-mode: ""
+      cloud.intel.com/host-cpu-cores: "96"
+      cloud.intel.com/host-cpu-count: "192"
+      cloud.intel.com/host-cpu-id: "0x806f8"
+      cloud.intel.com/host-cpu-manufacturer: Intel_Corporation
+      cloud.intel.com/host-cpu-sockets: "2"
+      cloud.intel.com/host-cpu-threads: "2"
+      cloud.intel.com/host-gpu-count: "0"
+      cloud.intel.com/host-gpu-model: ""
+      cloud.intel.com/host-memory-size: 1024Gi
+      cloud.intel.com/network-mode: ""
+      cloud.intel.com/verified: "true"
+      instance-type.cloud.intel.com/bm-spr-pl: "true"
+      pool.cloud.intel.com/general: "true"
+    name: cmh02-d00-bmas026
+    namespace: metal3-1
+    resourceVersion: "15742869"
+    uid: b441f98f-e111-4419-b40c-f09cf5d72864
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.77.131.155/redfish/v1/Systems/1
+      credentialsName: cmh02-d00-bmas026-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 3c:ec:ef:5c:ca:7a
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: cmh02-d00-bmas026-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10512640"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 2101
+        count: 192
+        flags:
+        - 3dnowprefetch
+        - abm
+        - acpi
+        - adx
+        - aes
+        - amx_bf16
+        - amx_int8
+        - amx_tile
+        - aperfmperf
+        - apic
+        - arat
+        - arch_capabilities
+        - arch_lbr
+        - arch_perfmon
+        - art
+        - avx
+        - avx2
+        - avx512_bf16
+        - avx512_bitalg
+        - avx512_fp16
+        - avx512_vbmi2
+        - avx512_vnni
+        - avx512_vpopcntdq
+        - avx512bw
+        - avx512cd
+        - avx512dq
+        - avx512f
+        - avx512ifma
+        - avx512vbmi
+        - avx512vl
+        - avx_vnni
+        - bmi1
+        - bmi2
+        - bts
+        - bus_lock_detect
+        - cat_l2
+        - cat_l3
+        - cdp_l2
+        - cdp_l3
+        - cldemote
+        - clflush
+        - clflushopt
+        - clwb
+        - cmov
+        - constant_tsc
+        - cpuid
+        - cpuid_fault
+        - cqm
+        - cqm_llc
+        - cqm_mbm_local
+        - cqm_mbm_total
+        - cqm_occup_llc
+        - cx16
+        - cx8
+        - dca
+        - de
+        - ds_cpl
+        - dtes64
+        - dtherm
+        - dts
+        - enqcmd
+        - epb
+        - ept
+        - ept_ad
+        - erms
+        - est
+        - f16c
+        - flexpriority
+        - flush_l1d
+        - fma
+        - fpu
+        - fsgsbase
+        - fsrm
+        - fxsr
+        - gfni
+        - ht
+        - ibpb
+        - ibrs
+        - ibrs_enhanced
+        - ida
+        - intel_ppin
+        - intel_pt
+        - invpcid
+        - invpcid_single
+        - la57
+        - lahf_lm
+        - lm
+        - mba
+        - mca
+        - mce
+        - md_clear
+        - mmx
+        - monitor
+        - movbe
+        - movdir64b
+        - movdiri
+        - msr
+        - mtrr
+        - nonstop_tsc
+        - nopl
+        - nx
+        - ospke
+        - pae
+        - pat
+        - pbe
+        - pcid
+        - pclmulqdq
+        - pconfig
+        - pdcm
+        - pdpe1gb
+        - pebs
+        - pge
+        - pku
+        - pln
+        - pni
+        - popcnt
+        - pse
+        - pse36
+        - pts
+        - rdpid
+        - rdrand
+        - rdseed
+        - rdt_a
+        - rdtscp
+        - rep_good
+        - sdbg
+        - sep
+        - serialize
+        - sha_ni
+        - smap
+        - smep
+        - smx
+        - split_lock_detect
+        - ss
+        - ssbd
+        - sse
+        - sse2
+        - sse4_1
+        - sse4_2
+        - ssse3
+        - stibp
+        - syscall
+        - tm
+        - tm2
+        - tme
+        - tpr_shadow
+        - tsc
+        - tsc_adjust
+        - tsc_deadline_timer
+        - tsc_known_freq
+        - tsxldtrk
+        - umip
+        - vaes
+        - vme
+        - vmx
+        - vnmi
+        - vpclmulqdq
+        - vpid
+        - waitpkg
+        - wbnoinvd
+        - x2apic
+        - xgetbv1
+        - xsave
+        - xsavec
+        - xsaveopt
+        - xsaves
+        - xtopology
+        - xtpr
+        model: Intel(R) Xeon(R) Platinum 8468
+      firmware:
+        bios:
+          date: 12/07/2023
+          vendor: American Megatrends International, LLC.
+          version: "2.1"
+      hostname: ubuntu
+      nics:
+      - lldp: {}
+        mac: 3c:ec:ef:5c:ca:7b
+        model: 0x15b3 0x1013
+        name: ens6f1np1
+      - lldp: {}
+        mac: 3c:ec:ef:5c:ca:0e
+        model: 0x15b3 0x1013
+        name: ens3f0np0
+      - lldp: {}
+        mac: 3c:ec:ef:5c:ca:0f
+        model: 0x15b3 0x1013
+        name: ens3f1np1
+      - lldp: {}
+        mac: ca:df:47:05:52:a3
+        name: usb0
+      - ip: 100.65.131.198
+        lldp:
+          switch_chassis_id: 60:6b:5b:95:3e:07
+          switch_port_description: cmh02-d00-bmas026_net0/0
+          switch_port_id: Ethernet5/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw016.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:ca:7a
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      - ip: fe80::3eec:efff:fe5c:ca7a%ens6f0np0
+        lldp:
+          switch_chassis_id: 60:6b:5b:95:3e:07
+          switch_port_description: cmh02-d00-bmas026_net0/0
+          switch_port_id: Ethernet5/1
+          switch_port_link_aggregation_support: true
+          switch_system_description: Arista Networks EOS version 4.31.4M running on
+            an Arista Networks DCS-7050CX4M-48D8
+          switch_system_name: cmh02-c01-acsw016.us-region-5.cloud.intel.com
+        mac: 3c:ec:ef:5c:ca:7a
+        model: 0x15b3 0x1013
+        name: ens6f0np0
+        pxe: true
+      ramMebibytes: 1048576
+      storage:
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme0n1
+        serialNumber: 234545607BA5
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752345607ba5
+      - model: Micron_7450_MTFDKBA960TFR
+        name: /dev/nvme1n1
+        serialNumber: 234545607BA4
+        sizeBytes: 960197124096
+        type: NVME
+        wwn: eui.000000000000000100a0752345607ba4
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-621C-TN12R (To be filled by O.E.M.)
+        serialNumber: S497867X4118249
+    hardwareProfile: unknown
+    lastUpdated: "2025-01-31T22:44:50Z"
+    operationHistory:
+      deprovision:
+        end: "2025-01-27T20:09:34Z"
+        start: "2025-01-27T20:04:53Z"
+      inspect:
+        end: "2025-01-27T20:03:06Z"
+        start: "2025-01-27T19:55:16Z"
+      provision:
+        end: "2025-01-27T20:04:51Z"
+        start: "2025-01-27T20:03:08Z"
+      register:
+        end: "2025-01-27T19:55:16Z"
+        start: "2025-01-27T19:55:02Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 5fc18b70-3a5c-425b-816e-fb3129e5924e
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: cmh02-d00-bmas026-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "10512640"
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

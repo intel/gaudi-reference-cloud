@@ -1,0 +1,34 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+idc_go_image(
+    name = "dataloader_image",
+    embed = [
+        ":dataloader_lib",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "dataloader_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/dataloader",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/k8s/generated/metal3client/clientset/versioned",
+        "//go/pkg/k8s/generated/metal3client/informers/externalversions",
+        "//go/pkg/k8s/generated/metal3client/listers/metal3.io/v1alpha1",
+        "//go/pkg/log",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/labels",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//tools/cache",
+        "@io_k8s_client_go//tools/clientcmd",
+    ],
+)
+
+go_binary(
+    name = "dataloader",
+    embed = [":dataloader_lib"],
+    visibility = ["//visibility:public"],
+)

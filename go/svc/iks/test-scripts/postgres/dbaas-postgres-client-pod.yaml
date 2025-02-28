@@ -1,0 +1,34 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client-1-iks-db-postgresql
+  labels:
+    app: client-1-iks-db-postgresql
+spec:
+  containers:
+  - command: ["/bin/sh","-c"]
+    args:
+    - "while true; do sleep 3600; done"
+    image: postgres:14
+    name: psql-14-client
+    securityContext:
+      capabilities: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: client-1-iks-db-postgresql
+  name: client-1-iks-db-postgresql
+spec:
+  ports:
+  - name: tcp-postgresql
+    port: 5432
+    protocol: TCP
+    targetPort: tcp-postgresql
+  selector:
+    app: client-1-iks-db-postgresql
+  sessionAffinity: None
+  type: ClusterIP

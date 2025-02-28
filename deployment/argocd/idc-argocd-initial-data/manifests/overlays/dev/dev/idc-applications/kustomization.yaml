@@ -1,0 +1,5 @@
+# Based on https://github.com/intel-innersource/frameworks.cloud.devcloud.services.idc-argocd/blob/main/manifests/overlays/staging/us-staging-1/idc-regional-applications/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./../../../../base/applications

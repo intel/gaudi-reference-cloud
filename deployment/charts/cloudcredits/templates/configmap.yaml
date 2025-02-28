@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenConfig:
+      listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    creditsExpiryMinimumInterval: {{ .Values.creditsExpiryMinimumInterval }}
+    creditUsageEventSchedulerInterval: {{ .Values.creditUsageEventSchedulerInterval }}
+    creditExpiryEventSchedulerInterval: {{ .Values.creditExpiryEventSchedulerInterval }}
+    creditUsageReportSchedulerInterval: {{ .Values.creditUsageReportSchedulerInterval }}
+    premiumCloudCreditThreshold: {{ .Values.premiumCloudCreditThreshold }}
+    intelCloudCreditThreshold: {{ .Values.intelCloudCreditThreshold }}
+    enterpriseCloudCreditThreshold: {{ .Values.enterpriseCloudCreditThreshold }}
+    premiumCloudCreditNotifyBeforeExpiry: {{ .Values.premiumCloudCreditNotifyBeforeExpiry }}
+    intelCloudCreditNotifyBeforeExpiry: {{ .Values.intelCloudCreditNotifyBeforeExpiry }}
+    enterpriseCloudCreditNotifyBeforeExpiry: {{ .Values.enterpriseCloudCreditNotifyBeforeExpiry }}
+    runCreditEventSchedulers: {{ .Values.runCreditEventSchedulers }}
+    couponNumberOfUsesThresholdStandard: {{ .Values.couponNumberOfUsesThresholdStandard }}
+    couponNumberOfUsesThresholdNonStandard: {{ .Values.couponNumberOfUsesThresholdNonStandard }}
+
+    features:
+      creditUsageEventScheduler: {{ .Values.features.creditUsageEventScheduler }}
+      creditExpiryEventScheduler: {{ .Values.features.creditExpiryEventScheduler }}
+      creditUsageReportScheduler: {{ .Values.features.creditUsageReportScheduler }}

@@ -1,0 +1,13 @@
+// Warning!
+// All go.mod files in the directories listed in this file affect Go minimal version selection.
+// See https://go.dev/ref/mod#workspaces.
+// Run "make gazelle" after editing this file.
+//
+// This file allows VS Code to be opened at the repo root with full Go language support.
+//
+
+go 1.23
+
+toolchain go1.23.2
+
+use ./go

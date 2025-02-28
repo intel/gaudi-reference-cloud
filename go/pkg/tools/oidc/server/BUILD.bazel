@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = [
+        "config.go",
+        "op.go",
+        "token.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/tools/oidc/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_gorilla_mux//:mux",
+        "@com_github_zitadel_oidc//pkg/crypto",
+        "@com_github_zitadel_oidc//pkg/op",
+        "@org_golang_x_text//language",
+    ],
+)

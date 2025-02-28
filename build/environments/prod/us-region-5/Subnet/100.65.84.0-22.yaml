@@ -1,0 +1,4 @@
+availabilityZone: us-region-5a
+region: us-region-5
+subnet: 100.65.84.0/22
+vlanId: 26

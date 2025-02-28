@@ -1,0 +1,262 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "quota-management-service";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+service QuotaManagementService {
+
+    rpc Register(ServiceQuotaRegistrationRequest) returns (ServiceQuotaRegistrationResponse) {
+        option (google.api.http) = {
+            post: "/v1/quota/service/register"
+            body: "*"
+        };
+    };
+
+    rpc ListRegisteredServices(ServicesListRequest) returns (ServicesListResponse) {
+        option (google.api.http) = {
+            get: "/v1/quota/registrations"
+        };
+    };
+
+    rpc ListServiceResources(ServiceResourcesListRequest) returns (ServiceResourcesListResponse) {
+        option (google.api.http) = {
+            get: "/v1/quota/service/{serviceId}/serviceResources"
+        };
+    };
+
+    rpc GetServiceResource(ServiceResourceRequest) returns (ServiceResourceResponse) {
+        option (google.api.http) = {
+            get: "/v1/quota/service/{serviceId}/serviceResource/{resourceName}"
+        };
+    };
+
+    rpc UpdateServiceRegistration(UpdateServiceRegistrationRequest) returns (ServiceQuotaRegistrationResponse) {
+        option (google.api.http) = {
+            put: "/v1/quota/service/{serviceId}/update"
+            body: "*"
+        };
+    };
+
+    rpc DeleteService(DeleteServiceRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/quota/service/{serviceId}/delete"
+        };
+    };
+
+    rpc CreateServiceQuota(CreateServiceQuotaRequest) returns (CreateServiceQuotaResponse) {
+        option (google.api.http) = {
+            post: "/v1/quota/service/{serviceId}/create"
+            body: "*"
+        };
+    };
+
+    rpc GetServiceQuotaResource(ServiceQuotaResourceRequest) returns (ServiceQuotaResourceResponse) {
+        option (google.api.http) = {
+            get: "/v1/quota/service/{serviceId}/resource/{resourceType}"
+        };
+    };
+
+    rpc DeleteServiceQuotaResource(DeleteServiceQuotaRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/quota/service/{serviceId}/resource/{resourceType}/ruleId/{ruleId}"
+        };
+    };
+
+    rpc UpdateServiceQuotaResource(UpdateQuotaServiceRequest) returns (UpdateQuotaServiceResponse) {
+        option (google.api.http) = {
+            put: "/v1/quota/service/{serviceId}/resource/{resourceType}/update"
+            body: "*"
+        };
+    };
+
+    rpc ListServiceQuota(ListServiceQuotaRequest) returns (ListServiceQuotaResponse) {
+        option (google.api.http) = {
+            get: "/v1/quota/service/{serviceId}"
+        };
+    };
+    rpc ListAllServiceQuotas(ListAllServiceQuotaRequest) returns (ListAllServiceQuotaResponse) {
+        option (google.api.http) = {
+            get: "/v1/quota"
+        };
+    };
+}
+
+
+// -------------------------------------------------------------------------------------------
+// Quota - Admin service to get quotas for any resource type and sub-resource
+// -------------------------------------------------------------------------------------------
+
+message ServiceQuotaRegistrationRequest {
+    string serviceName = 1;
+    string region = 2;
+    repeated ServiceResource serviceResources = 3;    
+}
+
+message ServiceQuotaRegistrationResponse {
+    string serviceId = 1;
+    string serviceName = 2;
+    string region = 3;
+   repeated ServiceResource serviceResources = 4;
+}
+
+message ServicesListRequest {
+    map<string, string> filters = 1;
+}
+
+message ServicesListResponse {
+    repeated ServiceDetail services = 1;
+}
+
+message ServiceDetail {
+    string serviceId = 1;
+    string serviceName = 2;
+}
+
+message ServiceResourcesListRequest {
+    string serviceId = 1;
+}
+
+message ServiceResourcesListResponse {
+    string serviceId = 1;
+    string serviceName = 2;
+    repeated ServiceResource serviceResources = 3;
+}
+
+message ServiceResource {
+   string name = 1;
+   string quotaUnit = 2;
+   int64 maxLimit = 3;
+
+}
+
+message ServiceResourceRequest {
+    string serviceId = 1;
+    string resourceName = 2;
+}
+
+message ServiceResourceResponse {
+    string serviceId = 1;
+    string serviceName = 2;
+    ServiceResource serviceResources = 3;
+}
+
+message QuotaConfig {
+    int64 limits = 1;
+    string quotaUnit= 2;
+}
+
+enum QuotaUnitType {
+    COUNT= 0;
+    REQ_SEC = 1;
+    REQ_MIN = 2;
+    REQ_HR = 3;
+}
+
+message UpdateServiceRegistrationRequest {
+    string serviceId = 1;
+    repeated ServiceResource serviceResources = 2;
+
+} 
+
+message CreateServiceQuotaRequest {
+    string serviceId = 1;
+    ServiceQuotaResource  serviceQuotaResource = 4;
+}
+
+message CreateServiceQuotaResponse {
+    string serviceId = 1;
+    string serviceName = 2;
+    string region = 3;
+    ServiceQuotaResource  serviceQuotaResource = 4;
+}
+
+message ServiceQuotaResource {
+    string resourceType = 1;
+    QuotaConfig quotaConfig = 2;
+    QuotaScope scope = 3;
+    string ruleId = 4;
+    string reason = 5;
+    google.protobuf.Timestamp createdTime = 6;
+    google.protobuf.Timestamp updatedTime = 7;
+}
+
+enum QuotaScopeType {
+    QUOTA_ACCOUNT_TYPE = 0;
+    QUOTA_ACCOUNT_ID = 1;
+}
+
+message QuotaScope {
+    string scopeType = 1;
+    string scopeValue = 2;
+}
+
+message ServiceQuotaResourceRequest {
+    string serviceId = 1;
+    string resourceType = 2;
+}
+
+message ServiceQuotaResourceResponse {
+    string serviceId = 1;
+    string serviceName = 2;
+    repeated ServiceQuotaResource serviceQuotaResource = 3;
+}
+
+message DeleteServiceRequest {
+    string serviceId = 1;
+}
+
+message DeleteServiceQuotaRequest {
+    string serviceId = 1;
+    string resourceType = 2;
+    string ruleId = 3;
+}
+
+message UpdateQuotaServiceRequest {
+    string serviceId = 1;
+    string resourceType = 2;
+    string ruleId = 3;
+    QuotaConfig quotaConfig = 4;
+    string reason = 5;
+}
+
+message UpdateQuotaServiceResponse {
+    string serviceId = 1;
+    ServiceQuotaResource  serviceQuotaResource = 2;
+}
+
+message ListServiceQuotaRequest {
+    string serviceId = 1;
+    map<string, string> filters = 2;
+}
+
+message ListAllServiceQuotaRequest {
+    map<string, string> filters = 1;
+}
+
+message ListServiceQuotaResponse {
+    string serviceId = 1;
+    string serviceName = 2;
+    repeated ServiceQuotaResource  serviceQuotaAllResources = 3;
+}
+
+message ListAllServiceQuotaResponse {
+    repeated ServiceQuotaResourceResponse allServicesQuotaResponse = 1;
+}

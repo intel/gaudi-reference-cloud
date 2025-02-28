@@ -1,0 +1,30 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "billing-intel_lib",
+    srcs = ["intel.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/billing_driver_intel/cmd",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/billing_driver_intel",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+    ],
+)
+
+go_binary(
+    name = "billing-intel",
+    embed = [":billing-intel_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "billing-intel_image",
+    embed = [":billing-intel_lib"],
+    visibility = ["//visibility:public"],
+)

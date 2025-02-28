@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bm-instance-operator.fullname" . }}-manager-config
+  labels:
+  {{- include "bm-instance-operator.labels" . | nindent 4 }}
+data:
+  controller_manager_config.yaml: |
+    apiVersion: private.cloud.intel.com/v1alpha1
+    acceleratorNetworkSdnEnabled: {{ .Values.managerConfig.controllerManagerConfigYaml.acceleratorNetworkSdnEnabled }}
+    health:
+      healthProbeBindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.health.healthProbeBindAddress
+        | quote }}
+    instanceOperator:
+      computeApiServerAddr: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.computeApiServerAddr | quote }}
+      ddi:
+        method: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.method
+          | quote }}
+        mmws:
+          baseUrl: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.mmws.baseUrl
+            | quote }}
+          passwordFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.mmws.passwordFilePath
+            | quote }}
+          userNameFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.mmws.userNameFilePath
+            | quote }}
+      enableMeteringMonitorFinalizer: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.enableMeteringMonitorFinalizer }}
+      filter:
+        labels:
+          instance-category: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.filter.labels.instanceCategory
+            | quote }}
+      httpClient:
+        insecureSkipVerify: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.insecureSkipVerify
+          }}
+        keepAlive: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.keepAlive
+          }}
+        timeoutInSecs: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.timeoutInSecs
+          }}
+        tlsHandshakeTimeout: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.tlsHandshakeTimeout
+          }}
+      sshProxyTunnelCluster:
+        kubeConfigFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.sshProxyTunnelCluster.kubeConfigFilePath
+          | quote }}
+      operatorFeatureFlags: {{ toYaml .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.operatorFeatureFlags
+        | nindent 8 }}
+      quickConnectHost: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.quickConnectHost }}
+      storageClusterAddr: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.storageClusterAddr }}
+    kind: BmInstanceOperatorConfig
+    leaderElection:
+      leaderElect: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.leaderElect
+        }}
+      resourceName: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.resourceName
+        | quote }}
+    maxConcurrentReconciles: {{ .Values.managerConfig.controllerManagerConfigYaml.maxConcurrentReconciles }}
+    metrics:
+      bindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress
+        | quote }}
+    networkConfig:
+      networkBackEndType: {{ .Values.managerConfig.controllerManagerConfigYaml.networkConfig.networkBackEndType }}
+      networkKubeConfig: {{ .Values.managerConfig.controllerManagerConfigYaml.networkConfig.networkKubeConfig }}
+      provisioningVlan: {{ .Values.managerConfig.controllerManagerConfigYaml.networkConfig.provisioningVlan }}
+      acceleratorNetworkDefaultVlan: {{ .Values.managerConfig.controllerManagerConfigYaml.networkConfig.acceleratorNetworkDefaultVlan }}
+      storageDefaultVlan: {{ .Values.managerConfig.controllerManagerConfigYaml.networkConfig.storageDefaultVlan }}
+      accBGPNetworkDefaultCommunityID: {{ .Values.managerConfig.controllerManagerConfigYaml.networkConfig.accBGPNetworkDefaultCommunityID }}
+    osHttpServerUrl: {{ .Values.managerConfig.controllerManagerConfigYaml.osHttpServerUrl
+      | quote }}
+    sshConfig:
+      waitForSSHAccess: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.waitForSSHAccess }}
+      privateKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.privateKeyFilePath
+        | quote }}
+      hostPublicKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.hostPublicKeyFilePath
+        | quote }}
+      sshProxyUser: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.sshProxyUser
+        | quote }}
+      sshProxyAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.sshProxyAddress
+        | quote }}
+      sshProxyPort: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.sshProxyPort }}
+    storageServerSubnets: {{ .Values.managerConfig.controllerManagerConfigYaml.storageServerSubnets | toJson }}
+    webhook:
+      port: {{ .Values.managerConfig.controllerManagerConfigYaml.webhook.port }}
+

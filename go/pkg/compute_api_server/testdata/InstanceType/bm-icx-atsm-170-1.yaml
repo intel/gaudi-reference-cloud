@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-icx-atsm-170-1
+spec:
+  name: bm-icx-atsm-170-1
+  displayName: Intel® Data Center GPU Flex Series on 3rd Gen Intel® Xeon® processors – 170 series (1x)
+  description: Intel® Data Center GPU Flex Series on 3rd Gen Intel® Xeon® processors – 170 series (1x)
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 24
+    id: "0x606A6"
+    modelName: 3rd Generation Intel® Xeon® Scalable Processors (Ice Lake)
+    sockets: 2
+    threads: 2
+  gpu:
+    modelName: "GPU-Flex-170"
+    count: 1
+  memory:
+    size: 256Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4000
+  disks:
+    - size: 2000Gi

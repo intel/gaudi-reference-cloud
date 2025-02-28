@@ -1,0 +1,74 @@
+---
+- name: Trigger Cleanup
+  gather_facts: false
+  hosts: hosts
+
+  vars_files:
+    - vars/common.yml
+    - vars/val-dir.yml
+
+  tasks:
+    - name: Fetch btower running container
+      shell: docker ps -q --filter "name=btower"
+      register: running_containers
+      ignore_errors: yes
+
+    - name: Stop btower container
+      docker_container:
+        name: "{{ item }}"
+        state: stopped
+      loop: "{{ running_containers.stdout_lines }}"
+      when: running_containers.stdout_lines|length > 0
+
+    - name: Container stopped successfully
+      debug:
+        msg: "Stopped container: {{ item }}"
+      loop: "{{ running_containers.stdout_lines }}"
+      when: running_containers.stdout_lines|length > 0
+
+    - name: Remove stopped container
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ running_containers.stdout_lines }}"
+      when: running_containers.stdout_lines|length > 0
+      register: deleted_containers
+
+    - name: Print deleted container
+      debug:
+        msg: "Deleted container: {{ item }}"
+      loop: "{{ deleted_containers.results }}"
+      when: deleted_containers is defined
+
+    - name: Fetch btower docker image
+      shell: docker images -q --filter "reference=btower:*"
+      register: btower_images
+      ignore_errors: yes
+
+    - name: Remove btower docker image
+      shell: docker rmi -f {{ item }}
+      loop: "{{ btower_images.stdout_lines }}"
+      when: btower_images.stdout_lines|length > 0
+      register: deleted_images
+
+    - name: Print deleted image
+      debug:
+        msg: "Deleted image: {{ item }}"
+      loop: "{{ deleted_images.results }}"
+      when: deleted_images is defined
+
+    - name: Delete validation directory
+      file:
+        path: "{{ val_dir }}"
+        state: absent
+
+    - name: Delete SSH keys from the host directory
+      file:
+        path: "{{ ssh_key_dir }}"
+        state: absent
+
+    - name: Delete hostfile from Deepspeed files directory
+      file:
+        path: "{{ deepspeed_hostfile_path }}"
+        state: absent
+

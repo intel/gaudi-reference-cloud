@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+load("//build/kubebuilder:kubebuilder.bzl", "kubebuilder_test_env")
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "agent_apis_test.go",
+        "storage_scheduler_test.go",
+        "suite_test.go",
+    ],
+    deps = [
+        "//go/pkg/pb",
+        "//go/pkg/storage/storage_scheduler/pkg/server",
+        "//go/pkg/storage/storagecontroller",
+        "//go/pkg/storage/storagecontroller/api:go_proto",
+        "//go/pkg/storage/storagecontroller/api/weka:go_proto",
+        "//go/pkg/storage/storagecontroller/test/mocks",
+        "@com_github_golang_mock//gomock",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

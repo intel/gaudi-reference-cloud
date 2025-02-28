@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenConfig:
+      listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    creditsInstallSchedulerInterval: {{ .Values.creditsInstallSchedulerInterval }}
+    reportUsageSchedulerInterval: {{ .Values.reportUsageSchedulerInterval }}
+    creditsExpiryMinimumInterval: {{ .Values.creditsExpiryMinimumInterval }}
+    creditUsageSchedulerInterval: {{ .Values.creditUsageSchedulerInterval }}
+    creditExpirySchedulerInterval: {{ .Values.creditExpirySchedulerInterval }}
+    premiumCloudCreditThreshold: {{ .Values.premiumCloudCreditThreshold }}
+    intelCloudCreditThreshold: {{ .Values.intelCloudCreditThreshold }}
+    enterpriseCloudCreditThreshold: {{ .Values.enterpriseCloudCreditThreshold }}
+    premiumCloudCreditNotifyBeforeExpiry: {{ .Values.premiumCloudCreditNotifyBeforeExpiry }}
+    intelCloudCreditNotifyBeforeExpiry: {{ .Values.intelCloudCreditNotifyBeforeExpiry }}
+    enterpriseCloudCreditNotifyBeforeExpiry: {{ .Values.enterpriseCloudCreditNotifyBeforeExpiry }}
+    servicesTerminationSchedulerInterval: {{ .Values.servicesTerminationSchedulerInterval }}
+    servicesTerminationInterval: {{ .Values.servicesTerminationInterval }}
+    instanceTerminationMeteringDuration: {{ .Values.instanceTerminationMeteringDuration }}
+    eventExpirySchedulerInterval: {{ .Values.eventExpirySchedulerInterval }}
+    cloudCreditUsageReportSchedulerInterval: {{ .Values.cloudCreditUsageReportSchedulerInterval }}
+    runSchedulers: {{ .Values.runSchedulers }}
+    couponNumberOfUsesThresholdStandard: {{ .Values.couponNumberOfUsesThresholdStandard }}
+    couponNumberOfUsesThresholdNonStandard: {{ .Values.couponNumberOfUsesThresholdNonStandard }}
+
+    features:
+      creditInstallScheduler: {{ .Values.features.creditInstallScheduler }}
+      reportUsageScheduler: {{ .Values.features.reportUsageScheduler }}
+      creditUsageScheduler: {{ .Values.features.creditUsageScheduler }}
+      creditExpiryScheduler: {{ .Values.features.creditExpiryScheduler }}
+      servicesTerminationScheduler: {{ .Values.features.servicesTerminationScheduler }}
+      eventExpiryScheduler: {{ .Values.features.eventExpiryScheduler }}
+      cloudCreditUsageReportScheduler: {{ .Values.features.cloudCreditUsageReportScheduler }}
+      billingUsageMetrics: {{ .Values.features.billingUsageMetrics }}
+      servicesTerminationAccountTypes: 
+      {{- if $.Values.features.servicesTerminationAccountTypes }}
+        {{- range $value := $.Values.features.servicesTerminationAccountTypes }}
+          - {{ $value }}
+        {{- end }}
+      {{- end }}

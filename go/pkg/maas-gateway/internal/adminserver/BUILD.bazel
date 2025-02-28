@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "adminserver",
+    srcs = ["server.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/maas-gateway/internal/adminserver",
+    visibility = ["//go/pkg/maas-gateway:__subpackages__"],
+    deps = [
+        "//go/pkg/tlsutil",
+        "@com_github_pkg_errors//:errors",
+    ],
+)

@@ -1,0 +1,43 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "iks_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/iks/cmd/iks",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/authutil",
+        "//go/pkg/conf",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/iks/config",
+        "//go/pkg/iks/server",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/manageddb",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@com_github_amacneil_dbmate//pkg/driver/postgres",
+        "@com_github_jackc_pgx_v5//stdlib",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "iks",
+    embed = [":iks_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "iks_image",
+    embed = [
+        ":iks_lib",
+    ],
+    visibility = ["//visibility:public"],
+)

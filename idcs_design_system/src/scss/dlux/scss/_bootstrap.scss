@@ -1,0 +1,163 @@
+@import "../../../../node_modules/bootstrap/scss/functions";
+
+// DLUX variable overrides
+@import "idc-overrides";
+@import "custom";
+@import "custom-dark";
+
+@import "../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../node_modules/bootstrap/scss/variables-dark";
+
+// DLUX map overrides
+$colors: map-remove(
+  $colors,
+  "blue",
+  "indigo",
+  "purple",
+  "pink",
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "teal",
+  "cyan",
+  "gray",
+  "gray-dark"
+);
+$colors: (
+  "black": $black,
+  "white": $white,
+  "classic-blue": $classic-blue,
+  "classic-blue-tint2": $classic-blue-tint2,
+  "classic-blue-tint1": $classic-blue-tint1,
+  "classic-blue-shade1": $classic-blue-shade1,
+  "classic-blue-shade2": $classic-blue-shade2,
+  "energy-blue": $energy-blue,
+  "energy-blue-tint2": $energy-blue-tint2,
+  "energy-blue-tint1": $energy-blue-tint1,
+  "energy-blue-shade1": $energy-blue-shade1,
+  "energy-blue-shade2": $energy-blue-shade2,
+  "carbon": $carbon,
+  "carbon-tint2": $carbon-tint2,
+  "carbon-tint1": $carbon-tint1,
+  "carbon-shade1": $carbon-shade1,
+  "carbon-shade2": $carbon-shade2,
+  "blue-steel": $blue-steel,
+  "blue-steel-tint2": $blue-steel-tint2,
+  "blue-steel-tint1": $blue-steel-tint1,
+  "blue-steel-shade1": $blue-steel-shade1,
+  "blue-steel-shade2": $blue-steel-shade2,
+  "geode": $geode,
+  "geode-tint2": $geode-tint2,
+  "geode-tint1": $geode-tint1,
+  "geode-shade1": $geode-shade1,
+  "rust": $rust,
+  "rust-tint2": $rust-tint2,
+  "rust-tint1": $rust-tint1,
+  "rust-shade1": $rust-shade1,
+  "moss": $moss,
+  "moss-tint2": $moss-tint2,
+  "moss-tint1": $moss-tint1,
+  "moss-shade1": $moss-shade1,
+  "moss-shade2": $moss-shade2,
+  "cobalt": $cobalt,
+  "cobalt-tint2": $cobalt-tint2,
+  "cobalt-tint1": $cobalt-tint1,
+  "cobalt-shade1": $cobalt-shade1,
+  "cobalt-shade2": $cobalt-shade2,
+  "cobalt-shade3": $cobalt-shade3,
+  "coral": $coral,
+  "coral-tint2": $coral-tint2,
+  "coral-tint1": $coral-tint1,
+  "coral-shade1": $coral-shade1,
+  "daisy": $daisy,
+  "daisy-tint1": $daisy-tint1,
+  "daisy-shade1": $daisy-shade1,
+  "daisy-shade2": $daisy-shade2,
+  "status-error": $status-error,
+  "status-error-natural": $status-error-natural,
+  "status-error-soft": $status-error-soft,
+  "status-error-natural-dark-mode": $status-error-natural-dark-mode,
+  "status-error-soft-dark-mode": $status-error-soft-dark-mode,
+  "status-success": $status-success,
+  "status-success-natural": $status-success-natural,
+  "status-success-soft": $status-success-soft,
+  "status-success-natural-dark-mode": $status-success-natural-dark-mode,
+  "status-success-soft-dark-mode": $status-success-soft-dark-mode,
+  "status-warning": $status-warning,
+  "status-warning-natural": $status-warning-natural,
+  "status-warning-soft": $status-warning-soft,
+  "status-warning-natural-dark-mode": $status-warning-natural-dark-mode,
+  "status-warning-soft-dark-mode": $status-warning-soft-dark-mode,
+);
+
+// Change the table status variants
+$table-intel-variants: (
+  "success": shift-color($status-success-soft, $table-bg-scale),
+  "warning": shift-color($status-warning-soft, $table-bg-scale),
+  "danger": shift-color($status-error-soft, $table-bg-scale),
+);
+$table-variants: map-merge($table-variants, $table-intel-variants);
+
+@import "../../../../node_modules/bootstrap/scss/maps";
+@import "../../../../node_modules/bootstrap/scss/mixins";
+@import "../../../../node_modules/bootstrap/scss/utilities";
+
+// Add background color and text color utilities for each Intel color
+$utilities: map-merge(
+  $utilities,
+  (
+    "background-color":
+      map-merge(
+        map-get($utilities, "background-color"),
+        (
+          values: map-merge(map-get(map-get($utilities, "background-color"), "values"), $colors),
+        )
+      ),
+    "color":
+      map-merge(
+        map-get($utilities, "color"),
+        (
+          values: map-merge(map-get(map-get($utilities, "color"), "values"), $colors),
+        )
+      ),
+  )
+);
+
+// Bootstrap Layout and Components
+@import "../../../../node_modules/bootstrap/scss/root";
+@import "../../../../node_modules/bootstrap/scss/reboot";
+@import "../../../../node_modules/bootstrap/scss/type";
+@import "../../../../node_modules/bootstrap/scss/images";
+@import "../../../../node_modules/bootstrap/scss/containers";
+@import "../../../../node_modules/bootstrap/scss/grid";
+@import "../../../../node_modules/bootstrap/scss/tables";
+@import "../../../../node_modules/bootstrap/scss/forms";
+@import "../../../../node_modules/bootstrap/scss/buttons";
+@import "../../../../node_modules/bootstrap/scss/transitions";
+@import "../../../../node_modules/bootstrap/scss/dropdown";
+@import "../../../../node_modules/bootstrap/scss/button-group";
+@import "../../../../node_modules/bootstrap/scss/nav";
+@import "../../../../node_modules/bootstrap/scss/navbar";
+@import "../../../../node_modules/bootstrap/scss/card";
+@import "../../../../node_modules/bootstrap/scss/accordion";
+@import "../../../../node_modules/bootstrap/scss/breadcrumb";
+@import "../../../../node_modules/bootstrap/scss/pagination";
+@import "../../../../node_modules/bootstrap/scss/badge";
+@import "../../../../node_modules/bootstrap/scss/alert";
+@import "../../../../node_modules/bootstrap/scss/progress";
+@import "../../../../node_modules/bootstrap/scss/list-group";
+@import "../../../../node_modules/bootstrap/scss/close";
+@import "../../../../node_modules/bootstrap/scss/toasts";
+@import "../../../../node_modules/bootstrap/scss/modal";
+@import "../../../../node_modules/bootstrap/scss/tooltip";
+@import "../../../../node_modules/bootstrap/scss/popover";
+@import "../../../../node_modules/bootstrap/scss/carousel";
+@import "../../../../node_modules/bootstrap/scss/spinners";
+@import "../../../../node_modules/bootstrap/scss/offcanvas";
+@import "../../../../node_modules/bootstrap/scss/placeholders";
+
+// Bootstrap Helpers
+@import "../../../../node_modules/bootstrap/scss/helpers";
+// Bootstrap Utilities
+@import "../../../../node_modules/bootstrap/scss/utilities/api";

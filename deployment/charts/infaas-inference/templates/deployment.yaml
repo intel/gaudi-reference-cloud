@@ -1,0 +1,150 @@
+{{- $deployedModel := .Values.deployedModel -}}
+{{- $model := index .Values.models $deployedModel -}}
+{{- $shortModelName := index $model "shortName" -}}
+{{- $infaasAgentName := printf "infaas-agent-%s" $shortModelName -}}
+{{- $fp8FolderName := index $model "fp8FolderName" -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infaas-inference.fullname" . }}
+  labels:
+    {{- include "infaas-inference.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "infaas-inference.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "infaas-inference.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if not .Values.mockInference }}
+      runtimeClassName: habana
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "infaas-inference.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if not .Values.mockInference }}
+      initContainers:
+        - name: s3-quantization-configs-mount
+          image: amazon/aws-cli:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              aws s3 sync s3://cnvrg-test-maas/quantization-configs/{{ $shortModelName }} /data/quantization_config &&
+              aws s3 sync s3://cnvrg-test-maas/quantization-configs/{{ $shortModelName }}/{{ $fp8FolderName }}  /data/hqt_output &&
+              chmod -R 400 /data/quantization_config &&
+              chmod -R 400 /data/hqt_output
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-access-secrets
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-access-secrets
+                  key: aws-secret-access-key
+          volumeMounts:
+            - name: fp8-config-volume
+              mountPath: /data
+      {{- end }}
+      containers:
+        {{- if not .Values.mockInference }}
+        {{- include "tgi-server-containers" .}}
+        {{- else }}
+        - name: mock-inference # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+          image: cnvrg/infaas:v666
+          imagePullPolicy: Always
+          args:
+            - mockinference
+          ports:
+            - name: grpc
+              containerPort: 50051
+              protocol: TCP
+          livenessProbe:
+            grpc:
+              port: 50051
+            initialDelaySeconds: 1
+            failureThreshold: 20
+          readinessProbe:
+            grpc:
+              port: 50051
+            failureThreshold: 20
+            periodSeconds: 1
+          resources:
+            requests:
+              cpu: "2"
+            limits:
+              cpu: "2"
+        {{- end }}
+
+        - name: {{ $infaasAgentName }} # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ include "idc-common.image" . }}
+          imagePullPolicy: {{ .Values.image.agent.pullPolicy }}
+          args:
+            - "serve"
+            - "--config=/config.yaml"
+          env:
+            - name: IDC_CLIENT_TLS_ENABLED
+              value: "false"
+            - name: IDC_SERVER_TLS_ENABLED
+              value: "false"
+          ports:
+            - name: unused
+              containerPort: {{ .Values.service.port }}
+          resources: {} # TODO
+          volumeMounts:
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+      # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        {{- if .Values.debugContainer }}
+        - name: netshoot-debug-container # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+          image: nicolaka/netshoot
+          command: [ "/bin/bash" ]
+          args: [ "-c", "while true; do ping localhost; sleep 60;done" ]
+        # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        {{- end }}
+
+      volumes:
+        - name: models-cache
+          hostPath:
+            path: /data
+            type: Directory
+        - name: fp8-config-volume
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ $infaasAgentName }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

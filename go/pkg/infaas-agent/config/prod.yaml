@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+Model:              "model1"
+Capacity:           8
+DispatcherAddr: "infaas-dispatcher:9090"
+BackendAddr:        "localhost:50051"

@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "keygen",
+    srcs = ["keygen.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/idccli/cmd/ssh/keygen",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/tools/ssh",
+        "@com_github_alecaivazis_survey_v2//:survey",
+        "@com_github_makenowjust_heredoc//:heredoc",
+        "@com_github_spf13_cobra//:cobra",
+    ],
+)

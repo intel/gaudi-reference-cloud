@@ -1,0 +1,17 @@
+replicaCount: 1
+image:
+  repository: intelcloud/oidc
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+ingress:
+  # If true, use a standard Kubernetes ingress.
+  enabled: true
+  hosts:
+    - host: "*"
+      paths:
+        - path: /token
+          pathType: Prefix
+
+listenPort: 80

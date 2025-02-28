@@ -1,0 +1,61 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+## kube-score config file
+
+# schedule interval in seconds
+schedulerInterval: 30
+
+githubConfig:
+  # githubAPIKeyPath
+  apiKey: ""
+
+vulnerabilityScannerConfig:
+  snyk:
+     apiEndpoint: "https://internal-placeholder.com/api"
+     authToken: ""    
+
+securityInsightsService:
+  url: ""
+
+thirdPartyComponents :
+  - "apiServerNetworkProxy"
+  - "containerd"
+  - "runc"
+  - "cniPlugins"
+
+thirdPartyComponentPolicy:
+  - componentName: apiServerNetworkProxy
+    minVersion: "0.0"
+    topK: 3
+    githubSource: https://github.com/kubernetes-sigs/apiserver-network-proxy
+    k8sVersion: "< v1.27.0"
+  - componentName: apiServerNetworkProxy
+    minVersion: "0.1"
+    topK: 3
+    githubSource: https://github.com/kubernetes-sigs/apiserver-network-proxy
+    k8sVersion: ">= v1.27.0"
+  - componentName: containerd
+    minVersion: "1.7.0"
+    topK: 3
+    githubSource: https://github.com/containerd/containerd
+    k8sVersion: "*"
+  - componentName: runc
+    minVersion: "1.0.0"
+    topK: 3
+    githubSource: https://github.com/opencontainers/runc
+    k8sVersion: "*"
+  - componentName: cniPlugins
+    minVersion: "1.0.0"
+    topK: 3
+    githubSource: https://github.com/containernetworking/plugins
+    k8sVersion: "*"
+  - componentName: calico
+    minVersion: "3.0"
+    topK: 3
+    githubSource: https://github.com/projectcalico/calico
+    k8sVersion: "*"
+  - componentName: cniPlugins
+    minVersion: "1.0"
+    topK: 3
+    githubSource: https://github.com/coredns/coredns
+    k8sVersion: "*"      

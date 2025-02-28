@@ -1,0 +1,70 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "notification_gateway",
+    srcs = [
+        "email.go",
+        "event.go",
+        "event_api_subscriber.go",
+        "event_data.go",
+        "event_dispatcher.go",
+        "event_expiry.go",
+        "event_handler.go",
+        "event_manager.go",
+        "event_publisher.go",
+        "event_receiver.go",
+        "notification.go",
+        "server.go",
+        "testing.go",
+        "util.go",
+    ],
+    embedsrcs = [
+        "sql/20240116043259_notifications_tables.down.sql",
+        "sql/20240116043259_notifications_tables.up.sql",
+        "sql/20240328204347_errors_table.down.sql",
+        "sql/20240328204347_errors_table.up.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/notification_gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/notification_gateway/config",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/sesutil",
+        "//go/pkg/snsutil",
+        "//go/pkg/sqsutil",
+        "//go/pkg/utils",
+        "@com_github_aws_aws_sdk_go//aws",
+        "@com_github_aws_aws_sdk_go//aws/credentials",
+        "@com_github_aws_aws_sdk_go//aws/session",
+        "@com_github_aws_aws_sdk_go//service/ses",
+        "@com_github_aws_aws_sdk_go_v2_service_sqs//types",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_lib_pq//:pq",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)
+
+go_test(
+    name = "notification_gateway_test",
+    srcs = ["notification_test.go"],
+    embed = [":notification_gateway"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_google_uuid//:uuid",
+    ],
+)

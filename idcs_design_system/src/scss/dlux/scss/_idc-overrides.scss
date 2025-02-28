@@ -1,0 +1,90 @@
+/***
+This file is used to override variables used by bootstrap and dlux
+Any variable here can be overriten by specific provider customization
+For reference of which variables can be modified inspect the src/scss/dlux/scss/_custom.scss file
+Although you can add another bootstrap variables if needed
+Please do not add any class here, this file is just for customizing the bootstrap and dlux variables,
+if something else is added the PR won't be accepted
+*/
+
+@import "colors";
+
+//Spacing
+
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * .25,
+  2: $spacer * .5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+  s0: 0,
+  s1: $spacer * .0625,
+  s2: $spacer * .125,
+  s3: $spacer * .25,
+  s4: $spacer * .5,
+  s5: $spacer * .75,
+  s6: $spacer * 1,
+  s7: $spacer * 1.25,
+  s8: $spacer * 1.5,
+  s9: $spacer * 2,
+  s10: $spacer * 2.5,
+  s11: $spacer * 4,
+  s12: $spacer * 5
+);
+
+$grid-breakpoints: (
+  xxs: 0,
+  xs: 320px,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+
+$container-max-widths: (
+  xxs: 320px,
+  xs: 576px,
+  sm: 768px,
+  md: 992px,
+  lg: 1200px,
+  xl: 1400px,
+  xxl: 1800px
+);
+
+// Redefine Bootstrap grayscale
+
+$bg-gray-300: $carbon-gray !default;
+$bg-gray-600: $gray-600 !default;
+
+// IDC Colors Overrides
+
+$idc-inactive: #494B51 !default;
+$body-bg-dark:    #323538 !default;
+
+// Components
+$border-radius: 0px !default;
+$border-radius-sm: 0px !default;
+$border-radius-lg: 0px !default;
+$border-radius-xl: 0px !default;
+$border-radius-xxl: 0px !default;
+
+// Buttons
+$btn-disabled-opacity: 0.65 !default;
+
+// Links
+$link-decoration: none !default;
+$link-shade-percentage: 25% !default;
+$link-hover-decoration: underline !default;
+
+$font-size-base: 1rem !default;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$h1-font-size: $font-size-base * 2 !default;
+$h2-font-size: $font-size-base * 1.75 !default;
+$h3-font-size: $font-size-base * 1.5 !default;
+$h4-font-size: $font-size-base * 1.25 !default;
+$h5-font-size: $font-size-base * 1.125 !default;
+$h6-font-size: $font-size-base !default;

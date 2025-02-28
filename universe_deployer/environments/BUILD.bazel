@@ -1,0 +1,23 @@
+# List of environments that will be tested by Manifests Generator.
+ENVIRONMENTS_TO_TEST = [
+    "prod",
+    "staging",
+]
+
+# Generate a Universe Config File with all commit hashes replaced by the literal string "HEAD".
+# This prevents cache invalidation if only the commit hashes change.
+[genrule(
+    name = env + "-head",
+    srcs = [env + ".json"],
+    outs = [env + "-head.json"],
+    cmd = """sed 's/"commit": ".*"/"commit": "HEAD"/' $(SRCS) > $@""",
+) for env in ENVIRONMENTS_TO_TEST]
+
+# Universe Config Files that will be tested by Manifests Generator.
+filegroup(
+    name = "environments-head",
+    srcs = [env + "-head" for env in ENVIRONMENTS_TO_TEST],
+    visibility = [
+        "//go/pkg/universe_deployer/manifests_generator:__pkg__",
+    ],
+)

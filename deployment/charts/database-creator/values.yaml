@@ -1,0 +1,9 @@
+postgresql:
+  host: "psql_netbox_rgdb_loadbalancer_ip"
+  adminUser: "admin-user"
+  dbName: "netbox"
+  dbUser: "netbox_user"
+
+secret:
+  name: netbox-postgres-secret
+  adminPasswordKey: postgresql_admin_password

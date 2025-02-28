@@ -1,0 +1,40 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/usage
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  service: usage-db-postgresql
+  vaultCredentialsPath: usagesecret/data/usagedb
+  
+usageSchedulerInterval: 3600
+productUsageSchedulerInterval: 3600
+migrationResourcePaginationSize: 40
+storageMetricUnitType: "TB"
+storageTimeMetricUnitType: "hour"
+storageServiceTypes:
+  - FileStorageAsAService
+  - ObjectStorageAsAService
+  - FileStorageAsAService-SC
+  - ObjectStorageAsAService-SC
+  
+features:
+  usageScheduler: true
+  productUsageScheduler: true 
+      
+fargateAnnotations:
+  CapacityProvisioned: "1vCPU 2GB"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
+
+otel:
+  otelAnnotations: false

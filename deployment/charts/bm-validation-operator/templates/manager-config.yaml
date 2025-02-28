@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bm-validation-operator.fullname" . }}-manager-config
+  labels:
+  {{- include "bm-validation-operator.labels" . | nindent 4 }}
+data:
+  controller_manager_config.yaml: |
+    apiVersion: private.cloud.intel.com/v1alpha1
+    health:
+      healthProbeBindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.health.healthProbeBindAddress
+        | quote }}
+    instanceOperator:
+      computeApiServerAddr: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.computeApiServerAddr | quote }}
+    kind: BmInstanceOperatorConfig
+    leaderElection:
+      leaderElect: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.leaderElect
+        }}
+      resourceName: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.resourceName
+        | quote }}
+    metrics:
+      bindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress
+        | quote }}
+    validationTaskRepositoryURL: {{ .Values.managerConfig.controllerManagerConfigYaml.validationTaskRepositoryURL
+      | quote }}
+    validationTaskVersion:
+      clusterVersionMap: {{ .Values.managerConfig.controllerManagerConfigYaml.validationTaskVersion.clusterVersionMap
+      | toJson }}
+      instanceVersionMap: {{ .Values.managerConfig.controllerManagerConfigYaml.validationTaskVersion.instanceVersionMap
+      | toJson }}
+    sshConfig:
+      waitForSSHAccess: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.waitForSSHAccess }}
+      privateKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.privateKeyFilePath
+        | quote }}
+      publicKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.publicKeyFilePath
+        | quote }}
+      hostPublicKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.hostPublicKeyFilePath
+        | quote }}
+      sshProxyUser: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.sshProxyUser
+        | quote }}
+      sshProxyAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.sshProxyAddress
+        | quote }}
+      sshProxyPort: {{ .Values.managerConfig.controllerManagerConfigYaml.sshConfig.sshProxyPort }}
+    cloudAccountID: {{ .Values.managerConfig.controllerManagerConfigYaml.cloudAccountID | quote }}
+    enabledInstanceTypes: {{ .Values.managerConfig.controllerManagerConfigYaml.enabledInstanceTypes | toJson }}
+    envConfiguration:
+      region: {{ .Values.managerConfig.controllerManagerConfigYaml.envConfiguration.region }}
+      availabilityZone: {{ .Values.managerConfig.controllerManagerConfigYaml.envConfiguration.availabilityZone }}
+      subnetPrefixLength: {{ .Values.managerConfig.controllerManagerConfigYaml.envConfiguration.subnetPrefixLength }}
+      netboxAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.envConfiguration.netboxAddress }}
+      netboxKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.envConfiguration.netboxKeyFilePath }}
+      huggingFaceTokenFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.envConfiguration.huggingFaceTokenFilePath }}
+    validationReportS3Config:
+      bucketName: {{ .Values.managerConfig.controllerManagerConfigYaml.validationReportS3Config.bucketName }}
+      accessKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.validationReportS3Config.accessKeyFilePath }}
+      secretAccessKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.validationReportS3Config.secretAccessKeyFilePath }}
+      httpsProxy: {{ .Values.managerConfig.controllerManagerConfigYaml.validationReportS3Config.httpsProxy }}
+      cloudfrontPrefix: {{ .Values.managerConfig.controllerManagerConfigYaml.validationReportS3Config.cloudfrontPrefix }}
+    featureFlags:
+      deProvisionPostValidationFailure: {{ .Values.managerConfig.controllerManagerConfigYaml.featureFlags.deProvisionPostValidationFailure }}
+      groupValidation: {{ .Values.managerConfig.controllerManagerConfigYaml.featureFlags.groupValidation }}
+      enabledGroupInstanceTypes: {{ .Values.managerConfig.controllerManagerConfigYaml.featureFlags.enabledGroupInstanceTypes | toJson }}
+      enableFirmwareUpgrade: {{ .Values.managerConfig.controllerManagerConfigYaml.featureFlags.enableFirmwareUpgrade }}
+    webhook:
+      port: {{ .Values.managerConfig.controllerManagerConfigYaml.webhook.port }}

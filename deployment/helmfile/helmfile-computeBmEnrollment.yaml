@@ -1,0 +1,186 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+{{- $availabilityZone0 := ($region.availabilityZones | get (keys $region.availabilityZones | sortAlpha | first)) }}
+{{- $availabilityZone0 := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone0 }}
+
+  {{- if $.Values.components.computeBm.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-baremetal-enrollment-api") }}
+    namespace: idcs-enrollment
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: computeBmEnrollment
+      service: compute-bm
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: baremetal-enrollment-api
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/baremetal-enrollment-api
+    version: {{ readFile (print $helmChartVersionsDir "/baremetal-enrollment-api.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - apiServer:
+          image:
+            repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}baremetal-enrollment-api@sha256"
+          ingress:
+            issueCa: {{ $region.region }}-ca
+            enabled: {{ $region.baremetalEnrollmentApi.ingress.enabled }}
+            className: {{ $region.baremetalEnrollmentApi.ingress.className | quote }}
+            hosts:
+              - host: {{ $region.baremetalEnrollmentApi.ingress.host | quote }}
+                paths:
+                  - path: /
+                    pathType: Prefix
+            tls:
+            - secretName: {{ $region.baremetalEnrollmentApi.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.baremetalEnrollmentApi.ingress.host | quote }}
+          config:
+            computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+            vaultAddress: {{ $.Values.vault.service | quote }}
+            vaultAuthPath: {{ $region.vault.authPath | quote }}
+            vaultApproleSecretsPath: "controlplane/data/{{ $region.region }}/baremetal/enrollment/approle"
+            vaultAuthRole: "{{ $availabilityZone0.availabilityZone }}-baremetal-enrollment-task-role"
+            secretCaPemPath: "{{ $.Environment.Name }}-root-ca/cert/ca_chain"
+            netboxAddress:  {{ $region.netbox.ingress.host | quote }}
+            backoffLimit: 0
+            provisioningDuration: 5400
+            deprovisioningDuration: 5400
+            jobCleanupDelay: 5400
+            dhcpProxy:
+              enabled: {{ $region.dhcpProxy.enabled }}
+              url: {{ $region.dhcpProxy.url | quote }}
+            menAndMice:
+              insecureSkipVerify: {{ $region.menAndMice.insecureSkipVerify }}
+              enabled: {{ $region.menAndMice.enabled }}
+              url: {{ $region.menAndMice.url | quote }}
+              serverAddress: {{ $region.menAndMice.serverAddress | quote }}
+              tftpServerIp: {{ $region.menAndMice.tftpServerIp | quote }}
+            enrollmentRegion: {{ $region.region }}
+          vault:
+            enable: true
+            annotations:
+              vault.hashicorp.com/agent-inject: "true"
+              vault.hashicorp.com/agent-inject-status: "update"
+              vault.hashicorp.com/agent-inject-secret-secret-id: "controlplane/data/{{ $region.region }}/baremetal/enrollment/approle"
+              vault.hashicorp.com/agent-inject-secret-role-id: "controlplane/data/{{ $region.region }}/baremetal/enrollment/approle"
+              vault.hashicorp.com/role: "{{ $region.region }}-baremetal-enrollment-api-role"
+              vault.hashicorp.com/agent-pre-populate-only: "true"
+              vault.hashicorp.com/agent-inject-template-secret-id: |
+                  {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/baremetal/enrollment/approle" }}
+                  {{ `{{- .Data.data.secret_id -}}` }}
+                  {{ `{{- end -}}` }}
+              vault.hashicorp.com/agent-inject-template-role-id: |
+                  {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/baremetal/enrollment/approle" }}
+                  {{ `{{- .Data.data.role_id -}}` }}
+                  {{ `{{- end -}}` }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+  {{- end }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.bmEnrollmentOperator.enabled) }}
+  - name: {{ $availabilityZone.availabilityZone }}-baremetal-enrollment-operator
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: baremetal-enrollment-operator
+    chart: idc/baremetal-enrollment-operator
+    version: {{ readFile (print $helmChartVersionsDir "/baremetal-enrollment-operator.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}baremetal-enrollment-operator@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+            dhcpProxy:
+              enabled: {{ $availabilityZone.bmEnrollmentOperator.dhcpProxy.enabled }}
+              url: {{ $availabilityZone.bmEnrollmentOperator.dhcpProxy.url | quote }}
+            enrollmentRegion: {{ $region.region }}
+            maxConcurrentReconciles: {{ $availabilityZone.bmEnrollmentOperator.maxConcurrentReconciles }}
+            menAndMice:
+              insecureSkipVerify: {{ $availabilityZone.bmEnrollmentOperator.menAndMice.insecureSkipVerify }}
+              enabled: {{ $availabilityZone.bmEnrollmentOperator.menAndMice.enabled }}
+              url: {{ $availabilityZone.bmEnrollmentOperator.menAndMice.url | quote }}
+              serverAddress: {{ $availabilityZone.bmEnrollmentOperator.menAndMice.serverAddress | quote }}
+              tftpServerIp: {{ $availabilityZone.bmEnrollmentOperator.menAndMice.tftpServerIp | quote }}
+            netbox:
+              address:  {{ $availabilityZone.bmEnrollmentOperator.netbox.address | quote }}
+              skipTlsVerify:  {{ $availabilityZone.bmEnrollmentOperator.netbox.skipTlsVerify }}
+            vaultAddress: {{ $.Values.vault.service | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          agent:
+            inject:
+              secret:
+                path: "controlplane/data/{{ $region.region }}/baremetal/enrollment"
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - serviceMonitor:
+            enabled: {{ $.Values.serviceMonitor.regional.enabled }}
+  {{- end }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.bmEnrollmentTask.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-baremetal-enrollment-task") }}
+    namespace: idcs-enrollment
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBmEnrollment
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: baremetal-enrollment-task
+    chart: idc/baremetal-enrollment-task
+    version: {{ readFile (print $helmChartVersionsDir "/baremetal-enrollment-task.version") | quote }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

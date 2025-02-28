@@ -1,0 +1,94 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+#cloud-init
+packages:
+  - nfs-common
+  - nfs4-acl-tools
+  - ldap-utils
+  - sssd-ldap
+  - slurm-client
+  - slurm-wlm-doc
+  - slurm-wlm
+write_files:
+  {{ Values.Common.LdapFiles | indent:2 }}
+  - path: /usr/local/bin/01_mount_home.sh
+    content: |
+      #!/bin/bash
+      BASE_PATH=/nfs_home
+      NFS_SERVER=$(/usr/bin/df /share | /usr/bin/sed '1d' | /usr/bin/cut -f 1 -d ':')
+      /usr/bin/mkdir -p ${BASE_PATH}/${SLURM_JOB_USER}
+      /usr/bin/chown ${SLURM_JOB_USER}:slurm ${BASE_PATH}/${SLURM_JOB_USER}
+      if [ $? -eq 0 ]; then
+        echo "mount success for ${SLURM_JOB_USER} ${SLURM_JOB_ID}: /usr/bin/mount ${NFS_SERVER}:/export/home/${SLURM_JOB_USER} ${BASE_PATH}/${SLURM_JOB_USER}"
+      else
+        echo "mount failed for ${SLURM_JOB_USER} ${SLURM_JOB_ID}: /usr/bin/mount ${NFS_SERVER}:/export/home/${SLURM_JOB_USER} ${BASE_PATH}/${SLURM_JOB_USER}"
+        exit
+      fi
+    permissions: '0755'
+    owner: root
+    group: root
+  - path: /usr/local/bin/01_umount_home.sh
+    content: |
+      #!/bin/bash
+      BASE_PATH=/nfs_home
+      /usr/bin/umount ${BASE_PATH}/${SLURM_JOB_USER}
+      if [ $? -eq 0 ]; then
+      	/usr/bin/rm -rf ${BASE_PATH}/${SLURM_JOB_USER}
+      	echo "umount ${BASE_PATH}/${SLURM_JOB_USER}  success
+      else
+      	echo "umount ${BASE_PATH}/${SLURM_JOB_USER}  failed
+      	exit
+      fi
+    permissions: '0755'
+    owner: root
+    group: root
+  {{ Values.Common.MungeFiles | indent:2 }}
+  - path: /etc/default/slurmd
+    content: |
+      # Additional options that are passed to the slurmd daemon
+      SLURMD_OPTIONS="--conf-server SLURMCTLD_HOST_IP:6817"
+    permissions: '0644'
+    owner: root
+    group: root
+  - path: /etc/systemd/system/update-slurmd.service
+    content: |
+      [Unit]
+      Description=Run /usr/local/bin/update-slurmd script after 3 minute
+      After=network.target
+
+      [Service]
+      Type=oneshot
+      ExecStartPre=/bin/sleep 180
+      ExecStart=/usr/local/bin/update-slurmd.sh
+
+      [Install]
+      WantedBy=multi-user.target
+    permissions: '0755'
+    owner: root
+    group: root
+  - path: /usr/local/bin/update-slurmd.sh
+    content: |
+      #!/bin/bash
+      sudo sed -i "s/SLURMCTLD_HOST_IP/$(cat /share/slurm-hosts.log | awk '{print $1}')/g" /etc/default/slurmd
+      sudo cat /share/slurm-hosts.log >> /etc/hosts
+      sudo systemctl restart slurmd
+    permissions: '0755'
+    owner: root
+    group: root
+runcmd:
+  {{ Values.Common.WekaStorage | indent:2 }}
+  {{ Values.Common.LdapRunCmd | indent:2 }}
+  - mkdir -p -v -m 0755 /var/lib/slurm/slurmd
+  - sudo chown root:root /var/lib/slurm/slurmd
+  - sudo chown slurm:slurm /var/lib/slurm
+  - mkdir -p -v -m 0755 /var/log/slurm/slurmd
+  - sudo chown slurm:slurm /var/log/slurm/slurmd
+  - mkdir -p -v -m 0755 /etc/slurm
+  - sudo sed -i '/ConditionPathExists=/d' /lib/systemd/system/slurmd.service
+  - sudo systemctl daemon-reload
+  - sudo systemctl restart slurmd
+  {{ Values.Common.MungeRunCmd | indent:2 }}
+  - sudo systemctl daemon-reload
+  - sudo systemctl enable update-slurmd.service
+  - sudo systemctl start update-slurmd.service
+  - sudo chown ubuntu:ubuntu /home/ubuntu

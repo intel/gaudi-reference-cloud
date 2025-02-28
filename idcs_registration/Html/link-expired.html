@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>$$CONSOLENAME$$</title>
+    <link rel="icon" href="$$CDN$$/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script type="text/javascript" src="$$CDN$$/analytics.js"></script>
+    <link
+      href="$$CDN$$/static/css/main.css"
+      rel="stylesheet"
+      data-preload="true"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div id="root" data-bs-theme="light">
+      <div id="overlay"></div>
+      <div id="ajax-loader">
+        <div class="loader"></div>
+      </div>
+      <div class="container registration-container" role="main">
+        <div class="registration-section">
+          <header>
+            <div class="d-flex flex-column gap-s4">
+              <h1 class="h3">Link Expired</h1>
+              <span class="div">
+                The link is already used/expired. If you're having trouble, try
+                visiting the Intel Console at
+                <a
+                  href="https://console.cloud.intel.com"
+                  target="_blank"
+                  rel="noopener"
+                  >https://console.cloud.intel.com</a
+                >.
+              </span>
+            </div>
+          </header>
+          <div id="api" role="main" class="d-none"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+<script>
+      $(document).ready(function () {
+        var checkLoadWap = setInterval(function() {
+        if (typeof loadWap === "function") {
+            clearInterval(checkLoadWap); // Stop checking once function is available
+            loadWap(); // Call the function
+        }
+    }, 500); // Check every 500ms
+      });
+    </script>
+</html>

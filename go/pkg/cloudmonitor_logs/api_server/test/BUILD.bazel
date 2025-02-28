@@ -1,0 +1,9 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "test_test",
+    srcs = ["suite_test.go"],
+)

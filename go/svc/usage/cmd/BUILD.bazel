@@ -1,0 +1,31 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "usage_lib",
+    srcs = ["usage.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/usage/cmd",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/usage",
+    ],
+)
+
+go_binary(
+    name = "usage",
+    embed = [":usage_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "usage_image",
+    embed = [":usage_lib"],
+    visibility = ["//visibility:public"],
+)

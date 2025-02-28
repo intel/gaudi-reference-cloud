@@ -1,0 +1,16 @@
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: ObjectStore
+metadata:
+  labels:
+    app.kubernetes.io/name: storage
+    app.kubernetes.io/instance: storage-sample
+    app.kubernetes.io/part-of: objectstore
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: objectstore
+  name: objectstore-sample
+spec:
+  availabilityZone: az1
+  encrypted: false
+  
+
+  

@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_go_image")
+
+package(default_visibility = ["//visibility:public"])
+
+idc_go_image(
+    name = "fleet_admin_api_server_image",
+    embed = ["//go/pkg/fleet_admin/api_server/cmd/fleet_admin_api_server:fleet_admin_api_server_lib"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "test-data",
+    srcs = glob([
+        "test-data/**",
+    ]),
+)

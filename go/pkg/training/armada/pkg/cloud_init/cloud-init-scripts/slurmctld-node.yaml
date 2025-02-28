@@ -1,0 +1,236 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+#cloud-init
+packages:
+  - nfs-common
+  - nfs4-acl-tools
+  - ldap-utils
+  - gnutls-bin
+  - debconf-utils
+  - sssd-ldap
+  - ssl-cert
+  - slapd
+  - slurm-client
+  - slurmdbd
+  - mariadb-server
+  - slurm-wlm-doc
+  - slurm-wlm
+write_files:
+  - path: /home/ubuntu/configure-mariadb.sh
+    content: |
+      #!/bin/bash
+      sudo mysql -e "FLUSH PRIVILEGES;"
+      sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'default_root_password';"
+      sudo mysql -u root -p'default_root_password' -e "DELETE FROM mysql.user WHERE User='';"
+      sudo mysql -u root -p'default_root_password' -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+      sudo mysql -u root -p'default_root_password' -e "DROP DATABASE IF EXISTS test;"
+      sudo mysql -u root -p'default_root_password' -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';"
+      sudo mysql -u root -p'default_root_password' -e "FLUSH PRIVILEGES;"
+      sudo mysql -u root -p'default_root_password' -e "CREATE DATABASE IF NOT EXISTS slurm_acct_db;"
+      sudo mysql -u root -p'default_root_password' -e "CREATE USER IF NOT EXISTS 'slurm'@'localhost' IDENTIFIED BY 'default_password';"
+      sudo mysql -u root -p'default_root_password' -e "GRANT ALL PRIVILEGES ON slurm_acct_db.* TO 'slurm'@'localhost';"
+      sudo mysql -u root -p'default_root_password' -e "FLUSH PRIVILEGES;"
+    permissions: '0777'
+    owner: root
+    group: root
+  - path: /etc/slurm/slurmdbd.conf
+    content: |
+      SlurmUser=slurm
+      AuthType=auth/munge
+      AuthInfo=/var/run/munge/munge.socket.2
+      DbdAddr=localhost
+      DbdHost=localhost
+      DbdPort=6819
+      DebugLevel=info
+      StorageHost=localhost
+      StorageType=accounting_storage/mysql
+      StorageUser=slurm
+      StoragePass=default_password
+      StorageLoc=slurm_acct_db
+      LogFile=/var/log/slurm/slurmdbd.log
+      PidFile=/var/run/slurmdbd.pid
+      PrivateData=accounts,users,usage,jobs
+    permissions: '0600'
+    owner: root
+    group: root
+  - path: /etc/slurm/slurm.conf
+    content: |
+      # Configuration Options
+      ClusterName=cluster
+      AuthType=auth/munge
+      CryptoType=crypto/munge
+      SlurmUser=slurm
+      Epilog=/usr/local/bin/01_umount_home.sh
+      Prolog=/usr/local/bin/01_mount_home.sh
+      AccountingStorageType=accounting_storage/slurmdbd
+      AccountingStorageHost=SLURMCTLD_HOST_IP
+      ProctrackType=proctrack/pgid
+      SlurmctldPort=6817
+      SlurmctldLogFile=/var/log/slurm/slurmctld.log
+      SlurmctldPidFile=/var/run/slurm/slurmctld.pid
+      StateSaveLocation=/var/lib/slurm/slurmctld
+      SlurmdPort=6818
+      SlurmdLogFile=/var/log/slurm/slurmd.log
+      SlurmdPidFile=/var/run/slurm/slurmd.pid
+      SlurmdSpoolDir=/var/lib/slurm/slurmd
+      SlurmctldHost=SLURMCTLD_HOST_IP
+      SlurmctldParameters=enable_configless
+
+      # Compute Nodes Options
+      NodeName={{ Values.NodeName }}
+      PartitionName={{ Values.PartitionName }} Nodes=ALL Default=YES
+    permissions: '0444'
+    owner: root
+    group: root
+  {{ Values.Common.MungeFiles | indent:2 }}
+  - path: /home/ubuntu/host_privkey_cert.template
+    content: |
+      cn = {{ Values.Common.ClusterId }} Cluster
+      ca
+      cert_signing_key
+      expiration_days = 365
+    permissions: '0660'
+    owner: root
+    group: root
+  - path: /home/ubuntu/ldap_privkey_cert.template
+    content: |
+      organization = {{ Values.Common.ClusterId }} Cluster
+      cn = {{ Values.Common.ClusterId }}-slurmctld
+      tls_www_server
+      encryption_key
+      signing_key
+      expiration_days = 365
+    permissions: '0660'
+    owner: root
+    group: root
+  - path: /home/ubuntu/debconf-slapd.conf
+    content: |
+      slapd slapd/password1 password admin
+      slapd slapd/internal/adminpw password admin
+      slapd slapd/internal/generated_adminpw password admin
+      slapd slapd/password2 password admin
+      slapd slapd/unsafe_selfwrite_acl note
+      slapd slapd/purge_database boolean false
+      slapd slapd/domain string {{ Values.Common.ClusterId }}.cluster
+      slapd slapd/ppolicy_schema_needs_update select abort installation
+      slapd slapd/invalid_config boolean true
+      slapd slapd/move_old_database boolean false
+      slapd slapd/backend select MDB
+      slapd shared/organization string {{ Values.Common.ClusterId }} Cluster
+      slapd slapd/dump_database_destdir string /var/backups/slapd-VERSION
+      slapd slapd/no_configuration boolean false
+      slapd slapd/dump_database select when needed
+      slapd slapd/password_mismatch note
+    permissions: '0644'
+    owner: root
+    group: root
+  - path: /home/ubuntu/slapd_config.sh
+    content: |
+      #!/bin/bash
+      certtool --generate-privkey --bits 4096 --outfile /etc/ssl/private/poc-cakey.pem
+      certtool --generate-self-signed --load-privkey /etc/ssl/private/poc-cakey.pem --template /home/ubuntu/host_privkey_cert.template --outfile /usr/local/share/ca-certificates/poc-cacert.crt
+      update-ca-certificates
+      certtool --generate-privkey --bits 2048 --outfile /etc/ldap/login_slapd_key.pem
+      certtool --generate-certificate --load-privkey /etc/ldap/login_slapd_key.pem --load-ca-certificate /etc/ssl/certs/poc-cacert.pem --load-ca-privkey /etc/ssl/private/poc-cakey.pem --template /home/ubuntu/ldap_privkey_cert.template --outfile /etc/ldap/login_slapd_cert.pem
+      chown root:openldap /usr/local/share/ca-certificates
+      chmod 0770 /usr/local/share/ca-certificates
+      chgrp openldap /etc/ldap/login_slapd_key.pem
+      chmod 0640 /etc/ldap/login_slapd_key.pem
+      echo '
+      dn: cn=config
+      add: olcTLSCACertificateFile
+      olcTLSCACertificateFile: /etc/ssl/certs/poc-cacert.pem
+      -
+      add: olcTLSCertificateFile
+      olcTLSCertificateFile: /etc/ldap/login_slapd_cert.pem
+      -
+      add: olcTLSCertificateKeyFile
+      olcTLSCertificateKeyFile: /etc/ldap/login_slapd_key.pem' > /home/ubuntu/certinfo.ldif
+      systemctl restart slapd
+      ldapmodify -Y EXTERNAL -H ldapi:/// -f /home/ubuntu/certinfo.ldif
+      cp /home/ubuntu/etc-default-slapd /etc/default/slapd
+      systemctl restart slapd
+      echo '
+      dn: ou=People,dc={{ Values.Common.ClusterId }},dc=cluster
+      objectClass: organizationalUnit
+      ou: People
+      dn: ou=Groups,dc={{ Values.Common.ClusterId }},dc=cluster
+      objectClass: organizationalUnit
+      ou: Groups
+      dn: cn=workshop,ou=Groups,dc={{ Values.Common.ClusterId }},dc=cluster
+      objectClass: posixGroup
+      cn: workshop
+      gidNumber: 5000' > /home/ubuntu/add_content.ldif
+      ldapadd -x -w 'admin' -D 'cn=admin,dc={{ Values.Common.ClusterId }},dc=cluster' -f /home/ubuntu/add_content.ldif
+    permissions: '0644'
+    owner: root
+    group: root
+  - path: /home/ubuntu/etc-default-slapd
+    content: |
+      # Default location of the slapd.conf file or slapd.d cn=config directory. If
+      # empty, use the compiled-in default (/etc/ldap/slapd.d with a fallback to
+      # /etc/ldap/slapd.conf).
+      SLAPD_CONF=
+
+      # System account to run the slapd server under. If empty the server
+      # will run as root.
+      SLAPD_USER='openldap'
+
+      # System group to run the slapd server under. If empty the server will
+      # run in the primary group of its user.
+      SLAPD_GROUP='openldap'
+      # Path to the pid file of the slapd server. If not set the init.d script
+      # will try to figure it out from $SLAPD_CONF (/etc/ldap/slapd.d by
+      # default)
+      SLAPD_PIDFILE=
+
+      # slapd normally serves ldap only on all TCP-ports 389. slapd can also
+      # service requests on TCP-port 636 (ldaps) and requests via unix
+      # sockets.
+      SLAPD_SERVICES='ldap:/// ldapi:/// ldaps:///'
+
+      # If SLAPD_SENTINEL_FILE is set to path to a file and that file exists,
+      # the init script will not start or restart slapd (but stop will still
+      # work).  Use this for temporarily disabling startup of slapd (when doing
+      # maintenance, for example, or through a configuration management system)
+      # when you don't want to edit a configuration file.
+      SLAPD_SENTINEL_FILE=/etc/ldap/noslapd
+
+      # Additional options to pass to slapd
+      SLAPD_OPTIONS=''
+    permissions: '0644'
+    owner: root
+    group: root
+runcmd:
+  {{ Values.Common.WekaStorage | indent:2 }}
+  - sudo printf '{{ Values.ComputeHostInstance }}' >> /etc/hosts
+  - sudo sed -i "s/SLURMCTLD_HOST_IP/$(hostname -s)/g" /etc/slurm/slurm.conf
+  - sudo printf '%s %s\n' $(ip addr show enp1s0 | grep -w 'inet' | awk '{print $2}' | cut -d'/' -f1) $(hostname -s) >> /share/slurm-hosts.log
+  - mkdir -p /var/run/slurm
+  - mkdir -p -v -m 0700 /var/lib/slurm/slurmctld
+  - sudo chown slurm:slurm /var/lib/slurm/slurmctld
+  - sudo chown slurm:root /etc/slurm/slurmdbd.conf
+  - sudo sh /home/ubuntu/configure-mariadb.sh
+  - sudo systemctl start slurmdbd
+  - sudo systemctl enable slurmdbd
+  - sudo systemctl restart slurmctld
+  - mkdir -p -v -m 0755 /etc/slurm
+  - mkdir -p -v -m 0755 /var/log/slurm
+  - sudo chown slurm:slurm /var/log/slurm
+  - mkdir -p /var/lib/slurm
+  - sudo usermod -d /var/lib/slurm slurm
+  - sudo chown slurm:slurm /var/lib/slurm
+  - sudo chmod 0755 /var/lib/slurm
+  - sudo chown munge:munge /etc/slurm/slurm.conf
+  - sudo chmod 0755 /etc/slurm
+  - sudo systemctl start slurmctld
+  - sudo systemctl enable slurmctld
+  - sudo systemctl start slurmd
+  - sudo systemctl enable slurmd
+  {{ Values.Common.MungeRunCmd | indent:2 }}
+  - mkdir -p -v -m 0770 /share/ldap/etc
+  - sudo sh /home/ubuntu/slapd_config.sh
+  - sudo cp /usr/local/share/ca-certificates/poc-cacert.crt /share/ldap/etc/poc-cacert.crt
+  - sudo chown root:openldap /share/ldap/etc/poc-cacert.crt
+  - sudo chmod 0660 /share/ldap/etc/poc-cacert.crt
+  - sudo chown ubuntu:ubuntu /home/ubuntu

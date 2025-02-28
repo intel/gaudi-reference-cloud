@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idcs-admin-portal.fullname" . }}
+  namespace: {{ include "idcs-admin-portal.namespace" . }}
+  labels:
+    {{- include "idcs-admin-portal.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "idcs-admin-portal.selectorLabels" . | nindent 4 }}

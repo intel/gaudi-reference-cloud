@@ -1,0 +1,590 @@
+{
+    "urls": {
+        "base_url": "https://<<endpoint>>/v1/meteringrecords"
+    },
+    "grpc": {
+        "host": "host:port details"
+    },
+    "numberofrecords": {
+        "numRecords": 200
+    },
+    "inputforperformance": {
+        "numRecordsforperf": 1000000
+    },
+    "inputforcid": {
+        "cidnumber": 1000
+    },
+    "token": {
+        "method": "azure"
+    },
+    "metering": {
+        "create": {
+			"validPayload": {
+				"payload": {
+					"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+					"cloudAccountId": "123456",
+					"transactionId": "2022-12-16T15",
+					"timestamp": "2022-11-29T13:34:00.000Z",
+					"properties": {
+						"instance": "small"
+					}
+				}
+			},
+			"createWithoutProperties": {
+				"payload1": {
+					"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+					"cloudAccountId": "123456",
+					"transactionId": "2022-12-16T15",
+					"timestamp": "2022-11-29T13:34:00.000Z"
+				}
+			},
+			"sameids": {
+				"payload": {
+					"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+					"cloudAccountId": "123456",
+					"transactionId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+					"timestamp": "2022-11-29T13:34:00.000Z",
+					"properties": {
+						"instance": "small"
+					}
+				}
+			},
+			"invalid_values": {
+				"extraField": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": "123456",
+						"transactionId": "2022-12-16T15",
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"extraField": 10,
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"cloudAccountId": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": 10,
+						"transactionId": "2022-12-16T15",
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"resourceId": {
+					"payload": {
+						"resourceId": 10,
+						"cloudAccountId": "123456",
+						"transactionId": "2022-12-16T15",
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"transactionId": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": "123456",
+						"transactionId": 5,
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"timestamp": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": "123456",
+						"transactionId": "2022-12-16T15",
+						"timestamp": "abc:def:xyz",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"properties": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": "123456",
+						"transactionId": "2022-12-16T15",
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"properties": 10
+					}
+				}
+			},
+			"missingFields": {
+				"empty": {},
+				"cloudAccountId": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"transactionId": "2022-12-16T15",
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"resourceId": {
+					"payload": {
+						"cloudAccountId": "123456",
+						"transactionId": "2022-12-16T15",
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"transactionId": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": "123456",
+						"timestamp": "2022-11-29T13:34:00.000Z",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"timestamp": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": "123456",
+						"transactionId": "2022-12-16T15",
+						"properties": {
+							"instance": "small"
+						}
+					}
+				},
+				"properties": {
+					"payload": {
+						"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+						"cloudAccountId": "123456",
+						"transactionId": "2022-12-16T15",
+						"timestamp": "2022-11-29T13:34:00.000Z"
+					}
+				}
+			},
+			"createSerially": {
+				"payload": {
+					"resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+					"cloudAccountId": "123456",
+					"transactionId": "2022-12-16T15",
+					"timestamp": "2022-11-29T13:34:00.000Z",
+					"properties": {
+						"instance": "small"
+					}
+				}
+			}
+		},
+        "invalid_values": {
+            "extraField": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "extraField": 10,
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "cloudAccountId": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": 10,
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "resourceId": {
+                "payload": {
+                    "resourceId": 10,
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "transactionId": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": 5,
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "timestamp": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "abc:def:xyz",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "properties": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "properties": 10
+                }
+            }
+        },
+        "missingFields": {
+            "empty": {},
+            "cloudAccountId": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "resourceId": {
+                "payload": {
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "transactionId": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "timestamp": "2022-11-29T13:34:00.000Z",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "timestamp": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "properties": {
+                        "instance": "small"
+                    }
+                }
+            },
+            "properties": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": "2022-11-29T13:34:00.000Z"
+                }
+            }
+        },
+        "createSerially": {
+            "payload": {
+                "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                "cloudAccountId": "123456789012",
+                "transactionId": "2022-12-16T15",
+                "timestamp": "2022-11-29T13:34:00.000Z",
+                "properties": {
+                    "instance": "small"
+                }
+            }
+        }
+    },
+    "search": {
+        "id": {
+            "id": 10
+        },
+        "resourceId": {
+            "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d"
+        },
+        "transactionId": {
+            "transactionId": "2022-12-16T15"
+        },
+        "cloudAccountId": {
+            "cloudAccountId": "123456789012"
+        },
+        "invalid_values": {
+            "extraField": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "extraField": 10,
+                    "reported": true
+                }
+            },
+            "cloudAccountId": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "abc",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "resourceId": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": 10,
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "transactionId": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": 5,
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "starttimestamp": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "abc:def:xyz",
+                    "reported": true
+                }
+            },
+            "endtimestamp": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "endTime": "abc:def:xyz",
+                    "reported": true
+                }
+            },
+            "id": {
+                "payload": {
+                    "id": "abc",
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "reported": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "reported": "10"
+                }
+            },
+            "timestamp": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "timestamp": 10,
+                    "reported": true
+                }
+            }
+        },
+        "missingFields": {
+            "empty": {},
+            "cloudAccountId": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "endTime": "2022-12-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "resourceId": {
+                "payload": {
+                    "id": 10,
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "endTime": "2022-12-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "transactionId": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "endTime": "2022-12-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "startTime": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "endTime": "2022-12-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "endTime": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-12-29T13:34:00.000Z",
+                    "reported": true
+                }
+            },
+            "reported": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-11-29T13:34:00.000Z",
+                    "endTime": "2022-12-29T13:34:00.000Z"
+                }
+            },
+            "id": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d",
+                    "cloudAccountId": "123456789012",
+                    "transactionId": "2022-12-16T15",
+                    "startTime": "2022-12-29T13:34:00.000Z",
+                    "endTime": "2022-12-29T13:34:00.000Z",
+                    "reported": true
+                }
+            }
+        }
+    },
+    "update": {
+        "invalid_values": {
+            "extraField": {
+                "payload": {
+                    "id": 10,
+                    "extraField": 10,
+                    "reported": true
+                }
+            },
+            "id": {
+                "payload": {
+                    "id": "abc",
+                    "reported": true
+                }
+            },
+            "reported": {
+                "payload": {
+                    "id": 10,
+                    "reported": 10
+                }
+            }
+        },
+        "missingFields": {
+            "empty": {},
+            "id": {
+                "reported": true
+            },
+            "reported": {
+                "id": 10
+            }
+        }
+    },
+    "findPrevious": {
+        "invalid_values": {
+            "extraField": {
+                "payload": {
+                    "id": 10,
+                    "extraField": 10,
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d"
+                }
+            },
+            "id": {
+                "payload": {
+                    "id": "abc",
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d"
+                }
+            },
+            "resourceId": {
+                "payload": {
+                    "id": 10,
+                    "resourceId": 10
+                }
+            }
+        },
+        "missingFields": {
+            "empty": {
+                "payload": {}
+            },
+            "id": {
+                "payload": {
+                    "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e1d"
+                }
+            },
+            "resourceId": {
+                "payload": {
+                    "id": 10
+                }
+            }
+        },
+        "multipleIDs": {
+            "payload": {
+                "id": [
+                    10,
+                    20,
+                    30
+                ]
+            }
+        },
+        "search_tag1": {
+            "payload": {
+                "id": 14357,
+                "resourceId": "490d4e11-ad5b-40ae-8a80-b46ee93d9673"
+            }
+        },
+        "search_tag2": {
+            "payload": {
+                "id": 14372,
+                "resourceId": "7cb582da-4f51-4a4e-8e3e-63792209b499"
+            }
+        },
+        "search_tag3": {
+            "payload": {
+                "id": 14387,
+                "resourceId": "7cb582da-4f51-4a4e-8e3e-63792209b499"
+            }
+        }
+    }
+}

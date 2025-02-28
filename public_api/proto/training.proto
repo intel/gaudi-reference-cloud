@@ -1,0 +1,201 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+import "compute.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "training-api-server";
+
+// -------------------------------------------------------------------------------------------
+// Training - Slurm Cluster Service (Armada)
+// -------------------------------------------------------------------------------------------
+
+service TrainingClusterService {
+    rpc Create(SlurmClusterCreateRequest) returns (SlurmClusterCreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/clusters"
+            body: "*"
+        };
+        option (idc.method).authz.cloudAccount = true;
+    }; 
+  
+    rpc Get(SlurmClusterRequest) returns (Cluster) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/clusters/{clusterId}"
+        };
+        option (idc.method).authz.cloudAccount = true;
+    }; 
+
+    rpc List(ClusterListOption) returns (SlurmClusterResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/clusters"
+        };
+        option (idc.method).authz.cloudAccount = true;
+    };
+}
+
+enum StorageMountType {
+    STORAGE_WEKA = 0;
+    STORAGE_MOUNT_UNKNOWN = 1;
+}
+
+enum StorageAccessModeType {
+    STORAGE_READ_WRITE = 0;
+    STORAGE_READ_ONLY = 1;
+    STORAGE_READ_WRITE_ONCE = 2;
+    STORAGE_ACCESS_UNKNOWN = 3;
+}
+
+enum NodeRole {
+    COMPUTE_NODE = 0;
+    CONTROLLER_NODE  = 1;
+    JUPYTERHUB_NODE = 3;
+    LOGIN_NODE = 4;
+    UNKNOWN_ROLE = 5;
+}
+
+enum MachineType {
+    SML_VM_TYPE = 0;
+    MED_VM_TYPE = 1;
+    LRG_VM_TYPE = 2;
+    PVC_BM_1100_4 = 3;
+    PVC_BM_1100_8 = 4;
+    PVC_BM_1550_8 = 5;
+    GAUDI_BM_TYPE = 6;
+    UNKNOWN_TYPE = 7;
+}
+
+enum ClusterState {
+    REQUESTED = 0;
+    ACCEPTED = 1;
+    PROVISIONING = 2;
+    FAILED = 3;
+    READY = 4;
+    UPDATING = 5;
+    UNKNOWN = 6;
+}
+
+message Cluster {
+    string cloudAccountId = 1;
+    string name = 2;
+    string clusterId = 3;
+    string description = 4;
+    repeated string SSHKeyName = 5;
+    repeated ClusterNode nodes = 6;
+    repeated StorageNode storageNodes = 7;
+    VNetSpec spec = 8; 
+}
+
+message SlurmClusterCreateRequest {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    Cluster cluster = 2;
+}
+
+message ClusterNode {
+    uint32 count = 1;
+    string nodeId = 2;
+    optional string name = 3;
+    string imageType = 4;
+    MachineType machineType = 5;
+    NodeRole role = 6;
+    map<string, string> labels = 7;
+    optional google.protobuf.Timestamp startTime = 8; 
+}
+
+message StorageNode {
+    string fsResourceId = 2;
+    string name = 3;
+    optional string description = 4;
+    string capacity = 5;
+    StorageAccessModeType accessMode = 6;
+    StorageMountType mount = 7;
+    string localMountDir = 8;
+    string remoteMountDir = 9;
+}
+
+message SlurmClusterRequest{
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    string clusterId = 2;
+}
+
+message SlurmClusterCreateResponse { 
+    string clusterId = 1;
+}
+
+message ClusterListOption {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    optional string clusterName = 3;
+}
+
+message ClusterInfo {
+    string cloudAccountId = 1;
+    string name = 2;
+    string clusterId = 3;
+    string description = 4;
+}
+
+message SlurmClusterResponse {
+    repeated ClusterInfo clusters = 1;
+}
+
+// -------------------------------------------------------------------------------------------
+// Training - Batch Service
+// -------------------------------------------------------------------------------------------
+
+service TrainingBatchUserService {
+    rpc Register(TrainingRegistrationRequest) returns (TrainingRegistrationResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/trainings"
+            body: "*"
+        };
+        option (idc.method).authz.cloudAccount = true;
+    };
+
+    rpc GetExpiryTimeById(GetDataRequest) returns (GetDataResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/trainings/expiry"
+        };
+        option (idc.method).authz.cloudAccount = true;
+  };
+}
+
+enum AccessType {
+    ACCESS_TYPE_SSH = 0;
+    ACCESS_TYPE_JUPYTER = 1;
+}
+
+message TrainingRegistrationRequest {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    string trainingId = 2;
+    repeated string sshKeyNames = 3;
+    AccessType accessType = 4;
+}
+
+message TrainingRegistrationResponse { 
+    optional string sshLoginInfo = 1;
+    optional string jupyterLoginInfo = 2;
+    string message = 3;
+    string expiryDate = 4;
+}
+
+message GetDataRequest {
+    string cloudAccountId = 1;
+}
+
+message GetDataResponse {
+    string expiryDate = 1;
+}

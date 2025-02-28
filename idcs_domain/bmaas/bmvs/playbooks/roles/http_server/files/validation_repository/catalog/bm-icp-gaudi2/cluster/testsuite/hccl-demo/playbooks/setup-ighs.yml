@@ -1,0 +1,28 @@
+---
+- name: Generate ansible inventory, modify it with hostnames for debugging and generate hostfile used for HCCL Demo
+  gather_facts: false
+  hosts: localhost
+  vars_files:
+    - "vars/common.yml"
+  roles:
+    - role: gen_hostfile
+      tags: ["gen_hostfile"]
+
+- name: Generate SSH Keys to setup bare-metal and docker containers passwordless connection
+  gather_facts: false
+  hosts: localhost
+  vars_files:
+    - "vars/common.yml"
+  roles:
+    - role: gen_ssh_key
+      tags: ["gen_ssh_key"]
+
+- name: Generate config file used for IGHS and HCCL-Demo
+  gather_facts: false
+  hosts: localhost
+  vars_files:
+    - "vars/common.yml"
+    - "vars/versions.yml"
+  roles:
+    - role: gen_config_file
+      tags: ["gen_config_file"]

@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "62ab0aaf-0a78-4814-9524-7af16e7a2f4e",
+		"name": "BMVS Demo - deployment-host",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21509401"
+	},
+	"item": [
+		{
+			"name": "Guest Host - BMC base",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{deployhost}}:{{vBMCport}}/redfish/v1/",
+					"protocol": "http",
+					"host": [
+						"{{deployhost}}"
+					],
+					"port": "{{vBMCport}}",
+					"path": [
+						"redfish",
+						"v1",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guest Host - Systems",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{deployhost}}:{{vBMCport}}/redfish/v1/Systems",
+					"protocol": "http",
+					"host": [
+						"{{deployhost}}"
+					],
+					"port": "{{vBMCport}}",
+					"path": [
+						"redfish",
+						"v1",
+						"Systems"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guest Host - ForceRestart",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"ResetType\":\"ForceRestart\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{deployhost}}:{{vBMCport}}/redfish/v1/Systems/{{gh-node}}/Actions/ComputerSystem.Reset",
+					"protocol": "http",
+					"host": [
+						"{{deployhost}}"
+					],
+					"port": "{{vBMCport}}",
+					"path": [
+						"redfish",
+						"v1",
+						"Systems",
+						"{{gh-node}}",
+						"Actions",
+						"ComputerSystem.Reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guest Host - ForceOff",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"ResetType\":\"ForceOff\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{deployhost}}:{{vBMCport}}/redfish/v1/Systems/{{gh-node}}/Actions/ComputerSystem.Reset",
+					"protocol": "http",
+					"host": [
+						"{{deployhost}}"
+					],
+					"port": "{{vBMCport}}",
+					"path": [
+						"redfish",
+						"v1",
+						"Systems",
+						"{{gh-node}}",
+						"Actions",
+						"ComputerSystem.Reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guest Host - ForceOn",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"ResetType\":\"ForceOn\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{deployhost}}:{{vBMCport}}/redfish/v1/Systems/{{gh-node}}/Actions/ComputerSystem.Reset",
+					"protocol": "http",
+					"host": [
+						"{{deployhost}}"
+					],
+					"port": "{{vBMCport}}",
+					"path": [
+						"redfish",
+						"v1",
+						"Systems",
+						"{{gh-node}}",
+						"Actions",
+						"ComputerSystem.Reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VirtualMedia.InsertMedia",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"Image\":\"https://internal-placeholder.com/pub/mirrors/ubuntu-releases/22.04.1/ubuntu-22.04.1-live-server-amd64.iso\", \"Inserted\": true}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{deployhost}}:{{vBMCport}}/redfish/v1/Managers/{{gh-node}}/VirtualMedia/Cd/Actions/VirtualMedia.InsertMedia",
+					"protocol": "http",
+					"host": [
+						"{{deployhost}}"
+					],
+					"port": "{{vBMCport}}",
+					"path": [
+						"redfish",
+						"v1",
+						"Managers",
+						"{{gh-node}}",
+						"VirtualMedia",
+						"Cd",
+						"Actions",
+						"VirtualMedia.InsertMedia"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VirtualMedia.EjectMedia",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{deployhost}}:{{vBMCport}}/redfish/v1/Managers/{{gh-node}}/VirtualMedia/Cd/Actions/VirtualMedia.EjectMedia",
+					"protocol": "http",
+					"host": [
+						"{{deployhost}}"
+					],
+					"port": "{{vBMCport}}",
+					"path": [
+						"redfish",
+						"v1",
+						"Managers",
+						"{{gh-node}}",
+						"VirtualMedia",
+						"Cd",
+						"Actions",
+						"VirtualMedia.EjectMedia"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "password",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "deployhost",
+			"value": "deployment.intel.com",
+			"type": "string"
+		},
+		{
+			"key": "gh-node",
+			"value": "eba2397e-bf02-4779-be17-56730cede40e",
+			"type": "string"
+		},
+		{
+			"key": "vBMCport",
+			"value": "8001",
+			"type": "string"
+		}
+	]
+}

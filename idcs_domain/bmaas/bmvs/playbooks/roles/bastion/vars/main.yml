@@ -1,0 +1,8 @@
+---
+ansible_network_os: 'ios'
+libvirt_image_dir: "/var/lib/libvirt/images/"
+bastion_server_name: "bmvs-bastion"
+bastion_server_cloudimg: "{{ bastion_server_name }}.qcow2"
+bastion_macaddress: "52:54:00:be:c0:01"
+ubuntu_cloud_init_iso: "{{ libvirt_image_dir }}/{{ bastion_server_name }}_cloud_init.iso"
+vlan_base_mac: "be:c0:01:00:00:"

@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "interceptors",
+    srcs = [
+        "filterinterceptors.go",
+        "metadatainterceptors.go",
+        "streamwrapper.go",
+        "validateinterceptors.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/maas-gateway/internal/interceptors",
+    visibility = ["//go/pkg/maas-gateway:__subpackages__"],
+    deps = [
+        "//go/pkg/maas-gateway/internal/contextmeta",
+        "//go/pkg/pb",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_pkg_errors//:errors",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)

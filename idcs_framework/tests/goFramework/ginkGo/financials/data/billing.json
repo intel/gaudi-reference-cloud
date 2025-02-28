@@ -1,0 +1,243 @@
+{        
+        
+    "ariaBaseUrl": "https://api.current.stage.ariasystems.net/v1/core", 
+    "usageTime":"15",   
+    "ariaConfig":{
+        "client_no": "",
+        "auth_key": ""    
+    }, 
+    "credit_reason":"CREDIT_INITIAL",
+    "startScheduler":{
+        "action":"<<action>>"
+    },
+    "createCoupon":{
+        "amount": 10,
+        "creator": "AutoUser",  
+        "numUses": 6
+    },
+    "createStandardCoupon":{
+        "amount": 10,
+        "creator": "AutoUser",  
+        "numUses": 6,
+        "isStandard":false
+    },
+    "rates":{
+        "intel":{
+            "sml" : 0.003,
+            "med" : 0.006,
+            "lrg" : 0.012,
+            "bm":0.024,
+            "gaudi2":0.112,
+            "image": 0.05,
+            "text":0.05
+        },
+        "premium":{
+            "sml" : 0.0075,
+            "med" : 0.015,
+            "lrg" : 0.03,
+            "bm":0.0603,
+            "gaudi2":0.1737,
+            "image": 0.05,
+            "text":0.05
+
+        },
+        "standard":{
+            "sml" : 0.0075,
+            "med" : 0.015,
+            "lrg" : 0.03,
+            "bm":0.0603,
+            "gaudi2":0.1737,
+            "image": 0.05,
+            "text":0.05
+
+        }     
+
+    },
+    "redeemCoupon":{
+        "cloudAccountId": "<<cloudAccountId>>",
+        "code": "<<code>>"
+    },
+    "createCredits": {
+        "amountUsed": 123,
+        "cloudAccountId": "<<cloudAccountId>>",
+        "couponCode": "<<couponCode>>",
+        "created": "<<created>>",
+        "expiration": "<<expiration>>",
+        "originalAmount": 456,
+        "reason": "<<reason>>",
+        "remainingAmount": 789
+    },
+    "creditcardPayload1":{
+        "CardnumberInput" : "4111111111111111",
+        "MonthInput":"10",
+        "Year":"26",
+        "Cvc":"456",
+        "FirstName":"Test",
+        "LastName":"User",
+        "Email":"testuser@intel.com",
+        "Phone":"123456",
+        "Country":"IN",
+        "AddressLine":"Intel Technologies",
+        "City":"Bangalore",
+        "State":"KA",
+        "ZipCode":"56004"
+    },
+
+    "cloudaccount_pg_password" : "<<cloudaccount_pg_password>>",
+    "createInvitation" :{
+        "cloudAccountId": "665852975911",
+         "invites": [
+           {
+             "expiry": "<<expiry>>",
+             "memberEmail": "<<memberEmail>>",
+             "note": "<<note>>"
+      
+           }
+  ]
+    },
+    "resendInvitation":{
+        "adminAccountId": "<<adminAccountId>>", 
+        "memberEmail": "<<memberEmail>>"
+        
+      },
+      "revokeInvitation":{
+        "adminAccountId": "<<adminAccountId>>", 
+        "memberEmail": "<<memberEmail>>",       
+        "invitationState": "<<invitationState>>"
+        
+      },
+      "validateInviteCode":{
+        "adminCloudAccountId":"<<adminCloudAccountId>>",
+        "memberEmail": "<<memberEmail>>",
+        "inviteCode":"<<inviteCode>>"
+    },
+    "rejectInvitation":{
+        "adminAccountId": "<<adminAccountId>>",
+       "invitationState": "<<invitationState>>",
+       "memberEmail": "<<memberEmail>>"
+   },
+    "removeMember": {
+        "adminAccountId": "<<adminAccountId>>",
+        "memberEmail": "<<memberEmail>>",
+         "invitation_state": "<<invitation_state>>"  
+   },
+
+    "createOTP":{
+        "cloudAccountId": "<<cloudAccountId>>",
+        "memberEmail": "<<memberEmail>>"
+      },
+      "verifyOTP":{
+        "cloudAccountId": "<<cloudAccountId>>",
+        "memberEmail": "<<memberEmail>>",
+        "otpCode": "<<otpCode>>"
+      },
+      "resendOTP":{
+        "cloudAccountId": "<<cloudAccountId>>",
+        "memberEmail": "<<memberEmail>>"
+      },
+        "upgradeWithCoupon": {
+        "cloudAccountId": "<<cloudAccountId>>",
+        "cloudAccountUpgradeToType": "<<cloudAccountUpgradeToType>>",
+        "code": "<<code>>"
+    },
+    "upgradeWithoutCoupon": {
+        "cloudAccountId": "<<cloudAccountId>>",
+        "cloudAccountUpgradeToType": "<<cloudAccountUpgradeToType>>"
+    },
+    "creditMigrate": {
+        "cloudAccountId": "<<cloudAccountId>>"
+    },
+    "create_maas_usage":{
+        "cloudAccountId": "<<cloudAccountId>>",
+        "endTime": "<<endTime>>",
+        "properties":  {
+          "serviceType": "ModelAsAService",
+          "processingType": "<<processingType>>"
+          },
+        "quantity": "<<quantity>>",
+        "region": "<<region>>",
+        "startTime": "<<startTime>>",
+        "timestamp": "<<timestamp>>",
+        "transactionId": "<<transactionId>>"
+      },
+      "search_maas_usage":{
+
+      },
+    "creditCards": {
+        "visaCard": {
+            "CardnumberInput": "4111111111111111",
+            "MonthInput": "10",
+            "Year": "28",
+            "Cvc": "456",
+            "FirstName": "Test Visa",
+            "LastName": "Visa User",
+            "Email": "testuservisa@premium.com",
+            "Phone": "123456",
+            "Country": "IN",
+            "AddressLine": "Intel Technologies",
+            "City": "Bangalore",
+            "State": "KA",
+            "ZipCode": "560048"
+        },
+        "masterCard": {
+            "CardnumberInput": "5454545454545454",
+            "MonthInput": "11",
+            "Year": "29",
+            "Cvc": "456",
+            "FirstName": "Test Master",
+            "LastName": "Master User",
+            "Email": "testusermaster@intel.com",
+            "Phone": "123456",
+            "Country": "IN",
+            "AddressLine": "Intel Technologies",
+            "City": "Bangalore",
+            "State": "KA",
+            "ZipCode": "560048"
+        },
+        "discoverCard": {
+            "CardnumberInput": "6011000995500000",
+            "MonthInput": "12",
+            "Year": "30",
+            "Cvc": "456",
+            "FirstName": "Test Discover",
+            "LastName": "Discover User",
+            "Email": "testuserdiscover@intel.com",
+            "Phone": "123456",
+            "Country": "IN",
+            "AddressLine": "Intel Technologies",
+            "City": "Bangalore",
+            "State": "KA",
+            "ZipCode": "560048"
+        },
+        "amexCard": {
+            "CardnumberInput": "371449635398431",
+            "MonthInput": "10",
+            "Year": "31",
+            "Cvc": "3543",
+            "FirstName": "Test Amex",
+            "LastName": "Amex User",
+            "Email": "testuseramex@intel.com",
+            "Phone": "123456",
+            "Country": "IN",
+            "AddressLine": "Intel Technologies",
+            "City": "Bangalore",
+            "State": "KA",
+            "ZipCode": "560048"
+        },
+        "changeCard": {
+            "CardnumberInput": "5454545454545454",
+            "MonthInput": "11",
+            "Year": "28",
+            "Cvc": "456",
+            "FirstName": "Test Master",
+            "LastName": "Master User",
+            "Email": "testusermaster1@intel.com",
+            "Phone": "123456",
+            "Country": "IN",
+            "AddressLine": "Intel Technologies",
+            "City": "Bangalore",
+            "State": "KA",
+            "ZipCode": "560048"
+        }
+    }
+}

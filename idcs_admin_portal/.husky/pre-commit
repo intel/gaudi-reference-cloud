@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+if !(git diff --cached --quiet -- ./idcs_admin_portal); then
+    echo 'Files changed on idcs_admin_portal, running pre-commit for it'
+    . "$(dirname -- "$0")/_/husky.sh"
+    cd ./idcs_admin_portal && npm run lint
+else
+    echo 'No changes on idcs_admin_portal, skip pre-commit for it'
+fi

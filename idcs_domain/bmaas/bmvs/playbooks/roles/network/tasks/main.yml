@@ -1,0 +1,20 @@
+---
+
+# TODO: Enable checking all values of the loop, instead of
+# stopping on first failure. Useful to remote all missing items once.
+
+- include_tasks: create_libvirt_network.yml
+  loop:
+    - "{{ data_network }}"
+    - "{{ storage_network }}"
+  loop_control:
+    loop_var: network
+  tags: setup
+
+- include_tasks: destroy_libvirt_network.yml
+  loop:
+    - "{{ data_network }}"
+    - "{{ storage_network }}"
+  loop_control:
+    loop_var: network
+  tags: [never, teardown]

@@ -1,0 +1,17 @@
+# This file contains targets to build Helm charts.
+# See https://github.com/masmovil/bazel-rules
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+    name = "chart",
+    package_name = "infaas-dispatcher",  # Must not have underscores.
+    srcs = glob([
+        "*.yaml",
+        "templates/**",
+    ]),
+    chart_deps = ["//deployment/charts/idc-common:chart"],
+    image = "//go/pkg/infaas-dispatcher:infaas_dispatcher_image",
+    values_tag_yaml_path = "image.tag",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: "registrationapi-{- username -}"
+  namespace: registration
+spec:
+  action: DENY
+  rules:
+    - from:
+        - source:
+            namespaces: ["{- namespace -}"]
+      to:
+        - operation:
+            hosts:
+              - registration-api.registration
+              - registration-api.registration.svc
+              - registration-api.registration.svc.cluster.local

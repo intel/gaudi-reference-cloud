@@ -1,0 +1,8 @@
+-
+  name: RKE2 node
+  hosts: rke2_node
+  become: true
+  roles:
+    - linux_server
+    - rke2_node
+

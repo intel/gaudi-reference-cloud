@@ -1,0 +1,29 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "query",
+    srcs = [
+        "create.go",
+        "delete.go",
+        "get.go",
+        "put.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/iks/db/query",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/iks/db/iks_utils",
+        "//go/pkg/ilb_operator/api/v1alpha1",
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/kubernetes_operator/kubernetes_provider/iks",
+        "//go/pkg/kubernetes_operator/utils",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_golang_protobuf//ptypes/empty",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@io_k8s_utils//pointer",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)

@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registration-api
+  namespace: registration
+spec:
+  selector:
+    matchLabels:
+      app: registration
+  template:
+    metadata:
+      labels:
+        app: registration
+    spec:
+      containers:
+        - image: icir.cps.intel.com/idc-training/registration/registration-api:latest@sha256:1128eaae00327dc74451baddb5d7db3d8b05d79eba4429c8c9f1a689e6522e0a
+          name: registration-api
+          ports:
+            - containerPort: 8000
+              name: web
+          volumeMounts:
+            - name: registration-db-cluster-app
+              mountPath: /etc/secrets/app
+            - name: registration-db-cluster-ca
+              mountPath: /etc/secrets/ca
+      imagePullSecrets:
+        - name: harbor-registry-secret
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001
+      volumes:
+        - name: registration-db-cluster-app
+          secret:
+            secretName: registration-db-cluster-app
+            defaultMode: 0600
+        - name: registration-db-cluster-ca
+          secret:
+            secretName: registration-db-cluster-ca
+            defaultMode: 0600

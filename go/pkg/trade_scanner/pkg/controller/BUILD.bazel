@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "controller",
+    srcs = ["controller.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/trade_scanner/pkg/controller",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/billing_common",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/trade_scanner/pkg/config",
+        "//go/pkg/tradecheck/tradecheckintel",
+    ],
+)

@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "bm-instance-operator.fullname" . }}-instance-baremetal-operator-manager-rolebinding
+  labels:
+  {{- include "bm-instance-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: bm-instance-operator-metal3-role
+subjects:
+- kind: ServiceAccount
+  name: '{{ include "bm-instance-operator.fullname" . }}'
+  namespace: '{{ .Release.Namespace }}'

@@ -1,0 +1,30 @@
+# This EnvoyFilter applies to traffic passing through the Istio Ingress Gateway.
+# It extracts the JWT, validates it, and adds the user's UUID to the x-jwt-user HTTP header.
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: jwt-to-header-filter
+  namespace: {{ .Release.Namespace }}
+spec:
+  workloadSelector:
+    labels:
+      istio: {{ .Values.istioIngressSelector }}
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+            subFilter:
+              name: "envoy.filters.http.router"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.lua
+        typed_config:
+          "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+          inlineCode: |
+            function envoy_on_request(request_handle)
+            end

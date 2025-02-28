@@ -1,0 +1,39 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-2204-jammy-v20221204
+spec:
+  displayName: Ubuntu 22.04 LTS (Jammy Jellyfish) v20221204
+  description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes:
+    - tiny
+    - medium
+    - large
+  md5sum: "c74d776cbdabbc5348592cf1b5086417"
+  sha256sum: "9a4aa5cd961c7229d0fa33cfa20b1b6f09c0134f9d9f4f171a775fc80ea0e4bd"
+  sha512sum: "cb54b1be5789e00cc86c080913994f5d5158fe1274dcfdca883b14018627520a878f5166ec1bcc68d82cd855b60803453229568f3d9feb734374dae45c2237eb"
+  virtualSizeBytes: 5242880000
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: OneAPI base kit
+      type: Software kit
+      version: "20.22.3"
+      description: core set of tools and libraries for developing high-performance, data-centric applications across diverse architectures.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20sthttps://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: ubuntu

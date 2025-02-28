@@ -1,0 +1,22 @@
+{
+    "metadata": {
+      "name": "load-vm-<<index>>"
+    },
+    "spec": {
+      "availabilityZone": "us-dev-1a",
+      "instanceType": "<<instance_type>>",
+      "machineImage": "<<machine_image>>",
+      "runStrategy": "RerunOnFailure",
+      "sshPublicKeyNames": [
+        "<<ssh-public-key-name>>"
+      ],
+      "interfaces": [
+        {
+          "name": "eth0",
+          "vNet": "us-dev-1a-default"
+        }
+      ]
+    }
+}
+
+

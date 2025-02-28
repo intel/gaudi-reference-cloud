@@ -1,0 +1,14 @@
+go_version: 1.23.2
+
+apt_packages:
+  - openssh-client
+  - libvirt-clients
+  - libvirt-daemon-system 
+  - virtinst 
+  - virt-manager
+  - ansible 
+  - ansible-lint
+  - python3-pip
+  - cloud-image-utils
+  - git
+  - unzip

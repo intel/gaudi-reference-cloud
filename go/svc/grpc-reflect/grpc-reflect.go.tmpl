@@ -1,0 +1,60 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+	"net"
+
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/conf"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/grpcutil"
+	_ "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/grpcutil/grpclog"
+
+	"google.golang.org/grpc/reflection"
+)
+
+type Config struct{
+	ListenPort uint16 `koanf:"listenPort"`
+	Deployment string `koanf:"deployment"`
+}
+
+var addr string
+var configFile string
+
+func init() {
+	flag.StringVar(&configFile, "config", "", "config file")
+}
+
+func main() {
+	flag.Parse()
+
+	if configFile == "" {
+		log.Fatal("specify --config")
+	}
+	cfg := Config{}
+	ctx:= context.Background()
+	if err := conf.LoadConfigFile(ctx, configFile, &cfg); err != nil {
+		log.Fatalf("%v: %v", configFile, err)
+	}
+
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.ListenPort))
+	if err != nil {
+		log.Fatalf("net.Listen: %v", err)
+	}
+	grpcServer, err := grpcutil.NewServer(ctx)
+	if err != nil {
+		log.Fatalf("grpcutil.NewServer: %v", err)
+	}
+{{- range .Services}}
+	if cfg.Deployment == "all" || cfg.Deployment == "{{.Deployment}}" {
+		pb.Register{{.Service}}Server(grpcServer, &pb.Unimplemented{{.Service}}Server{})
+	}
+{{- end}}
+	reflection.Register(grpcServer)
+	err = grpcServer.Serve(listener)
+	if err != nil {
+		log.Fatalf("grpcutil.Serve: %v", err)
+	}
+}

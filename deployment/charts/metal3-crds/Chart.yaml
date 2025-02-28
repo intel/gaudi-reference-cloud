@@ -1,0 +1,5 @@
+apiVersion: v2
+name: metal3-crds
+description: A Helm chart for Metal3 CRDs
+type: application
+version: 0.1.0

@@ -1,0 +1,40 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 5000
+grpcTls: 
+  certFile: cert.cert
+  keyFile: key.pem
+clusters:
+  - name: test
+    uuid: 00000000-0000-0000-0000-000000000000
+    type: Weka
+    labels:
+      label: value
+    location: testing
+    api:
+      type: REST
+      url: http://testing.localhost
+      caCertFile: caCert.crt
+    auth:
+      scheme: Basic
+      env: WEKA_CREDS
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: testfsgroup
+      backendFqdn: testing.localhost
+  - name: test2
+    uuid: 00000000-0000-0000-0000-000000000002
+    type: Weka
+    labels:
+      label: value2
+    location: testing2
+    api:
+      type: REST
+      url: http://testing.localhost
+    auth:
+      scheme: Bearer
+      file: password
+    wekaConfig:
+      tenantFsGroupName: testfsgroup
+      backendFqdn: testing.localhost

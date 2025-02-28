@@ -1,0 +1,118 @@
+{
+  "testEnv": "<<test-env>>",
+  "baseUrl": "",
+  "cloudAccount": "<<cloud-account>>",
+  "storage_creation_playload":{
+      "metadata": {
+        "description": "test-volume",
+        "name": "<<storage-name>>"
+      },
+      "spec": {
+        "Encrypted": true,
+        "accessModes": "ReadWrite",
+        "availabilityZone": "<<availability-zone>>",
+        "storageClass": "<<storage-class>>",
+        "filesystemType": "ComputeGeneral",
+        "instanceType": "storage-file",
+        "request": {
+          "storage": "<<storage-size>>"
+        }
+      }
+  },
+  "bucket_creation_payload":{
+      "metadata": {
+        "description": "test-bucket",
+        "name": "<<bucket-name>>"
+      },
+      "spec": {
+        "accessPolicy": "READ_WRITE",
+        "availabilityZone": "<<availability-zone>>",
+        "instanceType": "storage-object",
+        "request": {
+          "size": "10GB"
+        },
+        "versioned": true
+      }
+  },
+  "principal_creation_payload":{
+      "metadata": {
+        "name": "<<user-name>>"
+      },
+      "spec": [
+        {
+          "bucketId": "<<bucket-name>>",
+          "permission":["ReadBucket", "WriteBucket"],
+           "actions": ["GetBucketLocation"]
+        }
+      ]
+  },
+  "principal_update_policy_payload":{
+      "metadata": {
+        "name": "<<updated-user-name>>"
+      },
+      "spec": [
+        {
+          "actions": ["<<user-actions>>"],
+          "bucketId": "<<updated-bucket-name>>",
+          "permission": ["<<user-permissions>>"]
+        }
+      ]
+  },
+  "principal_update_policy_negative_payload":{
+    "metadata": {
+      "name": "<<updated-user-name>>"
+    },
+    "spec": []
+},
+  "principal_multi_update_policy_payload":{
+    "metadata": {
+      "name": "<<updated-user-name>>"
+    },
+    "spec": [
+      {
+        "actions": ["<<user-actions>>"],
+        "bucketId": "<<updated-bucket-name-1>>",
+        "permission": ["<<user-permissions>>"]
+      },
+      {
+        "actions": ["<<user-actions2>>"],
+        "bucketId": "<<updated-bucket-name-2>>",
+        "permission": ["<<user-permissions2>>"]
+      }
+
+    ]
+},
+  "rule_creation_payload":{
+    "metadata": {
+      "ruleName": "<<rule-name>>"
+    },
+    "spec": {
+      "prefix": "",
+      "expireDays": 1,
+      "noncurrentExpireDays": 1,
+      "deleteMarker": false
+    }
+},
+  "rule_invalid_payload":{
+    "metadata": {
+      "ruleName": "<<rule-name>>"
+    },
+    "spec": {
+      "prefix": "",
+      "expireDays": 1,
+      "noncurrentExpireDays": 1,
+      "deleteMarker": true
+    }
+  },
+  "rule_invalid_payload2":{
+    "metadata": {
+      "ruleName": "<<rule-name>>"
+    },
+    "spec": {
+      "prefix": "logs/",
+      "expireDays": 1,
+      "noncurrentExpireDays": 1,
+      "deleteMarker": true
+    }
+  }
+}

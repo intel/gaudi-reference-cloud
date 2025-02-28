@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-create-db-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: create-db
+        image: postgres:latest
+        env:
+        - name: POSTGRES_HOST
+          value: "{{ .Values.postgresql.host }}"
+        - name: POSTGRES_USER
+          value: "{{ .Values.postgresql.adminUser }}"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: {{ .Values.secret.adminPasswordKey }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d postgres --set=sslmode=require -a -f /docker-entrypoint-initdb.d/init-db.sql
+        volumeMounts:
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: init-script
+        configMap:
+          name: {{ .Release.Name }}-db-init-script
+      restartPolicy: Never
+  backoffLimit: 4

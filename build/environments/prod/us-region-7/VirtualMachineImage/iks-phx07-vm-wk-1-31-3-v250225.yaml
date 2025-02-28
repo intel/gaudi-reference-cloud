@@ -1,0 +1,14 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  labels:
+    harvesterhci.io/os-type: ubuntu
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/imageDisplayName: iks-phx07-vm-wk-1-31-3-v250225
+  name: iks-phx07-vm-wk-1-31-3-v250225
+  namespace: default
+spec:
+  checksum: b3c3bf7749722012f2debd82c798f93e265766bc7c394e3be32a653df130005723dd647ca414d0ae82b2bdbca8f02f1f48b81f657e4366e7e0267aa4ed81a594
+  displayName: iks-phx07-vm-wk-1-31-3-v250225
+  sourceType: download
+  url: http://10.153.84.12/vmaas/images/iks-phx07-vm-wk-1-31-3-v250225.qcow2

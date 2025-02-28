@@ -1,0 +1,24 @@
+- name: Fetch hostnames from IP addresses and store in variables
+  hosts: hosts
+  gather_facts: yes
+  vars_files:
+  - vars/common.yml
+  - vars/val-dir.yml
+
+  tasks:
+    - name: Fetch hostnames and IP addresses
+      set_fact:
+        host_info_dict: "{{ host_info_dict | default({}) | combine({hostvars[item].ansible_hostname: hostvars[item].ansible_default_ipv4.address}) }}"
+      loop: "{{ ansible_play_batch }}"
+
+    - name: Fetched Hostnames and IP(s)
+      delegate_to: localhost
+      debug:
+        var: host_info_dict
+
+    - name: Modify Ansible inventory
+      delegate_to: localhost
+      template:
+        src: "{{ hostfile_templates_dir }}/hosts_template.j2"
+        dest: "{{ ansible_inventory_path }}/hosts.yaml"
+

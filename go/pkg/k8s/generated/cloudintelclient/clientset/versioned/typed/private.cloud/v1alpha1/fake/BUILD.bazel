@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "fake",
+    srcs = [
+        "doc.go",
+        "fake_instance.go",
+        "fake_objectstore.go",
+        "fake_private.cloud_client.go",
+        "fake_sshproxytunnel.go",
+        "fake_storage.go",
+        "fake_vaststorage.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/cloudintelclient/clientset/versioned/typed/private.cloud/v1alpha1/fake",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/k8s/generated/cloudintelclient/clientset/versioned/typed/private.cloud/v1alpha1",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/labels",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/watch",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//testing",
+    ],
+)

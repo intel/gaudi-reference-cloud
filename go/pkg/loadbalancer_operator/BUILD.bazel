@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_container_image")
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "loadbalancer_operator_image",
+    entrypoint = ["/loadbalancer_operator"],
+    files = [
+        "//go/pkg/loadbalancer_operator/cmd:loadbalancer_operator",
+    ],
+    layers = ["//go/certs:intel_certs"],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

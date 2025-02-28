@@ -1,0 +1,8 @@
+{
+  "rancher": {
+    "url": "https://internal-placeholder.com",
+    "accessKey": "",
+    "secretKey": ""
+  },
+  "iks": {}
+}

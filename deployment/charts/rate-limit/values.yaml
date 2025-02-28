@@ -1,0 +1,120 @@
+replicaCount: 1
+
+image:
+  repository: amr-registry.caas.intel.com/cache/
+  name: envoyproxy/ratelimit
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 80b15778
+
+
+healthcheck:
+  enabled: true
+  readinessProbe:
+    httpGet:
+      path: /healthcheck
+      port: 8080
+    initialDelaySeconds: 45
+    periodSeconds: 30
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: /healthcheck
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+
+redis:
+  vaultCredentialsPath: controlplane/data/rate-limit-redis/credentials
+
+service:
+  rateLimit:
+    path: path
+    userId: user_id
+    method: method
+    shadowMode: true
+    any: "*"
+    unit: minute
+    requestsPerUnit: 30  
+  logLevel:
+    name: LOG_LEVEL
+    value: "info"
+  useStatsd:
+    name: USE_STATSD
+    value: "false"
+  usePrometheus:
+    name: USE_PROMETHEUS
+    value: "true"
+  redisType:
+    name: REDIS_TYPE
+    value: "cluster"
+  redisURL: 
+    name: REDIS_URL
+    value: "rate-limit-redis-0.rate-limit-redis-headless:6379,rate-limit-redis-1.rate-limit-redis-headless:6379,rate-limit-redis-2.rate-limit-redis-headless:6379,rate-limit-redis-3.rate-limit-redis-headless:6379,rate-limit-redis-4.rate-limit-redis-headless:6379,rate-limit-redis-5.rate-limit-redis-headless:6379"
+  redisPipelineWindow: 
+    name: REDIS_PIPELINE_WINDOW
+    value: "1ms"
+  redisPipelineLimit:
+    name: REDIS_PIPELINE_LIMIT
+    value: "10"
+  protocol:
+    name: REDIS_SOCKET_TYPE 
+    value: "tcp"
+  redisHealthCheck:
+    name: REDIS_HEALTH_CHECK_ACTIVE_CONNECTION
+    value: "true"
+  runTimeRoot: 
+    name: RUNTIME_ROOT
+    value: "/data/ratelimit"
+  runTimeSub:  
+    name: RUNTIME_SUBDIRECTORY
+    value: "config"
+  runTimeWatch: 
+    name: RUNTIME_WATCH_ROOT 
+    value: "true"
+  configType:  
+    name: CONFIG_TYPE
+    value: "FILE"
+  mergeDomain:  
+    name: MERGE_DOMAIN_CONFIG
+    value: "true"
+  cacheSize:  
+    name: LOCAL_CACHE_SIZE_IN_BYTES
+    value: "26214400"
+  volumeMounts:
+    name: config-volume
+    value: /data/ratelimit/config
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+  ports:
+    - protocol: TCP
+      name: grpc
+      port: 8081
+      targetPort: 8081
+    - protocol: TCP
+      name: metrics
+      port: 9090
+      targetPort: 9090
+    # - protocol: TCP
+    #   name: debug
+    #   port: 6070
+    #   targetPort: 6070
+
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+    # certFile: /vault/secrets/cert.pem
+    # caFile: /vault/secrets/ca.pem
+    # keyFile: /vault/secrets/cert.key
+  interval: 15s
+  scrapeTimeout: 15s

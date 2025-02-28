@@ -1,0 +1,300 @@
+---
+- name: Collect habana logs
+  gather_facts: true
+  hosts: hosts
+  vars_files:
+    - "vars/common.yml"
+
+  tasks:
+    - name: create directory
+      file:
+        path: /tmp/validation/logs/
+        state: directory
+        mode: '0775'
+        owner: sdp
+        group: sdp
+      become: true
+
+    - name: create logs directory
+      file:
+        path: "{{ hccl_demo_logs_dir }}"
+        state: directory
+        recurse: yes
+        mode: '0775'
+        owner: sdp
+        group: sdp
+      become: true
+
+    - name: check if cloud init instance data file exist
+      stat:
+        path: /run/cloud-init/instance-data.json
+      register: instance_data_file
+
+    - name: load instance data
+      slurp:
+        path: /run/cloud-init/instance-data.json
+      register: instance_data_json
+      when: instance_data_file.stat.exists
+
+    - name: load instance data
+      set_fact:
+        instance_data: "{{ instance_data_json.content | b64decode | from_json }}"
+      when: instance_data_file.stat.exists
+
+    - name: get BHM name(local_hostname)
+      set_fact:
+        bmh_name: "{{ instance_data.v1.local_hostname }}"
+      when: instance_data_file.stat.exists and instance_data.v1 is defined and instance_data.v1.local_hostname is defined
+
+    # use ansible host_name when bmh_name is not available
+    - name: get ansible hostname
+      set_fact:
+        bmh_name: "{{ ansible_hostname }}"
+      when: bmh_name is not defined
+
+    - name: print bmh_name
+      debug:
+        msg: "{{ bmh_name }}"
+
+    - name: check if habana_logs folder exist
+      stat:
+        path: /tmp/habana_logs
+      register: habana_logs_folder
+
+    - name: compress habana logs
+      archive:
+        path: /tmp/habana_logs
+        dest: "{{ hccl_demo_logs_dir }}{{ bmh_name }}_habana_logs.tar.gz"
+        format: gz
+        force_archive: true
+      when: habana_logs_folder.stat.exists and habana_logs_folder.stat.isdir
+      become: true
+
+    - name: collect kernel logs
+      shell: "dmesg -T | tee {{ hccl_demo_logs_dir }}/{{ bmh_name }}_dmesg.txt"
+      register: kernel_logs
+      become: yes
+      failed_when: kernel_logs.rc > 0
+
+    - name: compress kernel logs
+      archive:
+        path: "{{ hccl_demo_logs_dir }}/{{ bmh_name }}_dmesg.txt"
+        dest: "{{ hccl_demo_logs_dir }}/{{ bmh_name }}_dmesg.tar.gz"
+        format: gz
+        force_archive: true
+      when: kernel_logs.rc == 0
+      become: true
+
+    - name: change permission of the log files
+      file:
+        path: /tmp/validation/logs
+        state: directory
+        recurse: yes
+        owner: sdp
+        group: sdp
+        mode: 0775
+      become: true
+
+    - name: fetch habana logs file
+      fetch:
+        src:  "{{ hccl_demo_logs_dir }}/{{ bmh_name }}_habana_logs.tar.gz"
+        dest: "{{ hccl_demo_logs_dir }}"
+        flat: true
+
+    - name: fetch dmesg logs file
+      fetch:
+        src:  "{{ hccl_demo_logs_dir }}/{{ bmh_name }}_dmesg.tar.gz"
+        dest: "{{ hccl_demo_logs_dir }}"
+        flat: true
+      when: kernel_logs.rc == 0
+
+    - name: remove uncompressed kernel logs file
+      file:
+        path: "{{ hccl_demo_logs_dir }}/{{ bmh_name }}_dmesg.txt"
+        state: absent
+
+    - name: Get bmh IP address
+      set_fact:
+        bmh_ip_address: "{{ instance_data.ds.network_json['networks'][0].ip_address.split('/')[0] }}"
+      when: instance_data_file.stat.exists and instance_data.v1 is defined and instance_data.v1.local_hostname is defined
+
+    - name: Print bmh_ip_address
+      debug:
+        msg: "{{ bmh_ip_address }}"
+
+    - name: Fetch hostnames and IPs for all nodes
+      set_fact:
+        ip_to_bmh_map: "{{ ip_to_bmh_map | default({}) | combine({hostvars[item].bmh_ip_address: hostvars[item].bmh_name}) }}"
+      loop: "{{ ansible_play_batch }}"
+      run_once: true
+      delegate_to: localhost
+
+    - name: Print ip_to_bmh_map
+      debug:
+        msg: "{{ ip_to_bmh_map }}"
+      run_once: true
+      delegate_to: localhost
+    
+    - name: Check if hccl_demo_logs folder exist
+      stat:
+        path: "{{ ighs_files_dir }}/hccl_demo_logs"
+      register: hccl_demo_logs_folder
+    
+    - name: Fetch the L1 summary from IGHS test
+      slurp:
+        src: "{{ ighs_files_dir }}/hccl_demo_logs/ighs_L1_summary.json"
+      register: ighs_L1_summary
+      delegate_to: localhost
+
+    - name: Parse JSON L1 summary data
+      set_fact:
+        parsed_L1_json: "{{ ighs_L1_summary.content | b64decode | from_json }}"
+
+    - name: Convert IPs in each array to hostnames in L1 summary
+      set_fact:
+        parsed_L1_json: "{{ parsed_L1_json | combine({ item.key: converted_value }) }}"
+      loop: "{{ parsed_L1_json | dict2items }}"
+      vars:
+        converted_value: >-
+          {% if item.value is iterable %}
+          {{ item.value | map('extract', ip_to_bmh_map) | list }}
+          {% else %}
+          {{ item.value }}
+          {% endif %}
+
+    - name: Verify the IP are changed into hostnames in L1 summary
+      debug:
+        var: parsed_L1_json
+
+    - name: Print L1 summary result
+      debug:
+        msg: "{{ parsed_L1_json }}"
+    
+    - name: Fetch the L2 summary from IGHS test
+      slurp:
+        src: "{{ ighs_files_dir }}/hccl_demo_logs/ighs_L2_summary.json"
+      register: ighs_L2_summary
+      delegate_to: localhost
+
+    - name: Parse JSON L2 summary data
+      set_fact:
+        parsed_L2_json: "{{ ighs_L2_summary.content | b64decode | from_json }}"
+    
+    - name: Print L2 summary result
+      debug:
+        msg: "{{ ighs_L2_summary }}"
+
+    - name: Convert IPs in each array to hostnames in L2 summary
+      set_fact:
+        parsed_L2_json: "{{ parsed_L2_json | combine({ item.key: converted_value }) }}"
+      loop: "{{ parsed_L2_json | dict2items }}"
+      vars:
+        converted_value: >-
+          {% if item.value is iterable %}
+          {{ item.value | map('extract', ip_to_bmh_map) | list }}
+          {% else %}
+          {{ item.value }}
+          {% endif %}
+
+    - name: Verify the IP are changed into hostnames
+      debug:
+        var: parsed_L2_json
+    
+    - name: Combine L1 and L2 tests summary into testResult
+      set_fact:
+        testResult: |
+          {
+            "IGHS Level 1 (IGHS - Node Health)": {{ parsed_L1_json | to_nice_json }},
+            "IGHS Level 2 (HCCL Demo - Node Connectivity)": {{ parsed_L2_json | to_nice_json }}
+          }
+
+    - name: Print testResult
+      debug:
+        msg: "{{ testResult }}"
+    
+    - name: Report testResult to the validation_result meta file
+      lineinfile:
+        path: "/tmp/validation_result.meta"
+        line: "testResult={{ testResult }}"
+        insertafter: EOF
+      become: yes
+      delegate_to: localhost
+
+    - name: Store infected array values in failedNodes
+      set_fact:
+        failedNodes: "{{ parsed_L2_json.infected | from_yaml | join(',') }}"
+
+    - name: Debug the failedNodes variable
+      debug:
+        var: failedNodes
+
+    - name: Report failedNodes to the validation_result meta file
+      lineinfile:
+        path: "/tmp/validation_result.meta"
+        line: "failedNodes={{ failedNodes }}"
+        insertafter: EOF
+      become: yes
+      delegate_to: localhost
+
+    - name: Fetch log files with json and log extensions
+      find:
+        paths: "{{ ighs_files_dir }}/hccl_demo_logs/L1"
+        file_type: file
+        patterns: "{{ item }}"
+      register: file_list
+      loop:
+        - '*.json'
+        - '*.log'
+      delegate_to: localhost
+
+    - name: Extract and store paths in log_paths_list
+      set_fact:
+        log_paths_list: "{{ log_paths_list | default([]) + [item.path] }}"
+      loop: "{{ file_list.results | map(attribute='files') | flatten(levels=1) }}"
+      delegate_to: localhost
+
+    - name: Print log_paths_list
+      debug:
+        msg: "{{ log_paths_list }}"
+      delegate_to: localhost
+
+    - name: Iterate over the list of paths and replace IP with hostname for debugging
+      set_fact:
+        log_updated_paths: "{{ log_updated_paths | default([]) + [{'src': item, 'dest': item | replace(extracted_ip, ip_to_bmh_map[extracted_ip])}] }}"
+      loop: "{{ log_paths_list }}"
+      vars:
+        extracted_ip: "{{ item | regex_search('([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})') }}"
+      delegate_to: localhost
+
+    - name: Print log_updated_paths
+      debug:
+        msg: "{{ log_updated_paths }}"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Copy and rename files from IP-based names to hostname-based names
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        remote_src: yes
+      loop: "{{ log_updated_paths }}"
+      delegate_to: localhost
+    
+    - name: Delete original files with IP in their names
+      file:
+        path: "{{ item.src }}"
+        state: absent
+      loop: "{{ log_updated_paths }}"
+      delegate_to: localhost
+
+    - name: compress hccl-demo logs
+      archive:
+        path: "{{ ighs_files_dir }}/hccl_demo_logs"
+        dest: "{{ hccl_demo_logs_dir }}/hccl_demo_logs.tar.gz"
+        format: gz
+        force_archive: true
+      when: hccl_demo_logs_folder.stat.exists and hccl_demo_logs_folder.stat.isdir
+      become: true
+      delegate_to: localhost
+  vars:
+    hccl_demo_logs_dir: /tmp/validation/logs/ighs_hccl_demo_logs/

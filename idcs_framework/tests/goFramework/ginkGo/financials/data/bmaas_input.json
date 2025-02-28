@@ -1,0 +1,51 @@
+{
+  "baseUrl": "http://localhost:80",
+
+  "cloudaccount_payload": {
+
+  },
+
+  "metering_search_payload": {
+    "resourceId": "<<resourceId>>",
+    "cloudAccountId": "<<cloudAccountId>>"
+  },
+
+  "vnet_payload": {
+    "metadata": {
+      "name": "<<vnet-name>>"
+    },
+    "spec": {
+      "region": "us-dev-1",
+      "availabilityZone": "us-dev-1a",
+      "prefixLength": 23
+    }
+  },
+
+  "sshpublickey_payload": {
+    "metadata": {
+      "name": "<<ssh-key-name>>"
+    },
+    "spec": {
+      "sshPublicKey": "<<ssh-user-public-key>>"
+    }
+  },
+
+  "instance_payload": {
+    "metadata": {
+      "name": "<<instance-name>>"
+    },
+    "spec": {
+      "availabilityZone": "us-dev-1a",
+      "instanceType": "<<instance-type>>",
+      "machineImage": "<<machine-image>>",
+      "runStrategy": "RerunOnFailure",
+      "sshPublicKeyNames": ["<<ssh-public-key>>"],
+      "interfaces": [
+        {
+          "name": "eth0",
+          "vNet": "<<vnet-name>>"
+        }
+      ]
+    }
+  }
+}

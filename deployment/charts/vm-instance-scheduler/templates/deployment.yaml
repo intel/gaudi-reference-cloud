@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "vm-instance-scheduler.fullname" . }}
+  labels:
+  {{- include "vm-instance-scheduler.labels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vm-instance-scheduler.fullname" . }}
+  labels:
+    app.kubernetes.io/component: manager
+    app.kubernetes.io/created-by: vm-instance-scheduler
+    app.kubernetes.io/part-of: vm-instance-scheduler
+    control-plane: controller-manager
+  {{- include "vm-instance-scheduler.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.controllerManager.replicas }}
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+    {{- include "vm-instance-scheduler.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+      {{- include "vm-instance-scheduler.selectorLabels" . | nindent 8 }}
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-containers: "manager"
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        {{- $path := .Values.vault.agent.inject.secret.path }}
+        {{- range $clusterId := .Values.clusterIds }}
+        vault.hashicorp.com/agent-inject-secret-{{ $clusterId }}.hconf: {{ $path }}/harvester_kubeconfig_{{ $clusterId }}
+        vault.hashicorp.com/agent-inject-template-{{ $clusterId }}.hconf: |-
+          {{`{{- with secret `}}"{{ $path }}/harvester_kubeconfig_{{ $clusterId }}"{{` -}}`}}
+          {{`{{ .Data.data.kubeconfig `}}}}
+          {{`{{- end }}`}}
+        {{- end }}
+        {{- range $clusterId := .Values.kubeVirtClusterIds }}
+        vault.hashicorp.com/agent-inject-secret-{{ $clusterId }}.kconf: {{ $path }}/kubeconfig_{{ $clusterId }}
+        vault.hashicorp.com/agent-inject-template-{{ $clusterId }}.kconf: |-
+          {{`{{- with secret `}}"{{ $path }}/kubeconfig_{{ $clusterId }}"{{` -}}`}}
+          {{`{{ .Data.data.kubeconfig `}}}}
+          {{`{{- end }}`}}
+        {{- end }}
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/configmap: {{ include (print $.Template.BasePath "/manager-config.yaml") . | sha256sum }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - arm64
+                - ppc64le
+                - s390x
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
+      containers:
+      - args:
+        - --config=controller_manager_config.yaml
+        - --health-probe-bind-address=:8081
+        - --metrics-bind-address={{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress }}
+        {{- include "idc-common.logArgs" . | nindent 8 }}
+        - -logtostderr
+        - "-v={{ .Values.log.verbosity }}"
+        command:
+        - /vm_instance_scheduler
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        {{- include "idc-common.commonEnv" . | nindent 8 }}
+        {{- include "idc-common.otelEnv" . | nindent 8 }}
+        image: {{ .Values.controllerManager.manager.image.repository }}:{{ .Values.controllerManager.manager.image.tag
+          | default .Chart.AppVersion }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        ports:
+        - containerPort: 8080
+          name: grpc
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources: {{- toYaml .Values.controllerManager.manager.resources | nindent 10
+          }}
+        securityContext:
+        {{- include "idc-common.securityContext" . | nindent 12 }}
+        volumeMounts:
+        - mountPath: /controller_manager_config.yaml
+          name: manager-config
+          subPath: controller_manager_config.yaml
+          readOnly: true
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://{{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress }}/
+        - --logtostderr=true
+        - --v=0
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.controllerManager.kubeRbacProxy.image.repository }}:{{ .Values.controllerManager.kubeRbacProxy.image.tag
+          | default .Chart.AppVersion }}
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        resources: {{- toYaml .Values.controllerManager.kubeRbacProxy.resources | nindent
+          10 }}
+        securityContext:
+        {{- include "idc-common.securityContext" . | nindent 12 }}
+      serviceAccountName: {{ include "vm-instance-scheduler.fullname" . }}
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - configMap:
+          name: {{ include "vm-instance-scheduler.fullname" . }}-manager-config
+        name: manager-config
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

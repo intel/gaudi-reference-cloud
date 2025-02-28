@@ -1,0 +1,43 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Ilb
+metadata:
+  labels:
+    app.kubernetes.io/name: ilb
+    app.kubernetes.io/instance: ilb-sample
+    app.kubernetes.io/part-of: ilb
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: ilb
+  name: ilb-sample
+spec:
+  # TODO(user): Add fields here
+  vip:
+    name: "test-ilb-vip-443"
+    description: "This is a test ilb with params"
+    port: 443
+    iptype: "private"
+    persist: "i_client_ip_5min"
+    ipprotocol: "tcp"
+    environment: 11
+    usergroup: 1545
+  pool:
+    name: "test-ilb-pool-443"
+    description: "This is test ilb pool with params"
+    port: 443
+    environment: 11
+    usergroup: 1545
+    loadbalancingmode: "least-connections-member"
+    minactivemembers: 1
+    monitor: "i_tcp"
+    members:
+    - ip: "10.65.36.5"
+      connectionLimit: 100
+      priorityGroup: 0
+      ratio: 1
+      adminState: "enabled"
+    - ip: "10.65.36.6"
+      connectionLimit: 100
+      priorityGroup: 0
+      ratio: 1
+      adminState: "enabled"

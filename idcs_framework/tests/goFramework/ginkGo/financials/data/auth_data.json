@@ -1,0 +1,36 @@
+{
+  "adminAuthConfig": {
+    "useranme": "",
+    "password": "",
+    "clientSecret": "",
+    "client_id": "",
+    "redirectUri": "http://localhost:8000/",
+    "redirectPort": "8000",
+    "scope": "",
+    "authEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/authorize",
+    "tokenEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/token"
+  },
+  "authConfig": {
+    "userAccounts": [
+      {
+        "email": "",
+        "password": ""
+      },
+      {
+        "email": "",
+        "password": ""
+      },
+      {
+        "email": "",
+        "password": ""
+      }
+    ],
+    "clientSecret": "",
+    "client_id": "",
+    "redirectUri": "http://localhost:3000/",
+    "redirectPort": "3000",
+    "scope": "",
+    "authEndPoint": "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/authorize",
+    "tokenEndPoint": "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/token"
+  }
+}

@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "netbox",
+    srcs = [
+        "netboxclient.go",
+        "netboxclientv3.go",
+        "netboxclientv4.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/pkg/netbox",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/sdn-controller/pkg/utils",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_jerryzhen01_go_netbox_v4//:go-netbox",
+        "@com_github_netbox_community_go_netbox_v3//:go-netbox",
+    ],
+)

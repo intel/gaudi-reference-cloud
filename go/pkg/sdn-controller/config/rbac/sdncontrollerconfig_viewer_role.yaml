@@ -1,0 +1,29 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# permissions for end users to view sdncontrollerconfigs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: sdncontrollerconfig-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: sdn-controller
+    app.kubernetes.io/part-of: sdn-controller
+    app.kubernetes.io/managed-by: kustomize
+  name: sdncontrollerconfig-viewer-role
+rules:
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - sdncontrollerconfigs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - sdncontrollerconfigs/status
+  verbs:
+  - get

@@ -1,0 +1,200 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+//
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://protobuf.dev/programming-guides/proto3/
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+import "fleet_common.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "fleet-admin-ui-server";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+service FleetAdminUIService {
+  // Add a CloudAccount to a ComputeNode Pool that the CloudAccount is allowed to launch instances in.
+  rpc AddCloudAccountToComputeNodePool(AddCloudAccountToComputeNodePoolRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/fleetadmin/computenodepools/{poolId}/cloudaccounts"
+      body: "*"
+    };
+  };
+  // Delete a CloudAccount from the compute node pool
+  rpc DeleteCloudAccountFromComputeNodePool(DeleteCloudAccountFromComputeNodePoolRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/fleetadmin/computenodepools/{poolId}/cloudaccounts/{cloudAccountId}"
+    };
+  };
+  // Ping returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/fleetadmin/ping"
+    };
+  };
+  
+  // Get the list of compute nodes
+  rpc SearchNodes(SearchNodesRequest) returns (SearchNodesResponse) {
+    option (google.api.http) = {
+      get: "/v1/fleetadmin/nodes"
+    };
+  };
+  // Update the compute node
+  rpc UpdateNode(UpdateNodeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/fleetadmin/nodes/{nodeId}"
+      body: "*"
+    };
+  };
+  // Get the list of compute node pools
+  rpc SearchComputeNodePoolsForNodeAdmin(google.protobuf.Empty) returns (SearchComputeNodePoolsForNodeAdminResponse) {
+    option (google.api.http) = {
+      get: "/v1/fleetadmin/computenodepools"
+    };
+  };
+  // Update the pool
+  rpc PutComputeNodePool(PutComputeNodePoolRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/fleetadmin/computenodepools/{poolId}"
+      body: "*"
+    };
+  };
+  // Get the list of compute node pools that are allowed to be managed by current user's AGS entitlement.
+  rpc SearchComputeNodePoolsForPoolAccountManager(google.protobuf.Empty) returns (SearchComputeNodePoolsForPoolAccountManagerResponse) {
+    option (google.api.http) = {
+      get: "/v1/fleetadmin/accountmanagercomputenodepools"
+    };
+  };
+  // Get the list of cloudaccounts
+  rpc SearchCloudAccountsForComputeNodePool(SearchCloudAccountsForComputeNodePoolRequest) returns (SearchCloudAccountsForComputeNodePoolResponse) {
+    option (google.api.http) = {
+      get: "/v1/fleetadmin/computenodepools/{poolId}/cloudaccounts"
+    };
+  };
+
+// Get the InstanceType Stats for Node(s)
+rpc SearchInstanceTypeStatsForNode(SearchInstanceTypeStatsForNodeRequest) returns (SearchInstanceTypeStatsForNodeResponse) {
+  option (google.api.http) = {
+    get: "/v1/fleetadmin/nodes/instancetypestats"
+    additional_bindings {
+      get: "/v1/fleetadmin/nodes/{nodeId}/instancetypestats"
+    }
+  };
+};
+}
+
+message AddCloudAccountToComputeNodePoolRequest {
+  string cloudAccountId = 1;
+  string poolId = 2;
+  string createAdmin = 3;
+}
+
+
+message SearchNodesRequest {
+  // If not empty, only nodes in this pool will be returned.
+  optional string poolId = 1;
+}
+
+message SearchNodesResponse {
+  message ComputeNode {
+    string nodeName = 1;
+    string availabilityZone = 2;
+    repeated string instanceTypes = 3;
+    repeated string poolIds = 4;
+    float percentageResourcesUsed = 5;
+    string region = 6;
+    string clusterId = 7;
+    string namespace = 8;
+    int32 nodeId = 9;
+  }
+
+  repeated ComputeNode computeNodes = 1;
+}
+
+message UpdateNodeRequest {
+  OverridePoliciesAndValues instanceTypesOverride = 1;
+  // Each value is a poolId.
+  OverridePoliciesAndValues computeNodePoolsOverride = 2;
+  int32 nodeId = 3;
+  string region = 4;
+  string availabilityZone = 5;
+}
+
+message OverridePoliciesAndValues {
+  bool overridePolicies = 1;
+  repeated string overrideValues = 2;
+}
+
+message SearchComputeNodePoolsForNodeAdminResponse {
+  repeated ComputeNodePool computeNodePools = 1;
+}
+
+message ComputeNodePool {
+  string poolId = 1;
+  string poolName = 2;
+  int32 numberOfNodes = 3;
+  string poolAccountManagerAgsRole = 4;
+}
+
+message PutComputeNodePoolRequest {
+  string poolId = 1;
+  string poolName = 2;
+  string poolAccountManagerAgsRole = 3;
+  
+}
+
+message SearchComputeNodePoolsForPoolAccountManagerResponse {
+  repeated ComputeNodePoolForPoolAccountManager ComputeNodePoolsForPoolAccountManager = 1;
+}
+
+message ComputeNodePoolForPoolAccountManager {
+  string poolId = 1;
+  string poolName = 2;
+}
+
+message SearchCloudAccountsForComputeNodePoolRequest {
+  string poolId = 1;
+}
+
+message SearchCloudAccountsForComputeNodePoolResponse {
+  repeated CloudAccountForComputeNodePool CloudAccountsForComputeNodePool = 1;
+}
+
+message CloudAccountForComputeNodePool {
+  string cloudAccountId = 1;
+  string poolId = 2;
+  string createAdmin = 3;
+}
+message DeleteCloudAccountFromComputeNodePoolRequest {
+  string poolId = 1;
+  string cloudAccountId = 2;
+}
+
+message SearchInstanceTypeStatsForNodeRequest {
+  int32 nodeId = 1;
+}
+
+message SearchInstanceTypeStatsForNodeResponse {
+  repeated NodeInstanceTypeStats NodeInstanceTypeStats = 1;
+}
+
+message NodeInstanceTypeStats {
+  int32 nodeId = 1;
+  repeated InstanceTypeStats InstanceTypeStats = 2;
+}
+
+message InstanceTypeStats {
+  string instanceType = 1;
+  int32 runningInstances = 2;
+  int32 maxNewInstances = 3;
+}

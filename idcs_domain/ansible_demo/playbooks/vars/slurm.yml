@@ -1,0 +1,7 @@
+namespace: "my-project-123456"
+cluster_name: "slurm"
+controller_names: ["{{ cluster_name }}-controller-0"]
+num_workers: 11
+ssh_proxy_host: "10.165.62.252"
+ssh_proxy_user: "guest"
+force_clean: false

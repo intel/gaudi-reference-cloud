@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    database:
+      maxIdleConnectionCount: {{ .Values.dbMaxIdleConnectionCount | quote }}
+      passwordFile: /vault/secrets/db_password
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+    listenPort: {{ include "idc-common.listenPort" . }}
+    region: {{ .Values.region }}
+    availabilityZones:
+      {{- toYaml .Values.availabilityZones | nindent 8 }}
+    cloudaccountServerAddr: {{ .Values.cloudaccountServerAddr | quote }}

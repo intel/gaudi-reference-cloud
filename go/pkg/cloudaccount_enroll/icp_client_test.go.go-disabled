@@ -1,0 +1,157 @@
+package cloudaccount_enroll
+
+import (
+	"context"
+	"strconv"
+	"testing"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/jarcoal/httpmock"
+)
+
+func TestICPClientGetCurrentToken(t *testing.T) {
+	ctx := context.Background()
+
+	icpCfg, err := getICPConfig()
+	if err != nil {
+		t.Fatal("Failed to get ICP Config")
+	}
+
+	icpClient := &ICPClientImpl{
+		client: resty.New(),
+		cfg:    icpCfg,
+	}
+	tokenUrl := icpClient.cfg.URL.JoinPath("v1", "auth", "token")
+	//- Test for get Token.
+	//setup Mock
+	httpmock.ActivateNonDefault(icpClient.client.GetClient())
+	responder := httpmock.NewJsonResponderOrPanic(200, createMockICPToken())
+	httpmock.RegisterResponder("POST", tokenUrl.String(), responder)
+
+	// invoke and verify
+	token, err := icpClient.getCurrentToken(ctx)
+	if err != nil {
+		t.Fatal("Get Current token should not throw an error.")
+	}
+	if token == "" {
+		t.Fatal("Token parsing failed")
+	}
+
+	//Invoke again and verify if it is cached.
+	// Note: mock is not configured to return for second get token invocation..
+	newToken, err := icpClient.getCurrentToken(ctx)
+	if err != nil {
+		t.Fatal("Get Current token should not throw an error.")
+	}
+	if newToken != token {
+		t.Fatal("Token expected to be cached")
+	}
+}
+
+func TestICPClientGetCurrentTokenError(t *testing.T) {
+	ctx := context.Background()
+
+	icpCfg, err := getICPConfig()
+	if err != nil {
+		t.Fatal("Failed to get ICP Config")
+	}
+	icpClient := &ICPClientImpl{
+		client: resty.New(),
+		cfg:    icpCfg,
+	}
+	tokenUrl := icpClient.cfg.URL.JoinPath("v1", "auth", "token")
+	//- Test for get Token.
+	//setup Mock
+	httpmock.ActivateNonDefault(icpClient.client.GetClient())
+	responder := httpmock.NewJsonResponderOrPanic(500, nil)
+	httpmock.RegisterResponder("POST", tokenUrl.String(), responder)
+
+	// invoke and verify
+	_, err = icpClient.getCurrentToken(ctx)
+	if err == nil {
+		t.Fatal("Get Current token should throw an error.")
+	}
+}
+
+func TestICPClientIsEnterprisePending(t *testing.T) {
+	ctx := context.Background()
+
+	icpCfg, err := getICPConfig()
+	if err != nil {
+		t.Fatal("Failed to get ICP Config")
+	}
+
+	icpClient := &ICPClientImpl{
+		client: resty.New(),
+		cfg:    icpCfg,
+	}
+	tokenUrl := icpClient.cfg.URL.JoinPath("v1", "auth", "token")
+	clearCacheURL := icpClient.cfg.URL.JoinPath("m2r", "v1", "customers", "profile", "cache")
+	detailsURL := icpClient.cfg.URL.JoinPath("m2r", "v1", "customers", "profile")
+	email := "test@test.com"
+	oid := "oid1"
+	inputPersonId := 123
+
+	//setup Mock
+	httpmock.ActivateNonDefault(icpClient.client.GetClient())
+	tokenResponder := httpmock.NewJsonResponderOrPanic(200, createMockICPToken())
+	httpmock.RegisterResponder("POST", tokenUrl.String(), tokenResponder)
+
+	clearCacheResponder := httpmock.NewJsonResponderOrPanic(200, map[string]string{}).Times(2)
+	httpmock.RegisterResponder("PATCH", clearCacheURL.String(), clearCacheResponder)
+	getDetailsResponder := httpmock.NewJsonResponderOrPanic(200, createDetailsValue(inputPersonId))
+	httpmock.RegisterResponder("POST", detailsURL.String(), getDetailsResponder)
+
+	// invoke and verify
+	isEnterprisePending, personId, err := icpClient.IsEnterprisePending(ctx, email, oid)
+
+	if err != nil {
+		t.Fatal("isEnterprisePending should not throw an error.")
+	}
+	if personId != strconv.Itoa(inputPersonId) {
+		t.Fatal("Incorrect person id returned")
+	}
+	if isEnterprisePending {
+		t.Fatal("Expected false for enterprisePending")
+	}
+
+	// setup mock to simulate error
+	getDetailsErrorResponder := httpmock.NewJsonResponderOrPanic(401, nil)
+	httpmock.RegisterResponder("POST", detailsURL.String(), getDetailsErrorResponder)
+
+	// invoke and verify
+	_, _, err = icpClient.IsEnterprisePending(ctx, email, oid)
+	if err == nil {
+		t.Fatal("isEnterprisePending should throw an error.")
+	}
+
+	// setup mock to simulate error while clearing cache.
+	clearCacheResponder = httpmock.NewJsonResponderOrPanic(500, nil)
+	httpmock.RegisterResponder("PATCH", clearCacheURL.String(), clearCacheResponder)
+	// invoke and verify
+	_, _, err = icpClient.IsEnterprisePending(ctx, email, oid)
+	if err == nil {
+		t.Fatal("isEnterprisePending should throw an error.")
+	}
+}
+
+func createMockICPToken() map[string]string {
+	return map[string]string{
+		"access_token":   generateJWT(map[string]string{}),
+		"token_type":     "Bearer",
+		"expires_in":     "3599",
+		"ext_expires_in": "3599",
+	}
+}
+
+func createDetailsValue(personid int) accountResponse {
+
+	return accountResponse{
+		ClientUUID:   "client UID",
+		InternalUUID: "internal UID",
+		PersonBasicProfile: details{PersonBasicProfileDetails: personBasicProfileDetails{
+			PersonId:     personid,
+			EnterpriseId: "ent-01",
+		}},
+	}
+}

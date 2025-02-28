@@ -1,0 +1,52 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "controllers",
+    srcs = ["vm_instance_controller.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_operator/vm/controllers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_operator/controllers",
+        "//go/pkg/instance_operator/util",
+        "//go/pkg/instance_operator/vm/builder",
+        "//go/pkg/instance_operator/vm/util",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/k8s/generated/clientset/versioned",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/tools/k8s",
+        "//go/pkg/utils",
+        "@com_github_k8snetworkplumbingwg_network_attachment_definition_client//pkg/apis/k8s.cni.cncf.io/v1:k8s_cni_cncf_io",
+        "@com_github_k8snetworkplumbingwg_network_attachment_definition_client//pkg/client/clientset/versioned",
+        "@in_gopkg_yaml_v2//:yaml_v2",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_api//rbac/v1:rbac",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/builder",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/cluster",
+        "@io_k8s_sigs_controller_runtime//pkg/handler",
+        "@io_k8s_sigs_controller_runtime//pkg/reconcile",
+        "@io_k8s_sigs_controller_runtime//pkg/source",
+        "@io_kubevirt_api//core/v1:core",
+    ],
+)
+
+go_test(
+    name = "controllers_test",
+    srcs = ["vm_instance_controller_test.go"],
+    embed = [":controllers"],
+    deps = [
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

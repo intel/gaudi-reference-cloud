@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netbox-filters-cm
+data:
+  netbox_provider_servers_filter.json: |
+    {{ .Values.netbox.providerServersFilter | toJson | indent 4 }} 
+  netbox_provider_interfaces_filter.json: |
+    {{ .Values.netbox.providerInterfacesFilter | toJson | indent 4 }} 
+  switches_filter.json: |
+    {{ .Values.netbox.switchesFilter | toJson | indent 4 }} 

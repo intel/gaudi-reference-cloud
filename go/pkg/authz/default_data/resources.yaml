@@ -1,0 +1,79 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- type: cloudaccount
+  allowedactions: []
+- type: filestorage
+  description: File Storage
+  allowedactions:
+  - name: create
+    type: collection
+    description: Create a new file storage
+  - name: search
+    type: collection
+    description: List or search for file storage
+  - name: get
+    type: resource
+    description: Get a file storage
+  - name: update
+    type: resource
+    description: Update a file storage
+  - name: delete
+    type: resource
+    description: Delete a file storage
+  - name: getuser
+    type: resource
+    description: Get a user of a file storage
+- type: objectstorage
+  description: Object Storage
+  allowedactions:
+  - name: create
+    type: collection
+    description: Create a new object storage
+  - name: search
+    type: collection
+    description: List or search for object storage
+  - name: get
+    type: resource
+    description: Get an object storage
+  - name: delete
+    type: resource
+    description: Delete an object storage
+  - name: createprincipal
+    type: resource
+    description: Create a new principal user for an object storage
+  - name: updateprincipal
+    type: resource
+    description: Update a principal user of an object storage
+  - name: deleteprincipal
+    type: resource
+    description: Delete a principal user of an object storage
+- type: lifecyclerule
+  description: Object Storage Lifecycle Rule
+  allowedactions:
+  - name: create
+    type: collection
+    description: Create a new lifecycle rule
+  - name: search
+    type: collection
+    description: List or search for lifecycle rules
+  - name: get
+    type: resource
+    description: Get a lifecycle rule
+  - name: update
+    type: resource
+    description: Update a lifecycle rule
+  - name: delete
+    type: resource
+    description: Delete a lifecycle rule
+- type: principal
+  description: Object Storage Principal
+  allowedactions:
+  - name: search
+    type: collection
+    description: List or search for principals
+  - name: get
+    type: resource
+    description: Get a principal
+  - name: updatecreds
+    type: resource
+    description: Update principal credentials

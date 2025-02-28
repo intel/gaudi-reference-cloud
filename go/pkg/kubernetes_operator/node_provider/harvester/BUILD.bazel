@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "harvester",
+    srcs = ["provider.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/kubernetes_operator/node_provider/harvester",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_operator/vm/builder",
+        "//go/pkg/k8s/generated/clientset/versioned/typed/kubevirt.io/v1:kubevirt_io",
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/kubernetes_operator/node_provider",
+        "@com_github_pborman_uuid//:uuid",
+        "@com_github_pkg_errors//:errors",
+        "@com_github_rancher_norman//clientbase",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_utils//pointer",
+        "@io_kubevirt_api//core/v1:core",
+    ],
+)

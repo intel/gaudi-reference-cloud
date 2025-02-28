@@ -1,0 +1,33 @@
+# permissions for end users to view storage-operators.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: object-store-operator-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: object-store-operator
+    app.kubernetes.io/part-of: object-store-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: object-store-operator-viewer-role
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - object-store-operators
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - cloud.intel.com
+  resources:
+  - object-store-operators/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

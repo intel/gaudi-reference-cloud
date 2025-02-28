@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}-authzlogs
+  namespace: {{ include "idc-common.namespace" . }}
+data:
+  authzlogs.rego: |
+    package system.log
+
+
+    mask[{"op": "upsert", "path": "/input/attributes/request/http/headers/authorization", "value": x}] {
+        input.input.attributes.request.http.headers["authorization"]
+        x := "Bearer **REDACTED**"
+    }
+
+    mask[{"op": "upsert", "path": "/input/attributes/request/http/headers/grpcgateway-authorization", "value": x}] {
+        input.input.attributes.request.http.headers["grpcgateway-authorization"]
+        x := "Bearer **REDACTED**"
+    }
+
+    mask[{"op": "upsert", "path": "/input/parsed_body/invites/memberEmail", "value": x}] {
+       input.input.parsed_body.invites.memberEmail
+        x := "**REDACTED**"
+    }
+
+    mask[{"op": "upsert", "path": "/input/parsed_body/memberEmail", "value": x}] {
+        input.input.parsed_body.memberEmail
+        x := "**REDACTED**"
+    }
+    
+    mask[{"op": "upsert", "path": "/input/parsed_body/email", "value": x}] {
+        input.input.parsed_body.email
+        x := "**REDACTED**"
+    }

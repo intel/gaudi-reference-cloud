@@ -1,0 +1,32 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "bucket_test.go",
+        "bucket_user_test.go",
+        "client_test.go",
+        "cluster_test.go",
+        "filesystem_test.go",
+        "filesystem_vast_test.go",
+        "lifecycle_test.go",
+        "namespace_test.go",
+        "statefulagent_test.go",
+        "suite_test.go",
+        "user_test.go",
+    ],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/storage/storagecontroller",
+        "//go/pkg/storage/storagecontroller/api:go_proto",
+        "//go/pkg/storage/storagecontroller/api/vast:go_proto",
+        "//go/pkg/storage/storagecontroller/api/weka:go_proto",
+        "//go/pkg/storage/storagecontroller/test/mocks",  # keep
+        "//go/pkg/storage/storagecontroller/test/vastmocks",
+        "@com_github_golang_mock//gomock",
+        "@com_github_onsi_ginkgo//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

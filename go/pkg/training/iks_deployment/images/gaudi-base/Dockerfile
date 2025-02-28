@@ -1,0 +1,128 @@
+FROM icir.cps.intel.com/idc-training/trainings/training-base:0.1.0@sha256:747e7986e48b9679c88dab984e38cbaa8fcde108a22657e8a9585f6555ca20af
+
+ARG ARTIFACTORY_URL
+ARG VERSION
+ARG REVISION
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV GC_KERNEL_PATH=/usr/lib/habanalabs/libtpc_kernels.so
+ENV HABANA_LOGS=/var/log/habana_logs/
+ENV OS_NUMBER=2204
+ENV HABANA_SCAL_BIN_PATH=/opt/habanalabs/engines_fw
+ENV HABANA_PLUGINS_LIB_PATH=/opt/habanalabs/habana_plugins
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    apt-utils \
+    bc \
+    build-essential \
+    ca-certificates \
+    dkms \
+    ethtool \
+    gcc \
+    git \
+    gnupg \
+    gpg-agent \
+    graphviz \
+    libgl1 \
+    libgoogle-glog0v5 \
+    libjemalloc2 \
+    libpq-dev \
+    lsof \
+    make \
+    openssh-client \
+    openssh-server \
+    protobuf-compiler \
+    python3 \
+    python3-dev \
+    python3-pip \
+    python3-tk \
+    python3-venv \
+    unzip \
+    vim \
+    libkrb5-3 \
+    libgnutls30 \
+    wget && \
+    apt-get autoremove && apt-get clean && \
+    rm -f /etc/ssh/ssh_host_*_key*
+
+# There is no need to store pip installation files inside docker image
+ENV PIP_NO_CACHE_DIR=on
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN python3 -m pip install pip==24.2 setuptools==75.1.0 wheel==0.44.0
+
+COPY install_efa.sh .
+RUN ./install_efa.sh && rm install_efa.sh && rm -rf /etc/ld.so.conf.d/efa.conf /etc/profile.d/efa.sh
+
+ENV LIBFABRIC_VERSION="1.20.0"
+ENV LIBFABRIC_ROOT="/opt/habanalabs/libfabric-${LIBFABRIC_VERSION}"
+ENV MPI_ROOT=/opt/amazon/openmpi
+ENV LD_LIBRARY_PATH=$LIBFABRIC_ROOT/lib:${MPI_ROOT}/lib:/usr/lib/habanalabs:$LD_LIBRARY_PATH
+ENV PATH=${LIBFABRIC_ROOT}/bin:${MPI_ROOT}/bin:$PATH
+ENV OPAL_PREFIX=${MPI_ROOT}
+ENV MPICC=${MPI_ROOT}/bin/mpicc
+ENV RDMAV_FORK_SAFE=1
+ENV FI_EFA_USE_DEVICE_RDMA=1
+ENV RDMA_CORE_ROOT=/opt/habanalabs/rdma-core/src
+ENV RDMA_CORE_LIB=${RDMA_CORE_ROOT}/build/lib
+
+RUN wget -O- https://${ARTIFACTORY_URL}/artifactory/api/gpg/key/public | gpg --dearmor -o /usr/share/keyrings/habana-artifactory.gpg && \
+    chown root:root /usr/share/keyrings/habana-artifactory.gpg && \
+    chmod 644 /usr/share/keyrings/habana-artifactory.gpg  && \
+    echo "deb [signed-by=/usr/share/keyrings/habana-artifactory.gpg] https://${ARTIFACTORY_URL}/artifactory/debian jammy main" | tee -a /etc/apt/sources.list && \
+    apt-get update && \
+    cp /etc/dpkg/dpkg.cfg.d/excludes /etc/dpkg/dpkg.cfg.d/excludes.bak && \
+    sed -i '/path-exclude=\/usr\/share\/doc/d' /etc/dpkg/dpkg.cfg.d/excludes && \
+    apt-get install -y --no-install-recommends habanalabs-rdma-core="$VERSION"-"$REVISION" \
+        habanalabs-thunk="$VERSION"-"$REVISION" \
+        habanalabs-firmware-tools="$VERSION"-"$REVISION" \
+        habanalabs-graph="$VERSION"-"$REVISION" && \
+    apt-get autoremove --yes && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    mv -f /etc/dpkg/dpkg.cfg.d/excludes.bak /etc/dpkg/dpkg.cfg.d/excludes && \
+    sed --in-place "/$ARTIFACTORY_URL/d" /etc/apt/sources.list
+
+RUN wget -nv -O /tmp/libfabric-${LIBFABRIC_VERSION}.tar.bz2 https://github.com/ofiwg/libfabric/releases/download/v${LIBFABRIC_VERSION}/libfabric-${LIBFABRIC_VERSION}.tar.bz2 && \
+    cd /tmp/ && tar xf /tmp/libfabric-${LIBFABRIC_VERSION}.tar.bz2 && \
+    cd /tmp/libfabric-${LIBFABRIC_VERSION} && \
+    ./configure --prefix=$LIBFABRIC_ROOT --enable-psm3-verbs --enable-verbs=yes --with-synapseai=/usr && \
+    make && make install && cd / && rm -rf /tmp/libfabric-${LIBFABRIC_VERSION}.tar.bz2 /tmp/libfabric-${LIBFABRIC_VERSION}
+
+RUN wget -nv -O /tmp/main.zip https://github.com/HabanaAI/hccl_ofi_wrapper/archive/refs/heads/main.zip && \
+    unzip /tmp/main.zip -d /tmp && \
+    cd /tmp/hccl_ofi_wrapper-main && \
+    make && cp -f libhccl_ofi_wrapper.so /usr/lib/habanalabs/libhccl_ofi_wrapper.so && \
+    cd / && \
+    rm -rf /tmp/main.zip /tmp/hccl_ofi_wrapper-main
+
+RUN python3 -m pip install habana_media_loader=="${VERSION}"."${REVISION}"
+
+# SSH configuration necessary to support mpi-operator v2
+RUN mkdir -p /var/run/sshd && \
+    sed -i 's/[ #]\(.*StrictHostKeyChecking \).*/ \1no/g' /etc/ssh/ssh_config && \
+    sed -i 's/#\(ForwardAgent \).*/\1yes/g' /etc/ssh/ssh_config && \
+    echo "    UserKnownHostsFile /dev/null" >> /etc/ssh/ssh_config && \
+    sed -i 's/#\(StrictModes \).*/\1no/g' /etc/ssh/sshd_config && \
+    echo "/etc/init.d/ssh start \"-p 3022\"" >> ~/.bashrc && \
+    sed -i '/[ -z "$PS1" ] && return/s/^/#/g' ~/.bashrc
+
+
+# Creating the Gaudi notebook kernel
+USER root
+ARG env_name=gaudi
+ARG py_ver=3.10
+
+RUN mamba create --yes -p "${CONDA_DIR}/envs/${env_name}" \
+    python=${py_ver} \
+    'ipykernel' \
+    'jupyterlab' && \
+    mamba clean --all -f -y
+
+RUN "${CONDA_DIR}/envs/${env_name}/bin/python" -m ipykernel install --user --name="${env_name}" && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
+
+USER ${NB_UID}

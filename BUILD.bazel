@@ -1,0 +1,103 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# See https://github.com/bazel-contrib/bazel-gazelle/blob/master/README.rst#fix-and-update.
+# gazelle:prefix github.com/intel-innersource/frameworks.cloud.devcloud.services.idc
+# gazelle:exclude go/svc/grpc-proxy
+# gazelle:exclude go/build/tools
+# gazelle:exclude go/pkg/billing/build
+# gazelle:exclude local
+gazelle(name = "gazelle", args = ["go"])
+
+# See https://github.com/bazel-contrib/bazel-gazelle/blob/master/README.rst#update-repos.
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-build_file_proto_mode=disable",
+        "-from_file=go/go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
+# This filegroup can be used to provide arbitrary local files for testing.
+# Example BUILD.bazel: go_test(data = ["//:local"], ...)
+filegroup(
+    name = "local",
+    srcs = glob([
+        "local/**",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "local_BAZEL_REMOTE_CACHE_OPTS",
+    actual = "local/BAZEL_REMOTE_CACHE_OPTS",
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "local_secrets_universe_deployer",
+    srcs = glob([
+        "local/secrets/*/HARBOR_USERNAME",
+        "local/secrets/*/HARBOR_PASSWORD",
+        "local/secrets/ARTIFACTORY_TOKEN",
+        "local/secrets/ARTIFACTORY_CREDS_USR",
+        "local/secrets/ARTIFACTORY_CREDS_PSW",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "local_secrets_test-e2e-compute-vm",
+    srcs = [
+        "local/secrets/test-e2e-compute-vm/harvester-kubeconfig/harvester1",
+        "local/secrets/test-e2e-compute-vm/ssh-proxy-operator/host_public_key",
+        "local/secrets/test-e2e-compute-vm/ssh-proxy-operator/id_rsa",
+        "local/secrets/test-e2e-compute-vm/ssh-proxy-operator/id_rsa.pub",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "local_secrets_test-e2e-compute-vm_quick",
+    srcs = [
+        "local/test-e2e-compute-vm-global_host_port_80",
+        "local/test-e2e-compute-vm-global_host_port_443",
+        "local/secrets/test-e2e-compute-vm/kubeconfig/config",
+        "local/secrets/test-e2e-compute-vm/VAULT_TOKEN",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "local_secrets_test-e2e-compute-bm_ssh_proxy_ip",
+    outs = ["local/secrets/test-e2e-compute-bm/ssh_proxy_ip"],
+    cmd = "echo -n $$(ip -o route get to 10.248.2.1 | sed -n 's/.*src \\([0-9.]\\+\\).*/\\1/p') > $@",
+)
+
+filegroup(
+    name = "local_secrets_test-e2e-compute-bm",
+    srcs = [
+        "local/secrets/test-e2e-compute-bm/harvester-kubeconfig/harvester1",
+        "local/secrets/test-e2e-compute-bm/ssh-proxy-operator/id_rsa",
+        "local/secrets/test-e2e-compute-bm/ssh-proxy-operator/id_rsa.pub",
+        "local/secrets/test-e2e-compute-bm/bm-instance-operator/id_rsa",
+        "local/secrets/test-e2e-compute-bm/bm-instance-operator/id_rsa.pub",
+        "local/secrets/test-e2e-compute-bm/DEFAULT_BMC_USERNAME",
+        "local/secrets/test-e2e-compute-bm/DEFAULT_BMC_PASSWD",
+        ":local/secrets/test-e2e-compute-bm/ssh_proxy_ip",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# Below file deployment_data.tar is an output of the Bazel target //go/test/compute/upgrade/vm:deployment_data
+# generated with a previous commit, referred to as the upgrade base.
+# This is created with "make upgrade-base-deployment-data".
+filegroup(
+    name = "upgrade_base_compute_vm_deployment_data_tar",
+    srcs = [
+        "local/go/test/compute/upgrade/vm/deployment_data.tar",
+    ],
+    visibility = ["//go/test/compute/upgrade/vm:__pkg__"],
+)

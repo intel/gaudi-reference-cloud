@@ -1,0 +1,66 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+{{- if $.Values.global.adminportal.enabled }}
+
+{{- $region0 := get (keys $.Values.regions | sortAlpha | first) $.Values.regions }}
+{{- $region0 := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region0 }}
+
+  - name: adminportal
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: adminPortal
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/idcs-admin-portal
+    version: {{ $.Values.global.adminportal.version | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - configMap:
+          REACT_APP_API_GLOBAL_SERVICE: https://{{ $.Values.global.grpcRestGateway.ingress.host }}/v1
+          REACT_APP_API_REGIONAL_SERVICES:
+            - https://{{ $region0.grpcRestGateway.ingress.host }}/v1
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}idcs-admin-portal"
+          tag: "dev-{{ $.Values.global.adminportal.version }}"
+      - ingress:
+          enabled: {{ $.Values.global.adminportal.ingress.enabled }}
+          className: {{ $.Values.global.adminportal.ingress.className | quote }}
+          hosts:
+            - host: {{ $.Values.global.adminportal.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $.Values.global.adminportal.ingress.host }}
+          tls:
+            - secretName: {{ $.Values.global.adminportal.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $.Values.global.adminportal.ingress.host | quote }}
+          {{- end }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "kubevirt_io",
+    srcs = [
+        "interface.go",
+        "virtualmachine.go",
+        "virtualmachineinstance.go",
+        "virtualmachineinstancemigration.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/controllers/kubevirt.io/v1",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_rancher_lasso//pkg/client",
+        "@com_github_rancher_lasso//pkg/controller",
+        "@com_github_rancher_wrangler//pkg/apply",
+        "@com_github_rancher_wrangler//pkg/condition",
+        "@com_github_rancher_wrangler//pkg/generic",
+        "@com_github_rancher_wrangler//pkg/kv",
+        "@com_github_rancher_wrangler//pkg/schemes",
+        "@io_k8s_apimachinery//pkg/api/equality",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/labels",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_apimachinery//pkg/watch",
+        "@io_k8s_client_go//tools/cache",
+        "@io_kubevirt_api//core/v1:core",
+    ],
+)

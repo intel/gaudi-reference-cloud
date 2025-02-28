@@ -1,0 +1,138 @@
+---
+- name: Update dependenices version based on Firmware Version
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    fw_version: "{{ lookup('env', 'FW_VERSION') }}"
+    version_dir_file: /tmp/validation/testsuite/fw-version/versions.yaml
+    deepspeed_version_file_path: /tmp/validation/testsuite/deepspeed/playbooks/vars/val-dir.yml
+    hccl_versions_file_path: /tmp/validation/testsuite/hccl-demo/playbooks/vars/versions.yml
+    helper_env_file_path: /tmp/validation/testsuite/deepspeed/.env
+    deepspeed_env_vars: {}
+    deepspeed_versions_vars: {}
+    hccl_versions_vars: {}
+
+  tasks:
+    - name: Load version directory from file
+      include_vars:
+        file: "{{ version_dir_file }}"
+        name: versions_directory
+
+    - name: Print Gaudi Firmware Version (FW_VERSION)
+      debug:
+        msg: "{{ fw_version }}"
+
+    - name: Verify that firmware version "{{ fw_version }}" exists in version directory
+      fail:
+        msg: "Firmware version {{ fw_version }} not found in versions directory."
+      when: fw_version not in versions_directory
+
+    - name: Set selected versions for FW_VERSION "{{ fw_version }}"
+      set_fact:
+        selected_deps_versions: "{{ versions_directory[fw_version] }}"
+    
+    - name: Versions selected for FW_VERSION "{{ fw_version }}"
+      debug:
+        msg: "{{ selected_deps_versions }}"
+    
+    - name: Extract deepspeed dependencies versions for FW_VERSION "{{ fw_version }}"
+      vars:
+        deepspeed_vars: "{{ selected_deps_versions['deepspeed']['vars'] | default({}) }}"
+      set_fact:
+        deepspeed_vars_dict: "{{ deepspeed_vars | dict2items }}"
+  
+    - name: Format deepspeed variables
+      set_fact:
+        deepspeed_vars_formatted: |
+          {% for item in deepspeed_vars_dict %}
+          {{ item.key }}: "{{ item.value }}"
+          {% endfor %}
+    
+    - name: Print deepspeed_vars_formatted
+      debug:
+        msg: "{{ deepspeed_vars_formatted }}"
+    
+    - name: Fetch deepspeed variables
+      set_fact:
+        deepspeed_versions_vars: "{{ deepspeed_versions_vars | combine({item.split(': ')[0]: item.split(': ')[1] | trim('\"')}) }}"
+      loop: "{{ deepspeed_vars_formatted.splitlines() }}"
+    
+    - name: Create Ansible managed block for Deepspeed variables
+      set_fact:
+        env_block: |
+          {% for item in deepspeed_versions_vars | dict2items %}
+          {{ item.key }}: "{{ item.value }}"
+          {% endfor %}
+
+    - name: Update variables in /deepspeed/playbooks/vars/val-dir.yml
+      blockinfile:
+        path: "{{ deepspeed_version_file_path }}"
+        block: "{{ env_block }}"
+        create: yes
+      when: deepspeed_versions_vars | length > 0
+    
+    - name: Store deepspeed_version and transformers_version for .env file
+      set_fact:
+        deepspeed_env_vars: "{{ deepspeed_env_vars | combine({item.split(': ')[0]: item.split(': ')[1] | trim('\"')}) }}"
+      loop: "{{ deepspeed_vars_formatted.splitlines() }}"
+      when: '"deepspeed_version" in item or "transformers_version" in item or "optimum_habana_version" in item'
+
+    - name: Print deepspeed_env_vars
+      debug:
+        msg: "{{ deepspeed_env_vars }}"
+
+    - name: Create Ansible managed block for /deepspeed/.env variables
+      set_fact:
+        env_block: |
+          {% for item in deepspeed_env_vars | dict2items %}
+          export {{ item.key | upper }}={{ item.value | upper }}
+          {% endfor %}
+
+    - name: Update environment variables in /deepspeed/.env
+      blockinfile:
+        path: "{{ helper_env_file_path }}"
+        block: "{{ env_block }}"
+        create: yes
+      when: deepspeed_env_vars | length > 0
+    
+    - name: Extract hccl-demo dependencies versions for FW_VERSION "{{ fw_version }}"
+      vars:
+        hccl_vars: "{{ selected_deps_versions['hccl']['vars'] | default({}) }}"
+      set_fact:
+        hccl_vars: "{{ hccl_vars | dict2items }}"
+  
+    - name: Format hccl-demo variables
+      set_fact:
+        hccl_vars: |
+          {% for item in hccl_vars %}
+          {{ item.key }}: "{{ item.value }}"
+          {% endfor %}
+    
+    - name: Ensure the versions.yml exists under /hccl-demo/playbooks/vars/versions.yml
+      file:
+        path: "{{ hccl_versions_file_path }}"
+        state: touch
+    
+    - name: Store hccl-demo variables
+      set_fact:
+        hccl_versions_vars: "{{ hccl_versions_vars | combine({item.split(': ')[0]: item.split(': ')[1] | trim('\"')}) }}"
+      loop: "{{ hccl_vars.splitlines() }}"
+
+    - name: Print hccl_versions_vars
+      debug:
+        msg: "{{ hccl_versions_vars }}"
+
+    - name: Create Ansible managed block for /hccl-demo/vars/versions.yml variables
+      set_fact:
+        env_block: |
+          {% for item in hccl_versions_vars | dict2items %}
+          {{ item.key }}: "{{ item.value }}"
+          {% endfor %}
+
+    - name:  Update variables in /hccl-demo/playbooks/vars/versions.yml
+      blockinfile:
+        path: "{{ hccl_versions_file_path }}"
+        block: "{{ env_block }}"
+        create: yes
+      when: hccl_versions_vars | length > 0

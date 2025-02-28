@@ -1,0 +1,1023 @@
+! Command: show running-config
+! device: frontend-leaf1b (cEOSLab, EOS-4.32.0.1F-36950381.43201F (engineering build))
+!
+no aaa root
+!
+username admin privilege 15 role network-admin secret sha512 $6$Djsevd587nX3uxso$GuJHy3nxd.X9YaZaT8BPPTuiqzgNKw1AXcqIR7X7xD7xLdZg4lXliWvL/JECcw2rmVksB9EphbTZM6NA/8r18.
+username admin ssh-key ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCf/L2KJkgUB7lsqeGXY9Y41FRLxiFgtaKrrFaWdgYuTWQ2BNvIEfcBUen11cD0iUlAxZ6n1X50xWwQ/LdVU3s6+DpcuxMqUy5q7paT54SrTENZPRErfnsnVYjl+lYNx7RcBXYP+L8TDbYL07lRgwSWba151oGHV6YKyAHKRLhM8GEq0pY6ELGV3KO6uBF07gUXRBJs+bAHeJohqg3TArKw0aA4FRpHz/rOotbhRuoTcBVodAtBLhKw2DDz/1APoLV8TjlQPSb2Jld0NQCOjqF597NtxeduSGF9mEaWIUTaDKe4qoiRLXBKBjQgIPL51o84b7HkadU4yEt4IwLjl5cFftddsxIKSNhouUoC97/TS47ifSrEYv+96ijcNxvzecfoaWeNxha2YWub+CDmhEaKQOWdhNv388c1u+2eDpiFeB6ic09Knr5DAZSS4vLgQeqmamUm7iU/lFmH4EW0pmLQCc1prTGnlwXx53f7zZ6ajx6B0ncblrhkXyyBZpgyX4zLw3D+wT6wYqvSUNyxxdG2zzeDVHDrtw/KRj10DP2pscHYAR4/aPCAEqLLJfONEqp1RgU7/3KaCUBv6s0tfibGRV705f3uRg/W3j83hWsGI6/yZX7XaWczoRBs8KGzGID0dH6MTJWVeFC34RiKEfXVDnP60cQnOtgTMbUCsUsK9w== thomas.fletcher@intel.com_20230210_thomasfl-ws
+!
+terminal length 0
+!
+switchport default mode routed
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname frontend-leaf1b
+!
+spanning-tree mode mstp
+no spanning-tree vlan-id 4094
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 50
+   name 100.64.16.0/26_P_Harvester_dev
+   trunk group Dev_Nets
+   trunk group ISC
+!
+vlan 51
+   name 100.64.16.64/26_P_Operators_dev
+   trunk group Dev_Nets
+   trunk group ISC
+!
+vlan 52
+   name 100.64.16.128/27_T_Bastion_ssh-p
+   trunk group Dev_Nets
+   trunk group ISC
+!
+vlan 53
+   name 100.64.16.160/27_P_BringUp_dev
+   trunk group Dev_Nets
+   trunk group ISC
+!
+vlan 54
+   name 100.64.16.192/27_P_AZ1-Harvester
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 55
+   name 100.64.16.224/27_P_AZ1-Operators
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 56
+   name 100.64.17.0/27_T_AZ1-Bastion_ssh
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 57
+   name 100.64.17.32/27_P_AZ2-Harvester
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 58
+   name 100.64.17.64/27_P_AZ2-Operators
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 59
+   name 100.64.17.96/27_T_AZ2-Bastion_ss
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 60
+   name 100.64.17.128/27_P_Common-Ops
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 61
+   name 100.64.17.160/28_P_Common-Region
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 62
+   name 100.64.17.176/28_P_Common-Backbo
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 63
+   name 100.64.17.192/28_P_Common-Elk
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 64
+   name 100.64.17.208/28_P_Common-DB
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 65
+   name 100.64.18.0/26_P_BringUp-Ctrl-Pl
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 66
+   name 100.64.0.32/27_P_PI-Testing
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 67
+   name 100.64.5.128/27_P_Storage-Contro
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 68
+   name 100.64.0.64/26_P_Storage
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 69
+   name 100.64.0.16/28_P_IPAM-API-Stagin
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 70
+   name 100.64.0.192/26_P_Provider-Mgmt
+   trunk group Bastion_Nets
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 71
+   name 100.64.24.0/24_P_DevelopmentEnv
+   trunk group ISC
+   trunk group Provider_Nets
+!
+vlan 93
+   name 100.64.4.0/26_T_WEKA_service
+   trunk group ISC
+   trunk group Service_Nets
+   trunk group Tenant_Nets
+!
+vlan 94
+   name 100.64.4.64/26_T_WEKA_service
+   trunk group ISC
+   trunk group Service_Nets
+!
+vlan 95
+   name 100.64.4.128/26_T_WEKA_service
+   trunk group ISC
+   trunk group Service_Nets
+!
+vlan 96
+   name 100.64.4.192/26_T_WEKA_service
+   trunk group ISC
+   trunk group Service_Nets
+!
+vlan 97
+   name 100.64.5.0/26_T_WEKA_service
+   trunk group ISC
+   trunk group Service_Nets
+!
+vlan 98
+   name 100.64.5.64/26_T_WEKA_service
+   trunk group ISC
+   trunk group Service_Nets
+!
+vlan 100
+   name 100.80.0.0/22_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 101
+   name 100.80.4.0/22_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 102
+   name 100.80.8.0/22_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 103
+   name 100.80.12.0/22_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 104
+   name 100.80.16.0/23_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 105
+   name 100.80.18.0/23_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 106
+   name 100.80.20.0/23_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 107
+   name 100.80.22.0/23_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 108
+   name 100.80.24.0/23_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 109
+   name 100.80.26.0/23_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 110
+   name 100.80.28.0/23_T_TV
+   trunk group ISC
+   trunk group Tenant_Nets
+!
+vlan 4003
+   name 10.45.122.224/28_P_IDC-Bastion_s
+   trunk group Bastion_Nets
+   trunk group ISC
+!
+vlan 4008
+   name 100.64.128.128/25_P_BM-Provision
+   trunk group ISC
+   trunk group NoTrunkGroup
+!
+vlan 4009
+   name 10.45.122.32/27_P_IDC_SDN-Contro
+   trunk group Bastion_Nets
+   trunk group ISC
+!
+vlan 4010
+   name 10.45.121.64/27_P_CNVRG5_secure-
+   trunk group ISC
+!
+vlan 4018
+   name 10.45.117.240/28_P_Ironic
+   trunk group ISC
+   trunk group LB_Infra_Nets
+   trunk group Provider_Nets
+!
+vlan 4042
+   name 10.45.114.144/28_P_DHCP-Infra-St
+   trunk group ISC
+   trunk group LB_Infra_Nets
+   trunk group Provider_Nets
+!
+vlan 4043
+   name 10.45.114.128/28_P_DNS-Infra-Sta
+   trunk group ISC
+   trunk group LB_Infra_Nets
+   trunk group Provider_Nets
+!
+vlan 4044
+   name 10.45.114.112/28_P_DNS-Tenants-S
+   trunk group ISC
+   trunk group LB_Infra_Nets
+   trunk group Provider_Nets
+!
+vlan 4045
+   name 10.45.114.96/28_P_IPAM-Staging
+   trunk group ISC
+   trunk group LB_Infra_Nets
+   trunk group Provider_Nets
+!
+vlan 4071
+   name 10.250.10.20/31_VRF_Tenants_iBGP
+   trunk group ISC
+!
+vlan 4072
+   name 10.250.10.20/31_VRF_ProviderInfr
+   trunk group ISC
+!
+vlan 4073
+   name 10.250.10.20/31_VRF_P051_iBGP_PT
+   trunk group ISC
+!
+vlan 4077
+   name 10.250.10.20/31_VRF_Operator_iBG
+   trunk group ISC
+!
+vlan 4094
+   name 10.250.10.20/31_MLAG_Peering
+   trunk group MLAGPEER
+!
+vrf instance Operator
+!
+vrf instance P051
+!
+vrf instance ProviderInfra
+!
+vrf instance Tenants
+!
+vrf instance vrf_mgmt
+!
+management api http-commands
+   no shutdown
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+interface Port-Channel51
+   description server1-1
+   switchport access vlan 100
+   switchport
+   port-channel lacp fallback individual
+   mlag 51
+   spanning-tree portfast
+   spanning-tree bpduguard enable
+!
+interface Port-Channel61
+   description server1-2
+   switchport access vlan 100
+   switchport
+   port-channel lacp fallback individual
+   spanning-tree portfast
+   spanning-tree bpduguard enable
+!
+interface Port-Channel62
+   description server1-2-alt
+   switchport access vlan 100
+   switchport
+   port-channel lacp fallback individual
+   spanning-tree portfast
+   spanning-tree bpduguard enable
+!
+interface Port-Channel271
+   description leaf1a
+   switchport mode trunk
+   switchport trunk group ISC
+   switchport trunk group MLAGPEER
+   switchport
+!
+interface Ethernet1
+   switchport access vlan 100
+   switchport
+!
+interface Ethernet2
+   switchport access vlan 100
+   switchport
+!
+interface Ethernet5
+   description server1-1_9
+   switchport access vlan 4008
+   switchport
+   no snmp trap link-change
+   channel-group 51 mode active
+   lacp timer fast
+   spanning-tree portfast
+   spanning-tree bpduguard enable
+!
+interface Ethernet6
+   description server1-2_8
+   switchport access vlan 4008
+   switchport
+   no snmp trap link-change
+   channel-group 61 mode active
+   lacp timer fast
+   spanning-tree portfast
+   spanning-tree bpduguard enable
+!
+interface Ethernet7
+   description server1-2_9
+   switchport access vlan 4008
+   switchport
+   no snmp trap link-change
+   channel-group 61 mode active
+   lacp timer fast
+   spanning-tree portfast
+   spanning-tree bpduguard enable
+!
+interface Ethernet27
+   description leaf1a_27
+   switchport
+   channel-group 271 mode active
+!
+interface Ethernet28
+   description leaf1a_28
+   switchport
+   channel-group 271 mode active
+!
+interface Loopback0
+   ip address 10.45.115.17/32
+!
+interface Loopback1
+   description VXLAN VTEP IP
+   ip address 10.45.116.2/32
+!
+interface Loopback71
+   description Loopback VRF Tenants
+   vrf Tenants
+   ip address 10.45.115.17/32
+!
+interface Loopback72
+   description Loopback VRF ProviderInfra
+   vrf ProviderInfra
+   ip address 10.45.115.17/32
+!
+interface Loopback73
+   description Loopback VRF P051
+   vrf P051
+   ip address 10.45.115.17/32
+!
+interface Loopback77
+   description Loopback VRF Operator
+   vrf Operator
+   ip address 10.45.115.17/32
+!
+interface Management0
+   ip address 172.20.20.16/24 {{SKIP}}
+   ipv6 address 2001:172:20:20::10/64 {{SKIP}}
+!
+interface Vlan50
+   description 100.64.16.0/26_P_Harvester_dev
+   vrf ProviderInfra
+   ip address virtual 100.64.16.1/26
+!
+interface Vlan51
+   description 100.64.16.64/26_P_Operators_dev
+   vrf ProviderInfra
+   ip address virtual 100.64.16.65/26
+!
+interface Vlan52
+   description 100.64.16.128/27_T_Bastion_ssh-proxy-dev
+   vrf Tenants
+   ip access-group SSH-Proxy in
+   ip address virtual 100.64.16.129/27
+!
+interface Vlan53
+   description 100.64.16.160/27_P_BringUp_dev
+   vrf ProviderInfra
+   ip address virtual 100.64.16.161/27
+!
+interface Vlan54
+   description 100.64.16.192/27_P_AZ1-Harvester
+   vrf ProviderInfra
+   ip address virtual 100.64.16.193/27
+!
+interface Vlan55
+   description 100.64.16.224/27_P_AZ1-Operators
+   vrf ProviderInfra
+   ip address virtual 100.64.16.225/27
+!
+interface Vlan56
+   description 100.64.17.0/27_T_AZ1-Bastion_ssh-proxy
+   vrf Tenants
+   ip access-group SSH-Proxy in
+   ip address virtual 100.64.17.1/27
+!
+interface Vlan57
+   description 100.64.17.32/27_P_AZ2-Harvester
+   vrf ProviderInfra
+   ip address virtual 100.64.17.33/27
+!
+interface Vlan58
+   description 100.64.17.64/27_P_AZ2-Operators
+   vrf ProviderInfra
+   ip address virtual 100.64.17.65/27
+!
+interface Vlan59
+   description 100.64.17.96/27_T_AZ2-Bastion_ssh-proxy
+   vrf Tenants
+   ip access-group SSH-Proxy in
+   ip address virtual 100.64.17.97/27
+!
+interface Vlan60
+   description 100.64.17.128/27_P_Common-Ops
+   vrf ProviderInfra
+   ip address virtual 100.64.17.129/27
+!
+interface Vlan61
+   description 100.64.17.160/28_P_Common-Regional_oper
+   vrf Operator
+   ip address virtual 100.64.17.161/28
+!
+interface Vlan62
+   description 100.64.17.176/28_P_Common-Backbone
+   vrf ProviderInfra
+   ip address virtual 100.64.17.177/28
+!
+interface Vlan63
+   description 100.64.17.192/28_P_Common-Elk
+   vrf ProviderInfra
+   ip address virtual 100.64.17.193/28
+!
+interface Vlan64
+   description 100.64.17.208/28_P_Common-DB
+   vrf ProviderInfra
+   ip address virtual 100.64.17.209/28
+!
+interface Vlan65
+   description 100.64.18.0/26_P_BringUp-Ctrl-Pln
+   vrf ProviderInfra
+   ip address virtual 100.64.18.1/26
+!
+interface Vlan66
+   description 100.64.0.32/27_P_PI-Testing
+   vrf ProviderInfra
+   ip address virtual 100.64.0.33/27
+!
+interface Vlan67
+   description 100.64.5.128/27_P_Storage-Controller
+   vrf ProviderInfra
+   ip address virtual 100.64.5.129/27
+!
+interface Vlan68
+   description 100.64.0.64/26_P_Storage
+   vrf ProviderInfra
+   ip address virtual 100.64.0.65/26
+!
+interface Vlan69
+   description 100.64.0.16/28_P_IPAM-API-Staging
+   vrf ProviderInfra
+   ip address virtual 100.64.0.17/28
+!
+interface Vlan70
+   description 100.64.0.192/26_P_Provider-Mgmt
+   vrf ProviderInfra
+   ip address virtual 100.64.0.193/26
+!
+interface Vlan71
+   description 100.64.24.0/24_P_DevelopmentEnv
+   vrf ProviderInfra
+   ip address virtual 100.64.24.1/24
+!
+interface Vlan93
+   description 100.64.4.0/26_T_WEKA_service
+   vrf Tenants
+   ip access-group Storage-Block in
+   ip address virtual 100.64.4.1/26
+!
+interface Vlan94
+   description 100.64.4.64/26_T_WEKA_service
+   vrf Tenants
+   ip access-group Storage-Block in
+   ip address virtual 100.64.4.65/26
+!
+interface Vlan95
+   description 100.64.4.128/26_T_WEKA_service
+   vrf Tenants
+   ip access-group Storage-Block in
+   ip address virtual 100.64.4.129/26
+!
+interface Vlan96
+   description 100.64.4.192/26_T_WEKA_service
+   vrf Tenants
+   ip access-group Storage-Block in
+   ip address virtual 100.64.4.193/26
+!
+interface Vlan97
+   description 100.64.5.0/26_T_WEKA_service
+   vrf Tenants
+   ip access-group Storage-Block in
+   ip address virtual 100.64.5.1/26
+!
+interface Vlan98
+   description 100.64.5.64/26_T_WEKA_service
+   vrf Tenants
+   ip access-group Storage-Block in
+   ip address virtual 100.64.5.65/26
+!
+interface Vlan100
+   description 100.80.0.0/22_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.0.1/22
+!
+interface Vlan101
+   description 100.80.4.0/22_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.4.1/22
+!
+interface Vlan102
+   description 100.80.8.0/22_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.8.1/22
+!
+interface Vlan103
+   description 100.80.12.0/22_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.12.1/22
+!
+interface Vlan104
+   description 100.80.16.0/23_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.16.1/23
+!
+interface Vlan105
+   description 100.80.18.0/23_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.18.1/23
+!
+interface Vlan106
+   description 100.80.20.0/23_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.20.1/23
+!
+interface Vlan107
+   description 100.80.22.0/23_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.22.1/23
+!
+interface Vlan108
+   description 100.80.24.0/23_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.24.1/23
+!
+interface Vlan109
+   description 100.80.26.0/23_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.26.1/23
+!
+interface Vlan110
+   description 100.80.28.0/23_T_TV
+   vrf Tenants
+   ip access-group Tenant-Block in
+   ip address virtual 100.80.28.1/23
+!
+interface Vlan4008
+   description 100.64.131.0/25_P_BM-Provision
+   mtu 9164
+   no autostate
+   vrf ProviderInfra
+   ip address 100.64.131.1/25
+   ip helper-address 10.45.114.151
+   ip helper-address 10.45.114.152
+!
+interface Vlan4018
+   description 10.45.117.240/28_P_Ironic
+   vrf ProviderInfra
+   ip address virtual 10.45.117.241/28
+!
+interface Vlan4042
+   description 10.45.114.144/28_P_DHCP-Infra-Staging
+   vrf ProviderInfra
+   ip address virtual 10.45.114.145/28
+!
+interface Vlan4043
+   description 10.45.114.128/28_P_DNS-Infra-Staging
+   vrf ProviderInfra
+   ip address virtual 10.45.114.129/28
+!
+interface Vlan4044
+   description 10.45.114.112/28_P_DNS-Tenants-Staging
+   vrf ProviderInfra
+   ip address virtual 10.45.114.113/28
+!
+interface Vlan4045
+   description 10.45.114.96/28_P_IPAM-Staging
+   vrf ProviderInfra
+   ip address virtual 10.45.114.97/28
+!
+interface Vlan4071
+   description VRF_Tenants_iBGP_PTP
+   mtu 9164
+   no autostate
+   vrf Tenants
+   ip address 10.250.10.70/31
+!
+interface Vlan4072
+   description VRF_ProviderInfra_iBGP_PTP
+   mtu 9164
+   no autostate
+   vrf ProviderInfra
+   ip address 10.250.10.70/31
+!
+interface Vlan4073
+   description VRF_P051_iBGP_PTP
+   mtu 9164
+   no autostate
+   vrf P051
+   ip address 10.250.10.70/31
+!
+interface Vlan4077
+   description VRF_Operator_iBGP_PTP
+   mtu 9164
+   no autostate
+   vrf Operator
+   ip address 10.250.10.70/31
+!
+interface Vlan4094
+   description 10.250.10.20/31_MLAG_Peering
+   mtu 9164
+   no autostate
+   ip address 10.250.10.21/31
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan virtual-router encapsulation mac-address mlag-system-id
+   vxlan udp-port 4789
+   vxlan vlan 50 vni 5030050
+   vxlan vlan 51 vni 5030051
+   vxlan vlan 52 vni 5030052
+   vxlan vlan 53 vni 5030053
+   vxlan vlan 54 vni 5030054
+   vxlan vlan 55 vni 5030055
+   vxlan vlan 56 vni 5030056
+   vxlan vlan 57 vni 5030057
+   vxlan vlan 58 vni 5030058
+   vxlan vlan 59 vni 5030059
+   vxlan vlan 60 vni 5030060
+   vxlan vlan 61 vni 5030061
+   vxlan vlan 62 vni 5030062
+   vxlan vlan 63 vni 5030063
+   vxlan vlan 64 vni 5030064
+   vxlan vlan 65 vni 5030065
+   vxlan vlan 66 vni 5030066
+   vxlan vlan 67 vni 5030067
+   vxlan vlan 68 vni 5030068
+   vxlan vlan 69 vni 5030069
+   vxlan vlan 70 vni 5030070
+   vxlan vlan 71 vni 5030071
+   vxlan vlan 93 vni 5030093
+   vxlan vlan 94 vni 5030094
+   vxlan vlan 95 vni 5030095
+   vxlan vlan 96 vni 5030096
+   vxlan vlan 97 vni 5030097
+   vxlan vlan 98 vni 5030098
+   vxlan vlan 100 vni 5030100
+   vxlan vlan 101 vni 5030101
+   vxlan vlan 102 vni 5030102
+   vxlan vlan 103 vni 5030103
+   vxlan vlan 104 vni 5030104
+   vxlan vlan 105 vni 5030105
+   vxlan vlan 106 vni 5030106
+   vxlan vlan 107 vni 5030107
+   vxlan vlan 108 vni 5030108
+   vxlan vlan 109 vni 5030109
+   vxlan vlan 110 vni 5030110
+   vxlan vlan 4003 vni 5034003
+   vxlan vlan 4009 vni 5034009
+   vxlan vlan 4010 vni 5034010
+   vxlan vlan 4018 vni 5034018
+   vxlan vlan 4042 vni 5034042
+   vxlan vlan 4043 vni 5034043
+   vxlan vlan 4044 vni 5034044
+   vxlan vlan 4045 vni 5034045
+   vxlan vrf Operator vni 5037007
+   vxlan vrf P051 vni 5037003
+   vxlan vrf ProviderInfra vni 5037002
+   vxlan vrf Tenants vni 5037001
+   vxlan decapsulation filter interface multiple-vrf disabled
+!
+ip routing
+ip routing vrf Operator
+ip routing vrf P051
+ip routing vrf ProviderInfra
+ip routing vrf Tenants
+no ip routing vrf vrf_mgmt
+!
+mlag configuration
+   domain-id leaf1
+   heartbeat-interval 2500
+   local-interface Vlan4094
+   peer-address 10.250.10.20
+   peer-link Port-Channel271
+   reload-delay mlag 300
+   reload-delay non-mlag 180
+!
+ip route 0.0.0.0/0 172.20.20.1
+!
+ipv6 route ::/0 2001:172:20:20::1
+!
+router bgp 64621.3201
+   bgp asn notation asdot
+   router-id 10.45.115.17
+   update wait-for-convergence
+   distance bgp 20 200 200
+   graceful-restart restart-time 1200
+   graceful-restart
+   maximum-paths 32 ecmp 32
+   neighbor DatacenterSpine peer group
+   neighbor DatacenterSpine send-community standard
+   neighbor DatacenterSpine maximum-routes 50000
+   neighbor OVERLAY peer group
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY ebgp-multihop
+   neighbor OVERLAY send-community
+   neighbor OVERLAY maximum-routes 0
+   neighbor iBGP peer group
+   neighbor iBGP remote-as 64621.3201
+   neighbor iBGP next-hop-self
+   neighbor iBGP bfd
+   neighbor iBGP maximum-routes 0
+   neighbor 10.45.115.10 peer group OVERLAY
+   neighbor 10.45.115.10 remote-as 64621.3200
+   neighbor 10.45.115.10 description spine1
+   neighbor 10.45.115.11 peer group OVERLAY
+   neighbor 10.45.115.11 remote-as 64621.3200
+   neighbor 10.45.115.11 description spine2
+   neighbor 10.45.120.180 peer group DatacenterSpine
+   neighbor 10.45.120.180 remote-as 64621.3200
+   neighbor 10.45.120.180 bfd
+   neighbor 10.45.120.180 description spine1
+   neighbor 10.45.120.182 peer group DatacenterSpine
+   neighbor 10.45.120.182 remote-as 64621.3200
+   neighbor 10.45.120.182 bfd
+   neighbor 10.45.120.182 description spine2
+   neighbor 10.250.10.20 peer group iBGP
+   neighbor 10.250.10.20 description leaf1a
+   redistribute connected
+   !
+   vlan 50
+      rd 10.45.116.2:10050
+      route-target import 503:10050
+      route-target export 503:10050
+      redistribute learned
+   !
+   vlan 51
+      rd 10.45.116.2:10051
+      route-target import 503:10051
+      route-target export 503:10051
+      redistribute learned
+   !
+   vlan 53
+      rd 10.45.116.2:10053
+      route-target import 503:10053
+      route-target export 503:10053
+      redistribute learned
+   !
+   vlan 54
+      rd 10.45.116.2:10054
+      route-target import 503:10054
+      route-target export 503:10054
+      redistribute learned
+   !
+   vlan 55
+      rd 10.45.116.2:10055
+      route-target import 503:10055
+      route-target export 503:10055
+      redistribute learned
+   !
+   vlan 57
+      rd 10.45.116.2:10057
+      route-target import 503:10057
+      route-target export 503:10057
+      redistribute learned
+   !
+   vlan 58
+      rd 10.45.116.2:10058
+      route-target import 503:10058
+      route-target export 503:10058
+      redistribute learned
+   !
+   vlan 60
+      rd 10.45.116.2:10060
+      route-target import 503:10060
+      route-target export 503:10060
+      redistribute learned
+   !
+   vlan 61
+      rd 10.45.116.2:10061
+      route-target import 503:10061
+      route-target export 503:10061
+      redistribute learned
+   !
+   vlan 62
+      rd 10.45.116.2:10062
+      route-target import 503:10062
+      route-target export 503:10062
+      redistribute learned
+   !
+   vlan 63
+      rd 10.45.116.2:10063
+      route-target import 503:10063
+      route-target export 503:10063
+      redistribute learned
+   !
+   vlan 64
+      rd 10.45.116.2:10064
+      route-target import 503:10064
+      route-target export 503:10064
+      redistribute learned
+   !
+   vlan 65
+      rd 10.45.116.2:10065
+      route-target import 503:10065
+      route-target export 503:10065
+      redistribute learned
+   !
+   vlan 66
+      rd 10.45.116.2:10066
+      route-target import 503:10066
+      route-target export 503:10066
+      redistribute learned
+   !
+   vlan 67
+      rd 10.45.116.2:10067
+      route-target import 503:10067
+      route-target export 503:10067
+      redistribute learned
+   !
+   vlan 68
+      rd 10.45.116.2:10068
+      route-target import 503:10068
+      route-target export 503:10068
+      redistribute learned
+   !
+   vlan 69
+      rd 10.45.116.2:10069
+      route-target import 503:10069
+      route-target export 503:10069
+      redistribute learned
+   !
+   vlan 70
+      rd 10.45.116.2:10070
+      route-target import 503:10070
+      route-target export 503:10070
+      redistribute learned
+   !
+   vlan 71
+      rd 10.45.116.2:10071
+      route-target import 503:10071
+      route-target export 503:10071
+      redistribute learned
+   !
+   vlan 4003
+      rd 10.45.116.2:14003
+      route-target import 503:14003
+      route-target export 503:14003
+      redistribute learned
+   !
+   vlan 4009
+      rd 10.45.116.2:14009
+      route-target import 503:14009
+      route-target export 503:14009
+      redistribute learned
+   !
+   vlan 4010
+      rd 10.45.116.2:14010
+      route-target import 503:14010
+      route-target export 503:14010
+      redistribute learned
+   !
+   vlan 4018
+      rd 10.45.116.2:14018
+      route-target import 503:14018
+      route-target export 503:14018
+      redistribute learned
+   !
+   vlan 4042
+      rd 10.45.116.2:14042
+      route-target import 503:14042
+      route-target export 503:14042
+      redistribute learned
+   !
+   vlan 4043
+      rd 10.45.116.2:14043
+      route-target import 503:14043
+      route-target export 503:14043
+      redistribute learned
+   !
+   vlan 4044
+      rd 10.45.116.2:14044
+      route-target import 503:14044
+      route-target export 503:14044
+      redistribute learned
+   !
+   vlan 4045
+      rd 10.45.116.2:14045
+      route-target import 503:14045
+      route-target export 503:14045
+      redistribute learned
+   !
+   vlan-aware-bundle Tenants
+      rd 10.45.116.2:0
+      route-target import 503:0
+      route-target export 503:0
+      redistribute learned
+      vlan 52,56,59,93-98,100-110
+   !
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   address-family ipv4
+      no neighbor OVERLAY activate
+   !
+   vrf Operator
+      rd 10.45.116.2:27007
+      route-target import evpn 503:27007
+      route-target export evpn 503:27007
+      redistribute connected
+   !
+   vrf P051
+      rd 10.45.116.2:27003
+      route-target import evpn 503:27003
+      route-target export evpn 503:27003
+      redistribute connected
+   !
+   vrf ProviderInfra
+      rd 10.45.116.2:27002
+      route-target import evpn 503:27002
+      route-target export evpn 503:27002
+      redistribute connected
+   !
+   vrf Tenants
+      rd 10.45.116.2:27001
+      route-target import evpn 503:27001
+      route-target export evpn 503:27001
+      redistribute connected
+!
+router general
+   router-id ipv4 10.45.115.17
+!
+end

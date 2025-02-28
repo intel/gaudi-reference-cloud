@@ -1,0 +1,69 @@
+{% set ssh_port = "3022" %}
+
+FROM vault.habana.ai/gaudi-docker/{{ docker_image }}/{{ os_name }}/habanalabs/pytorch-installer-{{ pytorch_version }}:{{ docker_image_version }} AS base
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+   ca-certificates \
+   curl \
+   ffmpeg \
+   file \
+   gnupg \
+   less \
+   tree \
+   pdsh \
+   tmux \
+   htop
+
+ENV PYTHON /usr/bin/python{{ python_version }}
+
+RUN pip install --upgrade pip
+
+{% if optimum_habana_version %}
+RUN pip install "git+https://github.com/huggingface/optimum-habana.git@{{ optimum_habana_version }}" \
+   "git+https://github.com/HabanaAI/DeepSpeed.git@{{ deepspeed_version }}" \
+   transformers=={{ transformers_version }}
+{% else %}
+RUN pip install "git+https://github.com/huggingface/optimum-habana.git" \
+   "git+https://github.com/HabanaAI/DeepSpeed.git@{{ deepspeed_version }}" \
+   transformers=={{ transformers_version }}
+{% endif %}
+
+RUN pip install evaluate
+RUN pip install scikit-learn
+
+RUN sed -i 's/#Port 22/Port {{ ssh_port }}/g' /etc/ssh/sshd_config && \
+   sed -i 's/#   Port 22/    Port {{ ssh_port }}/g' /etc/ssh/ssh_config && \
+   sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+   service ssh restart
+
+{% if optimum_habana_version %}
+RUN git clone -b {{ optimum_habana_version }} https://github.com/huggingface/optimum-habana.git {{ optimum_habana_path }}
+{% else %}
+RUN git clone https://github.com/huggingface/optimum-habana.git {{ optimum_habana_path }}
+{% endif %}
+
+# deepspeed model
+RUN wget https://d2vof1q8ndojgm.cloudfront.net/models/bridgetower-large-itm-mlm-itc.tar.gz
+RUN mkdir -p /validation/models/BridgeTower
+RUN tar xvzf bridgetower-large-itm-mlm-itc.tar.gz -C /validation/models/BridgeTower/
+RUN rm -f bridgetower-large-itm-mlm-itc.tar.gz
+
+# deepspeed dataset
+RUN wget https://d2vof1q8ndojgm.cloudfront.net/datasets/newyorker_caption_contest.tar.gz
+RUN mkdir -p /validation/datasets/jmhessel
+RUN tar xvzf newyorker_caption_contest.tar.gz -C /validation/datasets/jmhessel/
+RUN rm -f newyorker_caption_contest.tar.gz
+
+FROM base AS dev
+
+COPY .ssh_keys/id_rsa* /root/.ssh/
+RUN chmod 600 /root/.ssh/id_rsa && \
+    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+
+# Set working directory
+COPY . /validation
+WORKDIR /validation
+
+COPY .deepspeed_env /root/.deepspeed_env
+
+ENTRYPOINT service ssh restart && /bin/bash

@@ -1,0 +1,54 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - devices
+  - networknodes
+  - nodegroups
+  - nodegrouptopoolmappings
+  - portchannels
+  - switchports
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - devices/finalizers
+  - networknodes/finalizers
+  - nodegroups/finalizers
+  - nodegrouptopoolmappings/finalizers
+  - portchannels/finalizers
+  - switchports/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - devices/status
+  - networknodes/status
+  - nodegroups/status
+  - nodegrouptopoolmappings/status
+  - portchannels/status
+  - switchports/status
+  verbs:
+  - get
+  - patch
+  - update

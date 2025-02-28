@@ -1,0 +1,156 @@
+replicaCount: 1
+
+# Override default port of 80 because envoy image runs proxy as
+# non-root user
+listenPort: 8443
+listenAddress: 0.0.0.0
+deployment: global
+targetAddressPrefix: ""
+targetAddressSuffix: ".idcs-system.svc.cluster.local"
+
+authz:
+  enabled: false
+  address: ""
+
+envoy:
+  image:
+    repository: envoyproxy/envoy
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: v1.30.6
+  config:
+    suffix: ""
+
+service:
+  type: ClusterIP
+
+image:
+  repository: intelcloud/opa
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+opa:
+  enabled: true
+  pullPolicy: IfNotPresent
+  port: 8181
+  healthPort: 8282
+  grpcPort: 9191
+  files: /authz # /authz/external for external proxy and /authz/internal for internal proxy
+  cloudaccount:
+    addr: ""
+    useTls: false
+
+adminJwtOpaRules:
+  insecureAlwaysAllowAdminToken: false
+
+opalclient:
+  imageRegistry: internal-placeholder.com
+  repository: intelcloud/opal-client-standalone@sha256
+  # sha256:b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e
+  tag: b98db071b2bf60f98eebf75de4ff474c68baf887532fb52a2d3a55bc23c5811e
+  pullPolicy: IfNotPresent
+  port: 7000
+
+# OIDC related configuration
+# issueURL corresponds to the iss claim in JWT.
+# keyURL is the Discovery RUL that has the public keys that is used to sign the JWT token.
+# server is the oidcServer address
+oidc:
+  oidcServerConnectTimeout: 100s
+  servers:
+  - audiences:
+    - 435e26cc-529d-45ca-8814-6def72d03e81
+    - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+    issueURL: https://consumer.intel.com/6abca663-55ad-4274-84df-caa464ddef9e/v2.0/
+    keyURL: https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/discovery/v2.0/keys
+    server: consumer.intel.com
+    port: 443
+  - audiences:
+    - 435e26cc-529d-45ca-8814-6def72d03e81
+    - 5cf0ff86-a5ea-47ab-a3fc-29934041d044
+    issueURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/v2.0
+    keyURL: https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/discovery/v2.0/keys
+    server: login.microsoftonline.com
+    port: 443
+
+enableJwtValidation: true
+
+ingress:
+  enabled: false
+  hosts: []
+  externalSecret:
+    # If true, get ingress TLS secret from Vault using External Secrets.
+    enabled: false
+
+tls:
+  enabled: true
+  # The vault CA for issuing the certificate for this service.
+  # This certificate is used for both client and server connections.
+  issueCa: ""
+  # The certificate common name requested for the certificate for this service.
+  commonName: ""
+  # Parameters used by TLS clients.
+  client:
+    # The vault CA used for validating server certificates.
+    rootCa: ""
+    # insecureSkipVerify controls whether a client verifies the server's
+    # certificate chain and host name. If insecureSkipVerify is true, the client
+    # accepts any certificate presented by the server and any host name in that
+    # certificate. In this mode, TLS is susceptible to machine-in-the-middle
+    # attacks. This should be used only for testing.
+    insecureSkipVerify: false
+  # Parameters used by TLS servers.
+  server:
+    # The vault CA used for validating client certificates.
+    # (Not implemented. `client.rootCa` is used for this purpose.)
+    rootCa: ""
+    # If true, this service requires clients to provide a valid certificate.
+    requireClientCertificate: true
+
+vault:
+  service: http://vault.vault.svc.cluster.local:8200
+  refreshInterval: 1460h
+  pkiSignPathPrefix: /pki/issue
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "debug"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+gts:
+  # For production environment use url as https://apis.intel.com. This is accessible outside of intel network aswell.
+  # Development environment use url as https://apis-sandbox.intel.com.
+  usernameFile: /vault/secrets/gts_username
+  passwordFile: /vault/secrets/gts_password
+  vaultCredentialsPath: controlplane/data/gts-trade-compliance/apigee
+
+cognito:
+  enabled: false
+  endpoint: ""
+
+statsd:
+  enabled: false
+  image:
+    repository: amr-idc-registry-pre.infra-host.com/cache/prom/statsd-exporter
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: v0.26.0
+  address: "localhost"
+  port: 9125
+  prefix: ""
+
+
+otel:
+  otelAnnotations: false
+
+
+rateLimit:
+  enable: false
+  claim: "sub"
+  rateLimitedAsResourceExhausted: true
+  failureModeDeny: false
+  enableXRateLimitHeaders: DRAFT_VERSION_03

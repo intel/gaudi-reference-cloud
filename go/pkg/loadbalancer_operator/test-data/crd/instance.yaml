@@ -1,0 +1,8 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Instance
+metadata:
+  name: instance-sample
+spec:
+

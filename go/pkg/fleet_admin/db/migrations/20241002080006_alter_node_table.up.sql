@@ -1,0 +1,5 @@
+-- INTEL CONFIDENTIAL
+-- Copyright (C) 2023 Intel Corporation
+
+ALTER TABLE node 
+ALTER COLUMN node_id ADD GENERATED ALWAYS AS IDENTITY;

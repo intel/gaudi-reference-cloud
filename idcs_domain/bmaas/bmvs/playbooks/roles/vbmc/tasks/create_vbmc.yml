@@ -1,0 +1,34 @@
+---
+# Deploy a vBMC for a Guest Host
+
+- name: Include common variables
+  include_vars:
+    file: sushy_files.yml
+
+- name: Block for launching a vBMC
+  block:
+    - name: Check if the Sushy emumlator for Guest Host VM number {{ vmnum }} is running
+      command: pgrep --full {{ sushy_conf_file }}
+      register: pid_result
+      failed_when: "pid_result.rc == 0"
+      changed_when: "pid_result.rc != 0"
+    - name: Get the domuuid for Guest Host VM number {{ vmnum }}
+      command: virsh domuuid gh-node-{{ vmnum }}
+      register: domuuid_result
+      changed_when: "domuuid_result.rc != 0"
+    - name: Create sushy config file for Guest Host VM number {{ vmnum }}
+      vars:
+        sushy_port: "{{ (8000 + vmnum)|int }}"
+        gh_domuuid: "{{ domuuid_result.stdout }}"
+      ansible.builtin.template:
+        src: sushy-gh-emulator.conf.j2
+        dest: "{{ sushy_conf_file }}"
+        owner: root
+        group: root
+        mode: '0644'
+        backup: false
+    - name: Start the vBMC in the backound for Guest Host VM number {{ vmnum }}
+      ansible.builtin.shell: cd {{ sushy_log_dir }}; nohup sushy-emulator --config {{ sushy_conf_file }} </dev/null >>{{ sushy_log_file }}  2>&1 &
+      register: sushy_result
+      changed_when: "sushy_result.rc != 0"
+  become: true

@@ -1,0 +1,44 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-2204-gaudi2-1.15.0-vm-v6
+spec:
+  displayName: ubuntu-2204-gaudi2-1.15.0-vm-v6
+  description: ubuntu-2204-gaudi2-1.15.0-vm-v6
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes:
+    - vm-icp-gaudi2-1
+    - vm-icp-gaudi2-8
+  md5sum: ad0167e9fd8f2b38d649c6f18e8e4cec
+  sha256sum: 07c1f1bc5362f550e882164b41e78174da887d747faa74308a4d177ed6c8fbdd
+  sha512sum: d8ddbb909dd816adaae8ba3b7ab79bb80eefbf035e61bba208494a6692decd51a24b47ef4cd124d4c35172ce0f2808ed5908719962da9562ae8f510aecd3a1a1
+  virtualSizeBytes: 48318382080
+  labels:
+    family: ubuntu-2204-server-cloudimg
+    architecture: X86_64 (VM only)
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+  components:
+    - name: Ubuntu 22.04 Server Cloudimg
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://releases.ubuntu.com/jammy
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: Intel Gaudi SW
+      type: Software kit
+      version: "1.15.0"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/v1.15.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+    - name: Intel Gaudi SW
+      type: Firmware kit
+      version: "1.15.0"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/v1.15.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  userName: ubuntu

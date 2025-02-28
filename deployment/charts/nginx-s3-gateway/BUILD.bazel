@@ -1,0 +1,12 @@
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml", 
+    "templates/**",
+  ]),
+  package_name = "nginx-s3-gateway",  # Must not have underscores.
+  visibility = ["//visibility:public"],
+  chart_deps = ["//deployment/charts/idc-common:chart"]
+)

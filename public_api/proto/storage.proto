@@ -1,0 +1,968 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "storage-api-server";
+
+// -------------------------------------------------------------------------------------------
+// Storage - Filesystem Service
+// -------------------------------------------------------------------------------------------
+
+service FileStorageService {
+    // Provision a new filesystem volume
+    rpc Create(FilesystemCreateRequest) returns (Filesystem) {
+      option (google.api.http) = {
+        post: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems"
+        body: "*"
+      };
+      option (idc.method).authz.cloudAccount = true;
+      option (idc.method).authz.product = true;
+      option (idc.method).authz.gtsCheck = true;
+      option (idc.method).authz.authzCheck = true;
+      option (idc.method).authz.appClientAccess = true;
+    };
+    // Get the status of an filesystem.
+    rpc Get(FilesystemGetRequest) returns (Filesystem) {
+      option (google.api.http) = {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/id/{metadata.resourceId}"
+        additional_bindings {
+          get: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/name/{metadata.name}"
+        }
+      };
+      option (idc.method).authz.cloudAccount = true;
+      option (idc.method).authz.authzCheck = true;
+      option (idc.method).authz.appClientAccess = true;
+    };
+    // List filesystems.
+    rpc Search(FilesystemSearchRequest) returns (FilesystemSearchResponse) {
+      option (google.api.http) = {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems"
+      };
+      option (idc.method).authz.cloudAccount = true;
+      option (idc.method).authz.authzCheck = true;
+      option (idc.method).authz.appClientAccess = true;
+    };
+    // Update the specification of an filesystem.
+    rpc Update(FilesystemUpdateRequest) returns (Filesystem) {
+      option (google.api.http) = {
+        put: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/id/{metadata.resourceId}"
+        body: "*"
+        additional_bindings {
+          put: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/name/{metadata.name}"
+          body: "*"
+        }
+      };
+      option (idc.method).authz.cloudAccount = true;
+      option (idc.method).authz.authzCheck = true;
+      option (idc.method).authz.appClientAccess = true;
+    };
+    // Request deletion of an filesystem.
+    rpc Delete(FilesystemDeleteRequest) returns (google.protobuf.Empty) {
+      option (google.api.http) = {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/id/{metadata.resourceId}"
+        additional_bindings {
+          delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/name/{metadata.name}"
+        }
+      };
+      option (idc.method).authz.cloudAccount = true;
+      option (idc.method).authz.authzCheck = true;
+      option (idc.method).authz.appClientAccess = true;
+    };
+
+  // Request user cedentials for a filesystem.
+  rpc GetUser(FilesystemGetUserRequest) returns (FilesystemGetUserResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/id/{metadata.resourceId}/user"
+      additional_bindings {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/filesystems/name/{metadata.name}/user"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+
+    // Ping always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  }
+
+  message FilesystemCreateRequest {
+    FilesystemMetadataCreate metadata = 1;
+    FilesystemSpec spec = 2;
+  }
+  message FilesystemGetRequest {
+    FilesystemMetadataReference metadata = 1;
+  }
+
+  message FilesystemGetUserRequest {
+    FilesystemMetadataReference metadata = 1;
+  }
+
+  message FilesystemGetUserResponse {
+    // Filesystem user name
+    string user = 1;
+    // Filesystem user password
+    string password = 2;
+  }
+
+  message FilesystemSearchRequest {
+    FilesystemMetadataSearch metadata = 1;
+  }
+  
+  message FilesystemSearchResponse {
+    repeated Filesystem items = 1;
+  }
+  
+  message FilesystemUpdateRequest {
+    FilesystemMetadataUpdate metadata = 1;
+    // The entire spec will be replaced.
+    FilesystemSpec spec = 2;
+  }
+  
+  message FilesystemDeleteRequest {
+    FilesystemMetadataReference metadata = 1;
+  }
+  
+  message Filesystem {
+    FilesystemMetadata metadata = 1;
+    FilesystemSpec spec = 2;
+    FilesystemStatus status = 3;
+  }
+
+  message FilesystemSpec {
+    // Not implemented.
+    string availabilityZone = 1;
+    // Requested size in GB
+    FilesystemCapacity request = 2;
+    //storage class - Not Implemented
+    FilesystemStorageClass storageClass = 3;
+    // Filesystem type - GeneralCompute (VM, BM) or K8s
+    FilesystemType filesystemType = 4;
+    //Access mode - Not Implemented
+    FilesystemAccessModes accessModes = 5;
+    //Mount protocols -- Currently supports only weka
+    FilesystemMountProtocols mountProtocol = 6;
+    //Encryption flag
+    bool encrypted = 7;
+    //The name of the Instance type
+    string instanceType = 8 [
+      (idc.field).product = true,
+      (idc.field).gtsCheck = true
+  ];
+  }
+
+  message FilesystemSpecUpdate {
+    // Requested size in GB
+    FilesystemCapacity request = 1;
+  }
+
+  message FilesystemCapacity {
+    // Filesystem capacity in GB
+    string storage = 1;
+  }
+  
+  enum FilesystemType {
+    Unspecified = 0;
+
+    ComputeGeneral = 1;
+
+    ComputeKubernetes = 2;
+  }
+
+  enum FilesystemStorageClass {
+    // stoarge classes
+    GeneralPurpose = 0;
+
+    //AI Workload optimized storage class 
+    AIOptimized = 1;
+
+    // stoarge classes
+    GeneralPurposeStd = 2;
+  }
+
+  enum FilesystemAccessModes {
+    // Read-Write
+    ReadWrite = 0;
+    // Read-Only
+    ReadOnly = 1;
+    //ReadWriteOnce
+    ReadWriteOnce = 2;
+  }
+
+  enum FilesystemMountProtocols {
+    // Weka
+    Weka = 0;
+    // NFS
+    NFS = 1;
+  }
+
+  message FilesystemMetadata {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    string name = 2;
+    string resourceId = 3;
+    // resourceVersion can be provided with Update and Delete for concurrency control.
+    string resourceVersion = 4;
+    
+    string description = 5;
+    // Map of string keys and values that can be used to organize and categorize instances.
+    map<string, string> labels = 6;
+    google.protobuf.Timestamp creationTimestamp = 7;
+    google.protobuf.Timestamp updateTimestamp = 8;
+    // Timestamp when resource was requested to be deleted.
+    google.protobuf.Timestamp deletionTimestamp = 9;
+  }
+  
+  message FilesystemMetadataCreate {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true,
+      (idc.field).authzCheck = true
+    ];
+    // Name will be generated if empty.
+    string name = 2;
+
+    string description = 3;
+    // Map of string keys and values that can be used to organize and categorize instances.
+    map<string, string> labels = 4;
+  }
+
+  message FilesystemMetadataUpdate {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true,
+      (idc.field).authzCheck = true
+    ];
+    oneof nameOrId {
+      string name = 2;
+      string resourceId = 3;
+    }
+    // If provided, the existing record must have this resourceVersion for the request to succeed.
+    string resourceVersion = 4;
+    // The entire set of labels will be replaced with these labels.
+    // Not implemented.
+    map<string, string> labels = 5;
+  }
+  
+  // A reference to a single filesystem volume.
+  message FilesystemMetadataReference {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true,
+      (idc.field).authzCheck = true
+    ];
+    oneof nameOrId {
+      string name = 2;
+      string resourceId = 3;
+    }
+    // If provided, the existing record must have this resourceVersion for the request to succeed.
+    string resourceVersion = 4;
+  }
+  
+  message FilesystemMetadataSearch {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true,
+      (idc.field).authzCheck = true
+    ];
+    // If not empty, only return instances that have these key/value pairs.
+    map<string, string> labels = 2;
+
+    //filter by filesystem type
+    FilesystemType filterType = 3;
+  }
+
+  message FilesystemStatus {
+    // Filesystem phase.
+    FilesystemPhase phase = 1;
+    // Additional details about the state or any error conditions.
+    string message = 2;
+    // A mount interface with backend server
+    FilesystemMountStatus mount = 3;
+    // Volume Security group
+    VolumeSecurityGroup securityGroup = 4;
+  }
+
+  enum FilesystemPhase {
+    // The system is provisioning filesystem volume.
+    // Default.
+    FSProvisioning = 0;
+    // The filesystem volume is provisioned and ready to mount.
+    FSReady = 1;
+    // The filesystem volume is in process of being deleted.
+    FSDeleting = 2;
+    // The filesystem volume is deleted.
+    FSDeleted = 3;
+    // The filesystem volume creation failed.
+    FSFailed = 4;
+    // The filesystem volume is being updated
+    FSUpdating = 5;
+  }
+
+  message FilesystemMountStatus {
+    // clusterName
+    string clusterName = 1;
+    // clusterAddr
+    string clusterAddr = 2;
+    // cluster version when available
+    optional string clusterVersion = 3;
+    // Name of the filesyste organization
+    string namespace = 4;
+    // Username for this filesystem
+    string username = 5;
+    // Name of the filesyste volume
+    string filesystemName = 6;
+    // volume mount path
+    string volumePath = 7;
+  }
+
+  message VolumeSecurityGroup {
+    repeated VolumeNetworkGroup networkFilterAllow = 1;
+  }
+  
+  message VolumeNetworkGroup {
+    string subnet = 1;
+    int32 prefixLength = 2;
+    string gateway = 3;
+  }
+
+// -------------------------------------------------------------------------------------------
+// Storage - Object Store (s3) Service
+// -------------------------------------------------------------------------------------------
+
+service ObjectStorageService {
+  // Provision a new s3 bucket
+  rpc CreateBucket(ObjectBucketCreateRequest) returns (ObjectBucket) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.gtsCheck = true;
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+
+  // Get the status of an s3 bucket.
+  rpc GetBucket(ObjectBucketGetRequest) returns (ObjectBucket) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/id/{metadata.bucketId}"
+      additional_bindings {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/name/{metadata.bucketName}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+
+  // List buckets.
+  rpc SearchBucket(ObjectBucketSearchRequest) returns (ObjectBucketSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+  
+  // Request deletion of a bucket.
+  rpc DeleteBucket(ObjectBucketDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/id/{metadata.bucketId}"
+      additional_bindings {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/name/{metadata.bucketName}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+
+  // Request bucket lifecycle policy
+  rpc CreateBucketLifecycleRule(BucketLifecycleRuleCreateRequest) returns (BucketLifecycleRule) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/id/{metadata.bucketId}/lifecyclerule"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // Get bucket lifecycle policy
+  rpc GetBucketLifecycleRule(BucketLifecycleRuleGetRequest) returns (BucketLifecycleRule) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/id/{metadata.bucketId}/lifecyclerule/id/{metadata.ruleId}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // List bucket lifecycle policy
+  rpc SearchBucketLifecycleRule(BucketLifecycleRuleSearchRequest) returns (BucketLifecycleRuleSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/objects/buckets/id/{bucketId}/lifecyclerule"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // Update bucket lifecycle policy
+  rpc UpdateBucketLifecycleRule(BucketLifecycleRuleUpdateRequest) returns (BucketLifecycleRule) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/id/{metadata.bucketId}/lifecyclerule/id/{metadata.ruleId}"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // Delete bucket lifecycle policy
+  rpc DeleteBucketLifecycleRule(BucketLifecycleRuleDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/buckets/id/{metadata.bucketId}/lifecyclerule/id/{metadata.ruleId}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // Create object service user
+  rpc CreateObjectUser(CreateObjectUserRequest) returns (ObjectUser) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  
+  // Get object service user
+  rpc GetObjectUser(ObjectUserGetRequest) returns (ObjectUser) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/id/{metadata.userId}"
+      additional_bindings {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/name/{metadata.userName}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+
+  // List all object service user
+  rpc SearchObjectUser(ObjectUserSearchRequest) returns (ObjectUserSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/objects/users"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // Delete object service user
+  rpc DeleteObjectUser(ObjectUserDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/id/{metadata.userId}"
+      additional_bindings {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/name/{metadata.userName}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+
+  // Update policies for object service user
+  rpc UpdateObjectUserPolicy(ObjectUserUpdateRequest) returns (ObjectUser) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/id/{metadata.userId}/policy"
+      additional_bindings {
+        put: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/name/{metadata.userName}/policy"
+        body: "*"
+      }
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // Update credentials for object service user
+  rpc UpdateObjectUserCredentials(ObjectUserUpdateCredsRequest) returns (ObjectUser) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/id/{metadata.userId}/credentials"
+      additional_bindings {
+        put: "/v1/cloudaccounts/{metadata.cloudAccountId}/objects/users/name/{metadata.userName}/credentials"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+// -------------------------------------------------------------------------------------------
+// Bucket Policy Rule structs
+// -------------------------------------------------------------------------------------------
+
+
+message ObjectBucketCreateRequest {
+  ObjectBucketCreateMetadata metadata = 1;
+  ObjectBucketSpec spec = 2;
+}
+
+message ObjectBucketCreateMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+  // Name will be generated if empty.
+  string name = 2;
+
+  string description = 3;
+
+  // Map of string keys and values that can be used to organize and categorize instances.
+  map<string, string> labels = 4; 
+}
+
+message ObjectBucketSpec {
+  // Not implemented.
+  string availabilityZone = 1;
+  // Requested size in GB
+  StorageCapacityRequest request = 2;
+  // Is bucket should be versioned, cannot be changed later
+  bool versioned = 3;
+  // Default access policy for the bucket
+  BucketAccessPolicy accessPolicy = 4;
+  //The name of the Instance type
+  string instanceType = 5 [
+    (idc.field).product = true,
+    (idc.field).gtsCheck = true
+  ];
+}
+
+message StorageCapacityRequest {
+  string size = 1;
+}
+
+message ObjectBucket {
+  ObjectBucketMetadata metadata = 1;
+  ObjectBucketSpec spec = 2;
+  ObjectBucketStatus status = 3;
+}
+
+enum BucketAccessPolicy {
+  // If policy was not provided, will default to `ACCESS_POLICY_NONE` on creation
+  UNSPECIFIED = 0;
+
+  // No access by default, equals to private, explicit IAM policy need to be attached
+  NONE = 1;
+
+  // Read only public access
+  READ = 2;
+
+  // Read/Write public access
+  READ_WRITE = 3;
+}
+
+message ObjectBucketMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  string resourceId = 3;
+  // resourceVersion can be provided with Update and Delete for concurrency control.
+  string resourceVersion = 4;
+  
+  string description = 5;
+  // Map of string keys and values that can be used to organize and categorize instances.
+  map<string, string> labels = 6;
+  google.protobuf.Timestamp creationTimestamp = 7;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 8;
+}
+
+message ObjectBucketMetadataRef {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+  oneof nameOrId {
+    string bucketName = 2;
+    string bucketId = 3;
+  }
+}
+
+message ObjectBucketStatus {
+  // Bucket phase.
+  BucketPhase phase = 1;
+  // Additional details about the state or any error conditions.
+  string message = 2;
+
+  ObjectCluster cluster = 3;
+
+  // policy status for object bucket
+  BucketPolicyStatus policy = 4;
+
+  BucketSecurityGroup securityGroup = 5;
+}
+
+message BucketSecurityGroup {
+  repeated BucketNetworkGroup networkFilterAllow = 1;
+
+  repeated BucketNetworkGroup networkFilterDeny = 2;
+}
+
+message BucketNetworkGroup {
+  string subnet = 1;
+  int32 prefixLength = 2;
+  string gateway = 3;
+}
+
+enum BucketPhase {
+  // The system is provisioning bucket.
+  // Default.
+  BucketProvisioning = 0;
+  // The bucket is provisioned and ready to mount.
+  BucketReady = 1;
+  // The bucket is in process of being deleted.
+  BucketDeleting = 2;
+  // The bucket is deleted.
+  BucketDeleted = 3;
+  // The bucket creation failed.
+  BucketFailed = 4;
+}
+
+message ObjectBucketGetRequest {
+  ObjectBucketMetadataRef metadata= 1;
+}
+
+message ObjectBucketSearchRequest{
+  ObjectBucketSearchMetadata metadata = 1;
+}
+
+message ObjectBucketSearchMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+  // If not empty, only return instances that have these key/value pairs.
+  map<string, string> labels = 2;
+}
+
+message ObjectBucketSearchResponse {
+  repeated ObjectBucket items = 1;
+}
+
+message ObjectBucketDeleteRequest {
+  ObjectBucketMetadataRef metadata= 1;
+}
+
+
+message BucketPolicyStatus {
+  repeated BucketLifecycleRule lifecycleRules = 1;
+
+  repeated BucketUserAccess userAccessPolicies = 2;
+}
+
+// -------------------------------------------------------------------------------------------
+// Bucket Policy Rule structs
+// -------------------------------------------------------------------------------------------
+
+message BucketLifecycleRuleCreateRequest {
+  BucketLifecycleRuleMetadata metadata = 1 ;
+
+  BucketLifecycleRuleSpec spec = 2;
+}
+
+message BucketLifecycleRule {
+  BucketLifecycleRuleMetadata metadata = 1;
+
+  BucketLifecycleRuleSpec spec = 2;
+
+  BucketLifecycleRuleStatus status = 3;
+}
+
+message BucketLifecycleRuleStatus {
+  string ruleId = 1;
+
+  BucketLifecycleRuleSPhase phase = 2;
+}
+
+enum BucketLifecycleRuleSPhase {
+  LFRuleProvisioning = 0;
+
+  LFRuleReady = 1;
+
+  LFRuleFailed = 2;
+
+  LFRuleDeleting = 3;
+}
+
+message BucketLifecycleRuleMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+  string ruleName = 2;
+
+  string resourceId = 3;
+
+  string bucketId = 4;
+
+  google.protobuf.Timestamp creationTimestamp = 5;
+
+  google.protobuf.Timestamp updateTimestamp = 6;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 7;
+
+}
+
+message BucketLifecycleRuleMetadataRef {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+
+  string bucketId = 2;
+
+  string ruleId = 3;
+}
+
+message BucketLifecycleRuleSpec {
+  // A path prefix. The rule will be restricted to objects with the specified prefix.
+  // If not specified, the rule will apply to all objects in the bucket.
+  string prefix = 1;
+
+  // Expires `current` versions of objects after a specified number of days counted from object creation.
+  uint32 expireDays = 2;
+
+  // A number of days after which to permanently delete non-current versions of objects.
+  // The number of days is timed from when the object becomes non-current, which is when a
+  // versioned object is deleted or overwritten.
+  uint32 noncurrentExpireDays = 3;
+
+  // Deletes versioned objects if there only delete marker as the only version
+  bool deleteMarker = 4;
+}
+
+message BucketLifecycleRuleGetRequest {
+  BucketLifecycleRuleMetadataRef metadata = 1;
+}
+
+message BucketLifecycleRuleUpdateRequest {
+  BucketLifecycleRuleMetadataRef metadata = 1;
+
+  BucketLifecycleRuleSpec spec = 2;
+}
+
+message BucketLifecycleRuleDeleteRequest {
+  BucketLifecycleRuleMetadataRef metadata = 1;
+}
+message BucketLifecycleRuleSearchRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+
+  string bucketId = 2;
+}
+
+message BucketLifecycleRuleSearchResponse {
+  repeated BucketLifecycleRule rules = 1;
+}
+
+// -------------------------------------------------------------------------------------------
+// Object user structs
+// -------------------------------------------------------------------------------------------
+
+message BucketUserAccess {
+  ObjectUserMetadata metadata = 1;
+
+  repeated ObjectUserPermissionSpec spec = 2;
+}
+
+enum ObjectBucketActions {
+  GetBucketLocation = 0;
+  GetBucketPolicy =  1;
+  ListBucket = 2;
+  ListBucketMultipartUploads = 3;
+  ListMultipartUploadParts = 4;
+  GetBucketTagging = 5;
+}
+
+
+message CreateObjectUserRequest {
+  ObjectUserMetadataCreate metadata = 1 ;
+
+  repeated ObjectUserPermissionSpec spec = 2 ;
+}
+
+message ObjectUserPermissionSpec {
+  string bucketId = 1;
+
+  string prefix = 2;
+
+  repeated BucketPermission permission = 3;    
+
+  repeated ObjectBucketActions actions = 4; 
+}
+
+message ObjectUserPolicy {
+    string prefix = 1;
+
+    repeated BucketPermission permissions = 2;    
+
+    repeated ObjectBucketActions actions = 3;
+}
+
+enum BucketPermission {
+    // Equal to granting:
+    // ```
+    // s3:GetObject
+    // ```
+    ReadBucket = 0;
+
+    // Equal to granting:
+    // ```
+    // s3:AbortMultipartUpload
+    // s3:PutObject
+    // ```
+    WriteBucket = 1;
+
+    // Equal to granting:
+    // ```
+    // s3:DeleteObject
+    // ```
+    DeleteBucket = 2;
+
+}
+
+message ObjectUserMetadataCreate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+
+  string name = 2;
+
+}
+
+message ObjectUser {
+  ObjectUserMetadata metadata = 1;
+
+  repeated ObjectUserPermissionSpec spec = 2;
+
+  ObjectUserStatus status = 3;
+}
+
+message ObjectUserMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+  
+  string name = 2;
+  
+  string userId = 3;
+
+  map<string, string> labels = 4;
+  google.protobuf.Timestamp creationTimestamp = 5;
+  google.protobuf.Timestamp updateTimestamp = 6;
+  google.protobuf.Timestamp deleteTimestamp = 7;
+}
+
+message ObjectUserStatus {
+  ObjectUserPhase phase = 1;
+
+  AccessPrincipal principal = 2;
+}
+
+
+message AccessPrincipal {
+  ObjectCluster cluster = 1;
+
+  ObjectAccessCredentials credentials =  2;
+}
+
+message ObjectCluster {
+  string clusterId = 1;
+  string accessEndpoint = 2;
+  string clusterName =3;
+}
+
+message ObjectAccessCredentials {
+  string accessKey = 1;
+  string secretKey = 2;
+}
+
+enum ObjectUserPhase {
+  // The system is provisioning bucket.
+  // Default.
+  ObjectUserProvisioning = 0;
+  // The user is provisioned and ready to mount.
+  ObjectUserReady = 1;
+  // The user is in process of being deleted.
+  ObjectUserDeleting = 2;
+  // The user is deleted.
+  ObjectUserDeleted = 3;
+  // The user creation failed.
+  ObjectUserFailed = 4;
+}
+
+message ObjectUserMetadataRef {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+  oneof nameOrId {
+    string userName = 2;
+    string userId = 3;
+  }
+}
+
+message ObjectUserGetRequest{
+  ObjectUserMetadataRef metadata = 1;
+}
+
+message ObjectUserSearchRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).authzCheck = true
+  ];
+}
+
+message ObjectUserSearchResponse {
+  repeated ObjectUser users = 1;
+}
+
+message ObjectUserDeleteRequest {
+  ObjectUserMetadataRef metadata = 1;
+}
+
+message ObjectUserUpdateRequest {
+  ObjectUserMetadataRef metadata = 1;
+
+  repeated ObjectUserPermissionSpec spec = 2 ;
+}
+
+message ObjectUserUpdateCredsRequest {
+  ObjectUserMetadataRef metadata = 1;
+}

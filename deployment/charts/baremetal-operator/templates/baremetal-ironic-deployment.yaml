@@ -1,0 +1,285 @@
+{{- if not .Values.enableTLSandAuth }}
+{{- if not .Values.deployStandaloneBaremetalOperator -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baremetal-operator-ironic
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      name: baremetal-operator-ironic-{{ .Release.Namespace }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: baremetal-operator-ironic-{{ .Release.Namespace }}
+        app: ironic
+      annotations:
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/baremetal-configmap: {{ include (print $.Template.BasePath "/baremetal-configmap.yaml") . | sha256sum }}
+        checksum/baremetal-fw-update-configmap: {{ include (print $.Template.BasePath "/baremetal-fw-update-configmap.yaml") . | sha256sum }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - ironic
+              topologyKey: kubernetes.io/hostname
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: name
+                  operator: In
+                  values:
+                  - baremetal-operator-{{ .Release.Namespace }}
+              topologyKey: kubernetes.io/hostname
+      containers:
+      {{- if not .Values.disableIronicPodDnsmasq }}
+      - command:
+        - /bin/rundnsmasq
+        env:
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            {{- if .Values.ironicEnvConfigMap.disableIronicDHCP }}
+            - ss -lun | grep :69
+            {{- else }}
+            - ss -lun | grep :67 && ss -lun | grep :69
+            {{- end }}
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic-dnsmasq
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            {{- if .Values.ironicEnvConfigMap.disableIronicDHCP }}
+            - ss -lun | grep :69
+            {{- else }}
+            - ss -lun | grep :67 && ss -lun | grep :69
+            {{- end }}
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        securityContext:
+        {{- include "idc-common.securityContextWithCapabilities" . | nindent 12 }}
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+      {{- end }}
+      - env:
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-password
+        - name: RESTART_CONTAINER_CERTIFICATE_UPDATED
+          valueFrom:
+            configMapKeyRef:
+              key: RESTART_CONTAINER_CERTIFICATE_UPDATED
+              name: ironic-bmo-configmap
+        image: {{ .Values.mariaDBImageRepo }}:{{ .Values.mariaDBImageTag }}
+        imagePullPolicy: {{ .Values.mariaDBImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: mariadb
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+      - command:
+        - /bin/runironic
+        env:
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb-password
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:6385 || curl -sSfk https://127.0.0.1:6385
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:6385 || curl -sSfk https://127.0.0.1:6385
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+        - mountPath: /etc/ironic/fw
+          name: ironic-fw-versions-volume
+          readOnly: true
+      - command:
+        - /bin/runlogwatch.sh
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: Always
+        name: ironic-log-watch
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+      - command:
+        - /bin/runironic-inspector
+        env:
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:5050 || curl -sSf -k https://127.0.0.1:5050
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic-inspector
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSf http://127.0.0.1:5050 || curl -sSf -k https://127.0.0.1:5050
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+      - command:
+        - /bin/runhttpd
+        env:
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicImageRepo }}:{{ .Values.ironicImageTag }}
+        imagePullPolicy: {{ .Values.ironicImagePullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSfk http://127.0.0.1:6180/images
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: ironic-httpd
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - curl -sSfk http://127.0.0.1:6180/images
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+        - mountPath: /shared/html/images/fw/ironic-fw-update.json
+          name: ironic-fw-versions-volume
+          subPath: ironic-fw-update.json
+          readOnly: true
+      hostNetwork: {{ .Values.useHostNetwork }}
+      serviceAccountName: baremetal-operator-ironic
+      {{- if .Values.enableIPAinitContainer }}
+      initContainers:
+      - command:
+        - /usr/local/bin/get-resource.sh
+        env:
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.ironicIPAImageRepo }}:{{ .Values.ironicIPAImageTag }}
+        imagePullPolicy: {{ .Values.ironicIPAImagePullPolicy }}
+        name: ironic-ipa-downloader
+        volumeMounts:
+        - mountPath: /shared
+          name: ironic-data-volume
+      {{- end }}
+      volumes:
+      - emptyDir: {}
+        name: ironic-data-volume
+      - name: ironic-fw-versions-volume
+        configMap:
+          name: ironic-fw-update
+{{- end }}
+{{- end }}

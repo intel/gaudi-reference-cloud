@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-spr
+spec:
+  name: bm-spr
+  displayName: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+  description: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 56
+    id: "0x806F8"
+    modelName: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 0
+  memory:
+    size: 512Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4800
+  disks:
+    - size: 7153Gi

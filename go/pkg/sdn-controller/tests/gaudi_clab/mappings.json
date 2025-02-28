@@ -1,0 +1,6 @@
+{
+    "nodeGroupToPoolMap" : {
+        "group-1":"VB",
+        "group-2":"VB"
+    }
+}       

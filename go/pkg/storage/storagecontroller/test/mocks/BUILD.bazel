@@ -1,0 +1,88 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("@io_bazel_rules_go//extras:gomock.bzl", "gomock")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+# gazelle:exclude api_mocks.gen.go
+# gazelle:exclude weka_api_mocks.gen.go
+# gazelle:exclude s3_mocks.gen.go
+# gazelle:exclude stateful_mocks.gen.go
+
+gomock(
+    name = "api_mocks",
+    out = "api_mocks.gen.go",
+    interfaces = [
+        "NamespaceServiceClient",
+        "ClusterServiceClient",
+        "UserServiceClient",
+    ],
+    library = "//go/pkg/storage/storagecontroller/api:go_proto",
+    package = "mocks",
+    visibility = ["//visibility:public"],
+)
+
+gomock(
+    name = "stateful_mocks",
+    out = "stateful_mocks.gen.go",
+    interfaces = [
+        "StatefulClientServiceClient",
+    ],
+    library = "//go/pkg/storage/storagecontroller/api/weka:go_proto",
+    package = "mocks",
+    visibility = ["//visibility:public"],
+)
+
+gomock(
+    name = "s3_mocks",
+    out = "s3_mocks.gen.go",
+    interfaces = [
+        "S3ServiceClient",
+    ],
+    library = "//go/pkg/storage/storagecontroller/api:go_proto",
+    package = "mocks",
+    visibility = ["//visibility:public"],
+)
+
+gomock(
+    name = "weka_api_mocks",
+    out = "weka_api_mocks.gen.go",
+    interfaces = [
+        "FilesystemServiceClient",
+    ],
+    library = "//go/pkg/storage/storagecontroller/api/weka:go_proto",
+    package = "mocks",
+    visibility = ["//visibility:public"],
+)
+
+# keep
+go_library(
+    name = "mocks",
+    srcs = [
+        ":api_mocks",
+        ":s3_mocks",
+        ":stateful_mocks",
+        ":weka_api_mocks",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/test/mocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/storage/storagecontroller/api:go_proto",
+        "//go/pkg/storage/storagecontroller/api/weka:go_proto",
+        "@com_github_golang_mock//gomock",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+write_source_files(
+    name = "write_gen_mocks",
+    diff_test = False,
+    files = {
+        "api_mocks.gen.go": ":api_mocks",
+        "weka_api_mocks.gen.go": ":weka_api_mocks",
+        "s3_mocks.gen.go": ":s3_mocks",
+        "stateful_mocks.gen.go": ":stateful_mocks",
+    },
+    visibility = ["//visibility:public"],
+)

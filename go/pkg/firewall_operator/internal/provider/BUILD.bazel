@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "provider",
+    srcs = ["provider.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/firewall_operator/internal/provider",
+    visibility = ["//go/pkg/firewall_operator:__subpackages__"],
+    deps = [
+        "//go/pkg/cloudaccount",
+        "//go/pkg/firewall_operator/api/v1alpha1",
+    ],
+)

@@ -1,0 +1,25 @@
+domain: intel.com
+layout:
+- go.kubebuilder.io/v4-alpha
+projectName: product-catalog
+repo: idcs_domain/product-catalog
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: intel.com
+  group: cloud
+  kind: Vendor
+  path: idcs_domain/product-catalog/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: intel.com
+  group: cloud
+  kind: Product
+  path: idcs_domain/product-catalog/api/v1alpha1
+  version: v1alpha1
+version: "3"

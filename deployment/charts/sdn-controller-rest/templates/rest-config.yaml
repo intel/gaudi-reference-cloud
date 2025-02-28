@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sdn-controller-rest-config
+data:
+  rest_config.yaml: |
+    apiVersion: idcnetwork.intel.com/v1alpha1
+    kind: SDNControllerRestConfig
+    restConfig:
+      listenPort: {{ .Values.restConfig.listenPort }}
+      healthPort: {{ .Values.restConfig.healthPort }}
+      dataCenter: {{ .Values.restConfig.dataCenter }}
+      allowedVlanIds: {{ .Values.restConfig.allowedVlanIds }}
+      allowedNativeVlanIds: {{ .Values.restConfig.allowedNativeVlanIds }}
+      allowedTrunkGroups:
+{{ .Values.restConfig.allowedTrunkGroups | toYaml | indent 8 }}
+      portChannelsEnabled: {{ .Values.restConfig.portChannelsEnabled }}

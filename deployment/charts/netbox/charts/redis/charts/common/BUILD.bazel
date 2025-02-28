@@ -1,0 +1,11 @@
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+    name = "chart",
+    package_name = "common",
+    srcs = glob([
+        "*.yaml",
+        "templates/**",
+    ]),
+    visibility = ["//visibility:public"],
+)

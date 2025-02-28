@@ -1,0 +1,24 @@
+syntax="proto3";
+ 
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).service = "dpai";
+option (idc.file).deploy = regional;
+
+
+
+message DpaiFirewallStatusResponse {
+    bool fw_created = 1;
+    bool lb_created = 2;
+}
+
+
+
+

@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("//build/docker:docker.bzl", "idc_container_image")
+
+idc_container_image(
+    name = "baremetal_enrollment_api_image",
+    entrypoint = ["/baremetal-enrollment"],
+    files = [
+        "//go/svc/baremetal_enrollment/cmd/apiservice:baremetal-enrollment-api",
+        "//go/svc/baremetal_enrollment/cmd/enrollment:baremetal-enrollment",
+    ],
+    layers = ["//go/certs:intel_certs"],
+    visibility = ["//visibility:public"],
+)

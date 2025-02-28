@@ -1,0 +1,4 @@
+apiVersion: v2
+name: database-creator
+description: A Helm chart  to create a PostgreSQL database
+version: 0.2.3

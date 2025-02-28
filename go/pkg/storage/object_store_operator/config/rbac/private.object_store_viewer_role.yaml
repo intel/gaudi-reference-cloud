@@ -1,0 +1,26 @@
+# permissions for end users to view instances.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: object-store-viewer-role
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - objectstorages
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - objectstorages/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

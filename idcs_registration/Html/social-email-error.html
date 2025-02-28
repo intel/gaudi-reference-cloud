@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>$$CONSOLENAME$$</title>
+    <link rel="icon" href="$$CDN$$/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="$$CDN$$/static/css/main.css"
+      rel="stylesheet"
+      data-preload="true"
+    />
+    <script type="text/javascript" src="$$CDN$$/analytics.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div id="root" data-bs-theme="light" class="emailverify-template">
+      <div id="overlay"></div>
+      <div id="ajax-loader">
+        <div class="loader"></div>
+      </div>
+      <div class="container registration-container" role="main">
+        <div class="registration-section">
+          <div id="api" role="main"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    $(document).ready(function () {
+      $("form .attr>ul").addClass("registration-form ps-0");
+
+      $(document).ajaxStart(function () {
+        $("#ajax-loader, #overlay").fadeIn();
+      });
+
+      $(document).ajaxStop(function () {
+        $("#ajax-loader, #overlay").fadeOut();
+      });
+      // Update the Privacy Statement label with a link
+      $('label[for="ps_true"]').html(
+        " I opt-in to Intel® Tiber™ AI Cloud communications."
+      );
+
+      // Update the Terms and Conditions label (without a link, just text change)
+      $('label[for="toc_true"]').html(
+        'I have read and accept the <a href="https://www.intel.com/content/www/us/en/content-details/784518/intel-commercial-software-saas-terms-and-conditions.html" target="_blank">Terms and Conditions</a>'
+      );
+      var checkLoadWap = setInterval(function() {
+        if (typeof loadWap === "function") {
+            clearInterval(checkLoadWap); // Stop checking once function is available
+            loadWap(); // Call the function
+        }
+    }, 500); // Check every 500ms
+    });
+  </script>
+</html>

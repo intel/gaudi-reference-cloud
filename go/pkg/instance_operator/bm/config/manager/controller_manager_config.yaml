@@ -1,0 +1,56 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# This file contains the default values used by Helmify when it creates the Helm chart values.yaml file.
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: BmInstanceOperatorConfig
+health:
+  healthProbeBindAddress: :8081
+metrics:
+  bindAddress: 127.0.0.1:8082
+webhook:
+  port: 9443
+leaderElection:
+  leaderElect: true
+  resourceName: ad81fe2a.cloud.intel.com
+# leaderElectionReleaseOnCancel defines if the leader should step down volume
+# when the Manager ends. This requires the binary to immediately end when the
+# Manager is stopped, otherwise, this setting is unsafe. Setting this significantly
+# speeds up voluntary leader transitions as the new leader don't have to wait
+# LeaseDuration time first.
+# In the default scaffold provided, the program ends immediately after
+# the manager stops, so would be fine to enable this option. However,
+# if you are doing or is intended to do any operation such as perform cleanups
+# after the manager stops then its usage might be unsafe.
+# leaderElectionReleaseOnCancel: true
+instanceOperator:
+  sshProxyTunnelCluster:
+    # Path to the file containing the sshProxyTunnelCluster kubeconfig.
+    kubeConfigFilePath: "/vault/secrets/sshproxy_kubeconfig"
+  httpClient:
+    timeoutInSecs: 20
+    keepAlive: 25
+    tlsHandshakeTimeout: 10
+    insecureSkipVerify: true
+  filter:
+    labels:
+      instance-category: BareMetalHost
+  enableMeteringMonitorFinalizer: true
+  ddi:
+    # Allowed ddi.methods: mmws (M&M), fake
+    method: fake
+    mmws:
+      baseUrl: http://ddi-proxy:8080/mmws/api
+      userNameFilePath: /var/run/secrets/kubernetes.io/mmws/username
+      passwordFilePath: /var/run/secrets/kubernetes.io/mmws/password
+    fake:
+      subnet: 172.18.0.0/16
+      gateway: 172.18.0.1
+      prefixLength: 16
+      vlanId: 1
+osHttpServerUrl: http://172.16.0.1:50001
+networkConfig:
+  networkBackEndType: "none" # this indicates SDN will not be used.
+  provisioningVlan: 4008
+  acceleratorNetworkDefaultVlan: 100
+  accBGPNetworkDefaultCommunityID: 1000
+  storageDefaultVlan: 2100

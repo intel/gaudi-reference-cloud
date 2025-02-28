@@ -1,0 +1,45 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "idc-common.fullname" . }}-cluster-role
+  labels:
+    app: {{ include "idc-common.fullname" . }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - metal3.io
+  resources:
+  - baremetalhosts
+  verbs:
+  - get
+  - list
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "idc-common.fullname" . }}-cluster-role-binding
+  labels:
+    app.kubernetes.io/component: {{ include "idc-common.fullname" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "idc-common.fullname" . }}-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: {{ include "idc-common.serviceAccountName" . }}
+  namespace: {{ include "idc-common.namespace" . }}

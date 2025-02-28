@@ -1,0 +1,43 @@
+.card {
+    background: var(--surface-background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    box-shadow: var(--card-shadow);
+    border: var(--card-border);
+}
+
+.card .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    @extend .p-s6;
+    @extend .gap-s4;
+}
+
+.card .card-body.gap-s6 {
+    @extend .gap-s6;
+}
+
+.card .card-header {
+  display: flex;
+  align-items: flex-start;
+  align-self: stretch;
+  @extend .p-s6;
+  @extend .gap-s4;
+}
+
+.card.bg-surface-gradient {
+    background: var(--surface-background-gradient-color);
+}
+
+.card.bg-surface-third-party-product {
+    background: var(--surface-background-third-party-product-color);
+}
+
+
+.card.card-border-top {
+    border-top: var(--card-border-top);
+}

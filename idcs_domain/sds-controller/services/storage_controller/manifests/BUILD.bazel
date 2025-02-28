@@ -1,0 +1,48 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load", "oci_push")
+load("@rules_oci_helpers//rules:setup_oci_image.bzl", "setup_oci_image")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+setup_oci_image(
+    name = "image_file",
+    out = "base/image.yaml",
+    image = "//services/storage_controller:image_push",
+    template = "image.tpl",
+)
+
+pkg_tar(
+    name = "tar",
+    srcs = glob([
+        "stage/**/*",
+        "base/**/*",
+        "prod/**/*",
+    ]) + [":image_file"],
+    extension = "tar.gz",
+    strip_prefix = ".",
+)
+
+oci_image(
+    name = "image",
+    architecture = select({
+        "@platforms//cpu:arm64": "arm64",
+        "@platforms//cpu:x86_64": "amd64",
+    }),
+    os = "linux",
+    tars = [
+        ":tar",
+    ],
+)
+
+oci_load(
+    name = "image_load",
+    image = ":image",
+    repo_tags = ["localtest.localhost/storage_controller:latest"],
+)
+
+oci_push(
+    name = "image_push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = "localtest.localhost/storage_controller",
+)

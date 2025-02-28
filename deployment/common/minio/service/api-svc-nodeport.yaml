@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    v1.min.io/tenant: minio-idc
+  name: minio-nodeport
+  namespace: minio-idc-tenant
+spec:
+  ports:
+  - name: https-minio
+    port: 443
+    protocol: TCP
+    targetPort: 9000
+    nodePort: 30443
+  selector:
+    v1.min.io/tenant: minio-idc
+  type: NodePort

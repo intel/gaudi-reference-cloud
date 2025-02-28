@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# permissions for end users to view instances.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: storage-viewer-role
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - storages
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - storages/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "k6_module",
+    srcs = ["register.go"],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/ci/k6",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ci/k6/modules",
+        "@io_k6_go_k6//js/modules",
+    ],
+)

@@ -1,0 +1,18 @@
+{
+    "apiVersion": "cloud.intel.com/v1alpha1",
+    "kind": "Instance",
+    "metadata": {
+        "name": "load-vm-<<index>>",
+        "namespace": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+        "labels": {
+            "cloud.intel.com/instance-category": "virtual-machine"
+        }
+    },
+    "spec": {
+        "instanceType": "tiny",
+        "machineImage": "ubuntu-22.04",
+        "sshPublicKeyNames": [
+            "mani-vm.example.com"
+        ]
+    }
+}

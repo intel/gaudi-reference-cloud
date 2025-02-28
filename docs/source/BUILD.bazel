@@ -1,0 +1,29 @@
+# Sphinx rules, including the Python environment for building Sphinx documents, are defined in /build/rules_sphinx.
+load("@rules_sphinx//sphinx:defs.bzl", "sphinx_html")
+
+sphinx_html(
+    name = "private_docs",
+    config = "conf.py",
+    index = "private/index.rst",
+    srcs = glob(
+        ["**/*"],
+        exclude = ["_build/**"],
+    ),
+    env = {
+        "PROJECT": "private",
+    },
+    visibility = ["//visibility:public"],
+)
+
+# Public docs do not build yet because they require the nbsphinx extension which is not working in Jenkins Bazel.
+# See https://github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/pull/3999.
+sphinx_html(
+    name = "public_docs",
+    config = "conf.py",
+    index = "public/index.rst",
+    srcs = glob(
+        ["**/*"],
+        exclude = ["_build/**"],
+    ),
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,160 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1;
+
+import "buf/validate/validate.proto";
+import "intel/storagecontroller/v1/common.proto";
+import "intel/storagecontroller/v1/namespace.proto";
+
+option go_package = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/api/intel/storagecontroller/v1";
+
+// Service used to manage user inside the `Namespace`
+service UserService {
+  // Queries all available user in the namespace
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
+
+  // Get specific user in the namespace.
+  // If user is not found returns NotFound error.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+
+  // Create new user in the namespace
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+
+  // Update user in the namespace
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {}
+
+  // Delete user from the namespace, response is empty use gRPC
+  // status codes to infer if delete was successful or not.
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+
+  // Updates user password in the namespace, namespace admin function
+  rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (UpdateUserPasswordResponse) {}
+}
+
+message ListUsersRequest {
+  // ID of the namespace to query
+  NamespaceIdentifier namespace_id = 1 [(buf.validate.field).required = true];
+
+  // Filter, can be used to filter out specific results
+  Filter filter = 2;
+
+  // Authentication info, should have `Admin` role
+  AuthenticationContext auth_ctx = 100;
+
+  message Filter {
+    // Collection of `User` names to include
+    repeated string names = 1;
+  }
+}
+
+message ListUsersResponse {
+  // Collection containing foud users
+  repeated User users = 1;
+}
+
+message GetUserRequest {
+  // ID of the user
+  UserIdentifier user_id = 1 [(buf.validate.field).required = true];
+
+  // Authentication info, should have `Admin` role
+  AuthenticationContext auth_ctx = 100;
+}
+
+message GetUserResponse {
+  // If user was found, contains `User` object
+  User user = 1;
+}
+
+message CreateUserRequest {
+  // ID of the namespace to create user in
+  NamespaceIdentifier namespace_id = 1 [(buf.validate.field).required = true];
+
+  // Name of the user, used in `Basic` credentials as a `principal`
+  string user_name = 2 [(buf.validate.field).string.min_len = 1];
+
+  // Password for the user, used in `Basic` credentials as a `credentials`
+  string user_password = 3 [(buf.validate.field).string.min_len = 5];
+
+  // Role of the user
+  User.Role role = 4;
+
+  // Authentication info, should have `Admin` role
+  AuthenticationContext auth_ctx = 100;
+}
+
+message CreateUserResponse {
+  // Created user
+  User user = 1;
+}
+
+// At the moment only Role can be updated
+message UpdateUserRequest {
+  // ID of the user to update
+  UserIdentifier user_id = 1 [(buf.validate.field).required = true];
+
+  // New user role
+  User.Role role = 2;
+
+  // Authentication info, should have `Admin` role
+  AuthenticationContext auth_ctx = 100;
+}
+
+message UpdateUserResponse {
+  // Updated user
+  User user = 1;
+}
+
+message DeleteUserRequest {
+  // ID of the user
+  UserIdentifier user_id = 1 [(buf.validate.field).required = true];
+
+  // Authentication info, should have `Admin` role
+  AuthenticationContext auth_ctx = 100;
+}
+
+message DeleteUserResponse {}
+
+message UpdateUserPasswordRequest {
+  // ID of the user
+  UserIdentifier user_id = 1 [(buf.validate.field).required = true];
+
+  // New password of the user
+  string new_password = 2 [(buf.validate.field).string.min_len = 5];
+
+  // Authentication info, should have `Admin` role
+  AuthenticationContext auth_ctx = 100;
+}
+
+message UpdateUserPasswordResponse {}
+
+message UserIdentifier {
+  // ID of the namespace
+  NamespaceIdentifier namespace_id = 1 [(buf.validate.field).required = true];
+
+  // ID of the user, arbitrary string, usualy a uuid/uid
+  string id = 2 [(buf.validate.field).string.min_len = 1];
+}
+
+message User {
+  // ID of the user
+  UserIdentifier id = 1 [(buf.validate.field).required = true];
+
+  // User name, usualy equals to principal
+  string name = 2;
+
+  // User role
+  Role role = 3;
+
+  enum Role {
+    // If roles was not provided
+    ROLE_UNSPECIFIED = 0;
+
+    // Namespace Admin role, can manage namespace resources
+    ROLE_ADMIN = 1;
+
+    // Namespace regular user role
+    ROLE_REGULAR = 2;
+  }
+}

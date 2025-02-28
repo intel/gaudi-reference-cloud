@@ -1,0 +1,11 @@
+.horizontalLine {
+  min-height: 0.0625rem;
+  width: 100%;
+  background: var(--gray-400);
+}
+
+.verticalLine {
+  min-width: 0.0625rem;
+  height: 100%;
+  background: var(--gray-400);
+}

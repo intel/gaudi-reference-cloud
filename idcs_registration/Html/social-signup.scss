@@ -1,0 +1,15 @@
+.social-signup-template {
+  #api .intro p,
+  #cancel,
+  .helpLink.tiny,
+  .verifying-modal,
+  .TextBox:has( #extension_country),
+  #toc_label,
+  #optIn_label {
+    display: none;
+  }
+}
+
+#countryName.placeholder-color:not(:focus-visible) {
+  color: var(--form-control-place-holder-color);
+}

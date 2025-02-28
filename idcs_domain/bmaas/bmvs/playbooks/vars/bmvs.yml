@@ -1,0 +1,8 @@
+---
+data_network: "{{ default_data_network }}"
+storage_network: "{{ default_storage_network }}"
+data_network_file: "{{ default_data_network_file }}"
+guest_host_network: "{{ default_host_network }}"
+guest_host_memory_mb: "{{ default_host_memory_mb }}"
+guest_host_disk_gb: "{{ default_host_disk_gb }}"
+guest_host_vcpu: "{{ default_host_vcpu }}"

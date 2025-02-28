@@ -1,0 +1,8 @@
+{
+  "TemplateName": "Multi-User-Invitation-Accept-Template",
+  "TemplateContent": {
+    "Subject": "Your Invitation Code to verify invitation Access #{{invitationCode}}",
+    "Text": "Dear Intel Developer Cloud Customer,\n\nPlease enter the below mentioned invitation code to verify your account.\n\n\n\n{{invitationCode}}\n\nSincerely,\nIntel Cloud Services",
+    "Html": "<p>Dear Intel Developer Cloud Customer,</p><p>Please enter the below mentioned invitation code to verify your account.<br><br><b>{{invitationCode}}</b><br><br></p><p>Sincerely,<br>Intel Cloud Services</p>"
+  }
+}

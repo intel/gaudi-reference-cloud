@@ -1,0 +1,33 @@
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatch
+tag-prefix: ''
+major-version-bump-message: ^(breaking|major).+
+minor-version-bump-message: ^(minor|feature).+
+patch-version-bump-message: ^(fix|patch).+
+no-bump-message: ^(none|skip).+
+branches:
+  main:
+    label: ''
+    mode: ContinuousDeployment
+    increment: Patch
+    prevent-increment:
+      of-merged-branch: true
+    track-merge-target: false
+    track-merge-message: true
+    regex: ^master$|^main$
+    source-branches: []
+    is-source-branch-for: []
+    tracks-release-branches: false
+    is-release-branch: false
+    is-main-branch: true
+    pre-release-weight: 55000
+  unknown:
+    increment: Patch
+    label: "xxx00"
+    prevent-increment:
+      when-current-commit-tagged: false
+    regex: (?<BranchName>.+)
+    source-branches:
+    - main
+    is-source-branch-for: []
+    pre-release-weight: 30000

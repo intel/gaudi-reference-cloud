@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-controller
+spec:
+  template:
+    metadata:
+      labels:
+        sidecar.istio.io/inject: "true"
+    spec:
+      volumes:
+        - name: pdx11-storage-controller-creds
+          secret:
+            secretName: pdx11-storage-controller-creds
+            items:
+              - key: _raw
+                path: pdx11-storage-controller-creds.json
+      containers:
+        - name: storage-controller
+          volumeMounts:
+            - name: pdx11-storage-controller-creds
+              mountPath: /app/secret/pdx11-storage-controller-creds.json
+              subPath: pdx11-storage-controller-creds.json
+              readOnly: true

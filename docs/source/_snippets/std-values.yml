@@ -1,0 +1,25 @@
+# Default values for tgi-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+modelName: runwayml/stable-diffusion-v1-5
+
+hostVolumePath: /scratch-2/data
+
+image:
+  repository: docker.io/rramamu1/std-gaudi
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  numofgaudi: 1
+  hugepages2Mi: 500Mi
+  #cpu: 25
+  memory: 60G

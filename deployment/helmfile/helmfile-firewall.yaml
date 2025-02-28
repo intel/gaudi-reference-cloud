@@ -1,0 +1,77 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+{{- if $availabilityZone.firewall.enabled }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-firewall-crds") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: firewall
+      service: firewall
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: firewall-crds
+    chart: idc/firewall-crds
+    version: {{ readFile (print $helmChartVersionsDir "/firewall-crds.version") | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-firewall-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: firewall
+      service: firewall
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: firewall-operator
+    chart: idc/firewall-operator
+    version: {{ readFile (print $helmChartVersionsDir "/firewall-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - firewallAPI:
+          baseURL: {{ $availabilityZone.firewall.firewallAPI.baseURL | quote }}
+          environment: {{ $availabilityZone.firewall.firewallAPI.environment | quote }}
+          region: {{ $availabilityZone.firewall.firewallAPI.region | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-firewall-operator/api
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}firewall-operator@sha256"
+      - serviceMonitor: 
+          enabled: {{ $availabilityZone.firewall.serviceMonitor.enabled }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+
+{{- end }}
+{{- end }}
+{{- end }}

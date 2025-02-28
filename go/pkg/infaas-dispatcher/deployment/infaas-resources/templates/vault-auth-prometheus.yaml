@@ -1,0 +1,13 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-prometheus-auth
+  namespace: idcs-prometheus
+spec:
+  method: kubernetes
+  mount: cluster-auth
+  kubernetes:
+    role: {{ .Values.region }}-maas-prometheus-role
+    serviceAccount: prometheus-prometheus-node-exporter
+    audiences:
+      - https://kubernetes.default.svc

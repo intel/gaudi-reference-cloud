@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "mocks",
+    srcs = [
+        "bucket.go",
+        "client.go",
+        "cluster.go",
+        "container.go",
+        "filesystem.go",
+        "lifecyclerule.go",
+        "login.go",
+        "organization.go",
+        "policy.go",
+        "user.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/backend/weka/client/v4/mocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/storage_controller/pkg/backend/weka/client/v4",
+    ],
+)

@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+sh_test(
+    name = "dummy_test",
+    size = "small",
+    srcs = ["test.sh"],
+)
+
+go_library(
+    name = "ci_image_lib",
+    srcs = ["lib.go"],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/ci/ci_image",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "ci_image_test",
+    srcs = ["lib_test.go"],
+    embed = [":ci_image_lib"],
+)

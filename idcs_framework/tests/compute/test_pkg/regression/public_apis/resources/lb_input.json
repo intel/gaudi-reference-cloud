@@ -1,0 +1,72 @@
+{
+    "instanceTypeToBeCreated": "vm-spr-med",
+    "machineImageToBeUsed": "ubuntu-2204-jammy-v20240308",
+    "vmInstancePayload": {
+        "metadata": {
+            "name": "<<instance-name>>"
+          },
+          "spec": {
+            "availabilityZone": "<<availability-zone>>",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+              "<<ssh-key-name>>"
+            ],
+            "interfaces": [
+              {
+                "name": "eth0",
+                "vNet": "<<vnet-name>>"
+              }
+            ]
+          }
+    },
+    "lbInstancePayload": { 
+        "metadata": { 
+            "name": "<<lb-name>>", 
+            "cloudAccount": "<<cloud-account>>"
+        }, 
+        "spec": { 
+            "listeners": [ 
+                { 
+                    "port": "80", 
+                    "pool": { 
+                        "port": "8080", 
+                        "monitor": "tcp", 
+                        "loadBalancingMode": "roundRobin", 
+                        "instanceResourceIds": [ 
+                            "<<instance-resource-id>>" 
+                        ] 
+                    } 
+                }
+            ], 
+            "security": { 
+                "sourceips": [ 
+                    "any"
+                ] 
+            } 
+        } 
+    },
+    "lbPutPayload":{
+        "spec": { 
+            "listeners": [ 
+                { 
+                    "port": "<<existing-port>>", 
+                    "pool": { 
+                        "port": "8080", 
+                        "monitor": "tcp", 
+                        "loadBalancingMode": "roundRobin", 
+                        "instanceResourceIds": [ 
+                            "<<instance-resource-id>>" 
+                        ] 
+                    } 
+                }
+            ], 
+            "security": { 
+                "sourceips": [ 
+                    "any" 
+                ] 
+            } 
+        } 
+    }
+}

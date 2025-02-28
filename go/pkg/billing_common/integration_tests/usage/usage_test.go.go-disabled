@@ -1,0 +1,30 @@
+package tests
+
+import (
+	"context"
+	"testing"
+
+	billingCommon "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_common"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/grpcutil"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/log"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb"
+)
+
+var (
+	usageClient            *billingCommon.UsageClient
+	Xeon3SmallInstanceType = "vm.xeon3.small"
+	IdcComputeServiceName  = "compute"
+	DefaultServiceRegion   = "hillsboro-1"
+)
+
+func TestMain(m *testing.M) {
+	grpcutil.UseTLS = false
+	log.SetDefaultLogger()
+	ctx := context.Background()
+	EmbedService(ctx)
+	grpcutil.StartTestServices(ctx)
+	defer grpcutil.StopTestServices()
+	meteringClient := pb.NewMeteringServiceClient(meteringClientConn)
+	usageClient = billingCommon.NewTestUsageClient(meteringClient)
+	m.Run()
+}

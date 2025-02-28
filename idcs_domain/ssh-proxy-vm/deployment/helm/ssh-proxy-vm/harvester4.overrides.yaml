@@ -1,0 +1,6 @@
+network:
+  subnet0:
+    address: "10.165.163.48/22"
+    gateway: "10.165.160.1"
+  subnet1:
+    address: "172.16.0.1/16"

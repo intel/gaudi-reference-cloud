@@ -1,0 +1,68 @@
+---
+
+# TODO: refactor to use community.libvirt.virt_net
+
+# Network need to be created as root; primarily due
+# to the restriction on creating network interfaces
+
+- name: Create libvirt network for {{ network }}
+  block:
+  - name: Check if libvirt network is already running...
+    ansible.builtin.shell:
+      cmd: >
+        virsh net-info "{{ network }}"
+    register: netstate_result
+    failed_when: "netstate_result.rc == 0"
+    changed_when: "netstate_result.rc != 0"
+  - name: get kind network gateway
+    ansible.builtin.shell:
+      cmd: >
+        docker inspect -f "{{ '{{' }}(index .IPAM.Config 0).Gateway{{ '}}' }}" kind
+    register: kind_net_gateway_result
+    changed_when: "netstate_result.rc != 0"
+  - name: get kind network bridge name
+    ansible.builtin.shell:
+      cmd: >
+        ip addr | grep -B2 "inet {{ kind_net_gateway_result.stdout }}" | head -1 | cut -d: -f2 | xargs
+    register: bridge_name_result
+    changed_when: "netstate_result.rc != 0"
+  - name: set kind network bridge name
+    set_fact:
+      bridge_name={{ bridge_name_result.stdout }}
+    when: bridge_name_result.stdout is search("br-")
+    changed_when: "netstate_result.rc != 0"
+  - name: Create temporary network file
+    become: true
+    ansible.builtin.tempfile:
+      state: file
+      suffix: temp
+    register: net_data_tempfile
+  - name: Define network XML for {{ network }}
+    ansible.builtin.template:
+      src: net-{{ network }}.xml.j2
+      dest: "{{ net_data_tempfile.path }}"
+      owner: root
+      group: root
+      mode: '0644'
+      backup: false
+  - name: define libvirt network for {{ network }}
+    command: virsh net-define {{ net_data_tempfile.path }}
+    register: result
+    changed_when: "result.rc != 0"
+  - name: start libvirt network for {{ network }}
+    command: virsh net-start {{ network }}
+    register: result
+    changed_when: "result.rc != 0"
+  - name: Set autostart libvirt network for {{ network }}
+    command: virsh net-autostart {{ network }}
+    register: result
+    changed_when: "result.rc != 0"
+  always:
+    - name: Clean up the temporary file
+      ansible.builtin.file:
+        path: "{{ net_data_tempfile.path }}"
+        state: absent
+      when: net_data_tempfile.path is defined
+  vars:
+    ansible_network_os: 'ios'
+  become: true

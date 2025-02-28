@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    baseURL: {{ .Values.firewallAPI.baseURL | quote }}
+    environment:  {{ .Values.firewallAPI.environment | quote }}
+    region:  {{ .Values.firewallAPI.region | quote }}
+    userNameFile: /vault/secrets/api_username
+    passwordFile: /vault/secrets/api_password
+    regionId: {{ .Values.regionId | quote }}
+    availabilityZoneId: {{ .Values.availabilityZoneId | quote }}
+    maxConcurrentReconciles: 1

@@ -1,0 +1,32 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - ilbs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - ilbs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - ilbs/status
+  verbs:
+  - get
+  - patch
+  - update

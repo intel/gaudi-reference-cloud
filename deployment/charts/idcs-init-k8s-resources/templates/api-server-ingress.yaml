@@ -1,0 +1,29 @@
+{{- if .Values.apiServerIngress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations: 
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    {{- if eq .Values.apiServerIngress.cors.enable "true" }}
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    {{ end }}
+  name: {{ .Values.apiServerIngress.name }}
+  namespace: {{ .Values.apiServerIngress.namespace }}
+spec:
+  ingressClassName: {{ .Values.apiServerIngress.className }}
+  rules:
+  - host: "{{ .Values.apiServerIngress.name }}.{{ .Values.apiServerIngress.domain }}"
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ .Values.apiServerIngress.serviceName }}
+            port:
+              number: {{ .Values.apiServerIngress.port }}
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - "{{ .Values.apiServerIngress.name }}.{{ .Values.apiServerIngress.domain }}"
+    secretName: {{ .Values.apiServerIngress.tlsSecretName }}
+{{- end }}

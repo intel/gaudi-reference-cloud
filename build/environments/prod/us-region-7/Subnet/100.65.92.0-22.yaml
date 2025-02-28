@@ -1,0 +1,4 @@
+availabilityZone: us-region-7a
+region: us-region-7
+subnet: 100.65.92.0/22
+vlanId: 28

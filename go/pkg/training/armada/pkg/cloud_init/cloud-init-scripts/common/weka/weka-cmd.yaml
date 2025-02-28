@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- curl {{ Values.InstallWekaClient }} | sudo sh
+- weka user login -H {{ Values.WekaClusterAddr }} --org {{ Values.WekaNamespace }} {{ Values.User }} "{{ Values.Password }}"
+- sudo mkdir {{ Values.LocalMountDir }}
+- sudo weka mount -t wekafs -o net=udp {{ Values.RemoteMountPoint }} {{ Values.LocalMountDir }}

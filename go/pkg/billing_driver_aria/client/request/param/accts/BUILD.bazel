@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "accts",
+    srcs = [
+        "acct.go",
+        "acct_supp_field.go",
+        "billing_group.go",
+        "collection_acct_groups_update.go",
+        "coupon_code.go",
+        "dunning_group.go",
+        "functional_acct_group.go",
+        "functional_acct_groups_update.go",
+        "master_plans_detail.go",
+        "product_catalog_plan_filter.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_aria/client/request/param/accts",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "accts_test",
+    srcs = ["acct_test.go"],
+    embed = [":accts"],
+    deps = ["@in_gopkg_yaml_v3//:yaml_v3"],
+)

@@ -1,0 +1,29 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: jupyterhub
+  namespace: "{- namespace -}"
+spec:
+  selector: component == 'singleuser-server'
+  order: 0
+  ingress:
+    - action: Allow
+      source:
+        namespaceSelector: projectcalico.org/name == 'jupyterhub'
+      destination:
+        ports:
+          - notebook-port
+      protocol: TCP
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: hub
+          namespace: jupyterhub
+    - action: Allow
+      destination:
+        services:
+          name: proxy-api
+          namespace: jupyterhub

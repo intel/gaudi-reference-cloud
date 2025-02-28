@@ -1,0 +1,31 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Check harvester temporary files in every 30 mins and delete those temporary files which didn’t get updated in last 3 hours
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: harvester-cleanup
+spec:
+  selector:
+    matchLabels:
+      name: harvester-cleanup
+  template:
+    metadata:
+      labels:
+        name: harvester-cleanup
+    spec:
+      containers:
+      - name: harvester-cleanup
+        image: busybox:1.35.0
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'while true; do echo $(date) harvester-cleanup started; find /host/tmp.* -maxdepth 1 -type d -mmin +180 -print0 2>/dev/null | xargs -r0 rm -rfv; echo $(date) harvester-cleanup completed; sleep 1800; done']
+        volumeMounts:
+         - mountPath: "/host"
+           name: harvester-temp
+        securityContext:
+         privileged: true
+      restartPolicy: Always
+      volumes:
+       - name: harvester-temp
+         hostPath:
+          path: /usr/local/.state/var-lib-rancher.bind/agent/tmp

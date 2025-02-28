@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-spr-hbm-c
+spec:
+  name: bm-spr-hbm-c
+  displayName: 4th Gen Intel® Xeon® processors with high bandwidth memory (HBM) – Cache mode
+  description: 4th Gen Intel® Xeon® processors with high bandwidth memory (HBM) – Cache mode
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 56
+    id: "0x806F8"
+    modelName: 4th Gen Intel® Xeon® processors with high bandwidth memory (HBM)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 0
+  hbmMode: HBM-Cache
+  memory:
+    size: 256Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4000
+  disks:
+    - size: 2000Gi

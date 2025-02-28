@@ -1,0 +1,53 @@
+# Ref: https://www.hashicorp.com/blog/dynamic-database-credentials-with-vault-and-kubernetes
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: enrollment
+  namespace: idcs-enrollment
+automountServiceAccountToken: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: idcs-enrollment
+  labels:
+    app: enrollment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enrollment
+  template:
+    metadata:
+      labels:
+        app: enrollment
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: update
+        vault.hashicorp.com/agent-inject-secret-approle: "enrollment/data/approle"
+        vault.hashicorp.com/agent-inject-secret-secret-id: "enrollment/data/approle"
+        vault.hashicorp.com/agent-inject-secret-netbox: "enrollment/data/netbox"
+        vault.hashicorp.com/agent-inject-secret-default-bmc: "enrollment/data/bmc/default"
+        vault.hashicorp.com/agent-inject-template-netbox: |
+          {{- with secret "enrollment/data/netbox" -}}
+          ---
+          token: {{ .Data.data.token }}
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-approle: |
+          {{- with secret "enrollment/data/approle" -}}
+          ---
+          role-id: {{ .Data.data.role_id }}
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-secret-id: |
+          {{- with secret "enrollment/data/approle" -}}
+          {{ .Data.data.secret_id }}
+          {{- end }}
+        vault.hashicorp.com/role: "enrollment-role"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+    spec:
+      serviceAccountName: enrollment
+      containers:
+        - name: enrollment
+          image: nicholasjackson/fake-service:v0.7.3

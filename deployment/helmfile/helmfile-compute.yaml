@@ -1,0 +1,81 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: jetstack
+    url: https://charts.jetstack.io
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+  {{- if ($region.computeDb.enabled) }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-compute-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: compute
+      service: compute
+      database: compute
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: compute-db
+      clusterName: {{ $clusterName | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-compute_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-compute_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region.computeDb.primary.persistence.enabled }}
+  {{- end }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if $availabilityZone.computeCRDs.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-compute-crds") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: compute
+      service: compute
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: compute-crds
+    chart: idc/compute-crds
+    version: {{ readFile (print $helmChartVersionsDir "/compute-crds.version") | quote }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

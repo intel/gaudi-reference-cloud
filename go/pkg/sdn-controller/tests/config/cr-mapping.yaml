@@ -1,0 +1,39 @@
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NodeGroupToPoolMapping
+metadata:
+  name: "group-1"
+  namespace: idcs-system  
+spec:
+  pool: ""
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NodeGroupToPoolMapping
+metadata:
+  name: "group-2"
+  namespace: idcs-system
+spec:
+  pool: ""
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NodeGroupToPoolMapping
+metadata:
+  name: "group-3"
+  namespace: idcs-system
+spec:
+  pool: ""
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NodeGroupToPoolMapping
+metadata:
+  name: "group-4"
+  namespace: idcs-system
+spec:
+  pool: "XBX"
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NodeGroupToPoolMapping
+metadata:
+  name: "group-5"
+  namespace: idcs-system
+spec:
+  pool: "XBX"

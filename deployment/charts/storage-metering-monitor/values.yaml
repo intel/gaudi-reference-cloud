@@ -1,0 +1,62 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/storage-metering-monitor@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+managerConfig:
+  controllerManagerConfigYaml:
+    health:
+      healthProbeBindAddress: :8081
+    leaderElection:
+      leaderElect: true
+      resourceName: 6876nm22.cloud.intel.com
+    # Usage records for running instances will be sent periodically with this interval.
+    # The actual interval will be slightly less by a random value to avoid bursts.
+    maxUsageRecordSendIntervalMinutes: 60
+    # The address of the global metering service in format "host:port".
+    # This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+    meteringServerAddr: metering.idcs-system.svc.cluster.local:8443
+    meteringServerUseTls: false
+    servicetype: "FileStorageAsAService"
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    webhook:
+      port: 9443
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+cognito:
+  enabled: false
+  endpoint: ""

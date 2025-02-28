@@ -1,0 +1,27 @@
+---
+- name: Memory Stress Test using stress-ng
+  hosts: vm
+  become: yes  # Run with sudo privileges
+  tasks:
+    - name: Install stress-ng and cpulimit if not present
+      ansible.builtin.apt:
+        name: 
+          - stress-ng
+          - cpulimit
+        state: present
+
+    - name: Run stress-ng to stress memory
+      ansible.builtin.shell: |
+        nohup cpulimit -l 50 -- stress-ng --vm {{ vm_count }} --vm-bytes {{ vm_bytes }} --timeout {{ execution_time }} --metrics-brief ./stress_ng_output_12h.txt 2>&1 &
+      async: {{ async_timeout }}     
+      poll: 0       
+      register: stress_job 
+
+    - name: Wait for stress-ng job to complete
+      ansible.builtin.async_status:
+        jid: "{{ stress_job.ansible_job_id }}" 
+      register: job_result
+      until: job_result.finished
+      retries: "{{ retries_count }}"
+      delay: "{{ delay_second }} "
+    

@@ -1,0 +1,11 @@
+- name: Connect to Harvester VM and install FIO
+  hosts: vm
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Install fio
+    ansible.builtin.apt:
+      name: fio
+      state: latest
+      update_cache: yes

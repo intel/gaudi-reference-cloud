@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "quick_connect_api_server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/quick_connect/api_server/cmd/quick_connect_api_server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/quick_connect/api_server/api",
+        "//go/pkg/quick_connect/secrets",
+        "//go/pkg/tlsutil",
+        "@com_github_gin_gonic_gin//:gin",
+        "@org_golang_x_sync//errgroup",
+    ],
+)
+
+go_binary(
+    name = "quick_connect_api_server",
+    embed = [":quick_connect_api_server_lib"],
+    visibility = ["//visibility:public"],
+)

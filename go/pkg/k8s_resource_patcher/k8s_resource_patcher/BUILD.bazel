@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "k8s_resource_patcher",
+    srcs = ["k8s_resource_patcher.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s_resource_patcher/k8s_resource_patcher",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/util",
+        "//go/pkg/k8s_resource_patcher/config",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/pb",
+        "//go/pkg/tools/k8s",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_client_go//dynamic",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//util/retry",
+    ],
+)

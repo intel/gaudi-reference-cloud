@@ -1,0 +1,54 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.tradeScanner.enabled }}
+  - name: trade-scanner
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: tradeScanner
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: trade-scanner
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/trade-scanner
+    version: {{ readFile (print $helmChartVersionsDir "/trade-scanner.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.tradeScanner.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}trade-scanner@sha256"
+      - commonConfig:
+          maxDefaultHistory: {{ (.Values.commonConfig).maxDefaultHistory }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+      - gts:
+          usernameFile: /vault/secrets/gts_username
+          passwordFile: /vault/secrets/gts_password
+          vaultCredentialsPath: "controlplane/data/gts-trade-compliance/apigee"
+  {{- end }}
+
+{{- end }}
+{{- end }}

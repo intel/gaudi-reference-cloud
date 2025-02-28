@@ -1,0 +1,274 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+enum CloudCreditReason {
+  CREDITS_UNSPECIFIED = 0;
+  CREDITS_INITIAL = 1;
+  CREDITS_PURCHASED = 2;
+  CREDITS_COUPON = 3;
+}
+
+enum CloudCreditsState {
+  CLOUD_CREDITS_STATE_UNSPECIFIED = 0;
+  CLOUD_CREDITS_STATE_AVAILABLE = 1;
+  CLOUD_CREDITS_STATE_THRESHOLD_REACHED = 2;
+  CLOUD_CREDITS_STATE_USED = 3;
+  CLOUD_CREDITS_STATE_EXPIRED = 4;
+  CLOUD_CREDITS_STATE_OUTDATED = 5;
+}
+
+message CouponFilter {
+  optional string code = 1;
+  optional google.protobuf.Timestamp redeemed = 2;
+  optional string creator = 3;
+}
+
+message CouponResponse {
+  repeated Coupon coupons = 1;
+  repeated CouponRedemption redemptions = 2;
+}
+
+message CloudCreditsCouponRedeem {
+  string code = 1;
+  string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+}
+
+message CouponDisable {
+  string code = 1;
+  google.protobuf.Timestamp disabled = 2;
+}
+
+message CouponCreate {
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp expires = 3;
+  uint32 amount = 5;
+  uint32 numUses = 6;
+  string creator = 7;
+  optional bool isStandard = 8;
+}
+
+message CouponRedemption {
+  string code = 1;
+  string cloudAccountId = 2;
+  google.protobuf.Timestamp redeemed = 3;
+  bool installed = 4;
+  string creator = 5;
+}
+
+message Coupon {
+  string code = 1;
+  string creator = 2;
+  google.protobuf.Timestamp created = 3;
+  google.protobuf.Timestamp start = 4;
+  google.protobuf.Timestamp expires = 5;
+  google.protobuf.Timestamp disabled = 6;
+  uint32 amount = 7;
+  uint32 numUses = 8;
+  uint32 numRedeemed = 9;
+  repeated CouponRedemption redemptions = 10;
+  optional bool isStandard = 11;
+}
+
+message CreditInstall {
+  google.protobuf.Timestamp createdAt = 2;
+  google.protobuf.Timestamp expiry = 3;
+  string cloudAccountId = 4 [
+    (idc.field).cloudAccount = true
+  ];
+
+  double originalAmount = 5;
+  string couponCode = 6;
+  double remainingAmount = 7;
+  CloudCreditReason reason = 8;
+}
+
+message CreditFilter {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  optional bool history = 2;
+}
+
+message CreditResponse {
+  double totalRemainingAmount = 1;
+  double totalUsedAmount = 2;
+  double totalUnAppliedAmount = 3;
+  google.protobuf.Timestamp lastUpdated = 4;
+  google.protobuf.Timestamp expirationDate = 5;
+  repeated Credit credits = 6;
+}
+
+message Credit {
+  google.protobuf.Timestamp created = 2;
+  google.protobuf.Timestamp expiration = 3;
+  string cloudAccountId = 4 [
+    (idc.field).cloudAccount = true
+  ];
+  double originalAmount = 5;
+  double remainingAmount = 6;
+  string couponCode = 7;
+  double amountUsed = 8;
+  CloudCreditReason reason = 9;
+}
+
+message Account {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+}
+
+message UnappliedCreditBalance {
+  double unappliedAmount = 1;
+}
+
+message UnappliedCredits{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  double remainingAmount = 2;
+  google.protobuf.Timestamp expiration = 3;
+}
+
+message MigratedCredits{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message CreditsState {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  CloudCreditsState state = 2;
+  google.protobuf.Timestamp eventAt = 3;
+}
+
+message CreditsStateFilter {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message CreditsStateResponse {
+  CloudCreditsState state = 1;
+  google.protobuf.Timestamp eventAt = 2;
+  google.protobuf.Timestamp updatedAt = 3;
+}
+
+service CloudCreditsCreditService {
+
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/cloudcredits/ping"
+    };
+  };
+
+  rpc Create(Credit) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudcredits/credit"
+      body: "*"
+    };
+  };
+
+  rpc ReadCredits(CreditFilter) returns (CreditResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudcredits/credit"
+    };
+    option (idc.method).authz.ownerCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc ReadUnappliedCreditBalance(Account) returns (UnappliedCreditBalance) {
+    option (google.api.http) = {
+      get: "/v1/cloudcredits/credit/unapplied"
+    };
+    option (idc.method).authz.ownerCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc ReadInternal(Account) returns (stream Credit) {
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc CreditMigrate(UnappliedCredits) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudcredits/credit/creditmigrate"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc DeleteMigratedCredit(MigratedCredits) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudcredits/credit/deletemigratedcredit"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc CreateCreditStateLog(CreditsState) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudcredits/state"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc ReadCreditStateLog(CreditsStateFilter) returns (CreditsStateResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudcredits/state"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+}
+
+service CloudCreditsCouponService {
+  rpc Redeem(CloudCreditsCouponRedeem) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudcredits/coupons/redeem"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+  rpc Create(CouponCreate) returns (Coupon) {
+    option (google.api.http) = {
+      post: "/v1/cloudcredits/coupons"
+      body: "*"
+    };
+  };
+
+  rpc Read(CouponFilter) returns (CouponResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudcredits/coupons"
+    };
+  };
+
+  rpc Disable(CouponDisable) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudcredits/coupons/disable"
+      body: "*"
+    };
+  };
+
+}

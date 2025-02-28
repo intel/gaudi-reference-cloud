@@ -1,0 +1,24 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@pip_deps//:requirements.bzl", "requirement")
+
+py_binary(
+    name = "sphinx_build_wrapper",
+    srcs = ["sphinx_build_wrapper.py"],
+    # Direct dependencies for building Sphinx docs must be declared below and in requirements.txt.
+    deps = [
+        requirement("docutils"),
+        requirement("GitPython"),
+        requirement("pydata_sphinx_theme"),
+        requirement("pytz"),
+        requirement("sphinx_copybutton"),
+        requirement("sphinx_design"),
+        requirement("sphinx_jinja"),
+        requirement("sphinx_multiproject"),
+        requirement("sphinx_tabs"),
+        requirement("sphinx"),
+    ],
+    env = {
+        "PROJECT": "private",
+    },
+    visibility = ["//visibility:public"],
+)

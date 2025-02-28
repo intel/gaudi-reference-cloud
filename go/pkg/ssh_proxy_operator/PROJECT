@@ -1,0 +1,25 @@
+domain: intel.com
+layout:
+- go.kubebuilder.io/v4-alpha
+multigroup: true
+projectName: ssh-proxy-operator
+repo: github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/ssh_proxy_operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: intel.com
+  group: cloud
+  kind: SshProxyOperatorConfig
+  path: github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/apis/private.cloud/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: intel.com
+  group: cloud
+  kind: SshProxyTunnel
+  path: github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/apis/private.cloud/v1alpha1
+  version: v1alpha1
+version: "3"

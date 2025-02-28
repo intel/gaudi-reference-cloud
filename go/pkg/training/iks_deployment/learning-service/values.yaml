@@ -1,0 +1,5 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+jupyterhub:
+  # MUST BE SET TO SOMETHING MORE SPECIFIC FOR THE REGION
+  domain: "learning-catalog.cloudworkspace.io"

@@ -1,0 +1,212 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+  {{- if $.Values.components.computeBm.enabled }}
+  {{- if ($region.netbox.enabled) }}
+  - name: netbox
+    namespace: idcs-enrollment
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: computeBm
+      service: compute-bm
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: netbox
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/netbox
+    wait: true
+    timeout: 600
+    version: {{ readFile (print $helmChartVersionsDir "/netbox.version") | quote }}
+    values:
+      - postgresql:
+          auth:
+            postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-netbox-postgres_db_admin_password") | quote }}
+            password: {{ readFile (print $secretsDir "/" $region.region "-netbox-postgres_db_user_password") | quote }}
+      - redis:
+          auth:
+            password: {{ readFile (print $secretsDir "/" $region.region "-netbox-redis_db_admin_password") | quote }}
+          replica:
+            replicaCount: 1
+      - ingress:
+          enabled: {{ $region.netbox.ingress.enabled }}
+          className: {{ $region.netbox.ingress.className }}
+          hosts:
+            - host: {{ $region.netbox.ingress.host | quote }}
+              paths:
+                - /
+          tls:
+            - secretName: {{ $region.netbox.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.netbox.ingress.host | quote }}
+      - secretKey: {{ readFile (print $secretsDir "/" $region.region "-netbox_secretKey") | quote }}
+      - service:
+          nodePort: 30980
+          type: NodePort
+      - image:
+          tag: "v3.6.1"
+          repository: {{ print $.Values.dockerIo.registry "/" $.Values.dockerIo.repositoryPrefix "netboxcommunity/netbox" | quote }}
+      - init:
+          image:
+            repository: {{ print $.Values.dockerIo.registry "/" $.Values.dockerIo.repositoryPrefix "library/busybox" | quote }}
+  {{- end }}
+  {{- end }}
+
+  {{- if ($region.nginxS3Gateway.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-compute-nginx-s3-gateway") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: computeBm
+      service: compute
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: compute-nginx-s3-gateway
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/nginx-s3-gateway
+    version: {{ readFile (print $helmChartVersionsDir "/nginx-s3-gateway.version") | quote }}
+    values:
+      - service: {{ $.Values.vault.service | quote }}
+      - authPath: {{ $region.vault.authPath | quote }}
+      - s3_bucket_name: {{ $region.nginxS3Gateway.s3_bucket_name | quote }}
+      - vaultCredentialsPath: "controlplane/data/{{ $region.region }}-compute-nginx-s3-gateway/aws"
+  {{- end }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.baremetalOperator.enabled) }}
+  {{- if $region.dhcpProxy.enabled }}
+  - name: dhcp-proxy
+    namespace: baremetal-operator
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBm
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: dhcp-proxy
+    chart: idc/dhcp-proxy
+    version: {{ readFile (print $helmChartVersionsDir "/dhcp-proxy.version") | quote }}
+    values:
+     - image:
+        registry: "{{ ($.Values.idcRegistry).registry }}"
+        repository: "{{ ($.Values.idcRegistry).repositoryPrefix }}dhcp-proxy"
+        tag: "0.0.1-f0e2eaa"
+     - listenPort: 8080
+     - dhcpProxyConfig:
+        dhcpFileserver: {{ $region.dhcpProxy.dhcpProxyConfig.dhcpFileserver | quote }}
+  {{- end }}
+  {{- end }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.baremetalOperator.enabled) }}
+  {{- if $region.dhcpProxy.enabled }}
+  - name: bm-dnsmasq
+    namespace: baremetal-operator
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBm
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: bm-dnsmasq
+    chart: idc/bm-dnsmasq
+    version: {{ readFile (print $helmChartVersionsDir "/bm-dnsmasq.version") | quote }}
+    values:
+     - image:
+        registry: "{{ ($.Values.idcRegistry).registry }}"
+        repository: "{{ ($.Values.idcRegistry).repositoryPrefix }}ironic-image"
+        pullPolicy: IfNotPresent
+        # Overrides the image tag whose default is the chart appVersion.
+        tag: "9-123bc24-ubuntu"
+     - dnsmasqConfig:
+          httpPort: 6180
+          dhcpRangeStartingIP: "172.18.5.10"
+          dhcpRangeFinalIP: "172.18.5.100"
+          gatewayIP: "172.18.0.1"
+          dnsIP: "172.18.0.1"
+          ironicIP: "172.18.255.101"
+          exceptInterface: lo
+          dhcpHosts: ""
+          dhcpIgnore: ""
+          provisioningInterface: eth0
+  {{- end }}
+  {{- end }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.metallb.enabled) }}
+  - name: "metallb"
+    namespace: "metallb-system"
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBm
+      service: compute-bm
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: "metallb"
+    chart: "bitnami/metallb"
+    version: "4.3.0"
+    wait: true  # Required for deploying metallb-custom-resources in kind
+    timeout: 300
+    values:
+      - speaker:
+          secretValue: 2bc424e4-88da-4cbb-b14f-1d3e419acbfc
+  {{- end }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.metallb.enabled) }}
+  - name: metallb-custom-resources
+    namespace: metallb-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBm
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: metallb-custom-resources
+    chart: idc/metallb-custom-resources
+    version: {{ readFile (print $helmChartVersionsDir "/metallb-custom-resources.version") | quote }}
+    needs:
+      - {{ $availabilityZone.kubeContext }}/metallb-system/metallb
+    values:
+      - metallb_layer2_enable: true
+      - metallb_layer2_single_ip_pools:
+        {{- range $availabilityZone.baremetalOperatorNamespaces }}
+        - {{ .ironicIp }}:
+            autoAssign: false
+            avoidBuggyIPs: true
+        {{- end}}
+      - metallb_layer2_range_ip_pools: []
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

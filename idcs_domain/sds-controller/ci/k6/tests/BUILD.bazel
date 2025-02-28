@@ -1,0 +1,11 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+sh_test(
+    name = "test_api",
+    srcs = ["//ci/k6/cmd"],
+    args = [
+        "run",
+        "$(location wekaV4.js)",
+    ],
+    data = ["wekaV4.js"],
+)

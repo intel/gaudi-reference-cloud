@@ -1,0 +1,12 @@
+node_modules/
+test-results/*
+report.json
+har/
+playwright-report/*
+playwright/.cache/
+.env*
+!.env.template
+videos/*
+.venv/
+!package.json
+!package-lock.json

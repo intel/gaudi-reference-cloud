@@ -1,0 +1,14 @@
+/***
+This file is used to override variables used by bootstrap and dlux for light theme
+For reference of which variables can be modified inspect the src/scss/dlux/scss/_custom.scss file
+Although you can add another bootstrap variables if needed
+Remember to add !default at the end of line so them does not get overritten
+Please do not add any class here, this file is just for customizing the bootstrap and dlux variables,
+if something else is added the PR won't be accepted
+*/
+
+@import "../../dlux/scss/colors";
+@import "../_default-new/customize.dlux.lightTheme";
+
+// Redefine Bootstrap named colors using Intel named colors
+$primary: #367c84 !default;

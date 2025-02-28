@@ -1,0 +1,15 @@
+# This file contains targets to build Helm charts.
+# See https://github.com/masmovil/bazel-rules
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml",
+    "templates/**",
+  ]),
+  package_name = "tftp-server",  # Must not have underscores.
+  visibility = ["//visibility:public"],
+  chart_deps = ["//deployment/charts/idc-common:chart"]
+)

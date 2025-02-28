@@ -1,0 +1,1 @@
+ALTER TABLE cloud_credits_intel ADD updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

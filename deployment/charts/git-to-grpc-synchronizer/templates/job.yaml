@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # To allow the Helm release to be updated, we must use a different job name.
+  # The job name includes a hash of the job spec, ensuring that the name changes only if the job spec changes.
+  # See Solution 2 in https://www.suse.com/c/rancher_blog/rancher-fleet-tips-for-kubernetes-jobs-deployment-strategies-in-continuous-delivery-scenarios/.
+  name: {{ include "idc-common.fullname" . | trunc 54 | trimSuffix "-" }}-{{ include "git-to-grpc-synchronizer.jobSpec" . | sha256sum | trunc 8 }}
+  namespace: {{ include "idc-common.namespace" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+{{ include "git-to-grpc-synchronizer.jobSpec" . }}

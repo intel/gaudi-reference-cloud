@@ -1,0 +1,6 @@
+apiVersion: v2
+name: fleet-node-reporter
+description: IDC Fleet Management Node Reporter
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

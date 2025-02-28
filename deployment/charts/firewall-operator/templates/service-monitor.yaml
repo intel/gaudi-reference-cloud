@@ -1,0 +1,24 @@
+{{ if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+  name: {{ include "idc-common.fullname" . }}-monitoring
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+  - honorLabels: true
+    path: /metrics
+    port: metrics
+    scheme: http
+    interval: 15s
+    scrapeTimeout: 15s
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+      app.kubernetes.io/name: {{ include "idc-common.name" . }}
+{{ end }}

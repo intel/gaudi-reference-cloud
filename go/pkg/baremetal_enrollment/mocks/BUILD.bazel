@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "mocks",
+    srcs = [
+        "bmc.go",
+        "dcim.go",
+        "http_client.go",
+        "mygofish.go",
+        "myssh.go",
+        "secret_manager.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/mocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/bmc",
+        "//go/pkg/baremetal_enrollment/dcim",
+        "//go/pkg/baremetal_enrollment/mygofish",
+        "//go/pkg/baremetal_enrollment/myssh",
+        "@com_github_golang_mock//gomock",
+        "@com_github_hashicorp_vault_api//:api",
+        "@com_github_stmcginnis_gofish//:gofish",
+        "@com_github_stmcginnis_gofish//redfish",
+        "@org_golang_x_crypto//ssh",
+    ],
+)

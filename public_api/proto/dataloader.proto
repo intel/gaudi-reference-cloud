@@ -1,0 +1,11 @@
+syntax = "proto3";
+package proto;
+ 
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+ 
+import "google/api/annotations.proto";
+ 
+import "annotations.proto";
+ 
+option (idc.file).deploy = regional;
+option (idc.file).service = "demoservice";

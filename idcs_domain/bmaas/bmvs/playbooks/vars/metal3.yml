@@ -1,0 +1,9 @@
+---
+data_network: "{{ default_data_network }}"
+storage_network: "{{ default_storage_network }}"
+data_network_file: "net-data-no-dhcp"
+guest_host_network: 'data'
+guest_host_storage_network: 'storage'
+guest_host_memory_mb: 4096
+guest_host_disk_gb: 20
+guest_host_vcpu: 2

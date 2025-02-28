@@ -1,0 +1,68 @@
+{    
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:react/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": ["./tsconfig.json"]
+    },
+    "plugins": [
+        "react"
+    ],    
+    "overrides": [
+        {
+            "files": ["**/*.tsx", "**/*.ts"],
+            "extends": [
+                "standard-with-typescript",
+                "plugin:react/recommended"
+            ],
+            "rules": {
+                "@typescript-eslint/space-before-function-paren": "off",
+                "@typescript-eslint/strict-boolean-expressions": "off",
+                "@typescript-eslint/restrict-template-expressions": "off",
+                "react/prop-types": 0,
+                "multiline-ternary": "off",
+                "@typescript-eslint/indent": "off"
+            }
+        },
+        {
+            "files": ["**/*.jsx", "**/*.js"],
+            "extends": [
+                "standard",
+                "plugin:react/recommended"
+            ],
+            "rules": {
+                "react/react-in-jsx-scope": "off",
+                "react/prop-types": 0,
+                "space-before-function-paren": "off",
+                "multiline-ternary": "off",
+                "indent": "off"
+            }
+        },
+        {
+            "files": ["**/*.test.js", "**/*.test.jsx", "**/mocks/**/*.js", "**/mocks/*.js", "**/__mocks__/**/*.js", "**/__mocks__/*.js", "**/setupTests.js", "**/setupTests.ts"],
+            "env": {
+                "jest": true
+            },
+            "plugins": ["jest"],
+            "extends": ["plugin:jest/recommended"],
+            "rules": {
+                "jest/no-mocks-import": "off",
+                "jest/expect-expect": "off"
+            }
+          }
+    ],
+    "rules": {
+        "react/no-unknown-property": ["error", { "ignore": ["intc-id", "data-wap_ref"] }]
+    },
+    "settings": {
+        "react": {
+          "version": "detect"
+        }
+    }
+}

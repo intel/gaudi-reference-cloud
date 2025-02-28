@@ -1,0 +1,38 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: Switch
+metadata:
+  name: "clab-allscfabrics-frontend-leaf1"
+  namespace: idcs-system
+spec:
+  fqdn: "clab-allscfabrics-frontend-leaf1"
+  ip: "clab-allscfabrics-frontend-leaf1"
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: Switch
+metadata:
+  name: "clab-allscfabrics-frontend-leaf2"
+  namespace: idcs-system
+spec:
+  fqdn: "clab-allscfabrics-frontend-leaf2"
+  ip: "clab-allscfabrics-frontend-leaf2"
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: Switch
+metadata:
+  name: "clab-allscfabrics-storage-leaf1"
+  namespace: idcs-system
+spec:
+  fqdn: "clab-allscfabrics-storage-leaf1"
+  ip: "clab-allscfabrics-storage-leaf1"
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: Switch
+metadata:
+  name: "clab-allscfabrics-storage-leaf2"
+  namespace: idcs-system
+spec:
+  fqdn: "clab-allscfabrics-storage-leaf2"
+  ip: "clab-allscfabrics-storage-leaf2"

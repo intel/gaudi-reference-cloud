@@ -1,0 +1,47 @@
+metadata:
+  name: "iks-gd-u22-cd-wk-1-30-3-habana-v1.18.0-v241212"
+spec:
+  displayName: IKS Ubuntu 22.04 Worker for GD v1.30.3 released on 2024-12-12
+  description: IKS Ubuntu 22.04 Worker for GD v1.30.3 released on 2024-12-12
+  hidden: true
+  instanceCategories:
+    - BareMetalHost
+  instanceTypes:
+    - bm-icp-gaudi2
+    - bm-spr-gaudi2
+    - bm-icx-gaudi2
+    - bm-icp-gaudi2-sc
+    - bm-icx-gaudi2-sc
+  md5sum: "85894c0836f8e9df98566157fdfa7ec6"
+  sha256sum: "7d7f8e16e7da466a817b2680ecc716cb10c298e3b781973ffb41c21fc54ff3e2"
+  sha512sum: "471338404ad47540152c6cd27a5c39ae9e443b574ebbb9f7e555bb44a7e9dc0508040936cddfb57bbdf0052ad992fa8b5e7a9b06fd46161386d1d61dea3ba9be"
+  virtualSizeBytes: 64424509440
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (Baremetal only)
+    iks: "true"
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+    - IKS
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: SynapseAI SW
+      type: Software kit
+      version: "1.11.0"
+      description: Designed to facilitate high-performance DL training on Habana�<80><99>s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/latest/SW_Stack_Packages_Installation/Synapse_SW_Stack_Installation.html#sw-stack-packages-installation
+    - name: IKS Core Components
+      type: Software kit
+      version: "1.30.3"
+      description: core set of tools for Kubernetes.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20sthttps://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: sdp

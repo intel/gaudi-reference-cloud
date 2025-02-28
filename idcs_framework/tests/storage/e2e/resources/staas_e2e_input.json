@@ -1,0 +1,194 @@
+{
+  "testEnv": "<<test-env>>",
+  "baseUrl": "",
+  "cloudAccount": "<<cloud-account>>",
+  "instanceTypeToBeCreated": "<<instance-type>>",
+  "vnetName": "<<vnet>>",
+  "machine_image": "<<machine-image>>",
+  "instance_payload":{
+      "metadata": {
+        "name": "<<instance-name>>"
+      },
+      "spec": {
+        "availabilityZone": "<<availability-zone>>",
+        "instanceType": "<<instance-type>>",
+        "machineImage": "<<machine-image>>",
+        "quickConnectEnabled": 2,
+        "runStrategy": "RerunOnFailure",
+        "sshPublicKeyNames": [
+          "<<ssh-key-name>>"
+        ],
+        "interfaces": [
+          {
+            "name": "eth0",
+            "vNet": "<<vnet-name>>"
+          }
+        ],
+        "userData": "#cloud-init\npackages:\n  - python3-pip\n\nwrite_files:\n  - path: /home/ubuntu/data.txt\n    content: |\n      #!/usr/bin/bash\n      echo 'hello world, this is some test data to be uploaded'\n    permissions: '0777'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/delete_object.py\n    content: |\n      #!/usr/bin/env python\n      import boto3\n      from botocore.client import Config\n\n      # Create a custom configuration\n      config = Config(\n        signature_version='s3v4'\n      )\n\n      # Initialize the S3 resource\n      s3 = boto3.resource('s3',\n                          endpoint_url='${ENDPOINT_URL}',\n                          aws_access_key_id='${ACCESS_KEY}',\n                          aws_secret_access_key='${SECRET_KEY}',\n                          verify=False,\n                          config=config)\n\n      # Define the bucket\n      bucket = s3.Bucket('${BUCKET_ID}')\n\n      # Delete all versioned objects in the bucket\n      for version in bucket.object_versions.all():\n          print(f\"Deleting object: {version.object_key}, version: {version.id}\")\n          # Delete the object version explicitly by specifying its VersionId\n          version.delete()\n\n      print(\"All versioned objects deleted.\")\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/upload_object.py\n    content: |\n      #!/usr/bin/env python3\n      import boto3\n      import logging\n      from botocore.exceptions import ClientError\n      from botocore.client import Config\n\n      config = Config(signature_version='s3v4')\n      s3 = boto3.resource('s3',\n                          endpoint_url='${ENDPOINT_URL}',\n                          aws_access_key_id='${ACCESS_KEY}',\n                          aws_secret_access_key='${SECRET_KEY}',\n                          verify=False,\n                          config=config)\n\n      bucket = s3.Bucket('${BUCKET_ID}')\n      bucket.object_versions.all().delete()\n      try:\n        s3.Bucket('${BUCKET_ID}').upload_file('/home/ubuntu/data.txt', 'd1_object')\n      except ClientError as e:\n        logging.error(e)\n    permissions: '0755'\n    owner: root\n    group: root\n\nruncmd:\n  - sudo pip3 install boto3\n  - echo \"STAAS script completed\" >> /var/log/cloud-init-output.log\n"
+      }
+  },
+  "instance_group_payload_os":{
+    "metadata": {
+      "name": "<<instance-group-name>>",
+      "productId": "8f9a75ef-1a67-4abc-bd5f-7780fc7dd335"
+    },
+    "spec": {
+      "instanceCount": "<<instance-count>>",
+      "instanceSpec": {
+        "availabilityZone": "<<availability-zone>>",
+        "instanceGroup": "test-ng",
+        "instanceType": "<<instance-type>>",
+        "interfaces": [
+          {
+            "name": "eth0",
+            "vNet": "<<vnet-name>>"
+          }
+        ],
+        "machineImage": "<<machine-image>>",
+        "quickConnectEnabled": 2,
+        "runStrategy": "RerunOnFailure",
+        "sshPublicKeyNames": [
+          "<<ssh-key-name>>"
+        ],
+        "userData": "#cloud-init\npackages:\n  - python3-pip\n\nwrite_files:\n  - path: /home/ubuntu/data.txt\n    content: |\n      #!/usr/bin/bash\n      echo 'hello world, this is some test data to be uploaded'\n    permissions: '0777'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/delete_object.py\n    content: |\n      #!/usr/bin/env python\n      import boto3\n      from botocore.client import Config\n\n      # Create a custom configuration\n      config = Config(\n        signature_version='s3v4'\n      )\n\n      # Initialize the S3 resource\n      s3 = boto3.resource('s3',\n                          endpoint_url='${ENDPOINT_URL}',\n                          aws_access_key_id='${ACCESS_KEY}',\n                          aws_secret_access_key='${SECRET_KEY}',\n                          verify=False,\n                          config=config)\n\n      # Define the bucket\n      bucket = s3.Bucket('${BUCKET_ID}')\n\n      # Delete all versioned objects in the bucket\n      for version in bucket.object_versions.all():\n          print(f\"Deleting object: {version.object_key}, version: {version.id}\")\n          # Delete the object version explicitly by specifying its VersionId\n          version.delete()\n\n      print(\"All versioned objects deleted.\")\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/upload_object.py\n    content: |\n      #!/usr/bin/env python3\n      import boto3\n      import logging\n      from botocore.exceptions import ClientError\n      from botocore.client import Config\n\n      config = Config(signature_version='s3v4')\n      s3 = boto3.resource('s3',\n                          endpoint_url='${ENDPOINT_URL}',\n                          aws_access_key_id='${ACCESS_KEY}',\n                          aws_secret_access_key='${SECRET_KEY}',\n                          verify=False,\n                          config=config)\n\n      bucket = s3.Bucket('${BUCKET_ID}')\n      bucket.object_versions.all().delete()\n      try:\n        s3.Bucket('${BUCKET_ID}').upload_file('/home/ubuntu/data.txt', 'd1_object')\n      except ClientError as e:\n        logging.error(e)\n    permissions: '0755'\n    owner: root\n    group: root\n\nruncmd:\n  - sudo pip3 install boto3\n  - echo \"STAAS script completed\" >> /var/log/cloud-init-output.log\n"
+      }
+    }
+  },
+  "instance_payload_fs":{
+    "metadata": {
+      "name": "<<instance-name>>"
+    },
+    "spec": {
+      "availabilityZone": "<<availability-zone>>",
+      "instanceType": "<<instance-type>>",
+      "machineImage": "<<machine-image>>",
+      "runStrategy": "RerunOnFailure",
+      "sshPublicKeyNames": [
+        "<<ssh-key-name>>"
+      ],
+      "interfaces": [
+        {
+          "name": "eth0",
+          "vNet": "<<vnet>>"
+        }
+      ],
+      "userData": "#cloud-init\npackage_update: true\npackages:\n  - python3\n  - python3-pip\n  - nfs-common\n\nwrite_files:\n  - path: /home/ubuntu/mountwekavolume.sh\n    content: |\n      #!/bin/bash -x\n      # Usage:\n      # mountvolume.sh <account num> <volume pw> <mount path> <volume name> <WEKA URL>\n      # Example:\n      # mountvolume.sh 440440958336 'password123' '/mnt/test' 'automation-storage-bc14e0' 'pdx05-dev-2.us-staging-1.cloud.intel.com' 'udp'\n\n      # Check if the number of arguments is equal to 6\n      if [ \"$#\" -ne 6 ]; then\n          echo \"Error: This script requires exactly 6 arguments.\"\n          exit 1\n      fi\n\n      ACCOUNTNUM=$1\n      VOLUMEPASSWORD=$2\n      MOUNTPATH=$3\n      VOLUMENAME=$4\n      WEKAURL=$5\n      NETWORK=$6\n\n      echo \"$(date +%T) Mount script starting...\"\n\n      curl http://${WEKAURL}:14000/dist/v1/install | sudo sh\n      weka user login -H ${WEKAURL} --org ns${ACCOUNTNUM} u${ACCOUNTNUM} \"${VOLUMEPASSWORD}\"\n      sudo mkdir -p ${MOUNTPATH}\n      sudo weka mount -t wekafs -o net=${NETWORK} ${WEKAURL}/${VOLUMENAME} ${MOUNTPATH}\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/waitforcloudinit.sh\n    content: |\n      #!/bin/bash\n\n      # Timeout duration in seconds\n      TIMEOUT=$1\n\n      # Interval between checks in seconds\n      INTERVAL=15\n\n      # Start time\n      START_TIME=$(date +%s)\n\n      # Function to check cloud-init status\n      check_cloud_init_status() {\n          STATUS=$(sudo cloud-init status --wait 2>/dev/null | grep -i \"status: done\")\n          if [[ -n \"$STATUS\" ]]; then\n              return 0\n          else\n              return 1\n          fi\n      }\n\n      # Loop until cloud-init status is Done or timeout is reached\n      while true; do\n          if check_cloud_init_status; then\n              echo \"cloud-init status: Done\"\n              exit 0\n          fi\n\n          # Check if timeout is reached\n          CURRENT_TIME=$(date +%s)\n          ELAPSED_TIME=$((CURRENT_TIME - START_TIME))\n          if [[ $ELAPSED_TIME -ge $TIMEOUT ]]; then\n              echo \"Timeout reached: cloud-init did not return Done within $TIMEOUT seconds.\"\n              exit 1\n          fi\n\n          # Wait for the interval before checking again\n          sleep $INTERVAL\n      done\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/mountvastvolume.sh\n    content: |\n      #!/bin/bash -x\n      # Usage:\n      # mountvastvolume.sh <mount path> <volume name> <VAST URL>\n      # Example:\n      # mountvastvolume.sh '/mnt/test' 'testvast01' 'vip1.vast-pdx05-1.us-staging-1.cloud.intel.com'\n\n      MOUNTPATH=$1\n      VOLUMENAME=$2\n      VASTURL=$3\n\n      sudo mkdir ${MOUNTPATH}\n      sudo chmod 755 ${MOUNTPATH}\n      sudo mount -o noresvport,vers=4.1,nconnect=16 localhost:/${VOLUMENAME} ${MOUNTPATH}\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/waitformount.sh\n    content: |\n      #!/bin/bash\n\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n\n      # Set the duration for the loop in seconds\n      duration=$((10 * 60))\n      start_time=$SECONDS\n\n      # Initialize exit status flag\n      exit_status=1\n\n      # Loop until the duration has elapsed or the condition is met\n      while [ $(($SECONDS - start_time)) -lt $duration ]; do\n\n        if mountpoint -q ${MOUNTPATH}; then\n          echo \"$(date +%T) Mount is ready, exiting the loop.\"\n          exit_status=0\n          break\n        else\n          echo \"$(date +%T) Mount is not ready. Trying again...\"\n        fi\n        \n        sleep 5\n      done\n\n      # Exit with the status determined by the condition\n      exit $exit_status\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/waitforunmount.sh\n    content: |\n      #!/bin/bash\n\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n\n      # Set the duration for the loop in seconds\n      duration=$((10 * 60))\n      start_time=$SECONDS\n\n      # Initialize exit status flag\n      exit_status=1\n\n      # Loop until the duration has elapsed or the condition is met\n      while [ $(($SECONDS - start_time)) -lt $duration ]; do\n\n        if ! mountpoint -q ${MOUNTPATH}; then\n          echo \"$(date +%T) Mount is inaccessible, exiting the loop.\"\n          exit_status=0\n          break\n        else\n          echo \"$(date +%T) Mount is still accessible. Trying again...\"\n        fi\n        \n        sleep 5\n      done\n\n      # Exit with the status determined by the condition\n      exit $exit_status\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/runtests.sh\n    content: |\n      #!/bin/bash\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n\n      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y fio\n      sudo fio --name=test --ioengine=libaio --iodepth=16 --rw=randread --bs=4k --direct=1 --size=1G --numjobs=4 --runtime=60 --group_reporting --directory=${MOUNTPATH}\n      sudo echo $? > /home/ubuntu/fioresult.log\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/unmountvolume.sh\n    content: |\n      #!/bin/bash\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n      sudo umount ${MOUNTPATH}\n    permissions: '0755'\n    owner: root\n    group: root\n\nruncmd:\n  - echo \"STAAS script completed\" >> /var/log/cloud-init-output.log\n"
+    }
+  },
+  "instance_group_payload_fs":{
+    "metadata": {
+      "name": "<<instance-group-name>>",
+      "productId": "8f9a75ef-1a67-4abc-bd5f-7780fc7dd335"
+    },
+    "spec": {
+      "instanceCount": "<<instance-count>>",
+      "instanceSpec": {
+        "availabilityZone": "<<availability-zone>>",
+        "instanceGroup": "test-ng",
+        "instanceType": "<<instance-type>>",
+        "interfaces": [
+          {
+            "name": "eth0",
+            "vNet": "<<vnet-name>>"
+          }
+        ],
+        "machineImage": "<<machine-image>>",
+        "quickConnectEnabled": 2,
+        "runStrategy": "RerunOnFailure",
+        "sshPublicKeyNames": [
+          "<<ssh-key-name>>"
+        ],
+        "userData": "#cloud-init\npackage_update: true\npackages:\n  - python3\n  - python3-pip\n  - nfs-common\n\nwrite_files:\n  - path: /home/ubuntu/mountwekavolume.sh\n    content: |\n      #!/bin/bash -x\n      # Usage:\n      # mountvolume.sh <account num> <volume pw> <mount path> <volume name> <WEKA URL>\n      # Example:\n      # mountvolume.sh 440440958336 'password123' '/mnt/test' 'automation-storage-bc14e0' 'pdx05-dev-2.us-staging-1.cloud.intel.com' 'udp'\n\n      # Check if the number of arguments is equal to 6\n      if [ \"$#\" -ne 6 ]; then\n          echo \"Error: This script requires exactly 6 arguments.\"\n          exit 1\n      fi\n\n      ACCOUNTNUM=$1\n      VOLUMEPASSWORD=$2\n      MOUNTPATH=$3\n      VOLUMENAME=$4\n      WEKAURL=$5\n      NETWORK=$6\n\n      echo \"$(date +%T) Mount script starting...\"\n\n      curl http://${WEKAURL}:14000/dist/v1/install | sudo sh\n      weka user login -H ${WEKAURL} --org ns${ACCOUNTNUM} u${ACCOUNTNUM} \"${VOLUMEPASSWORD}\"\n      sudo mkdir -p ${MOUNTPATH}\n      sudo weka mount -t wekafs -o net=${NETWORK} ${WEKAURL}/${VOLUMENAME} ${MOUNTPATH}\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/waitforcloudinit.sh\n    content: |\n      #!/bin/bash\n\n      # Timeout duration in seconds\n      TIMEOUT=$1\n\n      # Interval between checks in seconds\n      INTERVAL=15\n\n      # Start time\n      START_TIME=$(date +%s)\n\n      # Function to check cloud-init status\n      check_cloud_init_status() {\n          STATUS=$(sudo cloud-init status --wait 2>/dev/null | grep -i \"status: done\")\n          if [[ -n \"$STATUS\" ]]; then\n              return 0\n          else\n              return 1\n          fi\n      }\n\n      # Loop until cloud-init status is Done or timeout is reached\n      while true; do\n          if check_cloud_init_status; then\n              echo \"cloud-init status: Done\"\n              exit 0\n          fi\n\n          # Check if timeout is reached\n          CURRENT_TIME=$(date +%s)\n          ELAPSED_TIME=$((CURRENT_TIME - START_TIME))\n          if [[ $ELAPSED_TIME -ge $TIMEOUT ]]; then\n              echo \"Timeout reached: cloud-init did not return Done within $TIMEOUT seconds.\"\n              exit 1\n          fi\n\n          # Wait for the interval before checking again\n          sleep $INTERVAL\n      done\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/mountvastvolume.sh\n    content: |\n      #!/bin/bash -x\n      # Usage:\n      # mountvastvolume.sh <mount path> <volume name> <VAST URL>\n      # Example:\n      # mountvastvolume.sh '/mnt/test' 'testvast01' 'vip1.vast-pdx05-1.us-staging-1.cloud.intel.com'\n\n      MOUNTPATH=$1\n      VOLUMENAME=$2\n      VASTURL=$3\n\n      sudo mkdir ${MOUNTPATH}\n      sudo chmod 755 ${MOUNTPATH}\n      sudo mount -o noresvport,vers=4.1,nconnect=16 localhost:/${VOLUMENAME} ${MOUNTPATH}\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/waitformount.sh\n    content: |\n      #!/bin/bash\n\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n\n      # Set the duration for the loop in seconds\n      duration=$((10 * 60))\n      start_time=$SECONDS\n\n      # Initialize exit status flag\n      exit_status=1\n\n      # Loop until the duration has elapsed or the condition is met\n      while [ $(($SECONDS - start_time)) -lt $duration ]; do\n\n        if mountpoint -q ${MOUNTPATH}; then\n          echo \"$(date +%T) Mount is ready, exiting the loop.\"\n          exit_status=0\n          break\n        else\n          echo \"$(date +%T) Mount is not ready. Trying again...\"\n        fi\n        \n        sleep 5\n      done\n\n      # Exit with the status determined by the condition\n      exit $exit_status\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/waitforunmount.sh\n    content: |\n      #!/bin/bash\n\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n\n      # Set the duration for the loop in seconds\n      duration=$((10 * 60))\n      start_time=$SECONDS\n\n      # Initialize exit status flag\n      exit_status=1\n\n      # Loop until the duration has elapsed or the condition is met\n      while [ $(($SECONDS - start_time)) -lt $duration ]; do\n\n        if ! mountpoint -q ${MOUNTPATH}; then\n          echo \"$(date +%T) Mount is inaccessible, exiting the loop.\"\n          exit_status=0\n          break\n        else\n          echo \"$(date +%T) Mount is still accessible. Trying again...\"\n        fi\n        \n        sleep 5\n      done\n\n      # Exit with the status determined by the condition\n      exit $exit_status\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/runtests.sh\n    content: |\n      #!/bin/bash\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n\n      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y fio\n      sudo fio --name=test --ioengine=libaio --iodepth=16 --rw=randread --bs=4k --direct=1 --size=1G --numjobs=4 --runtime=60 --group_reporting --directory=${MOUNTPATH}\n      sudo echo $? > /home/ubuntu/fioresult.log\n    permissions: '0755'\n    owner: root\n    group: root\n\n  - path: /home/ubuntu/unmountvolume.sh\n    content: |\n      #!/bin/bash\n      # Check if the number of arguments is equal to 1\n      if [ \"$#\" -ne 1 ]; then\n          echo \"Error: This script requires exactly 1 argument.\"\n          exit 1\n      fi\n\n      MOUNTPATH=$1\n      sudo umount ${MOUNTPATH}\n    permissions: '0755'\n    owner: root\n    group: root\n\nruncmd:\n  - echo \"STAAS script completed\" >> /var/log/cloud-init-output.log\n"
+      }
+    }
+  },  
+  "filesystem_creation_playload":{
+    "metadata": {
+      "description": "test-volume",
+      "name": "<<storage-name>>"
+    },
+    "spec": {
+      "Encrypted": true,
+      "instanceType": "storage-file",
+      "accessModes": "ReadWrite",
+      "availabilityZone": "<<availability-zone>>",
+      "storageClass": "<<storage-class>>",
+      "filesystemType": "ComputeGeneral",
+      "request": {
+        "storage": "<<storage-size>>"
+      }
+    }
+  },
+  "filesystem_creation_playload_fast":{
+    "metadata": {
+      "description": "test-volume",
+      "name": "<<storage-name>>"
+    },
+    "spec": {
+      "Encrypted": true,
+      "instanceType": "storage-file",
+      "accessModes": "ReadWrite",
+      "availabilityZone": "<<availability-zone>>",
+      "mountProtocol": "Weka",
+      "filesystemType": "ComputeGeneral",
+      "storageClass": "AIOptimized",
+      "request": {
+        "storage": "<<storage-size>>"
+      }
+    }
+  },  
+  "storage_creation_playload":{
+    "metadata": {
+      "description": "test-volume",
+      "name": "<<storage-name>>"
+    },
+    "spec": {
+      "Encrypted": true,
+      "accessModes": "ReadWrite",
+      "availabilityZone": "<<availability-zone>>",
+      "mountProtocol": "Weka",
+      "request": {
+        "storage": "<<storage-size>>"
+      },
+      "instanceType": "storage-file"
+    }
+},  
+"bucket_creation_payload":{
+  "metadata": {
+    "description": "test-bucket",
+    "name": "<<bucket-name>>"
+  },
+  "spec": {
+    "accessPolicy": "READ_WRITE",
+    "instanceType": "storage-object",
+    "availabilityZone": "<<availability-zone>>",
+    "request": {
+      "size": "10GB"
+    },
+    "versioned": true
+  }
+},
+"principal_creation_payload":{
+  "metadata": {
+    "name": "<<user-name>>"
+  },
+  "spec": [
+    {
+      "bucketId": "<<bucket-name>>",
+      "permission":["ReadBucket", "WriteBucket", "DeleteBucket"],
+      "actions": ["GetBucketLocation", "GetBucketPolicy", "ListBucket", "GetBucketTagging"]
+    }
+  ]
+},
+"rule_creation_payload":{
+  "metadata": {
+    "ruleName": "<<rule-name>>"
+  },
+  "spec": {
+    "prefix": "",
+    "expireDays": 1,
+    "noncurrentExpireDays": 1,
+    "deleteMarker": false
+  }
+}
+}

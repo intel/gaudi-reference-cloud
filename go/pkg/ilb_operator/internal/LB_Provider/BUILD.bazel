@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "LB_Provider",
+    srcs = ["provider.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/ilb_operator/internal/LB_Provider",
+    visibility = ["//go/pkg/ilb_operator:__subpackages__"],
+    deps = [
+        "//go/pkg/ilb_operator/api/v1alpha1",
+        "//go/pkg/ilb_operator/internal/LB_Provider/highwire",
+    ],
+)

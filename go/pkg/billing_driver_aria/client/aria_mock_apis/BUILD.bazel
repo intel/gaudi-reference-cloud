@@ -1,0 +1,33 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "aria_mock_apis",
+    srcs = [
+        "aria_account.go",
+        "aria_payments.go",
+        "aria_service.go",
+        "aria_session.go",
+        "create_plan.go",
+        "deactivate_plan.go",
+        "default_func.go",
+        "delete_plans.go",
+        "form_struct_conv.go",
+        "get_plans.go",
+        "get_usage_type.go",
+        "get_usage_units.go",
+        "required_func.go",
+        "service_credit.go",
+        "usage_type.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_aria/client/aria_mock_apis",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/billing_driver_aria/client/request",
+        "//go/pkg/billing_driver_aria/client/response",
+        "//go/pkg/billing_driver_aria/client/response/data",
+        "//go/pkg/billing_driver_aria/config",
+        "@com_github_pborman_uuid//:uuid",
+    ],
+)

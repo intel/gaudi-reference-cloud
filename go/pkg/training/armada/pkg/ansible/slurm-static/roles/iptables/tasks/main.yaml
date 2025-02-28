@@ -1,0 +1,65 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+
+- name: Add the host to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ hostvars[item]['ansible_host'] }} {{ item }}"
+    state: present
+  loop: "{{ groups['all'] }}"
+  become: yes
+    #  delegate_to: localhost
+  when: hostvars[item]['ansible_host'] is defined
+
+- name: Install iptables services
+  apt:
+    name: iptables
+    state: present
+
+- name: Ensure iptables rules file exists
+  ansible.builtin.copy:
+    dest: /etc/iptables-rules.v4
+    content: |
+      *filter
+      :INPUT ACCEPT [0:0]
+      :FORWARD ACCEPT [0:0]
+      :OUTPUT ACCEPT [0:0]
+      COMMIT
+    force: no
+
+- name: Periodically restore iptables rules
+  ansible.builtin.cron:
+    name: "restore iptables rules"
+    user: "root"
+    minute: "*/5"
+    job: "iptables-restore < /etc/iptables-rules.v4 > /dev/null 2>&1"
+
+- name: Flush all iptables rules
+  ansible.builtin.shell:
+    cmd: /sbin/iptables -F
+  become: yes
+
+- name: Delete all custom iptables chains
+  ansible.builtin.shell:
+    cmd: /sbin/iptables -X
+  become: yes
+
+- name: Apply iptables rules
+  ansible.builtin.iptables:
+    chain: "{{ item.chain }}"
+    source: "{{ item.source | default(omit) }}"
+    destination: "{{ item.destination | default(omit) }}"
+    destination_port: "{{ item.destination_port | default(omit) }}"
+    destination_ports: "{{ item.destination_ports | default(omit) }}"
+    protocol: "{{ item.protocol | default(omit) }}"
+    jump: "{{ item.jump }}"
+    match: "{{ item.match | default(omit) }}"
+    ctstate: "{{ item.ctstate | default(omit) }}"
+    uid_owner: "{{ item.uid_owner | default(omit) }}"
+  loop: "{{ iptables_rules }}"
+
+- name: Save current state of the firewall in system file
+  community.general.iptables_state:
+    state: saved
+    path: /etc/iptables-rules.v4

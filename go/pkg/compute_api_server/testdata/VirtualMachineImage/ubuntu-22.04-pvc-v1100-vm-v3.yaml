@@ -1,0 +1,19 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  labels:
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/imageDisplayName: ubuntu-22.04-pvc-v1100-vm-v3
+    harvesterhci.io/os-type: ubuntu
+  name: ubuntu-22.04-pvc-v1100-vm-v3
+  namespace: default
+spec:
+  checksum: "f98a951d709ecfaf6e366292658babea718cc83eb6254255fc91d56fd2614594b4284bc3bdb920a32f16380882d53ad0cfa0629959a4fc5bc305b0103487124e"
+  displayName: ubuntu-22.04-pvc-v1100-vm-v3
+  retry: 3
+  sourceType: download
+  storageClassParameters:
+    migratable: "true"
+    numberOfReplicas: "1"
+    staleReplicaTimeout: "30"
+  url: http://10.45.122.149/vmaas/images/ubuntu-22.04-pvc-vm-cloudimg-amd64-v20241028.qcow2

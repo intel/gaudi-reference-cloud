@@ -1,0 +1,17 @@
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: InvalidKind
+metadata: 
+  name: idc 
+spec: 
+  description: Intel Developer Cloud 
+  id: "4015bb99-0522-4387-b47e-c821596dc735" 
+  families: 
+    - name: compute 
+      id: "61befbee-0607-47c5-b140-c6b4ea10b9da" 
+      description: "Compute as a Service: Bare Metal and Virtual Machine" 
+    - name: network 
+      id: "c1c4767c-d718-41d4-9076-02f270b68f5b" 
+      description: "Network as a Service" 
+    - name: storage 
+      id: "fabe738e-1edd-4d07-b1b4-5d9eadc9f28d" 
+      description: "Storage as a Service" 

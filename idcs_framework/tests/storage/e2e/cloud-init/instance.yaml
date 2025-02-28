@@ -1,0 +1,76 @@
+#cloud-init
+packages:
+  - python3-pip
+
+write_files:
+  - path: /home/ubuntu/data.txt
+    content: |
+      #!/usr/bin/bash
+      echo 'hello world, this is some test data to be uploaded'
+    permissions: '0777'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/delete_object.py
+    content: |
+      #!/usr/bin/env python
+      import boto3
+      from botocore.client import Config
+
+      # Create a custom configuration
+      config = Config(
+        signature_version='s3v4'
+      )
+
+      # Initialize the S3 resource
+      s3 = boto3.resource('s3',
+                          endpoint_url='${ENDPOINT_URL}',
+                          aws_access_key_id='${ACCESS_KEY}',
+                          aws_secret_access_key='${SECRET_KEY}',
+                          verify=False,
+                          config=config)
+
+      # Define the bucket
+      bucket = s3.Bucket('${BUCKET_ID}')
+
+      # Delete all versioned objects in the bucket
+      for version in bucket.object_versions.all():
+          print(f"Deleting object: {version.object_key}, version: {version.id}")
+          # Delete the object version explicitly by specifying its VersionId
+          version.delete()
+
+      print("All versioned objects deleted.")
+    permissions: '0755'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/upload_object.py
+    content: |
+      #!/usr/bin/env python3
+      import boto3
+      import logging
+      from botocore.exceptions import ClientError
+      from botocore.client import Config
+
+      config = Config(signature_version='s3v4')
+      s3 = boto3.resource('s3',
+                          endpoint_url='${ENDPOINT_URL}',
+                          aws_access_key_id='${ACCESS_KEY}',
+                          aws_secret_access_key='${SECRET_KEY}',
+                          verify=False,
+                          config=config)
+
+      bucket = s3.Bucket('${BUCKET_ID}')
+      bucket.object_versions.all().delete()
+      try:
+        s3.Bucket('${BUCKET_ID}').upload_file('/home/ubuntu/data.txt', 'd1_object')
+      except ClientError as e:
+        logging.error(e)
+    permissions: '0755'
+    owner: root
+    group: root
+
+runcmd:
+  - sudo pip3 install boto3
+  - echo "STAAS script completed" >> /var/log/cloud-init-output.log
+

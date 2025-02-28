@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "workspace",
+    srcs = [
+        "create.go",
+        "delete.go",
+        "deleteService.go",
+        "tasks.go",
+        "update.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/dpai/deployment/workspace",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/dpai/config",
+        "//go/pkg/dpai/db/models",
+        "//go/pkg/dpai/deployment",
+        "//go/pkg/dpai/utils",
+        "//go/pkg/dpai/utils/dns:menmice",
+        "//go/pkg/dpai/utils/helm",
+        "//go/pkg/dpai/utils/k8s",
+        "//go/pkg/dpai/utils/networking",
+        "//go/pkg/loadbalancer_operator/api/v1alpha1",
+        "//go/pkg/pb",
+        "@com_github_cert_manager_cert_manager//pkg/apis/certmanager/v1:certmanager",
+        "@com_github_cert_manager_cert_manager//pkg/apis/meta/v1:meta",
+        "@com_github_jackc_pgx_v5//pgtype",
+        "@com_github_mittwald_go_helm_client//:go-helm-client",
+        "@com_github_mittwald_go_helm_client//values",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@sh_helm_helm_v3//pkg/release",
+        "@sh_helm_helm_v3//pkg/repo",
+    ],
+)

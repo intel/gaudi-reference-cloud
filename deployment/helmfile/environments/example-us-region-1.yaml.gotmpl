@@ -1,0 +1,637 @@
+# Keep this file formatted and sorted consistently with "make helmfile-fmt".
+regions:
+  us-region-1:
+    appClientApiGrpcProxy:
+      external:
+        cognito:
+          enabled: true
+          oidc:
+            enabled: true
+            issueURL: host.example.com
+            keyURL: host.example.com
+            port: 443
+            server: host.example.com
+        # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+
+        enabled: true
+        # This MUST be false in production environments.
+        insecureDevEnvironment: false
+        # If insecureSkipJwtValidation is true, API authorization will be disabled.
+
+        # This MUST be false in production environments.
+        insecureSkipJwtValidation: false
+        opa:
+          enabled: true
+        replicaCount: 2
+    appClientApiGrpcRestGateway:
+      enabled: true
+      ingress:
+        host: host.example.com
+        tls:
+          secretName: wildcard-cloud-tls
+      swagger:
+        enabled: false
+    availabilityZones:
+      us-region-1a:
+        acceleratorClusterSubnets:
+          addBgpCommunityId: true
+          addSubnets: true
+        availabilityZone: us-region-1a
+        baremetalOperatorNamespaces:
+          - bkc:
+              dnp:
+                config:
+                  denalipassCleaningPriority: 32
+                fwVersions:
+                  bios: SE5C741.86B.01.01.0005.2309201932
+                  bmc: egs-1.81-0-g01b9f7-39e80000
+                  cpld: DNP_v4p6
+            enableEraseDevices: true
+            enableProxy: false
+            firmwareImageServer: https://host.example.com
+            gaudi2:
+              dell:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+              smc:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+              wiwynn:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+            gaudi3:
+              dell:
+                fwVersions:
+                  build: 1.19.1-26-rc1
+                  cpld: 0x00000004.67B607AE
+                  full: hl-gaudi3-1.19.1-fw-57.2.2-sec-2
+                  spi: 1.19.1-fw-57.2.2
+              smc:
+                fwVersions:
+                  build: 1.19.1-26-rc1
+                  cpld: 0x00000004.67B607AE
+                  full: hl-gaudi3-1.19.1-fw-57.2.2-sec-2
+                  spi: 1.19.1-fw-57.2.2
+            ironicImageTag: 1-3bf25bf-ubuntu
+            ironicIp: 100.64.16.231
+            mellanox:
+              MT_0000000224:
+                sha256: 86148bbce452286788b8db4e5e5672c8603b7ec9eebf83f5eb85634690cce3da
+                version: 20.41.1000
+              MT_0000000359:
+                sha256: cac364d2bf50edf5e75bb68e928115fde1e597c76ed8d57f3790c7ba5fcc7271
+                version: 22.41.1000
+              MT_0000000436:
+                sha256: f509880b8d31244d21a3138a6e99919a4c4fd58b6c9256b99ddf939e6a6530c0
+                version: 22.41.1000
+              MT_0000000838:
+                sha256: 69bf54024fd653bf2beaa6e7b04862d921539df54f07b627e5e312903f17541a
+                version: 28.41.1000
+            name: metal3-1
+            provisioningLimit: 40
+            pvc:
+              pvc_1100:
+                fwVersions:
+                  amc: 6.7.0.0
+                  ifwi: PVC2_1.23374
+                  psc: 0x12cfd.0x20220803
+              pvc_1550:
+                fwVersions:
+                  amc: 6.7.0.0
+                  ifwi: PVC2_1.23423
+                  psc: 0x2002f15.0x20231009
+            standaloneOperator: false
+          - bkc:
+              dnp:
+                config:
+                  denalipassCleaningPriority: 32
+                fwVersions:
+                  bios: SE5C741.86B.01.01.0005.2309201932
+                  bmc: egs-1.81-0-g01b9f7-39e80000
+                  cpld: DNP_v4p6
+            enableEraseDevices: true
+            enableProxy: false
+            firmwareImageServer: https://host.example.com
+            gaudi2:
+              dell:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+              smc:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+              wiwynn:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+            gaudi3:
+              dell:
+                fwVersions:
+                  build: 1.19.1-26-rc1
+                  cpld: 0x00000004.67B607AE
+                  full: hl-gaudi3-1.19.1-fw-57.2.2-sec-2
+                  spi: 1.19.1-fw-57.2.2
+              smc:
+                fwVersions:
+                  build: 1.19.1-26-rc1
+                  cpld: 0x00000004.67B607AE
+                  full: hl-gaudi3-1.19.1-fw-57.2.2-sec-2
+                  spi: 1.19.1-fw-57.2.2
+            ironicImageTag: 1-3bf25bf-ubuntu
+            ironicIp: 100.64.16.232
+            mellanox:
+              MT_0000000224:
+                sha256: 86148bbce452286788b8db4e5e5672c8603b7ec9eebf83f5eb85634690cce3da
+                version: 20.41.1000
+              MT_0000000359:
+                sha256: cac364d2bf50edf5e75bb68e928115fde1e597c76ed8d57f3790c7ba5fcc7271
+                version: 22.41.1000
+              MT_0000000436:
+                sha256: f509880b8d31244d21a3138a6e99919a4c4fd58b6c9256b99ddf939e6a6530c0
+                version: 22.41.1000
+              MT_0000000838:
+                sha256: 69bf54024fd653bf2beaa6e7b04862d921539df54f07b627e5e312903f17541a
+                version: 28.41.1000
+            name: metal3-2
+            provisioningLimit: 40
+            pvc:
+              pvc_1100:
+                fwVersions:
+                  amc: 6.7.0.0
+                  ifwi: PVC2_1.23374
+                  psc: 0x12cfd.0x20220803
+              pvc_1550:
+                fwVersions:
+                  amc: 6.7.0.0
+                  ifwi: PVC2_1.23423
+                  psc: 0x2002f15.0x20231009
+            standaloneOperator: false
+          - bkc:
+              dnp:
+                config:
+                  denalipassCleaningPriority: 32
+                fwVersions:
+                  bios: SE5C741.86B.01.01.0005.2309201932
+                  bmc: egs-1.81-0-g01b9f7-39e80000
+                  cpld: DNP_v4p6
+            enableEraseDevices: true
+            enableProxy: false
+            firmwareImageServer: https://host.example.com
+            gaudi2:
+              dell:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+              smc:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+              wiwynn:
+                fwVersions:
+                  build: 1.19.0-561
+                  full: hl-gaudi2-1.19.0-fw-56.1.0-sec-9
+                  spi: 1.19.0-fw-56.1.0
+            gaudi3:
+              dell:
+                fwVersions:
+                  build: 1.19.1-26-rc1
+                  cpld: 0x00000004.67B607AE
+                  full: hl-gaudi3-1.19.1-fw-57.2.2-sec-2
+                  spi: 1.19.1-fw-57.2.2
+              smc:
+                fwVersions:
+                  build: 1.19.1-26-rc1
+                  cpld: 0x00000004.67B607AE
+                  full: hl-gaudi3-1.19.1-fw-57.2.2-sec-2
+                  spi: 1.19.1-fw-57.2.2
+            ironicImageTag: 1-3bf25bf-ubuntu
+            ironicIp: 100.64.16.233
+            mellanox:
+              MT_0000000224:
+                sha256: 86148bbce452286788b8db4e5e5672c8603b7ec9eebf83f5eb85634690cce3da
+                version: 20.41.1000
+              MT_0000000359:
+                sha256: cac364d2bf50edf5e75bb68e928115fde1e597c76ed8d57f3790c7ba5fcc7271
+                version: 22.41.1000
+              MT_0000000436:
+                sha256: f509880b8d31244d21a3138a6e99919a4c4fd58b6c9256b99ddf939e6a6530c0
+                version: 22.41.1000
+              MT_0000000838:
+                sha256: 69bf54024fd653bf2beaa6e7b04862d921539df54f07b627e5e312903f17541a
+                version: 28.41.1000
+            name: metal3-3
+            provisioningLimit: 40
+            pvc:
+              pvc_1100:
+                fwVersions:
+                  amc: 6.7.0.0
+                  ifwi: PVC2_1.23374
+                  psc: 0x12cfd.0x20220803
+              pvc_1550:
+                fwVersions:
+                  amc: 6.7.0.0
+                  ifwi: PVC2_1.23423
+                  psc: 0x2002f15.0x20231009
+            standaloneOperator: false
+        bmInstanceOperator:
+          acceleratorNetworkSdnEnabled: true
+          networkConfig:
+            networkBackEndType: sdn
+            networkKubeConfig: /vault/secrets/sdnkubeconfig
+          operatorFeatureFlags:
+            enableQuickConnectClientCA: true
+          osHttpServerUrl: https://host.example.com
+          ravenConfig:
+            environment: prod
+            host: host.example.com
+          sshConfig:
+            sshProxyAddress: x.x.x.x
+            sshProxyPort: 22
+            sshProxyUser: bmo
+        bmValidationOperator:
+          cloudAccountId: "000000000001"
+          enabled: true
+          enabledInstanceTypes:
+            - bm-icp-gaudi2
+            - bm-spr-gaudi2
+            - bm-icx-gaudi2
+            - bm-icp-gaudi2-sc
+            - bm-icx-gaudi2-sc
+            - bm-spr-pvc-1100-8
+            - bm-spr-pvc-1550-8
+            - bm-gnr-gaudi3-smc
+            - bm-spr-gaudi3-dell
+            - bm-emr-gaudi3-dell
+          featureFlags:
+            deProvisionPostValidationFailure: true
+            enableFirmwareUpgrade: true
+            enabledGroupInstanceTypes: []
+            groupValidation: false
+          netboxAddress: host.example.com
+          subnetPrefixLength: 24
+          validationReportS3Config:
+            bucketName: idc-bmaas-validator-logs
+            cloudfrontPrefix: https://host.example.com
+          validationTaskRepositoryURL: http://host.example.com
+          validationTaskVersion:
+            clusterVersionMap:
+              bm-icp-gaudi2: 0.0.7-e58c8e9
+              bm-icp-gaudi2-sc: 0.0.7-e58c8e9
+              bm-icx-gaudi2: 0.0.7-e58c8e9
+              bm-icx-gaudi2-sc: 0.0.7-e58c8e9
+              bm-spr-gaudi2: 0.0.7-e58c8e9
+              bm-spr-pvc-1100-8: 0.0.1
+              bm-spr-pvc-1550-8: 0.0.1
+            instanceVersionMap:
+              bm-emr-gaudi3-dell: 0.0.4-9267d9d
+              bm-gnr-gaudi3-smc: 0.0.4-9267d9d
+              bm-icp-gaudi2: 0.0.7
+              bm-icp-gaudi2-sc: 0.0.7
+              bm-icx-gaudi2: 0.0.7
+              bm-icx-gaudi2-sc: 0.0.7
+              bm-spr-gaudi2: 0.0.7
+              bm-spr-gaudi3-dell: 0.0.4-9267d9d
+              bm-spr-pvc-1100-8: 0.0.1
+              bm-spr-pvc-1550-8: 0.0.1
+        debugTools:
+          enabled: false
+        externalSecrets:
+          enabled: true
+        firewall:
+          enabled: true
+          firewallAPI:
+            baseURL: https://host.example.com
+            environment: prod
+            region: flex
+          serviceMonitor:
+            enabled: true
+        harvesterClusters:
+          - clusterId: pdx04-k02-hvst
+          - clusterId: pdx04-k03-hv
+        ilbOperator:
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 12Gi
+            requests:
+              cpu: 2000m
+              memory: 8Gi
+        intelDevicePlugin:
+          enabled: true
+        kubeContext: pdx04-k02-azcp
+        kubernetesOperator:
+          resources:
+            limits:
+              cpu: 10000m
+              memory: 28Gi
+            requests:
+              cpu: 4000m
+              memory: 20Gi
+        kubernetesReconciler:
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 12Gi
+            requests:
+              cpu: 2000m
+              memory: 8Gi
+        loadbalancer:
+          enabled: true
+          highwireAPI:
+            environment: 184 # "DevCloud Production - Tenant - OR"
+            userGroup: 2802
+          serviceMonitor:
+            enabled: true
+        networkCluster:
+          kubeContext: pdx04-k02-nwcp
+          proxy:
+            http_proxy: http://host.example.com
+            https_proxy: http://host.example.com
+            no_proxy: local,10.0.0.0/8
+        otel:
+          exporter:
+            otlp:
+              endpoint: host.example.com
+        quickConnect:
+          enabled: true
+          host: connect.us-region-1.devcloudtenant.io
+          ingress:
+            tls:
+              secretName: wildcard-devcloudtenant-tls
+          kubeContext: pdx04-k02-azqc
+          oauth:
+            clientID: 13aa24f9-4ef7-4f15-8cbc-b5865a29bf9d
+            redirectHost: callback.connect.us-region-1.devcloudtenant.io
+            scopes:
+              - openid
+              - https://host.example.com
+              - profile
+              - offline_access
+          replicaCount: 3
+          statsd:
+            enabled: true
+            image:
+              repository: host.example.com
+        sdnController:
+          enabled: true
+          log:
+            level: info
+          managerConfig:
+            controllerManagerConfigYaml:
+              controllerConfig:
+                dataCenter: fxhb3p3p:ech2101pe
+                enableReadOnlyMode: false
+                maxConcurrentNetworkNodeReconciles: 10
+                maxConcurrentNodeGroupReconciles: 10
+                maxConcurrentReconciles: 64
+                maxConcurrentSwitchReconciles: 10
+                netboxProtocol: https
+                netboxServer: netbox.cloud.intel.com
+                netboxTokenPath: /vault/secrets/netboxtoken
+                portResyncPeriodInSec: 600
+                statusReportAcceleratedPeriodInSec: 60
+                statusReportPeriodInSec: 300
+                switchBackendMode: eapi
+                switchImportSource: raven
+                switchPortImportSource: bmh
+              ravenConfig:
+                environment: prod
+          serviceMonitor:
+            enabled: true
+        sshProxy:
+          authorizedKeysScpTargets:
+            - scp://guest@x.x.x.x:22/home/guest/.ssh/authorized_keys
+            - scp://guest@x.x.x.x:22/home/guest/.ssh/authorized_keys
+            - scp://guest@x.x.x.x:22/home/guest/.ssh/authorized_keys
+          proxyAddress: x.x.x.x
+          proxyUser: guest
+        subnet:
+          name: us-region-1a-default
+          prefix: 24
+        vmInstanceOperator:
+          operatorFeatureFlags:
+            enableQuickConnectClientCA: true
+        vmInstanceScheduler:
+          ingress:
+            host: host.example.com
+            tls:
+              secretName: wildcard-idcmgt-tls
+          managerConfig:
+            controllerManagerConfigYaml:
+              bgpNetworkRequiredInstanceCountThreshold: 21
+              enableBmaasBinpack: true
+    baremetalEnrollmentApi:
+      ingress:
+        className: nginx
+        enabled: true
+        host: host.example.com
+        tls:
+          secretName: enrollment-tls
+    computeApiServer:
+      cloudAccountQuota:
+        cloudAccounts:
+          ENTERPRISE:
+            storageQuota:
+              buckets: 100
+              filesystems: 100
+              totalSizeGB: 500000
+          INTEL:
+            storageQuota:
+              filesystems: 10
+              totalSizeGB: 200000
+          PREMIUM:
+            storageQuota:
+              buckets: 5
+              totalSizeGB: 500000
+          STANDARD:
+            storageQuota:
+              buckets: 1
+      database:
+        arg: sslmode=require
+        service: x.x.x.x
+      dirInstanceType: ../../build/environments/{{ .Environment.Name }}/InstanceType
+      dirMachineImage: ../../build/environments/{{ .Environment.Name }}/us-region-1/MachineImage
+      dirSubnet: ../../build/environments/{{ .Environment.Name }}/us-region-1/Subnet
+      featureFlags:
+        enableComputeNodePoolsForScheduling: true
+        enableMultipleFirmwareSupport: true
+    computeDb:
+      enabled: false
+    debugTools:
+      enabled: false
+    dhcpProxy:
+      enabled: false
+      url: http://host.example.com
+    externalSecrets:
+      enabled: true
+    fleetAdmin:
+      apiServer:
+        computeNodePoolForUnknownCloudAccount: general
+        database:
+          arg: sslmode=require
+          service: x.x.x.x
+      devDb:
+        enabled: false
+      enabled: true
+      replicaCount: 2
+    grpcProxy:
+      external:
+        statsd:
+          enabled: true
+          image:
+            repository: amr-idc-registry.infra-host.com/cache/prom/statsd-exporter
+      internal:
+        ingress:
+          host: host.example.com
+          tls:
+            secretName: wildcard-idcmgt-tls
+        statsd:
+          enabled: true
+          image:
+            repository: amr-idc-registry.infra-host.com/cache/prom/statsd-exporter
+    grpcRestGateway:
+      ingress:
+        host: host.example.com
+        tls:
+          secretName: wildcard-cloud-tls
+      swagger:
+        enabled: false
+    iks:
+      computeServerAddr: host.example.com
+      database:
+        arg: sslmode=require
+        name: main
+        port: 5432
+        service: x.x.x.x
+      otel:
+        exporter:
+          otlp:
+            endpoint: host.example.com
+      resources:
+        limits:
+          cpu: 4000m
+          memory: 16Gi
+        requests:
+          cpu: 2000m
+          memory: 10Gi
+    kubeContext: pdx04-k01-rgcp
+    menAndMice:
+      enabled: true
+      serverAddress: host.example.com
+      tftpServerIp: x.x.x.x
+      url: https://host.example.com
+    nameservers:
+      - x.x.x.x
+      - x.x.x.x
+    netbox:
+      enabled: false
+      ingress:
+        host: host.example.com
+    otel:
+      exporter:
+        otlp:
+          endpoint: o11y-otel.idcmgt.intel.com:443
+    quotaManagementDb:
+      primary:
+        persistence:
+          enabled: false
+    quotaManagementService:
+      bootstrappedServices:
+        - maxLimits:
+            - storage:
+                - filesystems: 100
+                - totalSizeTB: 500
+                - buckets: 100
+                - bucketPrincipals: 50
+                - bucketSizeInTB: 5
+          quotaAccountType:
+            ACCOUNT_TYPE_ENTERPRISE:
+              defaultLimits:
+                - storage:
+                    - buckets: 100
+                    - bucketSizeInTB: 5
+                    - filesystems: 100
+                    - totalSizeTB: 500
+                    - bucketPrincipals: 5
+            ACCOUNT_TYPE_INTEL:
+              defaultLimits:
+                - storage:
+                    - filesystems: 10
+                    - buckets: 5
+                    - bucketSizeInTB: 5
+                    - totalSizeTB: 200
+                    - bucketPrincipals: 5
+            ACCOUNT_TYPE_PREMIUM:
+              defaultLimits:
+                - storage:
+                    - filesystems: 10
+                    - buckets: 5
+                    - bucketSizeInTB: 5
+                    - totalSizeTB: 500
+                    - bucketPrincipals: 5
+            ACCOUNT_TYPE_STANDARD:
+              defaultLimits:
+                - storage:
+                    - filesystems: 10
+                    - buckets: 1
+                    - bucketSizeInTB: 5
+                    - totalSizeTB: 10
+                    - bucketPrincipals: 5
+          quotaUnit: COUNT
+      database:
+        arg: sslmode=require
+        service: 100.64.17.222
+      enabled: true
+      selectedRegion: us-region-1
+    region: us-region-1
+    setBiosPassword: true
+    storageApiServer:
+      database:
+        arg: sslmode=require
+        service: x.x.x.x
+    storageConfig:
+      fileStore:
+        enabled: true
+        iksStorageEnabled: true
+      metric:
+        bucketMetricEnabled: true
+        enabled: true
+      objectStore:
+        defaultBucketSizeInGB: 5000
+        enabled: true
+      serviceAddresses:
+        quotaManagementServerAddr: us-region-1-quota-management-service.idcs-system.svc.cluster.local:8443
+        storageKmsServerAddr: compute-us-region-1-grpcapi.idcmgt.intel.com:443
+        storageSchedulerServerAddr: us-region-1-storage-scheduler.idcs-system.svc.cluster.local:8443
+        storageUserServerAddr: us-region-1-storage-user.idcs-system.svc.cluster.local:8443
+      storageController:
+        storageControllerServerAddr: host.example.com
+    storageCustomMetricsService:
+      serviceMonitor:
+        enabled: true
+    storageDb:
+      enabled: false
+    trainingApiServer:
+      database:
+        arg: sslmode=require
+        service: x.x.x.x
+      slurmBatchService:
+        endpoint: https://host.example.com
+      slurmJupyterhubService:
+        endpoint: https://host.example.com
+      slurmSSHService:
+        endpoint: host.example.com
+    trainingDb:
+      enabled: false

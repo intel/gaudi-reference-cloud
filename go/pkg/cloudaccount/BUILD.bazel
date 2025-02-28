@@ -1,0 +1,81 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "cloudaccount",
+    srcs = [
+        "acct.go",
+        "appclient.go",
+        "cloudaccount.go",
+        "invitations.go",
+        "invitations_expiry.go",
+        "member.go",
+        "member_invitation.go",
+        "notification_client.go",
+        "otp.go",
+        "otp_logs.go",
+        "testing.go",
+        "user_credentials_client.go",
+        "utils.go",
+    ],
+    embedsrcs = glob(["sql/*.sql"]),
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudaccount",
+    visibility = ["//go:__subpackages__"],
+    deps = [
+        "//go/pkg/authz",
+        "//go/pkg/cloudaccount/config",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/notification_gateway",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/protodb",
+        "@com_github_golang_protobuf//ptypes/empty",
+        "@com_github_jackc_pgx_v5//pgconn",
+        "@com_github_lib_pq//:pq",
+        "@io_opentelemetry_go_otel//attribute",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//reflect/protoreflect",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+        "@org_golang_google_protobuf//types/known/wrapperspb",
+    ],
+)
+
+exports_files(["cloudaccount-configmap.yaml"])
+
+go_test(
+    name = "cloudaccount_test",
+    srcs = [
+        "acct_test.go",
+        "cloudaccount_test.go",
+        "invitations_expiry_test.go",
+        "invitations_test.go",
+        "member_invitation_test.go",
+        "member_test.go",
+        "otp_logs_test.go",
+        "otp_test.go",
+    ],
+    embed = [":cloudaccount"],
+    deps = [
+        "//go/pkg/authz",
+        "//go/pkg/cloudaccount/config",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_jackc_pgx_v5//pgconn",
+        "@com_github_stretchr_testify//assert",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//reflect/protoreflect",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)

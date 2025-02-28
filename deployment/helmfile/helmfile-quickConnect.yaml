@@ -1,0 +1,150 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $computeApiServerAddr := print $region.grpcRestGateway.ingress.host ":443" }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if $availabilityZone.quickConnect.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-quick-connect-api-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.quickConnect.kubeContext | quote }}
+    labels:
+      applicationName: quick-connect-api-server
+      component: quickConnect
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.quickConnect.kubeContext | quote }}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      service: quick-connect
+    chart: idc/quick-connect-api-server
+    version: {{ readFile (print $helmChartVersionsDir "/quick-connect-api-server.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - proxy:
+          http_proxy: {{ $availabilityZone.quickConnect.proxy.http_proxy | quote }}
+          https_proxy: {{ $availabilityZone.quickConnect.proxy.https_proxy | quote }}
+          no_proxy: "{{ $availabilityZone.quickConnect.proxy.no_proxy }},{{ $availabilityZone.otel.exporter.otlp.endpoint }}"
+      - availabilityZone: {{ $availabilityZone.availabilityZone }}
+      - clientCertificate:
+          commonName: {{ $availabilityZone.availabilityZone }}-quick-connect-client.idcs-system.svc.cluster.local
+      - computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+      - host: {{ $availabilityZone.quickConnect.host | quote }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}quick-connect-api-server@sha256"
+      - ingress:
+          enabled: {{ $availabilityZone.quickConnect.ingress.enabled }}
+          {{- if $availabilityZone.quickConnect.ingress.enabled }}
+          className: {{ $availabilityZone.quickConnect.ingress.className | quote }}
+          annotations:
+            {{- if (eq $availabilityZone.quickConnect.ingress.className "nginx") }}
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+            # Increase timeouts for websockets, see https://kubernetes.github.io/ingress-nginx/user-guide/miscellaneous/#websockets
+            nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+            nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+            # Increase buffer sizes to include large OAuth response headers
+            nginx.ingress.kubernetes.io/proxy-buffer-size: "32k"
+            nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
+            {{- end }}
+            {{- range $key, $value := $availabilityZone.quickConnect.ingress.annotations }}
+            {{ $key }}: {{ $value | quote }}
+            {{- end }}
+          hosts:
+            - host: "*.{{ $availabilityZone.quickConnect.host }}"
+              paths:
+                - path: /v1
+                  pathType: Prefix
+          tls:
+            - secretName: {{ $availabilityZone.quickConnect.ingress.tls.secretName | quote }}
+              hosts:
+                - "*.{{ $availabilityZone.quickConnect.host }}"
+          {{- end }}
+      - oauth:
+          {{- toYaml $availabilityZone.quickConnect.oauth | nindent 10 }}
+      - oidc:
+          servers:
+            {{- range $server := $availabilityZone.quickConnect.oidc.servers }}
+            - {{ $server | toJson }}
+            {{- end }}
+            {{- if and $availabilityZone.quickConnect.insecureDevEnvironment $.Values.global.oidc.insecureEnabled }}
+            - {{- range $key, $value := $availabilityZone.quickConnect.oidc.insecureDevServer }}
+              {{ $key }}: {{ $value | toJson }}
+              {{- end }}
+              keyURL: http://{{ $.Values.global.oidc.ingress.host }}:80/keys
+              server: {{ $.Values.global.oidc.ingress.host | quote }}
+            {{- end }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - region: {{ $region.region }}
+      - replicaCount: {{ $availabilityZone.quickConnect.replicaCount }}
+      - statsd:
+          {{- toYaml $availabilityZone.quickConnect.statsd | nindent 10 }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+          commonName: {{ $availabilityZone.availabilityZone }}-quick-connect-api-server.idcs-system.svc.cluster.local
+          server:
+            requireClientCertificate: false
+      - vault:
+          enable: true
+          address: {{ $.Values.vault.service | quote }}
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+          proxy: {{ $availabilityZone.quickConnect.proxy.https_proxy | default "" | quote }}
+          annotations:
+            vault.hashicorp.com/role: "{{ $availabilityZone.availabilityZone }}-quick-connect-api-server-role"
+            vault.hashicorp.com/agent-inject-secret-secret-id: "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/approle"
+            vault.hashicorp.com/agent-inject-template-secret-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/approle" }}
+                {{ `{{- .Data.data.secret_id -}}` }}
+                {{ `{{- end -}}` }}
+            vault.hashicorp.com/agent-inject-secret-role-id: "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/approle"
+            vault.hashicorp.com/agent-inject-template-role-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/approle" }}
+                {{ `{{- .Data.data.role_id -}}` }}
+                {{ `{{- end -}}` }}
+            {{- if $availabilityZone.quickConnect.oauth.enabled }}
+            vault.hashicorp.com/agent-inject-secret-token_secret.yaml: "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/oauth2_client"
+            vault.hashicorp.com/agent-inject-template-token_secret.yaml: |-
+                {{ `{{- with secret `}} "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/oauth2_client" }}
+                {{ `resources:` }}
+                {{ `  - "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"` }}
+                {{ `    name: token` }}
+                {{ `    generic_secret:` }}
+                {{ `      secret:` }}
+                {{ `        inline_string: "{{- .Data.data.token -}}"` }}
+                {{ `{{- end -}}` }}
+            vault.hashicorp.com/agent-inject-secret-hmac_secret.yaml: "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/oauth2_client"
+            vault.hashicorp.com/agent-inject-template-hmac_secret.yaml: |-
+                {{ `{{- with secret `}} "controlplane/data/{{ $availabilityZone.availabilityZone }}-quick-connect-api-server/oauth2_client" }}
+                {{ `resources:` }}
+                {{ `  - "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"` }}
+                {{ `    name: hmac` }}
+                {{ `    generic_secret:` }}
+                {{ `      secret:` }}
+                {{ `        inline_bytes: "{{- .Data.data.hmac -}}"` }}
+                {{ `{{- end -}}` }}
+            {{- end }}
+          pkiEngine: {{ $availabilityZone.availabilityZone }}-quick-connect-client-ca
+          pkiRole: {{ $availabilityZone.availabilityZone }}-quick-connect-client
+
+  {{- end }}
+
+{{- end }}
+{{- end }}

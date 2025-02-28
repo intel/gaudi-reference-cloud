@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# set python environment variable
+PYTHON=/usr/bin/python{{ python_version }}
+
+cd {{ optimum_habana_path }}/examples/contrastive-image-text
+
+deepspeed --hostfile /validation/hostfile --master_addr {{ master_ip }} \
+   run_bridgetower.py \
+   --output_dir /tmp/bridgetower-test \
+   --model_name_or_path /validation/models/BridgeTower/bridgetower-large-itm-mlm-itc \
+   --dataset_name /validation/datasets/jmhessel/newyorker_caption_contest \
+   --dataset_config_name matching \
+   --image_column image --caption_column image_description \
+   --remove_unused_columns=False \
+   --do_train --do_eval --do_predict \
+   --per_device_train_batch_size="{{ train_batch_size }}" --per_device_eval_batch_size="{{ eval_batch_size }}" \
+   --num_train_epochs {{ num_train_epochs }} \
+   --learning_rate="{{ learning_rate }}" \
+   --report_to tensorboard \
+   --overwrite_output_dir \
+   --use_habana --use_lazy_mode --use_hpu_graphs_for_inference --gaudi_config_name Habana/clip \
+   --throughput_warmup_steps {{ throughput_warmup_steps }} \
+   --logging_steps {{ logging_steps }} \
+   --dataloader_num_workers 8 \
+   --distribution_strategy fast_ddp \
+   --bf16
+

@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "idc_storage",
+    srcs = [
+        "client.go",
+        "storage.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/training/idc_storage",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/storage/utils",
+        "//go/pkg/training/config",
+        "@com_github_sethvargo_go_retry//:go-retry",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)

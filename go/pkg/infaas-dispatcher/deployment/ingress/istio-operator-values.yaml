@@ -1,0 +1,24 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  tag: 1.24.1
+  values:
+    global:
+      variant: distroless
+  components:
+    pilot:
+      k8s:
+        env:
+          - name: PILOT_LOG_LEVEL
+            value: "warn"
+          - name: PILOT_ENABLE_DEBUG_ONHTTP
+            value: "false"
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          env:
+            - name: ISTIO_LOG_LEVEL
+              value: "trace"  # Change to "trace" for even more details
+  meshConfig:
+    accessLogFile: /dev/stdout

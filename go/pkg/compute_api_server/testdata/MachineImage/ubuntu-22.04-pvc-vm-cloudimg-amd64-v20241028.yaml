@@ -1,0 +1,49 @@
+metadata:
+  name: ubuntu-22.04-pvc-v1100-vm-v3
+spec:
+  displayName: ubuntu-22.04-pvc-v1100-vm-v3
+  description: ubuntu-22.04-pvc-v1100-vm-v3
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes:
+    - vm-spr-pvc-1100-1
+  md5sum: "3ca5a5880a6125479e04078023874d41"
+  sha256sum: "6cca6eafa079bbc22b97381d10a94dbe1a0c6861844d8aaa8194e4efb5be39b7"
+  sha512sum: "f98a951d709ecfaf6e366292658babea718cc83eb6254255fc91d56fd2614594b4284bc3bdb920a32f16380882d53ad0cfa0629959a4fc5bc305b0103487124e"
+  virtualSizeBytes: 51539607552
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (VM only)
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: oneAPI base kit
+      type: Software kit
+      version: "2024.2.1"
+      description: core set of tools and libraries for developing high-performance, data-centric applications across diverse architectures.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.49uac7
+      imageUrl: https://www.intel.com/content/dam/develop/public/us/en/images/brand/brand-commercial-base-toolkit-16x9.png.rendition.intel.web.368.207.png
+    - name: oneAPI HPC kit
+      type: Software kit
+      version: "2024.2.1"
+      description: comprehensive suite of development tools that make it fast and easy to build modern code that gets maximum performance out of the newest Intel® processors.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit.html#gs.49ueyn
+      imageUrl: https://www.intel.com/content/dam/develop/public/us/en/images/brand/brand-commercial-base-hpc-toolkit-16x9.png.rendition.intel.web.368.207.png
+    - name: oneAPI render kit
+      type: Software kit
+      version: "2024.1.0"
+      description: powerful set of open source rendering, ray tracing, denoising, and path guiding libraries for AI synthetic data generation, digital twins, high-fidelity and high-performance visualization, and immersive content creation.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/rendering-toolkit.html#linklist_1681889240_
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/2022-10/brand-commercial-base-rendering-toolkit.png.rendition.intel.web.368.207.png
+  userName: ubuntu

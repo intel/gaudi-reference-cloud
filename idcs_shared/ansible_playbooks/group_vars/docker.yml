@@ -1,0 +1,3 @@
+devcloud_default_user: sdp
+ansible_user: "{{ devcloud_default_user }}"
+ansible_connection: 'ssh'

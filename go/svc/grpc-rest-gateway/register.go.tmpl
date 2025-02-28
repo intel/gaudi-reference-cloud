@@ -1,0 +1,21 @@
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb"
+	"google.golang.org/grpc"
+)
+
+func registerServers(ctx context.Context, conn *grpc.ClientConn, gwmux *runtime.ServeMux) {
+	var err error
+{{- range .Services}}
+	if config.Deployment == "all" || config.Deployment == "{{.Deployment}}" {
+		if err = pb.{{.RegisterFunc}}(ctx, gwmux, conn); err != nil {
+			log.Fatalf("register {{.Service}}: %v", err)
+		}
+	}
+{{- end}}
+}

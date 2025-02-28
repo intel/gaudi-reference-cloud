@@ -1,0 +1,7 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+filegroup(
+    name = "test_config",
+    srcs = ["test_config.yaml"],
+    visibility = ["//visibility:public"],
+)

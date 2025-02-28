@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-spr-pvc-1100-8
+spec:
+  name: bm-spr-pvc-1100-8
+  displayName: Intel® Max Series GPU (PVC) on 4th Gen Intel® Xeon® processors – 1100 series (8x)
+  description: Intel® Max Series GPU (PVC) on 4th Gen Intel® Xeon® processors – 1100 series (8x)
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 48
+    id: "0x806F8"
+    modelName: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+    sockets: 2
+    threads: 2
+  gpu:
+    modelName: "gpu-max-1100"
+    count: 8
+  memory:
+    size: 1024Gi
+    dimmSize: 64Gi
+    dimmCount: 16
+    speed: 4800
+  disks:
+    - size: 894Gi

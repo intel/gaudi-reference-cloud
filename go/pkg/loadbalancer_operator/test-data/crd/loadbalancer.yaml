@@ -1,0 +1,47 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Loadbalancer
+metadata:
+  labels:
+    app.kubernetes.io/name: loadbalancer
+    app.kubernetes.io/instance: loadbalancer-sample
+    app.kubernetes.io/part-of: loadbalancer
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: loadbalancer
+  name: loadbalancer-sample
+spec:
+  owner: steve
+  vip:
+    name: "test-loadbalancer-vip-443"
+    description: "This is a test loadbalancer with params"
+    port: 443
+    iptype: "private"
+    persist: "i_client_ip_5min"
+    ipprotocol: "tcp"
+    environment: 11
+    usergroup: 1545
+    sourceips:
+      - "134.134.137.83"
+  pool:
+    name: "test-loadbalancer-pool-443"
+    description: "This is test loadbalancer pool with params"
+    port: 443
+    environment: 11
+    usergroup: 1545
+    loadbalancingmode: "least-connections-member"
+    minactivemembers: 1
+    monitor: "i_tcp"
+    members:
+    - connectionLimit: 100
+      priorityGroup: 0
+      ratio: 1
+      adminState: "enabled"
+      instanceRef: "instance-sample"
+    - connectionLimit: 100
+      priorityGroup: 0
+      ratio: 1
+      adminState: "enabled"
+      instanceRef: "instance-sample2"
+status:
+  vip: 9.8.7.6

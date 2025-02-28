@@ -1,0 +1,125 @@
+diff --git a/app.py b/app.py
+index 7d8a913..0a67312 100644
+--- a/app.py
++++ b/app.py
+@@ -13,15 +13,23 @@ from PIL import Image
+ import uuid
+ import random
+ from huggingface_hub import hf_hub_download
++import intel_extension_for_pytorch as ipex
++
++webui_host_ip = os.getenv("HOST_IP")
++webui_host_port = int(os.getenv("HOST_PORT"))
++
++# Create public link
++share = os.getenv("SHARE", "false").lower() == "true"
+ 
+ #gradio.helpers.CACHED_FOLDER = '/data/cache'
+ 
+ pipe = StableVideoDiffusionPipeline.from_pretrained(
+     "stabilityai/stable-video-diffusion-img2vid-xt", torch_dtype=torch.float16, variant="fp16"
+ )
+-pipe.to("cuda")
+-pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
+-pipe.vae = torch.compile(pipe.vae, mode="reduce-overhead", fullgraph=True)
++pipe.to("xpu")
++pipe.unet = torch.xpu.optimize(pipe.unet.eval(), dtype=torch.float16, inplace=True)
++pipe.vae = torch.xpu.optimize(pipe.vae.eval(), dtype=torch.float16, inplace=True)
++pipe.image_encoder = torch.xpu.optimize(pipe.image_encoder.eval(), dtype=torch.float16, inplace=True)
+ 
+ max_64_bit_int = 2**63 - 1
+ 
+@@ -34,7 +42,7 @@ def sample(
+     version: str = "svd_xt",
+     cond_aug: float = 0.02,
+     decoding_t: int = 3,  # Number of frames decoded at a time! This eats most VRAM. Reduce if necessary.
+-    device: str = "cuda",
++    device: str = "xpu",
+     output_folder: str = "outputs",
+ ):
+     if image.mode == "RGBA":
+@@ -51,8 +59,12 @@ def sample(
+     frames = pipe(image, decode_chunk_size=decoding_t, generator=generator, motion_bucket_id=motion_bucket_id, noise_aug_strength=0.1, num_frames=25).frames[0]
+     export_to_video(frames, video_path, fps=fps_id)
+     torch.manual_seed(seed)
+-    
+-    return video_path, seed
++
++    video_path_h264 = video_path[:-4] + "_h264.mp4"
++    os.system(f"ffmpeg -i {video_path} -c:v libx264 {video_path_h264}") 
++    #return video_path, seed
++    return video_path_h264, seed
++
+ 
+ def resize_image(image, output_size=(1024, 576)):
+     # Calculate aspect ratios
+@@ -86,7 +98,7 @@ def resize_image(image, output_size=(1024, 576)):
+     return cropped_image
+ 
+ with gr.Blocks() as demo:
+-  gr.Markdown('''# Community demo for Stable Video Diffusion - Img2Vid - XT ([model](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt), [paper](https://stability.ai/research/stable-video-diffusion-scaling-latent-video-diffusion-models-to-large-datasets), [stability's ui waitlist](https://stability.ai/contact))
++  gr.Markdown('''# Community demo for Stable Video Diffusion - Img2Vid - XT on Intel Data Center GPU ([model](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt), [paper](https://stability.ai/research/stable-video-diffusion-scaling-latent-video-diffusion-models-to-large-datasets), [stability's ui waitlist](https://stability.ai/contact))
+ #### Research release ([_non-commercial_](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt/blob/main/LICENSE)): generate `4s` vid from a single image at (`25 frames` at `6 fps`). this demo uses [🧨 diffusers for low VRAM and fast generation](https://huggingface.co/docs/diffusers/main/en/using-diffusers/svd).
+   ''')
+   with gr.Row():
+@@ -104,15 +116,29 @@ with gr.Blocks() as demo:
+   generate_btn.click(fn=sample, inputs=[image, seed, randomize_seed, motion_bucket_id, fps_id], outputs=[video, seed], api_name="video")
+   gr.Examples(
+     examples=[
+-        "images/blink_meme.png",
+-        "images/confused2_meme.png",
+-        "images/disaster_meme.png",
+-        "images/distracted_meme.png",
+-        "images/hide_meme.png",
+-        "images/nazare_meme.png",
+-        "images/success_meme.png",
+-        "images/willy_meme.png",
+-        "images/wink_meme.png"
++        #"images/blink_meme.png",
++        #"images/confused2_meme.png",
++        #"images/disaster_meme.png",
++        #"images/distracted_meme.png",
++        #"images/hide_meme.png",
++        #"images/nazare_meme.png",
++        #"images/success_meme.png",
++        #"images/willy_meme.png",
++        #"images/wink_meme.png"
++        #"inputs/cover.png",
++        #"inputs/planeta.png", 
++        "inputs/catoon.png",
++        "inputs/dog.png",
++        "inputs/fondo.png",
++        "inputs/girl.png",
++        "inputs/nave.png",
++        "inputs/persona.png",
++        "inputs/rocket.png",
++        "inputs/fireworks.png",
++        "inputs/galaxia.png",
++        "inputs/lindo.png",
++        "inputs/paisaje.png",
++        "inputs/women.png"
+     ],
+     inputs=image,
+     outputs=[video, seed],
+@@ -122,4 +148,5 @@ with gr.Blocks() as demo:
+ 
+ if __name__ == "__main__":
+     demo.queue(max_size=20)
+-    demo.launch(share=True)
+\ No newline at end of file
++    #demo.launch(share=True)
++    demo.launch(share=share, server_name=webui_host_ip, server_port=webui_host_port)
+diff --git a/requirements.txt b/requirements.txt
+index a641cb1..4335bfc 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,7 +1,3 @@
+ https://gradio-builds.s3.amazonaws.com/756e3431d65172df986a7e335dce8136206a293a/gradio-4.7.1-py3-none-any.whl
+-git+https://github.com/huggingface/diffusers.git
+-transformers
+-accelerate
+ safetensors
+-opencv-python
+-uuid
+\ No newline at end of file
++uuid

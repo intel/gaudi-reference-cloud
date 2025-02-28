@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "apigee",
+    srcs = ["apigee_client.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/apigee",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_go_resty_resty_v2//:resty",
+        "@in_gopkg_square_go_jose_v2//jwt",
+    ],
+)

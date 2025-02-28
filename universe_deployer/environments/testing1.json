@@ -1,0 +1,157 @@
+{
+  "_doc": "Universe Config File for testing1. Only the version of this file in the main branch is authoritative. Artifacts are pushed to same Harbor as staging environment.",
+  "environments": {
+    "testing1": {
+      "components": {
+        "billing": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "cloudaccount": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "cloudcredits": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "externalSecrets": {
+          "commit": "469d948a3198b1d01197da56de24985dcb3ed395"
+        },
+        "grpc": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "metering": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "productCatalog": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "telemetry": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "tradeScanner": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        },
+        "ilens": {
+          "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+        }
+      },
+      "hint_push_to_environment": "staging",
+      "regions": {
+        "us-testing1-1": {
+          "components": {
+            "compute": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "computeApiServer": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "computeBm": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "computeBmEnrollment": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "computePopulateInstanceType": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "computePopulateMachineImage": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "computePopulateSubnet": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "dpai": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "externalSecrets": {
+              "commit": "469d948a3198b1d01197da56de24985dcb3ed395"
+            },
+            "firewall": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "grpc": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "iks": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "kfaas": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "loadbalancer": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "storage": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "telemetry": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "training": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            },
+            "armada": {
+              "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+            }
+          },
+          "availabilityZones": {
+            "us-testing1-1a": {
+              "components": {
+                "compute": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeBm": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeBmEnrollment": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeBmMetal3": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeSshProxy": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "externalSecrets": {
+                  "commit": "469d948a3198b1d01197da56de24985dcb3ed395"
+                },
+                "iks": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "intelDevicePlugin": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "sdn": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "storage": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                },
+                "telemetry": {
+                  "commit": "699ae87d998040ddcb254a01509c3b53770801c6"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

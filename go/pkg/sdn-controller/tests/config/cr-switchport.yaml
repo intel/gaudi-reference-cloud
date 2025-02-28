@@ -1,0 +1,40 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SwitchPort
+metadata:
+  labels:
+    app.kubernetes.io/name: switchport
+    app.kubernetes.io/instance: switchport-sample
+    app.kubernetes.io/part-of: sdn-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: sdn-controller
+    switch_fqdn: internal-placeholder.com
+  name: "ethernet27-1.internal-placeholder.com"
+  namespace: idcs-system
+spec:
+  name: "Ethernet27/1"
+  mode: "access"
+  vlanId: 444
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SwitchPort
+metadata:
+  labels:
+    switch_fqdn: internal-placeholder.com
+  name: ethernet2-1.internal-placeholder.com
+  namespace: idcs-system
+spec:
+  mode: access
+  name: Ethernet2/1
+  vlanId: 4008
+status:
+  mode: access
+  name: Ethernet2/1
+  ravenDBVlanId: 4008
+  vlanId: 4008
+---
+
+
+

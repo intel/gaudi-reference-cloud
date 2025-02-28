@@ -1,0 +1,71 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.components.dataloader.enabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+#added for dataloader 
+  {{- if $.Values.components.dataloader.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-dataloader") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: dataloader
+      service: dataloader
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: dataloader
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/dataloader
+    version: {{ readFile (print $helmChartVersionsDir "/dataloader.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}dataloader@sha256"
+      - apiServer:
+          # image:
+          #   repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}dataloader@sha256"
+          ingress:
+            issueCa: {{ $region.region }}-ca
+            enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+            className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}      
+      - domainSuffix: {{ $region | get "computeApiServer.domainSuffix" $.Values.defaults.region.computeApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+
+  {{- end }}
+
+   
+{{- end }} 
+{{- end }}

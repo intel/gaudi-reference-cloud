@@ -1,0 +1,15 @@
+<network>
+  <name>data</name>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='databr0' stp='on' delay='0'/>
+  <ip address='192.168.150.254' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.150.100' end='192.168.150.253'/>
+      <host mac="52:54:00:be:c0:01" ip="192.168.150.1"/>
+    </dhcp>
+  </ip>
+</network>

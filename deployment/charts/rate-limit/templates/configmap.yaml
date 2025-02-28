@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+data:
+  config.yaml: |
+    ---
+    domain: idc
+    descriptors:
+      - key: {{ .Values.service.rateLimit.userId }}
+        value: {{ .Values.service.rateLimit.any  | quote }}
+        descriptors:
+          - key: {{ .Values.service.rateLimit.path }}
+            value: {{ .Values.service.rateLimit.any  | quote }}
+            descriptors:
+              - key: {{ .Values.service.rateLimit.method }}
+                value: {{ .Values.service.rateLimit.any  | quote }}
+                rate_limit:
+                  unit: {{ .Values.service.rateLimit.unit }}
+                  requests_per_unit: {{ .Values.service.rateLimit.requestsPerUnit }}
+                shadow_mode: {{ .Values.service.rateLimit.shadowMode }}

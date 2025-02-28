@@ -1,0 +1,55 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "sdn-controller-rest_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/rest-api",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/mineral-river",
+        "//go/pkg/observability",
+        "//go/pkg/sdn-controller/api/v1alpha1",
+        "//go/pkg/sdn-controller/pkg/devices_manager",
+        "//go/pkg/sdn-controller/pkg/switch-clients",
+        "//go/pkg/sdn-controller/pkg/utils",
+        "//go/pkg/tlsutil",
+        "@com_github_gorilla_mux//:mux",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//plugin/pkg/client/auth",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_utils//strings/slices",
+    ],
+)
+
+go_binary(
+    name = "sdn-controller-rest",
+    embed = [":sdn-controller-rest_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "sdn-controller-rest_image_1",
+    embed = [":sdn-controller-rest_lib"],
+    visibility = ["//visibility:public"],
+)
+
+# Add the intel-certs layer to the generated image.
+container_image(
+    name = "sdn-controller-rest_image",
+    base = ":sdn-controller-rest_image_1",
+    layers = ["//go/certs:intel_certs"],
+    visibility = ["//visibility:public"],
+)

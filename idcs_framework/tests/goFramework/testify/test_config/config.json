@@ -1,0 +1,1430 @@
+{
+	"cluster_info": {
+		"name": "dev",
+		"dev": {
+			"name": "Test cluster ip",
+			"token": "Token to access the cluster"
+		},
+		"cd": {
+			"name": "",
+			"customerId": ""
+		}
+	},
+	"rpendpoint": "rp end point",
+	"rpuuid": "rp uuid",
+	"rplaunch": "SAMPLE Go TEST",
+	"rpproject": "pytest",
+	"launchdescription": "Sample launch",
+	"attributes": [{
+			"key": "Test Type",
+			"value": "Sanity"
+		},
+		{
+			"key": "Test Environment",
+			"value": "Cloud"
+		}
+	],
+	"vm_creation": {
+		"tiny_vm": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"tiny_vm_without_name": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"tiny_vm_without_namespace": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-without-namespace-vm10",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"tiny_vm_without_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-without-instanceType-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"tiny_vm_without_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-without-machineImage-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"tiny_vm_without_sshPublicKeyNames": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-without-sshPublicKeyNames-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04"
+				}
+			}
+		},
+		"small_vm": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_existing": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "existing-small-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_without_name": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_without_namespace": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-without-namespace-vm10",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_without_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-without-instanceType-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_without_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-without-machineImage-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_without_sshPublicKeyNames": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-without-sshPublicKeyNames-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04"
+				}
+			}
+		},
+		"medium_vm": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_existing": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "existing-medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_already_deleted": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "deleted-medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_get_vm_already_deleted": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "get-deleted-medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"delete_medium_vm": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "delete-medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_without_name": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_without_namespace": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-without-namespace-vm10",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_without_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-without-instanceType-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_without_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-without-machineImage-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_without_sshPublicKeyNames": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-without-sshPublicKeyNames-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04"
+				}
+			}
+		},
+		"large_vm": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_without_name": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_without_namespace": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-without-namespace-vm10",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_without_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-without-instanceType-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_without_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-without-machineImage-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_without_sshPublicKeyNames": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-without-sshPublicKeyNames-vm10",
+					"namespace": "abc-abc-abc",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04"
+				}
+			}
+		}
+	},
+	"vmGetResponse": {
+		"tiny_vm": {
+			"response": {
+				"metadata": {
+					"name": "tiny-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				},
+				"status": {
+					"instanceTypeSpec": {
+						"cpu": {
+							"cores": 4,
+							"id": "0x806F2",
+							"modelName": "Intel® Xeon 4th Gen® Scalable processor formerly known as Sapphire Rapids",
+							"sockets": 1,
+							"threads": 1
+						},
+						"displayName": "Tiny VM",
+						"memory": {
+							"dimmCount": 1,
+							"dimmSize": "8Gi",
+							"size": "8Gi",
+							"speed": 3200
+						}
+					}
+				}
+			}
+		},
+		"small_vm": {
+			"response": {
+				"metadata": {
+					"name": "small-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				},
+				"status": {
+					"instanceTypeSpec": {
+						"cpu": {
+							"cores": 8,
+							"id": "0x806F2",
+							"modelName": "Intel® Xeon 4th Gen® Scalable processor formerly known as Sapphire Rapids",
+							"sockets": 1,
+							"threads": 1
+						},
+						"displayName": "Small VM",
+						"memory": {
+							"dimmCount": 1,
+							"dimmSize": "16Gi",
+							"size": "8Gi",
+							"speed": 3200
+						}
+					}
+				}
+			}
+		},
+		"large_vm": {
+			"response": {
+				"metadata": {
+					"name": "large-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				},
+				"status": {
+					"instanceTypeSpec": {
+						"cpu": {
+							"cores": 32,
+							"id": "0x806F2",
+							"modelName": "Intel® Xeon 4th Gen® Scalable processor formerly known as Sapphire Rapids",
+							"sockets": 1,
+							"threads": 1
+						},
+						"displayName": "Large VM",
+						"memory": {
+							"dimmCount": 1,
+							"dimmSize": "64Gi",
+							"size": "8Gi",
+							"speed": 3200
+						}
+					}
+				}
+			}
+		},
+		"medium_vm": {
+			"response": {
+				"metadata": {
+					"name": "medium-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"runStrategy": "RerunOnFailure",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				},
+				"status": {
+					"instanceTypeSpec": {
+						"cpu": {
+							"cores": 16,
+							"id": "0x806F2",
+							"modelName": "Intel® Xeon 4th Gen® Scalable processor formerly known as Sapphire Rapids",
+							"sockets": 1,
+							"threads": 1
+						},
+						"displayName": "Medium VM",
+						"memory": {
+							"dimmCount": 1,
+							"dimmSize": "32Gi",
+							"size": "32Gi",
+							"speed": 3200
+						}
+					}
+				}
+			}
+		}
+	},
+	"vmPut": {
+		"tiny_vm_put_sshKey": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"tiny_vm_put_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"tiny_vm_put_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "tiny-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "linux",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_put_sshKey": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_put_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"small_vm_put_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "small-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "linux",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_put_sshKey": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_put_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"medium_vm_put_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "medium-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "linux",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_put_sshKey": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_put_instanceType": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		},
+		"large_vm_put_machineImage": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Instance",
+				"metadata": {
+					"name": "large-vm-vm10",
+					"namespace": "abc-abc-abc",
+					"resourceVersion": "",
+					"labels": {
+						"cloud.intel.com/instance-category": "virtual-machine"
+					}
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "linux",
+					"sshPublicKeyNames": [
+						"test-vm.example.com"
+					]
+				}
+			}
+		}
+	},
+	"vmDeleteResponse": {
+		"tiny_vm": {
+			"response": {
+				"metadata": {
+					"name": "tiny-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "tiny",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				},
+				"status": {
+					"instanceTypeSpec": {
+						"cpu": {
+							"cores": 4,
+							"id": "0x806F2",
+							"modelName": "Intel® Xeon 4th Gen® Scalable processor formerly known as Sapphire Rapids",
+							"sockets": 1,
+							"threads": 1
+						},
+						"displayName": "Tiny VM",
+						"memory": {
+							"dimmCount": 1,
+							"dimmSize": "8Gi",
+							"size": "8Gi",
+							"speed": 3200
+						}
+					}
+				}
+			}
+		},
+		"small_vm": {
+			"response": {
+				"metadata": {
+					"name": "small-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "small",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				},
+				"status": {
+					"instanceTypeSpec": {
+						"cpu": {
+							"cores": 8,
+							"id": "0x806F2",
+							"modelName": "Intel® Xeon 4th Gen® Scalable processor formerly known as Sapphire Rapids",
+							"sockets": 1,
+							"threads": 1
+						},
+						"displayName": "Small VM",
+						"memory": {
+							"dimmCount": 1,
+							"dimmSize": "16Gi",
+							"size": "8Gi",
+							"speed": 3200
+						}
+					}
+				}
+			}
+		},
+		"large_vm": {
+			"response": {
+				"metadata": {
+					"name": "large-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "large",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				},
+				"status": {
+					"instanceTypeSpec": {
+						"cpu": {
+							"cores": 32,
+							"id": "0x806F2",
+							"modelName": "Intel® Xeon 4th Gen® Scalable processor formerly known as Sapphire Rapids",
+							"sockets": 1,
+							"threads": 1
+						},
+						"displayName": "Large VM",
+						"memory": {
+							"dimmCount": 1,
+							"dimmSize": "64Gi",
+							"size": "8Gi",
+							"speed": 3200
+						}
+					}
+				}
+			}
+		},
+		"medium_vm": {
+			"response": {
+				"metadata": {
+					"name": "medium-vm-vm10",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"instanceType": "medium",
+					"machineImage": "ubuntu-22.04",
+					"sshPublicKeyNames": [
+						"test.example.com"
+					]
+				}
+			}
+		}
+	},
+	"createStorage": {
+		"createStorageVolume": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Storage",
+				"metadata": {
+					"name": "idc-netapp-file-storage-5",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"accessMode": [
+						"ReadWriteMany"
+					],
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		},
+		"createStorageVolumeInvalidName": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Storage",
+				"metadata": {
+					"name": 1,
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"accessMode": [
+						"ReadWriteMany"
+					],
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		},
+		"createStorageVolumeInvalidNameSpace": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Storage",
+				"metadata": {
+					"name": "idc-netapp-file-storage-5",
+					"namespace": 1
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"accessMode": [
+						"ReadWriteMany"
+					],
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		},
+		"createStorageVolumeInvalidField": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Storage",
+				"metadata": {
+					"name": "idc-netapp-file-storage-5",
+					"namespace": "abc-abc-abc",
+					"extra": "aaa"
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"accessMode": [
+						"ReadWriteMany"
+					],
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		},
+		"createStorage_without_name": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Storage",
+				"metadata": {
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"accessMode": [
+						"ReadWriteMany"
+					],
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		},
+		"createStorage_without_namespace": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Storage",
+				"metadata": {
+					"name": "idc-netapp-file-storage-6"
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"accessMode": [
+						"ReadWriteMany"
+					],
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		},
+		"createStorage_without_accessMode": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "Storage",
+				"metadata": {
+					"name": "idc-netapp-file-storage-5",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		},
+		"createStorage_without_multiShareEnable": {
+			"apiVersion": "cloud.intel.com/v1alpha1",
+			"kind": "Storage",
+			"metadata": {
+				"name": "idc-netapp-file-storage-5",
+				"namespace": "abc-abc-abc"
+			},
+			"spec": {
+				"request": {
+					"capacityGB": 100
+				},
+				"accessMode": [
+					"ReadWriteMany"
+				],
+				"storageClassType": "idc-file-storage-class"
+			}
+		},
+		"createStorage_without_storageClassType": {
+			"apiVersion": "cloud.intel.com/v1alpha1",
+			"kind": "Storage",
+			"metadata": {
+				"name": "idc-netapp-file-storage-5",
+				"namespace": "abc-abc-abc"
+			},
+			"spec": {
+				"request": {
+					"capacityGB": 100
+				},
+				"accessMode": [
+					"ReadWriteMany"
+				],
+				"multiShareEnable": false,
+				"storageClassType": "idc-file-storage-class"
+			}
+		}
+	},
+	"storageGetResponse": {
+		"createStorageVolume": {
+			"response": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"metadata": {
+					"name": "idc-netapp-file-storage-5",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"request": {
+						"capacityGB": 100
+					},
+					"accessMode": [
+						"ReadWriteMany"
+					],
+					"multiShareEnable": false,
+					"storageClassType": "idc-file-storage-class"
+				}
+			}
+		}
+	},
+	"storageDeleteResponse": {
+		"createStorageVolume": {
+			"response": {
+				"kind": "Status",
+				"apiVersion": "v1",
+				"metadata": {},
+				"status": "Success",
+				"details": {
+					"name": "idc-netapp-file-storage-5",
+					"group": "cloud.intel.com",
+					"kind": "storages"
+				}
+			}
+		}
+	},
+	"sshCreate": {
+		"sshKey": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "SshPublicKey",
+				"metadata": {
+					"name": "my-ssh-public-key-7",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"sshPublicKey": "ssh-rsa AAAAB3Nza...3oTw== user@example.com"
+				}
+			}
+		},
+		"nonsshKey": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "SshPublicKey",
+				"metadata": {
+					"name": "test-ssh-public-key-api-auto",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"sshPublicKey": "abc"
+				}
+			}
+		},
+		"nonsshKeyInt": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "SshPublicKey",
+				"metadata": {
+					"name": "test-ssh-public-key-api-auto",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"sshPublicKey": "1"
+				}
+			}
+		}
+	},
+	"sshGetResponse": {
+		"ssh": {
+			"response": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "SshPublicKey",
+				"metadata": {
+					"name": "my-ssh-public-key-7",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"sshPublicKey": "ssh-rsa AAAAB3Nza...3oTw== user@example.com"
+				}
+			}
+		}
+	},
+	"sshPut": {
+		"sshPut": {
+			"payload": {
+				"apiVersion": "cloud.intel.com/v1alpha1",
+				"kind": "SshPublicKey",
+				"metadata": {
+					"name": "my-ssh-public-key-7",
+					"namespace": "abc-abc-abc"
+				},
+				"spec": {
+					"sshPublicKey": "ssh-rsa AAAAB3Nza...3oTw== user@example.com"
+				}
+			}
+		}
+	},
+	"sshDeleteResponse": {
+		"ssh": {
+			"response": {
+				"kind": "Status",
+				"apiVersion": "v1",
+				"metadata": {},
+				"status": "Success",
+				"details": {
+					"name": "my-ssh-public-key-7",
+					"group": "cloud.intel.com",
+					"kind": "sshpublickeys"
+				}
+			}
+		}
+	},
+	"urls": {
+		"base_url": "Base Url for REST API tests"
+	},
+	"token": {
+		"method": "azure"
+	},
+	"adminAuthConfig": {
+		"useranme": "",
+		"password": "",
+		"clientSecret": "",
+		"client_id": "",
+		"redirectUri": "http://localhost:8000/",
+		"redirectPort": "8000",
+		"scope": "",
+		"authEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/authorize",
+		"tokenEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/token"
+
+	},
+	"authConfig": {
+		"userAccounts": [{
+				"email": "",
+				"password": "",
+				"userType" :"Intel"
+
+			},
+			{
+				"email": "",
+				"password": "",
+				"userType" :"Standard"
+			},			
+			{
+				"email": "",
+				"password": "",
+				"userType" :"Premium"
+			}
+			
+		],
+		"clientSecret": "",
+		"client_id": "",
+		"redirectUri": "http://localhost:3000/",
+		"redirectPort": "3000",
+		"scope": "",
+		"authEndPoint": "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/authorize",
+		"tokenEndPoint": "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/token"
+	},
+	"adminRoleToken": {
+		"url": "https://<<oidc>>/token?email=admin@intel.com&groups=IDC.Admin"
+	},
+	"expiredBearerToken": "expired bearer token"
+}

@@ -1,0 +1,91 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  - name: phx02-1
+    uuid: 3ad60220-a1e9-41da-ac97-26209f5e0796
+    type: Weka
+    labels:
+      operation: production
+      category: ai-storage
+      type: fast
+      wekaBackend: phx02-1.us-region-3.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: phx02
+    api:
+      type: REST
+      url: https://phx02-1.us-region-3.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx02-storage-controller-weka-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: phx02-1.us-region-3.cloud.intel.com
+  - name: phx02-2
+    uuid: d8557c1d-31d6-4daf-8bac-8de60500a079
+    type: Weka
+    labels:
+      operation: production
+      category: ai-storage
+      type: gp
+      wekaBackend: phx02-2.us-region-3.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: phx02
+    api:
+      type: REST
+      url: https://phx02-2.us-region-3.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx02-storage-controller-weka-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: phx02-2.us-region-3.cloud.intel.com
+  - name: phx02-3
+    uuid: 6880b710-4368-4977-9f26-52caa5d1ead0
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: production
+      category: shared-tenant
+      type: gp
+      s3Endpoints: https://s3-phx02-3.tenantiglb.us-region-3.cloud.intel.com:9000
+    location: phx02
+    api:
+      type: REST
+      url: phx02-3.us-region-3.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx02-storage-controller-minio-creds.json
+    minioConfig:
+      kesKey: "minio-kes-key"
+  - name: phx02-4
+    uuid: ce78d5e7-fbef-5df5-8a79-43e77c0319da
+    type: Vast
+    supportsApi:
+      - "VastView"
+    labels:
+      operation: production
+      category: shared-tenant
+      type: gp
+      vastBackend: vip1.vast-phx02-4.us-region-3.cloud.intel.com
+      vastVMSEndpoint: phx02-4.us-region-3.cloud.intel.com
+    location: phx02-4
+    api:
+      type: REST
+      url: https://phx02-4.us-region-3.cloud.intel.com/api/v5
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx02-storage-controller-vast-creds.json
+    vastConfig:
+      vipPool: vip-pool1
+      protectedOrgIds:
+        - "1"

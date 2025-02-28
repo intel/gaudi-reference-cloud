@@ -1,0 +1,32 @@
+@import '../../../../idcs_design_system/src/scss/providers/style.provider.dlux.scss';
+
+.searchBox {
+    display: flex;
+    min-width: 18.75rem;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+}
+
+.filter .searchBox {
+    max-width: 18.75rem;
+}
+
+.searchBox input {
+    border-radius: 0.25rem 0rem 0rem 0.25rem;
+    border-top: 1px solid var(--gray-400);
+    border-bottom: 1px solid var(--gray-400);
+    border-left: 1px solid var(--gray-400);
+    border-right: 0px ;
+}
+
+.searchBox .btn-icon-simple,
+.searchBox .btn-icon-simple:focus,
+.searchBox .btn-icon-simple:focus-visible,
+.searchBox .btn-icon-simple:focus:active {
+    border-radius: 0rem 0.25rem 0.25rem 0rem;
+    border-top: 1px solid var(--gray-400);
+    border-bottom: 1px solid var(--gray-400);
+    border-right: 1px solid var(--gray-400);
+    border-left: 0px ;
+}

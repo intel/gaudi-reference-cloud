@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+region: us-dev-1
+availabilityZone: us-dev-1a
+subnet: 192.168.201.0/24
+vlanId: 201

@@ -1,0 +1,57 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Storage
+metadata:
+  labels:
+    app.kubernetes.io/name: storage
+    app.kubernetes.io/instance: storage-sample
+    app.kubernetes.io/part-of: storage
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: storage
+  name: storage-sample
+spec:
+
+  availabilityZone: az1
+
+  request:
+
+    storage: "2073741827"
+
+  accessModes: Regular
+
+  mountProtocol: Weka
+
+  encrypted: false
+
+  filesystemSchedule:
+    enableFileSystem: false
+
+    filesystemName: idc-staas-demo-26
+    assignedCluster:                                                                                                                            
+      addr:     dummy-address-intel.com                                                                                   
+      name:     dev-2                                                                                                                            
+      uuid:     918b5026-d516-48c8-bfd3-5998547265b2
+      version: "4.1"
+
+    assignedNamespace:                                                                                                                      
+      credentialsPath:  staas/tenant/817145059787/ns817145059787                                                                                
+      name:              ns-817145059787                                                                                                         
+      password:            ns-817145059787                                                                                                                  
+      user:              ns-817145059787                                                                                                                        
+    assignedUser:                                                                                                                               
+      credentialsPath:  staas/tenant/817145059787/u817145059787                                                                                 
+      password:           ns-817145059787                                                                                                                       
+      user:               ns-817145059787                                                                                                                       
+    filesystemName:     test117
+status:
+  mount:
+    fileSystemName: "fs1"
+    dnsName: dummy.idc.com
+  namespace:
+    name: ns01348
+    user: ns123456789199
+
+  
+
+  

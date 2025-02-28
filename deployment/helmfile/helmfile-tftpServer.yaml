@@ -1,0 +1,51 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.components.tftpServer.enabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- if $region.tftpServer.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-tftp-server") }}
+    namespace: tftp-server-test
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: tftpServer
+      service: tftp-server
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: tftp-server
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/tftp-server
+    version: {{ readFile (print $helmChartVersionsDir "/tftp-server.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - tftpServerImage:
+          tag: "2024-12-06"
+          repository: "amr-idc-registry-pre.infra-host.com/intelcloud/img/tftp-server"
+      - network:
+          container:
+            port: 23469
+            hostNetwork: true
+          service:
+            enabled: false
+            type: NodePort
+            nodeport: 32169
+
+{{- end }}
+{{- end }}
+{{- end }}

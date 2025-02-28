@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tgi-pod
+  labels:
+    app: tgi-server
+spec:
+  runtimeClassName: habana
+
+  initContainers:
+  - name: s3-model-files-mount
+    image: amazon/aws-cli:latest
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+        aws s3 sync s3://cnvrg-test-maas/quantization-configs/llama-guard-3-1b /data/quantization_config && 
+        aws s3 sync s3://cnvrg-test-maas/quantization-configs/llama-guard-3-1b/single-device /data/hqt_output &&
+        aws s3 sync s3://cnvrg-test-maas/models/${MODEL_ID} /model &&
+        chmod -R 400 /data/quantization_config &&
+        chmod -R 400 /data/hqt_output &&
+        chmod -R 400 /model
+    env:
+      - name: MODEL_ID
+        value: meta-llama/Llama-Guard-3-1B
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: aws-access-secrets
+            key: aws-access-key-id 
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: aws-access-secrets
+            key: aws-secret-access-key
+    volumeMounts:
+      - name: fp8-config-volume
+        mountPath: /data
+      - name: models
+        mountPath: /model
+
+  containers:
+  - name: tgi-mistral-0-1-7b-fp8
+    image: moditamam/tgi-gaudi:2.0.6
+    securityContext:
+      capabilities:
+        add: ["SYS_PTRACE"]
+    volumeMounts:  
+      - name: fp8-config-volume
+        mountPath: /usr/src/quantization_config
+        subPath: quantization_config
+        readOnly: true
+      - name: fp8-config-volume
+        mountPath: /usr/src/hqt_output
+        subPath: hqt_output
+        readOnly: true
+      - name: models
+        mountPath: /usr/src/model
+        readOnly: true
+    env:
+      - name: QUANT_CONFIG
+        value: "/usr/src/quantization_config/maxabs_quant.json"
+      - name: HABANA_VISIBLE_DEVICES
+        value: "all"
+      - name: OMPI_MCA_btl_vader_single_copy_mechanism
+        value: "none"
+      - name: TEXT_GENERATION_SERVER_IGNORE_EOS_TOKEN
+        value: "false"
+      - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+        value: "true"
+      - name: BATCH_BUCKET_SIZE
+        value: "32"
+      - name: PREFILL_BATCH_BUCKET_SIZE
+        value: "4"
+      - name: PAD_SEQUENCE_TO_MULTIPLE_OF
+        value: "64"
+      - name: LIMIT_HPU_GRAPH
+        value: "true"
+      - name: USE_FLASH_ATTENTION
+        value: "true"
+      - name: FLASH_ATTENTION_RECOMPUTE
+        value: "true"
+      - name: MODEL_ID
+        value: /usr/src/model
+      - name: SHARDED
+        value: "false"
+      # - name: NUM_SHARD
+      #   value: "8"
+    resources:
+      limits:
+        habana.ai/gaudi: "1"
+    args:
+      - --max-input-length
+      - "2048"
+      - --max-batch-prefill-tokens
+      - "4096"
+      - --max-total-tokens
+      - "4096"
+      - --max-batch-total-tokens
+      - "524288"
+      - --max-waiting-tokens
+      - "7"
+      - --waiting-served-ratio
+      - "1.2"
+      - --max-concurrent-requests
+      - "256"
+      - --hostname
+      - "0.0.0.0"
+      - --port
+      - "8080"
+  
+  volumes:
+  - name: models
+    emptyDir: {}
+  - name: fp8-config-volume
+    emptyDir: {}

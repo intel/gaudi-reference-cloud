@@ -1,0 +1,84 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+services:
+  local-ovn:
+    image:
+      amr-idc-registry-pre.infra-host.com/idc-networking/sdnv2_dev/local-ovn:latest
+    build: 
+      context: ../..
+      dockerfile: ./assets/docker/Dockerfile.ovn
+    ports:
+      - "127.0.0.1:6641:6641"
+      - "127.0.0.1:6642:6642"
+    healthcheck:
+      test: ["CMD-SHELL", "ovn-nbctl show"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  local-psql:
+    image:
+      amr-idc-registry-pre.infra-host.com/idc-networking/sdnv2_dev/local-psql:latest
+    build: 
+      context: ../..
+      dockerfile: ./assets/docker/Dockerfile.psql
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: sdncontroller
+      POSTGRES_DB: sdncontroller
+      POSTGRES_PASSWORD: foo
+    command: >
+      -c ssl=on 
+      -c ssl_cert_file=/var/lib/postgresql/server.crt 
+      -c ssl_key_file=/var/lib/postgresql/server.key 
+      -c ssl_ca_file=/var/lib/postgresql/ca.crt
+      -c hba_file=/etc/pg_hba.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sdncontroller -d sdncontroller"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  local-sdncontroller:
+    profiles:
+      - integrated
+      - sim
+    image:
+      amr-idc-registry-pre.infra-host.com/idc-networking/sdnv2_dev/local-sdncontroller:latest
+    build:
+      context: ../..
+      dockerfile: ./assets/docker/Dockerfile.sdncontroller
+      args:
+        CONFIG_FILE: config.yaml
+    ports:
+      - "127.0.0.1:50051:50051"
+    environment:
+      OVN_IP: docker-local-ovn-1
+      DB_IP: docker-local-psql-1
+    depends_on:
+      local-ovn: 
+        condition: service_healthy
+        restart: true
+      local-psql:
+        condition: service_healthy
+        restart: true
+
+  local-ovs:
+    profiles:
+      - sim
+    image: amr-idc-registry-pre.infra-host.com/idc-networking/sdnv2_dev/local-ovs:latest
+    build:
+      context: local-ovs
+      dockerfile: ./Dockerfile
+    environment:
+      OVN_CENTRAL_IP: localhost
+    privileged: true
+    network_mode: "host"
+    user: root
+    volumes:
+      - /lib/modules:/lib/modules:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /etc/ovn:/etc/ovn

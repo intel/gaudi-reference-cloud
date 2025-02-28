@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+database:
+  host: localhost
+  port: 5432
+  dbname: dpai
+  username: postgres
+  passwordEnvKey: PG_PASSWORD
+registry:
+  dockerPersonal:
+    url: ghcr.io
+    username: venkadeshwarank
+    passwordEnvKey: GITHUB_TOKEN
+  docker:
+    url: amr-idc-registry-pre.infra-host.com
+    username: robotdpai+backend-api-dev
+    passwordEnvKey: HARBOR_TOKEN
+  helm:
+    reponame: dpai
+    url: https://amr-idc-registry-pre.infra-host.com/chartrepo/dpai
+    username: robotdpai+backend-api-dev
+    passwordEnvKey: HARBOR_TOKEN

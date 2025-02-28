@@ -1,0 +1,8 @@
+apt_packages:
+  - openjdk-11-jre-headless
+  - make
+  - gcc
+  - g++
+  - python3-pip
+  - allure
+  - git-lfs

@@ -1,0 +1,23 @@
+# kind may be DataVolume or VirtualMachineImage
+kind: "VirtualMachineImage"
+
+# sourceMap is a map from image name to MachineImage metadata
+sourceMap:
+
+# excludeSources is the list of image name regexes in sourceMap to exclude
+excludeSources:
+# - ".*gaudi.*"
+# - iks-vm-u22-wk-1-27-11-v240227
+
+# images is a dictionary of image name to overridden values or complete definitions that are not in the sourceMap
+images:
+#  ubuntu-2204-gaudi2-1.15.0-vm-v2:
+#    spec:
+#      url: http://10.45.124.15/vmaas/images/ubuntu-22.04-gaudi2-v1.15.0-vm-cloudimg-amd64-v20240718.qcow2
+#  iks-vm-u22-wk-1-27-11-v240227:
+#    apiVersion: harvesterhci.io/v1beta1
+#    kind: VirtualMachineImage
+#    metadata:
+#      ...
+
+urlPrefix: http://10.45.122.149/vmaas/images

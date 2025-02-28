@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@rules_buf//buf:defs.bzl", "buf_breaking_test")
+
+exports_files(["buf.yaml"])
+
+# Tests if api has breaking changes
+buf_breaking_test(
+    name = "v1_breaking",
+    against = "testdata/image.binpb",
+    config = ":buf.yaml",
+    targets = [
+        "//api/intel/storagecontroller/v1:common_proto",
+        "//api/intel/storagecontroller/v1:namespace_proto",
+        "//api/intel/storagecontroller/v1:cluster_proto",
+        "//api/intel/storagecontroller/v1:s3_proto",
+        "//api/intel/storagecontroller/v1/weka:statefulclient_proto",
+        "//api/intel/storagecontroller/v1:user_proto",
+        "//api/intel/storagecontroller/v1/weka:filesystem_proto",
+        "//api/intel/storagecontroller/v1/vast:filesystem_proto",
+    ],
+)

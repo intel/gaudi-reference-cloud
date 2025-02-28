@@ -1,0 +1,21 @@
+{
+    "metadata": {
+      "name": "load-vm-<<index>>"
+    },
+    "spec": {
+      "availabilityZone": "us-dev-1a",
+      "instanceType": "vm-icp-gaudi2-1",
+      "machineImage": "ubuntu-20.04-gaudi2-v1.13-vm-v1",
+      "runStrategy": "RerunOnFailure",
+      "sshPublicKeyNames": [
+        "user2@acme.com"
+      ],
+      "interfaces": [
+        {
+          "name": "eth0",
+          "vNet": "us-dev-1a-default"
+        }
+      ],
+      "userData": "#cloud-init\nwrite_files:\n  - path: /tmp/Dockerfile\n    permissions: '0777'\n    content: |\n      # Use the base image\n      FROM vault.habana.ai/gaudi-docker/1.14.0/ubuntu22.04/habanalabs/pytorch-installer-2.1.1:1.14.0-493\n      RUN apt-get update && apt-get install -y pdsh tmux htop\n      ENV PYTHON /usr/bin/python3.10\n      RUN $PYTHON -m pip install --upgrade pip\n      RUN $PYTHON -m pip install git+https://github.com/HabanaAI/DeepSpeed.git@1.14.0\n      RUN $PYTHON -m pip install optimum[habana]\n      RUN sed -i 's/#Port 22/Port 3022/g' /etc/ssh/sshd_config && sed -i 's/#   Port 22/    Port 3022/g' /etc/ssh/ssh_config && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && service ssh restart\n      COPY /tmp/.deepspeed_env /root/.deepspeed_env\n      COPY /tmp/run_load.sh /root/run_load.sh\n      ENTRYPOINT service ssh restart && /bin/bash\n  - path: /tmp/run_container.sh\n    permissions: '0755'\n    content: |\n      #!/bin/bash\n      sudo apt update -y && sudo apt upgrade -y\n      sudo add-apt-repository ppa:deadsnakes/ppa -y\n      sudo apt update -y\n      sudo apt install python3.10 -y\n      sudo docker build -t btower -f /tmp/Dockerfile . > /tmp/dockeroutput1.txt 2>&1\n\n      sudo docker run --env=HABANA_VISIBLE_DEVICES=all --env=OMPI_MCA_btl_vader_single_copy_mechanism=none --cap-add=sys_nice --network=host --restart=no --device=/dev/infiniband --runtime=habana --shm-size=64g -v /home:/home --name btower -t -d btower:latest\n      sudo docker exec -t btower bash -c \"git clone https://github.com/huggingface/optimum-habana.git && pip install --upgrade-strategy eager optimum[habana] && pip install git+https://github.com/HabanaAI/DeepSpeed.git@1.14.0 && pip install git+https://github.com/huggingface/optimum-habana.git && cd /optimum-habana/examples/contrastive-image-text/ && pip install -r requirements.txt && git checkout v1.10.1 && pip install --upgrade transformers==4.37.0 >/tmp/dockeroutput1.txt 2>&1\"\n      sudo docker exec -t btower bash -c \"cd /root/ && sh run_load.sh >/tmp/dockeroutput2.txt 2>&1\"\n  - path: /tmp/run_load.sh\n    permissions: '0777'\n    content: |\n      #!/bin/bash\n      # set python environment variable\n      PYTHON=/usr/bin/python3.10\n      cd /optimum-habana/examples/contrastive-image-text\n      python ../gaudi_spawn.py --use_mpi run_bridgetower.py \\\n      --output_dir /tmp/bridgetower-test \\\n      --model_name_or_path BridgeTower/bridgetower-large-itm-mlm-itc \\\n      --dataset_name jmhessel/newyorker_caption_contest --dataset_config_name matching \\\n      --dataset_revision 3c6c4f6c0ff7e902833d3afa5f8f3875c2b036e6 \\\n      --image_column image --caption_column image_description \\\n      --remove_unused_columns=False \\\n      --do_train --do_eval --do_predict \\\n      --per_device_train_batch_size=\"40\" --per_device_eval_batch_size=\"16\" \\\n      --num_train_epochs 5 \\\n      --learning_rate=\"1e-5\" \\\n      --overwrite_output_dir \\\n      --save_strategy no \\\n      --use_habana --use_lazy_mode --use_hpu_graphs_for_inference --gaudi_config_name Habana/clip \\\n      --throughput_warmup_steps 3 \\\n      --logging_steps 10 \\\n      --dataloader_num_workers 1 \\\n      --mediapipe_dataloader \\\n      --bf16\n  - path: /tmp/.deepspeed_env\n    permissions: '0777'\n    content: |\n      HF_HOME=/home/cache\n      PT_HPU_POOL_MEM_ACQUIRE_PERC=100\n      PT_HPU_MAX_COMPOUND_OP_SIZE=1000\n      PT_HPU_LAZY_ACC_PAR_MODE=0\n      PT_HPU_RECIPE_CACHE_CONFIG=/home/pt_cache,False,20000"
+    }
+}

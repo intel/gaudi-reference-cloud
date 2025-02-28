@@ -1,0 +1,8 @@
+{
+  "description": "",
+  "k8sversionname": "1.28",
+  "name": "test-iks",
+  "runtimename": "Containerd",
+  "tags": [],
+  "instanceType": "iks-cluster"
+}

@@ -1,0 +1,43 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-2204-gaudi2-1.15.0-vm-v1
+spec:
+  displayName: ubuntu-2204-gaudi2-1.15.0-vm-v1
+  description: ubuntu-2204-gaudi2-1.15.0-vm-v1
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes:
+    - vm-icp-gaudi2-1
+    - vm-icp-gaudi2-8
+  md5sum: "ce7990f06bb7be1bfde76f7465c9c202"
+  sha256sum: "4ba22770cf30b5a053fbd6328d9bdcdb6bf8076250962810005a40021247367b"
+  virtualSizeBytes: 34359738368
+  labels:
+    family: ubuntu-2204-server-cloudimg
+    architecture: X86_64 (VM only)
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+  components:
+    - name: Ubuntu 22.04 Server Cloudimg
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://releases.ubuntu.com/jammy
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: Intel Gaudi SW
+      type: Software kit
+      version: "1.15.0"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/v1.15.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+    - name: Intel Gaudi SW
+      type: Firmware kit
+      version: "1.15.0-479"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/v1.15.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  userName: ubuntu

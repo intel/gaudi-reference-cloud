@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "inference-safeguard.fullname" . }}
+  labels:
+    {{- include "inference-safeguard.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "inference-safeguard.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "inference-safeguard.fullname" . }}
+    spec:
+      runtimeClassName: habana
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: tgi-safeguard
+          securityContext:
+            capabilities:
+              add: ["SYS_NICE"]
+          image: {{ .Values.image.tgiSafeguard.repository }}:{{ .Values.image.tgiSafeguard.tag }}
+          imagePullPolicy: {{ .Values.image.tgiSafeguard.pullPolicy }}
+          args:
+            - --max-input-length
+            - "2048"
+            - --max-batch-prefill-tokens
+            - "4096"
+            - --max-total-tokens
+            - "4096"
+            - --max-batch-total-tokens
+            - "65536"
+            - --max-waiting-tokens
+            - "7"
+            - --waiting-served-ratio
+            - "1.2"
+            - --max-concurrent-requests
+            - "64"
+            - "--hostname"
+            - "0.0.0.0"
+            - "--port"
+            - "9000"
+          env:
+            - name: HABANA_VISIBLE_DEVICES
+              value: "all"
+            - name: OMPI_MCA_btl_vader_single_copy_mechanism
+              value: "none"
+            - name: TEXT_GENERATION_SERVER_IGNORE_EOS_TOKEN
+              value: "false"
+            - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+              value: "true"
+            - name: BATCH_BUCKET_SIZE
+              value: "32"
+            - name: PREFILL_BATCH_BUCKET_SIZE
+              value: "2"
+            - name: PAD_SEQUENCE_TO_MULTIPLE_OF
+              value: "64"
+            - name: USE_FLASH_ATTENTION
+              value: "true"
+            - name: FLASH_ATTENTION_RECOMPUTE
+              value: "true"
+            - name: MODEL_ID
+              value: meta-llama/Llama-Guard-3-8B
+            - name: HUGGINGFACE_HUB_CACHE
+              value: /models-cache
+            - name: TGI_PROFILER_ENABLED
+              value: "true"
+            - name: SHARDED
+              value: "false"
+            - name: HUGGING_FACE_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-api-token-secret
+                  key: HF_API_TOKEN
+          resources:
+            limits:
+              habana.ai/gaudi: "1"
+          volumeMounts:
+            - mountPath: models-cache
+              name: models-cache
+
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

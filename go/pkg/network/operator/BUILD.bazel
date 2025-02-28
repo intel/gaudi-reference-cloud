@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_container_image")
+
+package(default_visibility = ["//visibility:public"])
+
+idc_container_image(
+    name = "network_operator_image",
+    entrypoint = ["/network_operator"],
+    files = [
+        "//go/pkg/network/operator/cmd:network_operator",
+    ],
+    layers = ["//go/certs:intel_certs"],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,144 @@
+# See https://github.com/hashicorp/vault-helm/blob/main/values.yaml
+
+bases:
+  - environments.yaml
+
+---
+
+repositories:
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+
+releases:
+
+{{- if $.Values.vault.enabled }}
+  {{- if $.Values.global.enabled }}
+        - name: vault
+          # Must be kube-system for AWS Fargate.
+          namespace: kube-system
+          kubeContext: {{ $.Values.global.kubeContext }}
+          labels:
+            component: vault
+            applicationName: vault
+            geographicScope: global
+            environmentName: {{ $.Values.global.environmentName }}
+            kubeContext: {{ $.Values.global.kubeContext }}
+          chart: hashicorp/vault
+          version: {{ $.Values.vault.version | quote }}
+          values:
+            - injector:
+                agentDefaults:
+                  {{- if $.Values.zeroResources }}
+                  cpuRequest: 0m
+                  memRequest: 0Mi
+                  {{- end }}
+                  server:
+                    enabled: false
+            {{- if $.Values.global.vault.server.enabled }}
+            - server:
+                ha:
+                  enabled: false
+                  raft:
+                    enabled: true
+                ingress:
+                  enabled: true
+                  ingressClassName: {{ $.Values.global.vault.ingress.className | quote }}
+                  hosts:
+                    - host: {{ $.Values.global.vault.ingress.host | quote }}
+                service:
+                  nodePort: 30990
+                  type: NodePort
+                logLevel: debug
+            {{- else }}
+            - global:
+                externalVaultAddr: {{ $.Values.vault.service | quote }}
+            {{- end }}
+  {{- end }}
+
+  {{- range $region := .Values.regions }}
+    {{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+    {{- if (ne $region.kubeContext $.Values.global.kubeContext) }}
+        - name: {{ include "idc-common.toReleaseName" (print $region.region "-vault") }}
+          namespace: kube-system
+          kubeContext: {{ $region.kubeContext }}
+          labels:
+            component: vault
+            geographicScope: regional
+            region: {{ $region.region }}
+            kubeContext: {{ $region.kubeContext }}
+            applicationName: vault
+            clusterName: {{ $region | get "clusterName" $region.region | quote }}
+          chart: hashicorp/vault
+          version: {{ $.Values.vault.version | quote }}
+          values:
+            - global:
+                externalVaultAddr: {{ $.Values.vault.service | quote }}
+            - injector:
+                agentDefaults:
+                  {{- if $.Values.zeroResources }}
+                  cpuRequest: 0m
+                  memRequest: 0Mi
+                  {{- end }}
+                  server:
+                    enabled: false
+    {{- end }}
+
+    {{- range $availabilityZone := $region.availabilityZones }}
+      {{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+      {{- if and (ne $availabilityZone.kubeContext $.Values.global.kubeContext) ($availabilityZone.vault.enabled) }}
+        - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-vault") }}
+          namespace: kube-system
+          kubeContext: {{ $availabilityZone.kubeContext }}
+          labels:
+            component: vault
+            geographicScope: az
+            availabilityZone: {{ $availabilityZone.availabilityZone }}
+            kubeContext: {{ $availabilityZone.kubeContext }}
+            region: {{ $region.region }}
+            applicationName: vault
+          chart: hashicorp/vault
+          version: {{ $.Values.vault.version | quote }}
+          values:
+            - global:
+                externalVaultAddr: {{ $.Values.vault.service | quote }}
+            - injector:
+                agentDefaults:
+                  {{- if $.Values.zeroResources }}
+                  cpuRequest: 0m
+                  memRequest: 0Mi
+                  {{- end }}
+                  server:
+                    enabled: false
+      {{- end }}
+
+      {{- if $.Values.components.networkCluster.enabled }}
+      {{- if and (ne $availabilityZone.networkCluster.kubeContext $.Values.global.kubeContext) (ne $availabilityZone.networkCluster.kubeContext $availabilityZone.kubeContext) }}
+        - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-network-vault") }}
+          namespace: kube-system
+          kubeContext: {{ $availabilityZone.networkCluster.kubeContext }}
+          labels:
+            component: vault
+            geographicScope: az-network
+            availabilityZone: {{ $availabilityZone.availabilityZone }}
+            region: {{ $region.region }}
+            applicationName: vault
+          chart: hashicorp/vault
+          version: {{ $.Values.vault.version | quote }}
+          values:
+            - global:
+                externalVaultAddr: {{ $.Values.vault.service | quote }}
+            - injector:
+                replicas: {{ $availabilityZone.networkCluster.vault.injectorReplicas }}
+                agentDefaults:
+                  {{- if $.Values.zeroResources }}
+                  cpuRequest: 0m
+                  memRequest: 0Mi
+                  {{- end }}
+                  server:
+                    enabled: false
+      {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+{{- end }}

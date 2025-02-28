@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infaas-agent-{{ index .Values.models .Values.deployedModel "shortName" }}
+  namespace: "idcs-system" # TODO should be injected
+data:
+  config.yaml: |
+    ListenPort: 9999 # currently unused until we setup a server
+    Model:              "{{ .Values.deployedModel }}"
+    Capacity:           {{if .Values.mockInference }}1{{else}}{{ index .Values.models .Values.deployedModel "resources" "limits" "habana.ai/gaudi" }}{{end}}
+    DispatcherAddr:     "infaas-dispatcher"
+    BackendAddr:        "localhost:50051" # tgi-proxy address

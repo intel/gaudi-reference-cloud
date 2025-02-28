@@ -1,0 +1,8 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: registration
+  labels:
+    istio-injection: enabled

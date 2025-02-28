@@ -1,0 +1,17 @@
+$dashboard-background: linear-gradient(115deg, rgba(17, 153, 142, 0.07) 0%, rgba(0, 8, 100, 0.07) 93.02%), var(--surface-background-color);
+
+#root:has(.sheet > .section.dashboard-container) {
+    background: #{$dashboard-background};
+
+    .siteBreadcrum {
+        background: var(--hit-box);
+    }
+}
+
+.sheet:has(.section.dashboard-container) {
+    background: var(--hit-box);
+}
+
+.section.dashboard-container {
+    background: var(--hit-box);
+}

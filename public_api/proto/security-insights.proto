@@ -1,0 +1,362 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+import "annotations.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "security-insights";
+
+service SecurityInsights {
+    rpc CreateRelease(K8sReleaseMD) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/releases"
+            body: "*"
+        };
+    }; 
+
+    rpc GetRelease(GetReleaseRequest) returns (K8sReleaseMD) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/component/{component}/releases/{releaseId}"
+        };
+    };
+
+    rpc GetAllReleases(ReleaseFilter) returns (K8sReleaseMDList) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/releases/search"
+            body: "*"
+        };
+    };
+    
+    rpc StoreReleaseSBOM(ReleaseSBOM) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/releases/{releaseId}/sbom"
+            body: "*"
+        };
+    }; 
+
+    rpc StoreReleaseComponent(ReleaseComponents) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/releases/{releaseId}/component"
+            body: "*"
+        };
+    }; 
+
+    rpc GetReleaseComponent(GetReleaseRequest) returns (stream ReleaseComponents) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/releases/{releaseId}/component"
+        };
+    };
+
+    rpc GetReleaseSBOM(GetReleaseRequest) returns (SBOM) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/component/{component}/releases/{releaseId}/sbom"
+        };
+    }; 
+
+    rpc StoreReleaseVulnerabilityReport(VulnerabilityReport) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/releases/{releaseId}/vulnerabilities"
+            body: "*"
+        };
+    };
+
+    rpc StoreCISReport(CISReport) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/releases/{releaseId}/cis"
+            body: "*"
+        };
+    };
+
+    rpc GetReleaseVulnerabilities(GetReleaseRequest) returns (VulnerabilitiesResult) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/component/{component}/releases/{releaseId}/vulnerabilities"
+        };
+    }; 
+
+    rpc GetCISReport(GetCISRequest) returns (CISReport) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/releases/{releaseId}/cis"
+        };
+    }; 
+
+    rpc UpdateRecommendationPolicy(RecommendationPolicy) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/policy"
+            body: "*"
+        };
+    };
+
+    rpc GetSummary(GetReleaseRequest) returns (SecuritySummary) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/component/{component}/releases/{releaseId}/summary"
+        };
+    }; 
+
+    rpc GetRecommendationPolicies(PolicyFilters) returns (AllPoliciesResponse) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/policy"
+        };
+    }; 
+
+    rpc GetRecommendationPolicy(PolicyId) returns (PolicyDetails) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/policy/{policyId}"
+        };
+    };
+    
+    rpc GetUpdateRecommendation(RecommendationFilter) returns (UpdateRecommendations) {
+        option (google.api.http) = {
+            get: "/v1/securityinsights/recommendations"
+        };
+    }; 
+
+    rpc GetAllComponents(ReleaseFilter) returns (ComponentList) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/components"
+            body: "*"
+        };
+    };
+
+        rpc CompareReleaseVulnerabilities(ReleaseComparisonFilter) returns (VulnerabilityComparisonReport) {
+        option (google.api.http) = {
+            post: "/v1/securityinsights/components/compare"
+            body: "*"
+        };
+    };
+
+}
+
+message ComponentList {
+    map<string, Releases> components = 1;
+}
+
+message Releases {
+    repeated string id = 1;
+}
+
+message K8sReleaseMD {
+    string releaseId = 1;
+    ValidVendors vendor = 2;
+    string license = 3;
+    string purl = 4;
+    google.protobuf.Timestamp releaseTimestamp = 5;
+    google.protobuf.Timestamp eosTimestamp = 6;
+    google.protobuf.Timestamp eolTimestamp = 7;
+    map<string, string> properties = 8; 
+    repeated ReleaseComponents components = 9;
+}
+
+message K8sReleaseMDList {
+    repeated K8sReleaseMD releases = 1;
+}
+
+enum ValidVendors { 
+    UNSPECIFIED_KUBE_VENDOR = 0; 
+    OSS_KUBE_VENDOR = 1; 
+    RANCHER_KUBE_VENDOR = 2; 
+} 
+
+enum ValidSBOMFormats { 
+    UNSPECIFIED_FORMAT = 0; 
+    SPDX_FORMAT = 1; 
+    CYCLONEDX_FORMAT = 2; 
+}
+
+enum ComponentType{
+    UNSPECIFIED_TYPE = 0;
+    OCI_IMAGE = 1; 
+    GIT_REPO = 2;
+    COMPRESSED_BUNDLE = 3;
+    FILE = 4;
+}
+
+enum ReleaseComponent {
+    UNSPECIFIED_COMPONENT = 0;
+    KUBERNETES = 1;
+    CALICO = 2;
+    CONTAINERD = 3;
+    RUNC = 4;
+}
+
+message ReleaseComponents {
+    string releaseId = 1;
+    ValidVendors vendor = 2;
+    string name = 3;
+    string version = 4;
+    string purl = 5;
+    string sha256 = 6;
+    string License = 7;
+    google.protobuf.Timestamp ReleaseTime = 8;
+    ComponentType type = 9;
+}
+
+message GetReleaseRequest {
+    string releaseId = 1 [(validate.rules).string = {pattern: "^v[0-9]+\\.[0-9]+\\.[0-9]+$"}];
+    ReleaseComponent component = 2 [(validate.rules).enum.defined_only = true];
+}
+  
+message ReleaseFilter {
+    uint32 top = 1;
+    ReleaseComponent component = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message ReleaseSBOM {
+    string releaseId = 1;
+    SBOM sbom = 2;
+}
+
+message SBOM {
+    string sbom = 1;
+    ValidSBOMFormats format = 2;
+    google.protobuf.Timestamp createTimestamp = 3;
+}
+
+message VulnerabilityReport {
+    string releaseId = 1;
+    string componentName = 2;
+    string componentVersion = 3;
+    string componentSHA256 = 4;
+    google.protobuf.Timestamp scanTimestamp = 5;
+    string scanTool = 6;
+    repeated Vulnerability vulnerabilities = 7;
+}
+
+message VulnerabilitySummary {
+    string releaseId = 1;
+    string componentName = 2;
+    string componentVersion = 3;
+    string componentSHA256 = 4;
+    google.protobuf.Timestamp scanTimestamp = 5;
+    string scanTool = 6;
+    map<string, uint32> vulnerabilityCount = 7;
+}
+
+message VulnerabilitiesResult {
+    repeated VulnerabilityReport report = 1;
+}
+
+message CISReport {
+    string releaseId = 1;
+    google.protobuf.Timestamp scanTimestamp = 2;
+    string scanTool = 3;
+    google.protobuf.Struct vulnerabilities = 4;
+}
+
+message Vulnerability {
+    string Id = 1;
+    string description = 2;
+    string affectedPackage = 3;
+    string affectedVersions = 4;
+    string fixedVersion = 5;
+    string severity = 6;
+    google.protobuf.Timestamp publishedAt = 7;
+}
+
+message RecommendationPolicy {
+    string name = 1;
+    string description = 2;
+    google.protobuf.Timestamp createdAt = 3;
+    google.protobuf.Struct policy = 4;
+    bool active = 5;
+}
+
+message PolicyId {
+    string policyId = 1;
+}
+
+message AllPoliciesResponse {
+    repeated PolicyMetadata policies = 1 ;
+}
+
+message PolicyMetadata {
+    string policyId = 1 ;
+    string name = 2;
+    string description = 3;
+    google.protobuf.Timestamp createdAt = 4;
+    bool active = 5;
+}
+
+message PolicyDetails {
+    PolicyMetadata policyMetadata = 1;
+    google.protobuf.Struct policy = 2;
+}
+
+message PolicyFilters {
+    bool active =1 ;
+}
+
+message RecommendationFilter {
+    string policyId = 1;
+    string currentVersion = 2;
+    string vendor = 3;
+    uint32 topk = 4;
+}
+
+message UpdateRecommendations {
+    string policyId = 1;
+    string currentVersion = 2;
+    string vendor = 3;
+    repeated RecommendedVersion versions = 4;
+}
+
+message RecommendedVersion{
+    string version = 1;
+    string createdAt = 2;
+    google.protobuf.Struct reason = 3;
+}
+
+message GetCISRequest {
+    string releaseId = 1;
+}
+
+message SecuritySummary {
+    string releaseId = 1;
+    repeated VulnerabilitySummary vulnerabilities = 2;
+    google.protobuf.Struct cisReport = 3;
+
+}
+
+message ReleaseComparisonFilter {
+    ReleaseComponent componentName = 1 [(validate.rules).enum.defined_only = true];
+    string currReleaseId = 2 [(validate.rules).string = {pattern: "^v[0-9]+\\.[0-9]+\\.[0-9]+$"}];
+    string newReleaseId = 3 [(validate.rules).string = {pattern: "^v[0-9]+\\.[0-9]+\\.[0-9]+$"}];
+}
+
+message VulnerabilityComparisonReport {
+    repeated  VulnerabilityDiscovery summary = 1;
+    repeated VulnerabilityComparisonSummary report = 2;
+}
+
+message VulnerabilityDiscovery {
+    string component = 1;
+    uint32 fixed = 2;
+    uint32 common = 3;
+    uint32 new = 4;
+}
+
+message VulnerabilityComparisonSummary {
+    string componentName = 1;
+    string currReleaseId = 2;
+    string newReleaseId = 3;
+   
+    string currComponentSHA256 = 4;
+    string newComponentSHA256 = 5;
+    google.protobuf.Timestamp currScanTimestamp = 6;
+    google.protobuf.Timestamp newScanTimestamp = 7;
+    string scanTool = 8;
+    VulnerabilitiesWrapper fixed = 9;
+    VulnerabilitiesWrapper common = 10;
+    VulnerabilitiesWrapper new = 11;
+}
+
+message VulnerabilitiesWrapper {
+    repeated Vulnerability Vulns = 1;
+}

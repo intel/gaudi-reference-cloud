@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+version: v1
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT
+  ignore_only:
+    PACKAGE_VERSION_SUFFIX:
+      - intel/storagecontroller/v1/weka/filesystem.proto
+      - intel/storagecontroller/v1/weka/statefulclient.proto
+      - intel/storagecontroller/v1/vast/filesystem.proto

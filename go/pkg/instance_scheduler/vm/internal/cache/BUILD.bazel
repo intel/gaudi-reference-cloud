@@ -1,0 +1,44 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "cache",
+    srcs = [
+        "cache.go",
+        "interface.go",
+        "node_tree.go",
+        "snapshot.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/internal/cache",
+    visibility = ["//go/pkg/instance_scheduler/vm:__subpackages__"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/metrics",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/util/sets",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_component_helpers//node/topology",
+    ],
+)
+
+go_test(
+    name = "cache_test",
+    srcs = [
+        "cache_test.go",
+        "node_tree_test.go",
+        "snapshot_test.go",
+    ],
+    embed = [":cache"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/util",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/resource",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/util/sets",
+    ],
+)

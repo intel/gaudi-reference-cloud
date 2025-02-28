@@ -1,0 +1,574 @@
+$siteNavBarWidth: 233px;
+$learningBarWidth: 233px;
+
+.header-center-search .input-group input {
+  border: 1px solid #{$gray-400};
+  width: 238px;
+}
+
+.space {
+  width: 4px;
+  height: auto;
+  display: inline-block;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .site-title{
+    display: none;
+  }
+  .offcanvas-sm-width {
+    width: 100% !important;
+  }
+}
+
+.header-badge {
+  color: #212529 !important;
+  font-weight: 400 !important;
+}
+
+.header-badge-bg-standard {
+  background: $energy-blue-tint2 !important;
+}
+
+.header-badge-bg-premium {
+  background: $daisy-tint1 !important;
+}
+
+.header-badge-bg-enterprise {
+  background: $blue-steel-tint2 !important;
+}
+
+.header-badge-bg-enterprise_pending {
+  color: $status-error !important;
+}
+
+.header-badge-bg-intel {
+  background: $classic-blue !important;
+  color: $white !important;
+}
+
+.notificationsCount{
+  font-size: 10px;
+  transform: translate(-8px, -5px);
+  position: absolute;
+  padding-left: 2px;
+  padding-right: 2px;
+  width: 1.6em;
+  text-align: center;
+  color: $black
+}
+
+.header-scroll-menu {
+  overflow-y: auto;
+}
+
+.header-scroll-menu::-webkit-scrollbar {
+	width: 1px;
+}
+
+#dropdown-header-user-toggle.dropdown-toggle::after,
+#notificationsHeaderButton.dropdown-toggle::after,
+#dropdown-header-support-toggle.dropdown-toggle::after {
+  display: none;
+}
+
+.siteNavbar {
+  z-index: 1028;
+}
+
+.siteNavbar .btn-icon-simple svg {
+  height: 20px;
+  width: 20px;
+}
+
+.siteNavbar .dropdown-toggle,
+.siteToolbar .dropdown-toggle {
+  box-shadow: none;
+} 
+
+.siteToolbar {
+  top: 56px;
+  z-index: 1027;
+}
+
+.siteToolbar .navbar-brand {
+  width: auto;
+  max-width: fit-content;
+  margin-right: 0;
+  svg {    
+    width: 20px;
+    height: 20px;
+  }  
+}
+
+.navbar-brand a {
+  svg {
+    max-height: unset;
+    max-width: unset;
+  }
+}
+
+// Close
+
+.siteBanner .btn.btn-close
+{
+    opacity: 0.8;
+}
+
+.siteBanner .btn.btn-close:active
+{
+    opacity: 0.85;
+}
+
+.siteBanner .btn.btn-close:hover:not(:active),
+.siteBanner .btn.btn-close:focus,
+.siteBanner .btn.btn-close:focus-visible {
+    opacity: 1;
+}
+
+.siteToolbar .navbar-nav.nav-tabs {
+  margin-bottom: -2px;
+  border-bottom-color: transparent;
+}
+
+.sideNavBar {
+ position: fixed;
+ z-index: 1026;
+ bottom: 0;
+ top: 0;
+ left: 0;
+ display: flex;
+ flex-direction: column;
+ max-width: 100%;
+ border-right: 1px solid var(--gray-400);
+ margin-top: 120px;
+ width: $siteNavBarWidth;
+ transform: translateX(-100%);
+ transition: transform 0.3s ease-in-out;
+ visibility: hidden;
+}
+
+.sideNavBar.showSideNavBar {
+  visibility: visible;
+  transform: none;
+}
+
+.sideNavBar-header {
+  justify-content: space-between;
+}
+
+.sideNavBarMargingStart {
+  padding-left: $siteNavBarWidth;
+}
+
+.footer.sideNavBarMargingStart {
+  padding-left: calc($siteNavBarWidth + 16px);
+}
+
+.learningBar {
+  position: fixed;
+  z-index: 1026;
+  bottom: 0;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  border-left: 1px solid var(--gray-400);
+  margin-top: 120px;
+  width: $learningBarWidth;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  visibility: hidden;
+ }
+ 
+ .learningBar.showLearningBar {
+   visibility: visible;
+   transform: none;
+ }
+ 
+ .learningBar-header {
+   justify-content: space-between;
+ }
+ 
+ .learningBarMargingEnd {
+   padding-right: $learningBarWidth;
+ }
+
+ .siteBanner.learningBarMargingEnd.withScrollbar {
+  padding-right: calc($learningBarWidth - 15px);
+ }
+
+.footer.learningBarMargingEnd {
+  padding-right: calc($learningBarWidth);
+}
+
+.siteBanner {
+  position: relative;
+  top: 120px;
+  margin-top: 2px;
+}
+
+.siteBreadcrum {
+  background: var(--surface-background-color);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  align-self: flex-start;
+  @extend .px-s5;
+  @extend .gap-s6;  
+}
+
+// Override breakpoints when open  one or another side bar
+
+.siteContainer.sideNavBarMargingStart:not(.learningBarMargingEnd),
+.siteContainer.learningBarMargingEnd:not(.sideNavBarMargingStart) {
+       // XXS breakpoint
+    @media (min-width: 0px) {
+        @for $i from 1 through 12 {
+          .col-xxs-#{$i} {
+            @include make-col($i)
+          }
+        }
+    }
+    // XS breakpoint
+    @media (min-width: calc(320px + $siteNavBarWidth)) {
+        @for $i from 1 through 12 {
+          .col-xs-#{$i} {
+            @include make-col($i)
+          }
+        }
+    }
+   // SM breakpoint
+    @media (min-width: calc(576px + $siteNavBarWidth)) {
+        @for $i from 1 through 12 {
+          .col-sm-#{$i} {
+            @include make-col($i)
+          }
+        }
+    }
+    // MD breakpoint
+    @media (min-width: calc(768px + $siteNavBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-md-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+    // LG breakpoint
+    @media (min-width: calc(992px + $siteNavBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-lg-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+    // XL breakpoint
+    @media (min-width: calc(1200px + $siteNavBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-xl-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+    // XXL breakpoint
+    @media (min-width: calc(1400px + $siteNavBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-xxl-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+}
+
+
+// Override breakpoints when open both side bars
+
+.siteContainer.sideNavBarMargingStart.learningBarMargingEnd {
+       // XXS breakpoint
+    @media (min-width: 0px) {
+        @for $i from 1 through 12 {
+          .col-xxs-#{$i} {
+            @include make-col($i)
+          }
+        }
+    }
+    // XS breakpoint
+    @media (min-width: calc(320px + $siteNavBarWidth + $learningBarWidth)) {
+        @for $i from 1 through 12 {
+          .col-xs-#{$i} {
+            @include make-col($i)
+          }
+        }
+    }
+   // SM breakpoint
+    @media (min-width: calc(576px + $siteNavBarWidth + $learningBarWidth)) {
+        @for $i from 1 through 12 {
+          .col-sm-#{$i} {
+            @include make-col($i)
+          }
+        }
+    }
+    // MD breakpoint
+    @media (min-width: calc(768px + $siteNavBarWidth + $learningBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-md-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+    // LG breakpoint
+    @media (min-width: calc(992px + $siteNavBarWidth + $learningBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-lg-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+    // XL breakpoint
+    @media (min-width: calc(1200px + $siteNavBarWidth + $learningBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-xl-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+    // XXL breakpoint
+    @media (min-width: calc(1400px + $siteNavBarWidth + $learningBarWidth)) {
+      @for $i from 1 through 12 {
+        .col-xxl-#{$i} {
+          @include make-col($i)
+        }
+      }
+    }
+}
+
+// Override display utilities when open  one or another side bar
+
+.siteContainer.sideNavBarMargingStart:not(.learningBarMargingEnd),
+.siteContainer.learningBarMargingEnd:not(.sideNavBarMargingStart) {
+       // XXS breakpoint
+    @media (min-width: 0px) {
+        .d-xs-none,
+        .d-sm-none,
+        .d-md-none,
+        .d-lg-none,
+        .d-xl-none,
+        .d-xxl-none {
+          display: revert !important;
+        }
+        .d-xs-flex,
+        .d-xs-block,
+        .d-sm-flex,
+        .d-sm-block,
+        .d-md-flex,
+        .d-md-block,
+        .d-lg-flex,
+        .d-lg-block,
+        .d-xl-flex,
+        .d-xl-block,
+        .d-xxl-flex,
+        .d-xxl-block {
+          display: none !important;
+        }
+        .d-flex {
+          display: flex !important;
+        }
+        .d-block {
+          display: block !important;
+        }
+    }
+    // XS breakpoint
+    @media (min-width: calc(320px + $siteNavBarWidth)) {
+      .d-xs-none {
+        display: none !important;
+       }
+       .d-xs-flex {
+         display: flex !important;
+       }
+       .d-xs-block {
+         display: block !important;
+       }
+    }
+   // SM breakpoint
+    @media (min-width: calc(576px + $siteNavBarWidth)) {
+        .d-sm-none {
+         display: none !important;
+        }
+        .d-sm-flex {
+          display: flex !important;
+        }
+        .d-sm-block {
+          display: block !important;
+        }
+    }
+    // MD breakpoint
+    @media (min-width: calc(768px + $siteNavBarWidth)) {
+      .d-md-none {
+        display: none !important;
+       }
+       .d-md-flex {
+         display: flex !important;
+       }
+       .d-md-block {
+         display: block !important;
+       }
+    }
+    // LG breakpoint
+    @media (min-width: calc(992px + $siteNavBarWidth)) {
+      .d-lg-none {
+        display: none !important;
+       }
+       .d-lg-flex {
+         display: flex !important;
+       }
+       .d-lg-block {
+         display: block !important;
+       }
+    }
+    // XL breakpoint
+    @media (min-width: calc(1200px + $siteNavBarWidth)) {
+      .d-xl-none {
+        display: none !important;
+       }
+       .d-xl-flex {
+         display: flex !important;
+       }
+       .d-xl-block {
+         display: block !important;
+       }
+    }
+    // XXL breakpoint
+    @media (min-width: calc(1400px + $siteNavBarWidth)) {
+      .d-xxl-none {
+        display: none !important;
+       }
+       .d-xxl-flex {
+         display: flex !important;
+       }
+       .d-xxl-block {
+         display: block !important;
+       }
+    }
+}
+
+// Override breakpoints when open both side bars
+
+.siteContainer.sideNavBarMargingStart.learningBarMargingEnd {
+  // XXS breakpoint
+@media (min-width: 0px) {
+  .d-xs-none,
+  .d-sm-none,
+  .d-md-none,
+  .d-lg-none,
+  .d-xl-none,
+  .d-xxl-none {
+    display: revert !important;
+  }
+  .d-xs-flex,
+  .d-xs-block,
+  .d-sm-flex,
+  .d-sm-block,
+  .d-md-flex,
+  .d-md-block,
+  .d-lg-flex,
+  .d-lg-block,
+  .d-xl-flex,
+  .d-xl-block,
+  .d-xxl-flex,
+  .d-xxl-block {
+    display: none !important;
+  }
+   .d-flex {
+     display: flex !important;
+   }
+   .d-block {
+    display: block !important;
+   }
+}
+// XS breakpoint
+@media (min-width: calc(320px + $siteNavBarWidth + $learningBarWidth)) {
+ .d-xs-none {
+   display: none !important;
+  }
+  .d-xs-flex {
+    display: flex !important;
+  }
+  .d-xs-block {
+    display: block !important;
+  }
+}
+// SM breakpoint
+@media (min-width: calc(576px + $siteNavBarWidth + $learningBarWidth)) {
+   .d-sm-none {
+    display: none !important;
+   }
+   .d-sm-flex {
+     display: flex !important;
+   }
+   .d-sm-block {
+     display: block !important;
+   }
+}
+// MD breakpoint
+@media (min-width: calc(768px + $siteNavBarWidth + $learningBarWidth)) {
+ .d-md-none {
+   display: none !important;
+  }
+  .d-md-flex {
+    display: flex !important;
+  }
+  .d-md-block {
+    display: block !important;
+  }
+}
+// LG breakpoint
+@media (min-width: calc(992px + $siteNavBarWidth + $learningBarWidth)) {
+ .d-lg-none {
+   display: none !important;
+  }
+  .d-lg-flex {
+    display: flex !important;
+  }
+  .d-lg-block {
+    display: block !important;
+  }
+}
+// XL breakpoint
+@media (min-width: calc(1200px + $siteNavBarWidth + $learningBarWidth)) {
+ .d-xl-none {
+   display: none !important;
+  }
+  .d-xl-flex {
+    display: flex !important;
+  }
+  .d-xl-block {
+    display: block !important;
+  }
+}
+// XXL breakpoint
+@media (min-width: calc(1400px + $siteNavBarWidth + $learningBarWidth)) {
+ .d-xxl-none {
+   display: none !important;
+  }
+  .d-xxl-flex {
+    display: flex !important;
+  }
+  .d-xxl-block {
+    display: block !important;
+  }
+}
+}
+
+
+

@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: kube-dns
+  namespace: "{- namespace -}"
+spec:
+  selector: component == 'singleuser-server'
+  order: 0
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kube-dns
+          namespace: kube-system

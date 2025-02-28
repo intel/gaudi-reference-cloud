@@ -1,0 +1,32 @@
+# This job runs periodically to run various kubectl get commands.
+# The output will be logged and is expected to be collected by OTEL.
+{{- if .Values.collector.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-collector
+  namespace: {{ .Release.Namespace }}
+spec:
+  concurrencyPolicy: Replace
+  schedule: {{ .Values.collector.schedule | quote }}
+  jobTemplate:
+    spec:
+      # No retries on failure
+      backoffLimit: 0
+      template:
+        spec:
+          containers:
+            # Run each command in a separate container so that the output can be filtered by container name.
+            {{- range $commandName, $commandValue := .Values.collector.commands }}
+            - name: {{ $commandName | quote }}
+              image: "{{ $.Values.collector.image.registry }}/{{ $.Values.collector.image.repository }}:{{ $.Values.collector.image.tag }}"
+              imagePullPolicy: IfNotPresent
+              command:
+                - "/bin/sh"
+                - "-c"
+                - {{ print "set -x\n" $commandValue | quote }}
+            {{- end }}
+          serviceAccountName: {{ .Release.Name }}-collector
+          restartPolicy: Never
+      ttlSecondsAfterFinished: 3600
+{{- end }}

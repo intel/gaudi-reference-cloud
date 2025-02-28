@@ -1,0 +1,17 @@
+# This file contains targets to build Helm charts.
+# See https://github.com/masmovil/bazel-rules
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml", 
+    "templates/**",
+  ]),
+  image  = "//go/pkg/git_to_grpc_synchronizer:git_to_grpc_synchronizer_image",
+  package_name = "git-to-grpc-synchronizer",  # Must not have underscores.
+  values_tag_yaml_path = "image.tag",
+  visibility = ["//visibility:public"],
+  chart_deps = ["//deployment/charts/idc-common:chart"],
+)

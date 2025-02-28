@@ -1,0 +1,25 @@
+---
+- name: Extract MASTER_IP and MEMBER_IPS
+  set_fact:
+    MASTER_IP: "{{ MASTER_IP | regex_search('MASTER_IP=(.*)\\n', '\\1') }}"
+    MEMBER_IPS: "{{ MEMBER_IPS | regex_search('MEMBER_IPS=(.*)\\n', '\\1') }}"
+
+- name: Successfully fetched IP information
+  debug:
+    msg: "MASTER_IP: {{ MASTER_IP }}, MEMBER_IPS: {{ MEMBER_IPS }}"
+
+- name: Create ansible inventory
+  file:
+    path: "{{ ansible_inventory_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Generate hosts used by ansible
+  template:
+    src: "ansible_hosts.j2"
+    dest: "{{ ansible_inventory_path }}/hosts.yaml"
+
+- name: Generate hostfile used by IGHS and HCCL-Demo
+  template:
+    src: "ighs_hostfile.j2"
+    dest: "{{ ighs_files_dir }}/hostfile"

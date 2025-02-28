@@ -1,0 +1,12 @@
+{
+    "base_url": "https://internal-placeholder.com",
+    "token_url": "http://internal-placeholder.com",
+    "maxVU": 50,
+    "minVU": 10,
+    "VUs": 50,
+    "duration": "300s",
+    "iterations": 50,
+    "maxDuration": "1h",
+    "rampMaxDuration": "40s",
+    "rampMinDuration": "20s"
+}

@@ -1,0 +1,10 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- path: /etc/munge/munge.template
+  content: |
+    swS/vIjfqds5LoCNS+pD5e82x2rgIm2RUrIt3Zy3WyOL1vjkRue8A0jYaYX5tllYcrEkZiiExfCH
+    HLmpj8lyoV3cP3V3J7O1fjyufCRxU7ZFy+EuFwPL7EKl55w47kjpsNJ23ZA2woYA2zHXYH9/Io2P
+    UpHZN7hoinMIxIb631w=
+  permissions: '0666'
+  owner: root
+  group: root

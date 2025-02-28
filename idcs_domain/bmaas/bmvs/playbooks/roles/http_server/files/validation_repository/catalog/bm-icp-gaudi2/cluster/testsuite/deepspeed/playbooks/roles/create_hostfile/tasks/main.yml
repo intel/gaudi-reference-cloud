@@ -1,0 +1,25 @@
+---
+- name: Extract MASTER_IP and MEMBER_IPS
+  set_fact:
+    MASTER_IP: "{{ MASTER_IP | regex_search('MASTER_IP=(.*)\\n', '\\1') }}"
+    MEMBER_IPS: "{{ MEMBER_IPS | regex_search('MEMBER_IPS=(.*)\\n', '\\1') }}"
+
+- name: List IP(s)
+  debug:
+    msg: "MASTER_IP: {{ MASTER_IP }}, MEMBER_IPS: {{ MEMBER_IPS }}"
+
+- name: Create inventory folder
+  file:
+    path: "{{ ansible_inventory_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Generate Ansible Inventory
+  template:
+    src: "hostfile.j2"
+    dest: "{{ ansible_inventory_path }}/hosts.yaml"
+
+- name: Generate hostfile used by Deepspeed Test
+  template:
+    src: "bthostfile.j2"
+    dest: "{{ deepspeed_hostfile_path }}"

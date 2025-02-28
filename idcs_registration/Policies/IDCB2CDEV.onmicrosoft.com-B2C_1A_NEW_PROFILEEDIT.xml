@@ -1,0 +1,27 @@
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" PolicySchemaVersion="0.3.0.0" TenantId="idcb2cdev.onmicrosoft.com" DeploymentMode="Development" PolicyId="B2C_1A_NEW_ProfileEdit" PublicPolicyUri="http://idcb2cdev.onmicrosoft.com/B2C_1A_NEW_ProfileEdit" TenantObjectId="b5af1bb3-df03-4b0d-8315-841efe9cdd69">
+  <BasePolicy>
+    <TenantId>idcb2cdev.onmicrosoft.com</TenantId>
+    <PolicyId>B2C_1A_NEW_TrustFrameworkExtensions</PolicyId>
+  </BasePolicy>
+  <RelyingParty>
+    <DefaultUserJourney ReferenceId="ProfileEdit" />
+    <TechnicalProfile Id="PolicyProfile">
+      <DisplayName>PolicyProfile</DisplayName>
+      <Protocol Name="OpenIdConnect" />
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="firstName" />
+        <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="lastName" />
+        <OutputClaim ClaimTypeReferenceId="extension_hasAuthApp" PartnerClaimType="hasAuthAppMFA" />
+        <OutputClaim ClaimTypeReferenceId="extension_country" PartnerClaimType="country" />
+        <OutputClaim ClaimTypeReferenceId="extension_optIn" PartnerClaimType="optIn" DefaultValue="false" />
+        <OutputClaim ClaimTypeReferenceId="extension_toc" PartnerClaimType="toc" />
+        <OutputClaim ClaimTypeReferenceId="email" />
+        <OutputClaim ClaimTypeReferenceId="isMobilePresent" PartnerClaimType="hasMobileMFA" />
+        <OutputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="sub" />
+        <OutputClaim ClaimTypeReferenceId="identityProvider" />
+        <OutputClaim ClaimTypeReferenceId="tenantId" AlwaysUseDefaultValue="true" DefaultValue="{Policy:TenantObjectId}" />
+      </OutputClaims>
+      <SubjectNamingInfo ClaimType="sub" />
+    </TechnicalProfile>
+  </RelyingParty>
+</TrustFrameworkPolicy>

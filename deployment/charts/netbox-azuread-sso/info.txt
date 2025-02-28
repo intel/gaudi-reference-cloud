@@ -1,0 +1,4 @@
+helm from: https://github.com/bootc/netbox-chart
+branch: develop 
+version: 4.1.1
+git hash commit: https://github.com/bootc/netbox-chart/commit/9f537a99928d42f9f1854e95c605db8bc352d4c8

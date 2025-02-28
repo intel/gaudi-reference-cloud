@@ -1,0 +1,57 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.components.training.enabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $storageApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- if $.Values.components.training.armada.enabled }}     
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-armada") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: armada
+      geographicScope: regional
+      region: {{ $region.region }}
+      applicationName: armada
+      kubeContext: {{ $region.kubeContext }}
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/armada
+    version: {{ readFile (print $helmChartVersionsDir "/armada.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}armada@sha256"
+      - database:
+          service: {{ $region | get "trainingApiServer.database.service" (print $region.region "-training-db-postgresql") | quote }}
+          arg: {{ $region | get "trainingApiServer.database.arg" $.Values.defaults.region.trainingApiServer.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-training-api-server/database"
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - computeGrpcAPIEndpoint: {{ $computeApiServerAddr | quote }}
+      - storageGrpcAPIEndpoint: {{ $storageApiServerAddr | quote }}
+{{- end }}
+
+{{- end }}
+{{- end }}

@@ -1,0 +1,7 @@
+http_proxy: http://internal-placeholder.com:912
+https_proxy: http://internal-placeholder.com:912
+no_proxy: 127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local,internal-placeholder.com,*.intel.com
+rke2_no_proxy: intel.com,.intel.com,10.0.0.0/8,192.168.0.0/16,localhost,127.0.0.0/8,134.134.0.0/16,172.16.0.0/16,.cluster.local,internal-placeholder.com,.intel.com
+
+apt_packages:
+  - jq

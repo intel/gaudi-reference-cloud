@@ -1,0 +1,20 @@
+{
+    "metadata": {
+      "name": "load-vm-<<index>>"
+    },
+    "spec": {
+      "availabilityZone": "us-dev-1a",
+      "instanceType": "vm-icp-gaudi2-1",
+      "machineImage": "ubuntu-20.04-gaudi2-v1.13-vm-v1",
+      "runStrategy": "RerunOnFailure",
+      "sshPublicKeyNames": [
+        "user2@acme.com"
+      ],
+      "interfaces": [
+        {
+          "name": "eth0",
+          "vNet": "us-dev-1a-default"
+        }
+      ]
+    }
+}

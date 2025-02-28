@@ -1,0 +1,65 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.components.cloudmonitorLogs.enabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+  {{- if $region.cloudmonitorLogs.enabled }}
+    - name: {{ include "idc-common.toReleaseName" (print $region.region "-cloudmonitor-logs-api-server") }}
+      namespace: idcs-system
+      kubeContext: {{ $region.kubeContext }}
+      labels:
+        applicationName: cloudmonitor-logs-api-server
+        clusterName: {{ $clusterName | quote }}
+        component: cloudmonitorLogs
+        geographicScope: regional
+        kubeContext: {{ $region.kubeContext }}
+        region: {{ $region.region }}
+        service: cloudmonitor-logs
+      chart: idc/cloudmonitor-logs-api-server
+      version: {{ readFile (print $helmChartVersionsDir "/cloudmonitor-logs-api-server.version") | quote }}
+      values:
+        - proxy.yaml.gotmpl
+        - idc-common.yaml.gotmpl
+        - database:
+            arg: {{ $region.cloudmonitorLogs.apiServer.database.arg | quote }}
+            name: main
+            service: {{ $region | get "cloudmonitorLogs.apiServer.database.service" (print $region.region "-cloudmonitor-logs-db-postgresql") | quote }}
+            vaultCredentialsPath: "controlplane/data/{{ $region.region }}-cloudmonitor-logs-api-server/database"
+        - image:
+            registry: {{ ($.Values.image).registry | quote }}
+            repository: "{{ ($.Values.image).repositoryPrefix }}cloudmonitor-logs-api-server@sha256"
+        - nodePort: {{ $region.cloudmonitorLogs.apiServer.service.nodePort }}
+        - otel:
+            exporter:
+              otlp:
+                endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+        - region: {{ $region.region | quote }}
+        - replicaCount: {{ $region.cloudmonitorLogs.replicaCount }}
+        - service:
+            type: {{ $region.cloudmonitorLogs.apiServer.service.type | quote }}
+        - tls:
+            issueCa: {{ $region.region }}-ca
+        - vault:
+            authPath: {{ $region.vault.authPath | quote }}
+  {{- end }}
+{{- end }}
+
+{{- end }}

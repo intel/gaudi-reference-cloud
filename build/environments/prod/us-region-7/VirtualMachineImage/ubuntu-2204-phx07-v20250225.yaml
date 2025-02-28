@@ -1,0 +1,14 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  labels:
+    harvesterhci.io/os-type: ubuntu
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/imageDisplayName: ubuntu-2204-phx07-v20250225
+  name: ubuntu-2204-phx07-v20250225
+  namespace: default
+spec:
+  checksum: f6ec52258b3ab74068793ad0c35e2fda823d139de5fac65fe04f63396f8c32a3c8e4a1337e243d0b260b7a3be3e73e3d1e93b61fbeefa06b8a691254700fc492
+  displayName: ubuntu-2204-phx07-v20250225
+  sourceType: download
+  url: http://10.153.84.12/vmaas/images/ubuntu-2204-phx07-v20250225.qcow2

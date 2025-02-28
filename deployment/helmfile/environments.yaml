@@ -1,0 +1,336 @@
+# See the IDC Environment Master List at https://internal-placeholder.com/x/uyLhs.
+
+# Note on shared usage of the dev3 Harvester cluster (aka harvester-cp-dev1):
+# To ensure a consistent Harvester configuration, include either
+# - shared/dev3-harvester.yaml.gotmpl when region is .Environment.Name
+# - shared/dev3-harvester-alias-dev1.yaml.gotmpl when region in us-dev-1
+
+environments:
+  internal-placeholder.com:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-jenkins.yaml.gotmpl
+      - environments/internal-placeholder.com.yaml.gotmpl
+  dev1:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev1.yaml.gotmpl
+  dev2:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev2.yaml.gotmpl
+  dev3:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev3.yaml.gotmpl
+  dev-jf:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev-jf.yaml.gotmpl
+  dev4:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev4.yaml.gotmpl
+  dev5:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev5.yaml.gotmpl
+  dev6:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev6.yaml.gotmpl
+  dev7:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev7.yaml.gotmpl
+  dev8:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev8.yaml.gotmpl
+  dev9:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev9.yaml.gotmpl
+  dev10:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev10.yaml.gotmpl
+  dev22:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev22.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev24:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev24.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev25:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev25.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev26:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev26.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev27:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev27.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev28:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev28.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev29:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev29.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev30:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev30.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev31:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev31.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev32:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev32.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev33:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev33.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev34:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev34.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev35:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev35.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev36:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev36.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev37:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev37.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev38:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev38.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev39:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev39.yaml.gotmpl
+      - environments/shared/dev3-harvester.yaml.gotmpl
+  dev-oneapi:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev-oneapi.yaml.gotmpl
+  dev-iks:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/dev-iks.yaml.gotmpl
+  iks-dev-test:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/shared/dev-jf-singlecluster-shared.yaml.gotmpl
+      - environments/iks-dev-test.yaml.gotmpl
+  kind-2regions:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-2regions.yaml.gotmpl
+  kind-jenkins:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-jenkins.yaml.gotmpl
+  kind-multicluster:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-multicluster.yaml.gotmpl
+  kind-singlecluster:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-singlecluster.yaml.gotmpl
+  minimal:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/minimal.yaml.gotmpl
+  pdx03-c01-azcp001-vm-1:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c01-azcp001-vm-2:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+      - environments/pdx03-c01-azcp001-vm-2.yaml.gotmpl
+  pdx03-c01-azcp001-vm-3-s: # "s" for "Single cluster" (full name was too long for vault)
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c01-azcp001-vm-3:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+      - environments/pdx03-c01-azcp001-vm-3.yaml.gotmpl
+  pdx05-c01-nwcp-devel2:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+      - environments/pdx05-c01-nwcp-devel2.yaml.gotmpl
+  pdx03-c01-azcp001-vm-5:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c01-azcp001-vm-6:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c01-rgcp001-vm-1:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-multicluster-flex.yaml.gotmpl
+  pdx03-c01-rgcp001-vm-4:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev-flex.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+      - environments/pdx03-c01-rgcp001-vm-4.yaml.gotmpl
+  pdx03-c01-rgcp001-vm-5:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/pdx03-c01-rgcp001-vm-5.yaml.gotmpl
+  pdx03-c01-rgcp001-vm-6:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/pdx03-c01-rgcp001-vm-6.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c01-rgcp001-vm-10:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/pdx03-c01-rgcp001-vm-10.yaml.gotmpl
+  pdx03-c01-rgcp001-vm-7:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/pdx03-c01-rgcp001-vm-7.yaml.gotmpl
+  pdx03-c01-rgcp001-vm-8:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-jenkins.yaml.gotmpl
+      - environments/pdx03-c01-rgcp001-vm-8.yaml.gotmpl
+  pdx03-c05-azcp001-vm-1:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev-flex.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx05-c01-stcp-client002:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev-flex.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c04-azcp002-vm-3:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev-flex.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c01-azcp002-vm-5:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/dev-flex.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+  pdx03-c03-rgcp001-vm-8:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/pdx03-c03-rgcp001-vm-8.yaml.gotmpl
+  pdx03-c02-azcp001-vm-1:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/bmaas-flex-dev.yaml.gotmpl
+      - environments/shared/dev3-harvester-alias-dev1.yaml.gotmpl
+      # - environments/pdx03-c02-azcp001-vm-1.yaml.gotmpl
+  prod:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/prod-region-us-region-1.yaml.gotmpl
+      - environments/prod-region-us-region-2.yaml.gotmpl
+      - environments/prod-region-us-region-3.yaml.gotmpl
+      - environments/prod-region-us-region-4.yaml.gotmpl
+      - environments/prod-region-us-region-7.yaml.gotmpl
+      - environments/prod-region-us-region-5.yaml.gotmpl
+      - environments/prod.yaml.gotmpl
+  staging:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/staging-region-us-staging-1.yaml.gotmpl
+      - environments/staging-region-us-staging-3.yaml.gotmpl
+      - environments/staging-region-us-staging-4.yaml.gotmpl
+      - environments/staging.yaml.gotmpl
+  qa1:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/qa1.yaml.gotmpl
+      - environments/qa1-region-us-qa1-1.yaml.gotmpl
+  testing1:
+    values:
+      - defaults.yaml.gotmpl
+#      - environments/testing1-region-us-testing1-1.yaml.gotmpl
+      - environments/testing1.yaml.gotmpl
+  test-e2e-sdn:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-singlecluster.yaml.gotmpl
+      - environments/test-e2e-sdn.yaml.gotmpl
+  psdn-kind:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/kind-singlecluster.yaml.gotmpl
+      - environments/psdn-kind.yaml.gotmpl
+  test-e2e-compute-bm:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/test-e2e-compute-bm.yaml.gotmpl
+  test-e2e-compute-vm:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/test-e2e-compute-vm.yaml.gotmpl
+  test-manifests-generator:
+    values:
+      - defaults.yaml.gotmpl
+      - environments/test-manifests-generator.yaml.gotmpl

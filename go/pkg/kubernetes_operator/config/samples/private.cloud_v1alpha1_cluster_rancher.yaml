@@ -1,0 +1,56 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    nodegroup.devcloud.io/gateway: 10.64.112.1
+    nodegroup.devcloud.io/ip-addresses: 10.64.112.220,10.64.112.221,10.64.112.222
+    nodegroup.devcloud.io/nameserver: 10.248.2.17
+  name: rancher-beta-cluster
+  namespace: default
+spec:
+  advancedConfig:
+    kubeApiServerArgs: ""
+    kubeControllerManagerArgs: ""
+    kubeProxyArgs: ""
+    kubeSchedulerArgs: ""
+    kubeletArgs: ""
+  backup: ""
+  instanceIMI: image-9hvh9
+  instanceType: small
+  kubernetesProvider: rke2
+  kubernetesProviderConfig:
+    caCertAuthEndpoint: ""
+    enableAuthEndpoint: false
+    envVars:
+      HTTP_PROXY: http://internal-placeholder.com:912
+      HTTPS_PROXY: http://internal-placeholder.com:912
+      NO_PROXY: localhost,127.0.0.0/8,127.0.0.1/8,10.0.0.0/8,.intel.com
+      http_proxy: http://internal-placeholder.com:912
+      https_proxy: http://internal-placeholder.com:912
+      no_proxy: localhost,127.0.0.0/8,127.0.0.1/8,10.0.0.0/8,.intel.com
+    fqdnAuthEndpoint: ""
+  kubernetesVersion: v1.22.17
+  network:
+    clusterDNS: "100.66.0.10"
+    podCIDR: "100.68.0.0/16"
+    serviceCIDR: "100.66.0.0/16"
+  nodeProvider: Harvester 
+  runtime: runc
+  nodegroups:
+    - annotations:
+        nodegroup.devcloud.io/gateway: 10.64.112.1
+        nodegroup.devcloud.io/ip-addresses: 10.64.112.223,10.64.112.224
+        nodegroup.devcloud.io/nameserver: 10.248.2.17
+      count: 1
+      instanceIMI: image-9hvh9
+      instanceType: small
+      name: ng01
+      sshKey: mysshkey
+      kubernetesVersion: ""
+      labels: {}
+      taints: {}
+      upgradeStrategy:
+        drainBefore: false
+        maxUnavailablePercent: 0

@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "reader",
+    srcs = ["reader.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/env_config/reader",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/env_config/types",
+        "//go/pkg/universe_deployer/filepaths",
+        "//go/pkg/universe_deployer/universe_config",
+        "//go/pkg/universe_deployer/util",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+    ],
+)

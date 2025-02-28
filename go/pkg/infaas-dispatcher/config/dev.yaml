@@ -1,0 +1,12 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+ListenPort:      50051
+SupportedModels:
+  - model1
+  - model2
+
+BacklogSize: 10
+
+DefaultGenerateStreamTimeout: 30s
+
+MetricsPort: 2112

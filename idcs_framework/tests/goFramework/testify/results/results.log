@@ -1,0 +1,16 @@
+{"level":"info","ts":"2024-03-19T15:51:31.666-0700","caller":"Billing/suite_test.go:49","msg":"Starting Billing REST   test suite"}
+{"level":"info","ts":"2024-03-19T15:51:31.667-0700","caller":"Billing/suite_test.go:50","msg":"Starting Report Portal Setup"}
+{"level":"info","ts":"2024-03-19T15:51:31.667-0700","caller":"Billing/suite_test.go:51","msg":"-- Start Launch --"}
+{"level":"info","ts":"2024-03-19T15:51:31.667-0700","caller":"Billing/suite_test.go:53","msg":"-- Start Suite --"}
+{"level":"info","ts":"2024-03-19T15:51:31.667-0700","caller":"Billing/suite_test.go:58","msg":"-- Start Test --"}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:81","msg":"Starting IDC Billing REST  Functional test cases"}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:82","msg":"                                                                                                                "}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:83","msg":"                                                                                                                "}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:84","msg":"################################################################################################################"}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:85","msg":" Executing Test ------------ TestBillingAPITestSuite/TestAStandardCreatePaidInstanceWithoutCredits "}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:86","msg":"################################################################################################################"}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:87","msg":"                                                                                                                "}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/suite_test.go:88","msg":"                                                                                                                "}
+{"level":"info","ts":"2024-03-19T15:51:31.668-0700","caller":"Billing/billing_regression_all_user_test.go:1268","msg":"Creating a enterprise User Cloud Account using Enroll API"}
+{"level":"info","ts":"2024-03-19T15:51:31.669-0700","caller":"auth/auth.go:40","msg":"Entry not found in tokens map, Hence token will be created using authorization flow for the user "}
+{"level":"info","ts":"2024-03-19T15:51:32.062-0700","caller":"azure_auth/browser.go:47","msg":"Starting local Listener"}

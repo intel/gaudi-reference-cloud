@@ -1,0 +1,110 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-vm
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  labels:
+    network.harvesterhci.io/clusternetwork: mgmt
+    network.harvesterhci.io/type: L2VlanNetwork
+  name: "202"
+  namespace: test-vm
+spec:
+  config: '{"cniVersion":"0.3.1","name":"202","mtu":1500,"type":"bridge","bridge":"mgmt-br","promiscMode":true,"vlan":202,"ipam":{}}'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: default-cdi-cloner
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: test-vm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cdi-cloner
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  labels:
+    kubevirt.io/vm: test-vm
+  name: test-vm
+  namespace: test-vm
+spec:
+  runStrategy: RerunOnFailure
+  template:
+    metadata:
+      labels:
+        kubevirt.io/vm: test-vm
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: disk-0
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+          interfaces:
+          - bridge: {}
+            model: virtio
+            name: default
+        resources:
+          requests:
+            memory: 4Gi
+      networks:
+      - multus:
+          networkName: test-vm/202
+        name: default
+      volumes:
+      - name: disk-0
+        dataVolume:
+          name: datavolume-0
+      - name: cloudinitdisk
+        cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            users:
+            - name: devcloud
+              passwd: $6$rounds=4096$XhcB3dVGXp7UGpND$ceXjuST1rpdbW9/xlVw26IROWtt7T8KAOg3271cEYKcDpc68leLhcn8vWxng1N2ymQ1r4KyQmHE2FXMEljpcY/
+              lock_passwd: false
+              ssh_authorized_keys:
+              - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDI8npNfVhl8cybkYZUCQV7grm/c/cy18VEbTrbnFSxf todd.malsbary@intel.com_20240311_intel_internal
+              shell: /bin/bash
+          networkData: |-
+            version: 2
+            renderer: networkd
+            ethernets:
+              enp1s0:
+                match:
+                  name: enp1s0
+                addresses:
+                - 192.168.202.10/24
+                mtu: 9000
+                nameservers:
+                  addresses:
+                  - 10.22.224.196
+                  - 10.248.2.1
+                routes:
+                - to: 0.0.0.0/0
+                  via: 192.168.202.1
+  dataVolumeTemplates:
+  - metadata:
+      name: datavolume-0
+    spec:
+      storage:
+        accessModes:
+        - ReadWriteMany
+      source:
+        pvc:
+          name: ubuntu-2204-jammy-v20230122
+          namespace: default

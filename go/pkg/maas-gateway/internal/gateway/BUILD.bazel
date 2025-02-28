@@ -1,0 +1,65 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "gateway",
+    srcs = [
+        "gateway.go",
+        "server.go",
+        "types.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/maas-gateway/internal/gateway",
+    visibility = ["//go/pkg/maas-gateway:__subpackages__"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/maas-gateway/internal/adminserver",
+        "//go/pkg/maas-gateway/internal/client",
+        "//go/pkg/maas-gateway/internal/config",
+        "//go/pkg/maas-gateway/internal/contextmeta",
+        "//go/pkg/maas-gateway/internal/health",
+        "//go/pkg/maas-gateway/internal/interceptors",
+        "//go/pkg/maas-gateway/internal/metering",
+        "//go/pkg/maas-gateway/internal/metrics",
+        "//go/pkg/pb",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_jinzhu_copier//:copier",
+        "@com_github_pkg_errors//:errors",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//health",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+        "@org_golang_google_grpc//keepalive",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+        "@org_golang_google_protobuf//types/known/wrapperspb",
+    ],
+)
+
+go_test(
+    name = "gateway_test",
+    srcs = ["integration_test.go"],
+    embed = [":gateway"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/maas-gateway/internal/client",
+        "//go/pkg/maas-gateway/internal/config",
+        "//go/pkg/maas-gateway/internal/metrics",
+        "//go/pkg/maas-gateway/test/mock",
+        "//go/pkg/pb",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_golang_protobuf//ptypes/empty",
+        "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//suite",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_grpc//test/bufconn",
+    ],
+)

@@ -1,0 +1,8 @@
+- name: Check token variable is present
+  assert:
+    that:
+      - token is defined
+
+- name: Register node
+  shell: NO_PROXY="{{ rke2_no_proxy }}" HTTP_PROXY="{{ http_proxy }}" HTTPS_PROXY="{{ http_proxy }}" curl -fL https://internal-placeholder.com/system-agent-install.sh | sudo NO_PROXY="{{ rke2_no_proxy }}" HTTP_PROXY="{{ http_proxy }}" HTTPS_PROXY="{{ http_proxy }}" sh -s - --server https://internal-placeholder.com --label 'cattle.io/os=linux' --token {{ token}} --etcd --controlplane --worker
+

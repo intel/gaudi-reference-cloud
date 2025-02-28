@@ -1,0 +1,129 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: idc-networking
+    url: amr-idc-registry-pre.infra-host.com
+    oci: true
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- if $region.sdnVN.enabled }}
+
+  {{- if $region.sdnVN.devDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-sdn-vn-controller-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: sdnVN
+      service: sdn-vn-controller
+      database: sdn-vn-controller
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: sdn-vn-controller-db
+      clusterName: {{ $clusterName | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-sdn-vn-controller_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-sdn-vn-controller_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region.sdnVN.devDb.primary.persistence.enabled }}
+  {{- end }}
+
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-sdn-vn-ovn-central") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: sdnVN
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: sdn-vn-ovn-central
+      clusterName: {{ $clusterName | quote }}
+    chart: idc-networking/amd64/ovn-central
+    version: 0.1.0
+    values:
+      - global:
+          namespace: idcs-system
+          image:
+            registry: amr-idc-registry-pre.infra-host.com/idc-networking
+          nbPort: 6641
+          sbPort: 6642
+
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-sdn-vn-controller") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      applicationName: sdn-vn-controller
+      clusterName: {{ $clusterName | quote }}
+      component: sdnVN
+      geographicScope: regional
+      kubeContext: {{ $region.kubeContext }}
+      region: {{ $region.region }}
+      service: sdn-vn-controller
+    chart: idc/sdn-vn-controller
+    version: {{ readFile (print $helmChartVersionsDir "/sdn-vn-controller.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - ovnCentral:
+          ovnAddress: {{ $region.sdnVN.ovnCentral.ovnAddress }}
+          ovnPort: {{ $region.sdnVN.ovnCentral.ovnPort }}
+      - database:
+          dbAddress: us-dev-1-sdn-vn-controller-db-postgresql.idcs-system.svc.cluster.local
+          name: main
+          user: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-sdn-vn-controller_db_user_password") | quote }}
+          arg: {{ $region.sdnVN.database.arg | quote }}
+          service: {{ $region | get "sdn-vn-controller.database.service" (print $region.region "-sdn-vn-controller-db-postgresql") | quote }}
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-sdn-vn-controller/database"
+      - security:
+          postgreSqlSSL:
+            enabled: no
+            verify: no
+          ovnCentralSSL:
+            enabled: no
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}sdn-vn-controller@sha256"
+      - region: {{ $region.region | quote }}
+      - replicaCount: {{ $region.sdnVN.replicaCount }}
+      - service:
+          type: {{ $region.sdnVN.service.type | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+
+{{- end }}
+
+{{- end }}

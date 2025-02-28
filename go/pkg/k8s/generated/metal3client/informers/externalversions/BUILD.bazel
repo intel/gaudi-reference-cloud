@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "externalversions",
+    srcs = [
+        "factory.go",
+        "generic.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/metal3client/informers/externalversions",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/k8s/generated/metal3client/clientset/versioned",
+        "//go/pkg/k8s/generated/metal3client/informers/externalversions/internalinterfaces",
+        "//go/pkg/k8s/generated/metal3client/informers/externalversions/metal3.io:metal3_io",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_client_go//tools/cache",
+    ],
+)

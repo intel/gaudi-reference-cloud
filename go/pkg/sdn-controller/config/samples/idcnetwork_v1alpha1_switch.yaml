@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# apiVersion: idcnetwork.intel.com/v1alpha1
+# kind: Switch
+# metadata:
+#   name: "internal-placeholder.com"
+#   namespace: idcs-system
+# spec:
+#   fqdn: "internal-placeholder.com"
+#   ip: "10.45.112.98"
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: Switch
+metadata:
+  name: "internal-placeholder.com"
+  namespace: idcs-system
+spec:
+  fqdn: "internal-placeholder.com"
+  ip: "10.45.112.99"

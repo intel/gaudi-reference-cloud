@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SDNControllerConfig
+metadata:
+  labels:
+    app.kubernetes.io/name: sdncontrollerconfig
+    app.kubernetes.io/instance: sdncontrollerconfig-sample
+    app.kubernetes.io/part-of: sdn-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: sdn-controller
+  name: sdncontrollerconfig-sample
+spec:
+  # TODO(user): Add fields here

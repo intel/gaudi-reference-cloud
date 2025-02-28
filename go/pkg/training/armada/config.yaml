@@ -1,0 +1,27 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+database:
+  service: oneapi-db-postgresql
+  #url: postgres://postgres5808-lb-fm-in.dbaas.intel.com:5432/oneapiint?sslmode=require
+  vaultCredentialsPath: controlplane/data/oneapi/database
+
+service:
+  type: ClusterIP
+
+globalConfig: 
+  interval: 30
+  maxClustersPerAccount: 0
+  maxNodesPerAccount: 0
+  maxVnetsPerAccount: 0
+  maxStorageSizePerAccount: 0
+
+cloudConfig:
+  idc:
+    authAPIEndpoint: ""
+    computeAPIEndpoint: ""
+    computeGrpcAPIEndpoint: ""
+    foundationGrpcAPIEndpoint: ""
+    foundationAPIEndpoint: ""
+    StorageGrpcAPIEndpoint: ""
+    availabilityZone: ""
+    region: ""

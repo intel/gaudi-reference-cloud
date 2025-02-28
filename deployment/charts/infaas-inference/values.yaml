@@ -1,0 +1,369 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Default values for infaas-inference.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+mockInference: false
+debugContainer: false
+
+image:
+  pullPolicy: IfNotPresent
+  registry: amr-registry.caas.intel.com
+  repository: intelcloud/infaas-agent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+inference-images:
+  tgiProxy:
+    repository: cnvrg/infaas-inference
+    pullPolicy: Always
+    tag: "proxy"
+  tgiServer:
+    repository: "amr-idc-registry.infra-host.com/cache/moditamam/tgi-gaudi" #ghcr.io/huggingface/tgi-gaudi
+    pullPolicy: Always
+    tag: "2.0.5-patched-2"
+
+imagePullSecrets:
+  - name: cnvrg-dockerhub-secret
+
+# The model we're going to deploy with this chart
+# must match one of the models key
+deployedModel: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+# precision of the deployed model
+# supproted values: 'fp16', 'bf16', 'fp8'
+# TGI defaults 'bf16'
+precision: "fp8"
+
+models:
+  "meta-llama/Meta-Llama-3.1-8B-Instruct":
+    shortName: "llama-3-1-8b"
+    resources:
+      limits:
+        habana.ai/gaudi: 1
+    fp8FolderName: "single-device"
+    startupProbeInitialDelaySeconds: 50
+    args:
+      - --max-input-length
+      - "2048"
+      - --max-batch-prefill-tokens
+      - "4096"
+      - --max-total-tokens
+      - "4096"
+      - --max-batch-total-tokens
+      - "65536"
+      - --max-waiting-tokens
+      - "7"
+      - --waiting-served-ratio
+      - "1.2"
+      - --max-concurrent-requests
+      - "32"
+      - --hostname
+      - "0.0.0.0"
+      - --port
+      - "8080"
+    env:
+      - name: HABANA_VISIBLE_DEVICES
+        value: "all"
+      - name: OMPI_MCA_btl_vader_single_copy_mechanism
+        value: "none"
+      - name: TEXT_GENERATION_SERVER_IGNORE_EOS_TOKEN
+        value: "false"
+      - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+        value: "true"
+      - name: BATCH_BUCKET_SIZE
+        value: "16"
+      - name: PREFILL_BATCH_BUCKET_SIZE
+        value: "2"
+      - name: PAD_SEQUENCE_TO_MULTIPLE_OF
+        value: "256"
+      - name: USE_FLASH_ATTENTION
+        value: "true"
+      - name: FLASH_ATTENTION_RECOMPUTE
+        value: "true"
+      - name: MODEL_ID
+        value: meta-llama/Meta-Llama-3.1-8B-Instruct
+      - name: HUGGINGFACE_HUB_CACHE
+        value: /models-cache
+      - name: SHARDED
+        value: "false"
+      - name: WARMUP_ENABLED
+        value: "false"
+      - name: HUGGING_FACE_HUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: hf-api-token-secret
+            key: HF_API_TOKEN
+  "mistralai/Mistral-7B-Instruct-v0.1":
+    shortName: "mistral-0-1-7b"
+    resources:
+      limits:
+        habana.ai/gaudi: 1
+    fp8FolderName: "single-device"
+    startupProbeInitialDelaySeconds: 50
+    args:
+      - --max-input-length
+      - "2048"
+      - --max-batch-prefill-tokens
+      - "4096"
+      - --max-total-tokens
+      - "4096"
+      - --max-batch-total-tokens
+      - "65536"
+      - --max-waiting-tokens
+      - "7"
+      - --waiting-served-ratio
+      - "1.2"
+      - --max-concurrent-requests
+      - "32"
+      - --hostname
+      - "0.0.0.0"
+      - --port
+      - "8080"
+    env:
+      - name: HABANA_VISIBLE_DEVICES
+        value: "all"
+      - name: OMPI_MCA_btl_vader_single_copy_mechanism
+        value: "none"
+      - name: TEXT_GENERATION_SERVER_IGNORE_EOS_TOKEN
+        value: "false"
+      - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+        value: "true"
+      - name: BATCH_BUCKET_SIZE
+        value: "16"
+      - name: PREFILL_BATCH_BUCKET_SIZE
+        value: "2"
+      - name: PAD_SEQUENCE_TO_MULTIPLE_OF
+        value: "256"
+      - name: USE_FLASH_ATTENTION
+        value: "true"
+      - name: FLASH_ATTENTION_RECOMPUTE
+        value: "true"
+      - name: MODEL_ID
+        value: mistralai/Mistral-7B-Instruct-v0.1
+      - name: HUGGINGFACE_HUB_CACHE
+        value: /models-cache
+      - name: SHARDED
+        value: "false"
+      - name: WARMUP_ENABLED
+        value: "false"
+      - name: HUGGING_FACE_HUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: hf-api-token-secret
+            key: HF_API_TOKEN
+  "meta-llama/Meta-Llama-3.1-70B-Instruct":
+    shortName: "llama-3-1-70b"
+    resources:
+      limits:
+        habana.ai/gaudi: 8
+    fp8FolderName: "eight-devices"
+    startupProbeInitialDelaySeconds: 150
+    args:
+      - --max-input-length
+      - "2048"
+      - --max-batch-prefill-tokens
+      - "4096"
+      - --max-total-tokens
+      - "4096"
+      - --max-batch-total-tokens
+      - "524288"
+      - --max-waiting-tokens
+      - "7"
+      - --waiting-served-ratio
+      - "1.2"
+      - --max-concurrent-requests
+      - "256"
+      - --hostname
+      - "0.0.0.0"
+      - --port
+      - "8080"
+    env:
+      - name: HABANA_VISIBLE_DEVICES
+        value: "all"
+      - name: OMPI_MCA_btl_vader_single_copy_mechanism
+        value: "none"
+      - name: TEXT_GENERATION_SERVER_IGNORE_EOS_TOKEN
+        value: "false"
+      - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+        value: "true"
+      - name: BATCH_BUCKET_SIZE
+        value: "128"
+      - name: PREFILL_BATCH_BUCKET_SIZE
+        value: "4"
+      - name: PAD_SEQUENCE_TO_MULTIPLE_OF
+        value: "64"
+      - name: LIMIT_HPU_GRAPH
+        value: "true"
+      - name: USE_FLASH_ATTENTION
+        value: "true"
+      - name: FLASH_ATTENTION_RECOMPUTE
+        value: "true"
+      - name: MODEL_ID
+        value: meta-llama/Meta-Llama-3.1-70B-Instruct
+      - name: HUGGINGFACE_HUB_CACHE
+        value: /models-cache
+      - name: SHARDED
+        value: "true"
+      - name: NUM_SHARD
+        value: "8"
+      - name: WARMUP_ENABLED
+        value: "false"
+      - name: HUGGING_FACE_HUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: hf-api-token-secret
+            key: HF_API_TOKEN
+  "mistralai/Mixtral-8x22B-Instruct-v0.1":
+    shortName: "mixtral-0-1-8x22b"
+    resources:
+      limits:
+        habana.ai/gaudi: 8
+    fp8FolderName: "eight-devices"
+    startupProbeInitialDelaySeconds: 150
+    args:
+      - --max-input-length
+      - "2048"
+      - --max-batch-prefill-tokens
+      - "4096"
+      - --max-total-tokens
+      - "4096"
+      - --max-batch-total-tokens
+      - "524288"
+      - --max-waiting-tokens
+      - "7"
+      - --waiting-served-ratio
+      - "1.2"
+      - --max-concurrent-requests
+      - "256"
+      - --hostname
+      - "0.0.0.0"
+      - --port
+      - "8080"
+    env:
+      - name: HABANA_VISIBLE_DEVICES
+        value: "all"
+      - name: OMPI_MCA_btl_vader_single_copy_mechanism
+        value: "none"
+      - name: TEXT_GENERATION_SERVER_IGNORE_EOS_TOKEN
+        value: "false"
+      - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+        value: "true"
+      - name: BATCH_BUCKET_SIZE
+        value: "128"
+      - name: PREFILL_BATCH_BUCKET_SIZE
+        value: "4"
+      - name: PAD_SEQUENCE_TO_MULTIPLE_OF
+        value: "64"
+      - name: LIMIT_HPU_GRAPH
+        value: "true"
+      - name: USE_FLASH_ATTENTION
+        value: "true"
+      - name: FLASH_ATTENTION_RECOMPUTE
+        value: "true"
+      - name: MODEL_ID
+        value: mistralai/Mixtral-8x22B-Instruct-v0.1
+      - name: HUGGINGFACE_HUB_CACHE
+        value: /models-cache
+      - name: SHARDED
+        value: "true"
+      - name: NUM_SHARD
+        value: "8"
+      - name: WARMUP_ENABLED
+        value: "false"
+      - name: HUGGING_FACE_HUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: hf-api-token-secret
+            key: HF_API_TOKEN
+# "model5":
+#   shortName: "m5"
+#   resources:
+#     limits:
+#       habana.ai/gaudi: "666666"
+#   args:
+#     - arg1
+#     - arg2
+#   env:
+#     k1: val1
+#     k2: val2
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: "9999" # unused ATM really
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

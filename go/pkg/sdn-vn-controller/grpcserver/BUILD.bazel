@@ -1,0 +1,20 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "grpcserver",
+    srcs = ["grpcserver.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller/grpcserver",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/sdn-vn-controller/api/sdn/v1:sdn",
+        "//go/pkg/sdn-vn-controller/configmgr",
+        "//go/pkg/sdn-vn-controller/handlers",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_ovn_org_libovsdb//client",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials",
+        "@org_golang_google_grpc//reflection",
+    ],
+)

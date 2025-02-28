@@ -1,0 +1,211 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+// This is a patch of pusher.go in commit 05a4fde2861693b18dd0d3e3bbab54306aa161f3.
+// This fixes the handling of new environments.
+package pusher
+
+import (
+	"context"
+	"os"
+	"os/exec"
+	"path/filepath"
+
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/log"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/deployer_config"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/universe_config"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/util"
+)
+
+// Push container images and Helm charts to Docker and Helm registries.
+func Push(
+	ctx context.Context,
+	commit string,
+	semanticVersion string,
+	universeConfig *universe_config.UniverseConfig,
+	workspaceDir string,
+	secretsDir string,
+	bazelBinary string,
+	bazelStartupOpts []string,
+	bazelRunOpts []string,
+	helmBinary string,
+) error {
+	log := log.FromContext(ctx).WithName("Push")
+	log.Info("BEGIN")
+	defer log.Info("END")
+
+	if len(universeConfig.Environments) == 0 {
+		log.Info("No environments to process")
+		return nil
+	}
+
+	if false {
+		cmd := exec.CommandContext(ctx, "/bin/find", "-L", workspaceDir)
+		cmd.Env = os.Environ()
+		if err := util.RunCmd(ctx, cmd); err != nil {
+			return err
+		}
+	}
+
+	// Get deployer config from commit.
+	deployerConfigFile := filepath.Join(workspaceDir, "deployment/universe_deployer/config.yaml")
+	deployerConfig, err := deployer_config.NewConfigFromFile(ctx, deployerConfigFile)
+	if err != nil {
+		return err
+	}
+	log.Info("deployerConfig", "deployerConfig", deployerConfig)
+
+	for idcEnv := range universeConfig.Environments {
+		log.Info("Processing environment", "idcEnv", idcEnv)
+
+		deployerEnvironment, ok := deployerConfig.Environments[idcEnv]
+		if ok {
+			envSecretsDir := filepath.Join(secretsDir, idcEnv)
+
+			dockerRegistry := deployerEnvironment.Docker.Registry
+			dockerImagePrefix := deployerEnvironment.Docker.ImagePrefix
+			helmRegistry := deployerEnvironment.Helm.Registry
+			helmProject := deployerEnvironment.Helm.Project
+
+			log.Info("Logging into Docker registry", "dockerRegistry", dockerRegistry)
+			if err := dockerLogin(ctx, envSecretsDir, dockerRegistry); err != nil {
+				return err
+			}
+
+			log.Info("Logging into Helm registry", "helmRegistry", helmRegistry)
+			if err := helmLogin(ctx, envSecretsDir, helmRegistry, helmBinary); err != nil {
+				return err
+			}
+
+			if err := PushAllContainersAndChartsOnce(
+				ctx,
+				commit,
+				semanticVersion,
+				dockerRegistry,
+				dockerImagePrefix,
+				helmRegistry,
+				helmProject,
+				workspaceDir,
+				bazelBinary,
+				bazelStartupOpts,
+				bazelRunOpts,
+			); err != nil {
+				return err
+			}
+		} else {
+			log.Info("Skipping push because the environment was not found in the deployer config file",
+				"environment", idcEnv, "deployerConfigFile", deployerConfigFile)
+		}
+	}
+
+	return nil
+}
+
+// Push all containers and charts once.
+// Containers are pushed to dockerRegistry.
+// Charts are pushed to helmRegistry.
+func PushAllContainersAndChartsOnce(
+	ctx context.Context,
+	commit string,
+	semanticVersion string,
+	dockerRegistry string,
+	dockerImagePrefix string,
+	helmRegistry string,
+	helmProject string,
+	workspaceDir string,
+	bazelBinary string,
+	bazelStartupOpts []string,
+	bazelRunOpts []string,
+) error {
+	log := log.FromContext(ctx).WithName("PushAllContainersAndChartsOnce")
+	log.Info("BEGIN")
+	defer log.Info("END")
+
+	args := []string{}
+	args = append(args, bazelStartupOpts...)
+	args = append(args, "run")
+	args = append(args,
+		"--define", "APPEND_CHART_HASH_TO_HELM_CHART_VERSION=True",
+		"--define", "DOCKER_IMAGE_PREFIX="+dockerImagePrefix,
+		"--define", "DOCKER_REGISTRY="+dockerRegistry,
+		"--define", "DOCKER_TAG="+semanticVersion+"-"+commit,
+		"--define", "HELM_CHART_VERSION="+semanticVersion,
+		"--define", "HELM_PASSWORD=",
+		"--define", "HELM_PROJECT="+helmProject,
+		"--define", "HELM_REGISTRY="+helmRegistry,
+		"--define", "HELM_USERNAME=",
+		"--define", "IDC_FULL_VERSION="+semanticVersion+"-"+commit,
+		"--verbose_failures",
+	)
+	args = append(args, bazelRunOpts...)
+	args = append(args,
+		"//deployment:all_container_and_chart_push",
+	)
+	cmd := exec.CommandContext(ctx, bazelBinary, args...)
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, "PATH=/bin")
+	cmd.Dir = workspaceDir
+	if err := util.RunCmd(ctx, cmd); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Docker login.
+// This writes the credentials in plaintext to homeDir/.docker/config.json.
+func dockerLogin(ctx context.Context, envSecretsDir string, dockerRegistry string) error {
+	log := log.FromContext(ctx).WithName("dockerLogin")
+	harborUsernameBytes, err := os.ReadFile(filepath.Join(envSecretsDir, "HARBOR_USERNAME"))
+	if err != nil {
+		log.Error(err, "unable to read file; assuming that login is not needed")
+		return nil
+	}
+	harborUsername := string(harborUsernameBytes)
+	harborPasswordFile, err := os.Open(filepath.Join(envSecretsDir, "HARBOR_PASSWORD"))
+	if err != nil {
+		return err
+	}
+	defer harborPasswordFile.Close()
+
+	cmd := exec.CommandContext(ctx, "/usr/bin/docker",
+		"login",
+		"--username", harborUsername,
+		"--password-stdin",
+		dockerRegistry,
+	)
+	cmd.Stdin = harborPasswordFile
+	cmd.Env = os.Environ()
+	if err := util.RunCmd(ctx, cmd); err != nil {
+		return err
+	}
+	return nil
+}
+
+func helmLogin(ctx context.Context, envSecretsDir string, helmRegistry string, helmBinary string) error {
+	log := log.FromContext(ctx).WithName("helmLogin")
+	harborUsernameBytes, err := os.ReadFile(filepath.Join(envSecretsDir, "HARBOR_USERNAME"))
+	if err != nil {
+		log.Error(err, "unable to read file; assuming that login is not needed")
+		return nil
+	}
+	harborUsername := string(harborUsernameBytes)
+	harborPasswordFile, err := os.Open(filepath.Join(envSecretsDir, "HARBOR_PASSWORD"))
+	if err != nil {
+		return err
+	}
+	defer harborPasswordFile.Close()
+
+	cmd := exec.CommandContext(ctx, helmBinary,
+		"registry",
+		"login",
+		"--username", harborUsername,
+		"--password-stdin",
+		helmRegistry,
+	)
+	cmd.Stdin = harborPasswordFile
+	cmd.Env = os.Environ()
+	if err := util.RunCmd(ctx, cmd); err != nil {
+		return err
+	}
+	return nil
+}

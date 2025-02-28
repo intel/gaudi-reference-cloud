@@ -1,0 +1,12 @@
+hosts:
+  hosts:
+    node-0:
+      ansible_host: "{{ MASTER_IP.split(',')[0] }}"
+{% if MEMBER_IPS is defined and MEMBER_IPS != "" %}
+{% for index in range(1, MEMBER_IPS.split(',') | length + 1) %}
+    node-{{ index }}:
+      ansible_host: "{{ MEMBER_IPS.split(',')[index - 1] }}"
+{% endfor %}
+{% else %}
+    # No member IPs defined
+{% endif %}

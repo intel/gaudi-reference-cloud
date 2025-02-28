@@ -1,0 +1,13 @@
+  - import_tasks: ./set_default_password.yml
+
+  - include_tasks: ../common/tasks/update_all_apt_packages.yml
+  - include_tasks: ../common/tasks/install_apt_packages.yml
+
+  - import_tasks: ./install_kubectl.yml
+  - import_tasks: ./install_k9s.yml
+  - import_tasks: ./add_env_vars_bashrc.yml
+  - import_tasks: ./create_rke2_proxy_config.yml
+
+  - include_tasks: ../common/tasks/check_if_need_reboot.yml
+
+  - import_tasks: ./register_node.yml

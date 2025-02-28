@@ -1,0 +1,98 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+- name: Create base application installation directory for JupyterHub
+  file:
+    path: "{{ INSTALL_PATH }}"
+    state: directory
+    mode: 0664
+    owner: root
+    group: root
+  when: INSTALL_PATH is defined
+
+- name: Create sub-directories for JupyterHub
+  file:
+    path: "{{ INSTALL_PATH }}/{{ item }}"
+    state: directory
+    mode: 0664
+    owner: root
+    group: root
+  with_items:
+    - etc
+    - bin
+    - n
+    - n/bin
+
+- name: Create /var/lib directory for JupyterHub 
+  file:
+    path: /var/lib/jupyterhub
+    state: directory
+    mode: 0664
+
+- name: Extract Python 3.11.5 into "{{ INSTALL_PATH }}/python-3.11.5"
+  become: yes
+  unarchive:
+    src: python-3.11.5.tar.gz
+    dest: "{{ INSTALL_PATH }}/"
+
+- name: Extract node-v18.17.1-linux-x64.tar.xz into "{{ INSTALL_PATH }}/n/bin/n"
+  become: yes
+  unarchive:
+    src: node-v18.17.1-linux-x64.tar.xz
+    dest: "{{ INSTALL_PATH}}/n/bin/"
+
+- name: Copy patch.txt to "{{ INSTALL_PATH }}"
+  become: yes
+  copy:
+    src: patch.txt
+    dest: "{{ INSTALL_PATH }}/"
+
+- name: Copy jupyterhub_config.py to "{{ INSTALL_PATH }}/etc/"
+  become: yes
+  copy:
+    src: jupyterhub_config.py
+    dest: "{{ INSTALL_PATH }}/etc/"
+
+- name: Copy jupyterhub.service to "/etc/systemd/system/"
+  become: yes
+  copy:
+    src: jupyterhub.service
+    dest: /etc/systemd/system/
+
+- name: Copy jupyterhub-start to "{{ INSTALL_PATH }}/bin/"
+  become: yes
+  copy:
+    src: jupyterhub-start
+    dest: "{{ INSTALL_PATH }}/bin/"
+    mode: 0755
+
+- name: Copy jupyteruser.sh to "{{ INSTALL_PATH }}/bin/"
+  become: yes
+  copy:
+    src: jupyteruser.sh
+    dest: "{{ INSTALL_PATH }}/bin/"
+    mode: 0755
+
+- name: Copy jupyterhub.conf to "/etc/nginx/sites-available/"
+  become: yes
+  copy:
+    src: jupyterhub.conf
+    dest: /etc/nginx/sites-available/
+
+- name: Symlink jupyterhub.conf for nginx proxy server
+  ignore_errors: true
+  become: yes
+  file:
+    src: /etc/nginx/sites-available/jupyterhub.conf
+    dest: /etc/nginx/sites-enabled/jupyterhub.conf
+    state: link
+
+- name: Generate a large prime for diffie helman exchange
+  ignore_errors: true
+  become: yes
+  openssl_dhparam:
+    size: 4096
+    path: /etc/ssl/dhparam.pem
+  async: 120
+  poll: 10
+  

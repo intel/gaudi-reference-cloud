@@ -1,0 +1,160 @@
+@import "colors";
+
+// Redefine Bootstrap grayscale
+$gray-100: $carbon-tint2 !default;
+$gray-200: $carbon-tint1-tint !default;
+$gray-300: $carbon-tint1 !default;
+$gray-400: $carbon-tint1-shade !default;
+$gray-500: $carbon !default;
+$gray-600: $carbon-shade1-tint !default;
+$gray-700: $carbon-shade1 !default;
+$gray-800: $carbon-shade1-shade !default;
+$gray-900: $carbon-shade2 !default;
+
+// Redefine Bootstrap named colors using Intel named colors
+$blue: $classic-blue !default;
+$indigo: $cobalt !default;
+$purple: $geode !default;
+$pink: $coral !default;
+$red: $coral-shade1 !default;
+$orange: $rust !default;
+$yellow: $daisy !default;
+$green: $moss !default;
+$teal: $blue-steel !default;
+$cyan: $energy-blue !default;
+
+// Define Bootstrap theme variant colors using Intel colors
+$primary: $classic-blue !default;
+$secondary: $white !default;
+$success: $status-success !default;
+$info: $energy-blue !default;
+$warning: $status-warning !default;
+$danger: $status-error !default;
+$light: $gray-100 !default;
+$dark: $gray-900 !default;
+
+// Colors used on Alerts and List Groups
+$primary-text-emphasis:    $white !default;
+$secondary-text-emphasis:  $classic-blue !default;
+$success-text-emphasis:    #{shade-color($success, 75)} !default;
+$info-text-emphasis:       #{shade-color($energy-blue, 75)} !default;
+$warning-text-emphasis:    #{shade-color($warning, 75)} !default;
+$danger-text-emphasis:     #{shade-color($danger, 75)} !default;
+$light-text-emphasis:      $gray-800 !default;
+$dark-text-emphasis:       $gray-100 !default;
+
+$primary-bg-subtle:        $primary !default;
+$secondary-bg-subtle:      $secondary !default;
+$success-bg-subtle:        $status-success-soft !default;
+$info-bg-subtle:           $energy-blue-tint1 !default;
+$warning-bg-subtle:        $status-warning-soft !default;
+$danger-bg-subtle:         $status-error-soft !default;
+$light-bg-subtle:          $gray-100 !default;
+$dark-bg-subtle:           $gray-800 !default;
+
+$primary-border-subtle:    $classic-blue-shade1 !default;
+$secondary-border-subtle:  $classic-blue !default;
+$success-border-subtle:    #{shade-color($status-success-soft, 18)} !default;
+$info-border-subtle:       $info !default;
+$warning-border-subtle:    #{shade-color($status-warning-soft, 18)} !default;
+$danger-border-subtle:     #{shade-color($status-error-soft, 18)} !default;
+$light-border-subtle:      $gray-200 !default;
+$dark-border-subtle:       $black !default;
+
+// Options
+$enable-shadows: true !default;
+
+// Links
+$link-decoration:         underline !default;
+$link-hover-color:        $classic-blue-shade1 !default;
+$link-hover-decoration:   underline !default;
+$link-shade-percentage:   20% !default;
+
+// Components
+$border-radius: 0rem !default;
+$border-radius-sm: 0rem !default;
+$border-radius-lg: 0rem !default;
+$border-radius-xl: 0rem !default;
+$border-radius-xxl: 0rem !default;
+
+// Typography
+$font-family-intelone-bodytext: "IntelOne BodyText", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$font-family-intelone-mono: "IntelOne Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-intelone-display: "IntelOne Display", "IntelOne BodyText", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+
+$font-family-sans-serif: $font-family-intelone-bodytext !default;
+$font-family-monospace: $font-family-intelone-mono !default;
+$display-font-family: $font-family-intelone-display !default;
+$headings-font-family: $font-family-intelone-display !default;
+
+// Tables
+$table-bg-scale: 0 !default;
+
+// Buttons
+//$btn-disabled-opacity: 0.67 !default;
+$btn-link-disabled-color: $carbon !default;
+$btn-hover-bg-shade-amount: 18% !default;
+$btn-hover-bg-tint-amount: 18% !default;
+$btn-hover-border-shade-amount: 22% !default;
+$btn-hover-border-tint-amount: 12% !default;
+$btn-active-bg-shade-amount: 24% !default;
+$btn-active-bg-tint-amount: 24% !default;
+$btn-active-border-shade-amount: 28% !default;
+$btn-active-border-tint-amount: 12% !default;
+
+// Forms
+// $input-disabled-bg: $gray-200 !default;
+// $input-group-addon-bg: $gray-200 !default;
+$form-check-input-border: 1px solid $carbon !default;
+$form-switch-color: $carbon !default;
+$form-switch-focus-color: $carbon !default;
+//$form-select-disabled-color: $carbon-shade1 !default;
+
+// Navbars
+$navbar-padding-y: 0 !default;
+
+$navbar-light-color: $classic-blue !default;
+$navbar-light-hover-color: $classic-blue-shade1 !default;
+$navbar-light-active-color: $classic-blue !default;
+$navbar-light-disabled-color: $carbon !default;
+$navbar-light-brand-color: $classic-blue !default;
+$navbar-light-brand-hover-color: $classic-blue !default;
+
+$navbar-dark-color: $carbon-tint2 !default;
+$navbar-dark-hover-color: $carbon-tint1-tint !default;
+$navbar-dark-disabled-color: $carbon-tint1;
+
+// Dropdowns
+$dropdown-link-hover-color: $black !default;
+$dropdown-link-hover-bg: $energy-blue !default;
+$dropdown-link-active-color: $white;
+$dropdown-dark-color: $carbon-tint2 !default;
+$dropdown-dark-bg: $carbon-shade1-shade !default;
+$dropdown-dark-link-hover-color: $black !default;
+$dropdown-dark-link-hover-bg: $energy-blue !default;
+
+// Accordions
+$accordion-icon-color: $black !default;
+$accordion-icon-active-color: $black !default;
+$accordion-button-active-bg: $energy-blue !default;
+$accordion-button-active-color: $black !default;
+
+// Toasts
+$toast-header-color: $carbon-shade1 !default;
+
+// Alerts
+$alert-link-font-weight: 600 !default;
+//$alert-bg-scale: 0 !default;
+//$alert-border-scale: 15% !default;
+//$alert-color-scale: 0 !default;
+
+
+// List Groups
+$list-group-disabled-color: $carbon !default;
+$list-group-disabled-bg: $carbon-tint2 !default;
+$list-group-action-color: $black !default;
+$list-group-item-bg-scale: 0 !default;
+$list-group-item-color-scale: 0 !default;
+
+// Code
+$code-color: $rust-shade1 !default;

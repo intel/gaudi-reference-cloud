@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "vulns",
+    srcs = [
+        "scanner.go",
+        "trivy.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/insights/security-scanner/pkg/actions/vulns",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/insights/kubescore/pkg/common",
+        "//go/pkg/log",
+    ],
+)

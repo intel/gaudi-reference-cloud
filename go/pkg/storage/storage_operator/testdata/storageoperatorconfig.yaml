@@ -1,0 +1,152 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+Name:         test117                                                                                                                            
+  Namespace:    817145059787                                                                                                                       
+  Labels:       <none>                                                                                                                             
+  Annotations:  <none>                                                                                                                             
+  API Version:  private.cloud.intel.com/v1alpha1                                                                                                   
+  Kind:         Storage                                                                                                                            
+  Metadata:                                                                                                                                        
+    Creation Timestamp:  2023-11-16T00:20:13Z                                                                                                      
+    Finalizers:                                                                                                                                    
+      private.cloud.intel.com/storagefinalizer                                                                                                     
+      private.cloud.intel.com/storagemeteringmonitorfinalizer                                                                                      
+    Generation:  1                                                                                                                                 
+    Managed Fields:                                                                                                                                
+      API Version:  private.cloud.intel.com/v1alpha1                                                                                               
+      Fields Type:  FieldsV1
+ 	  fieldsV1:                                                                                                                                    
+        f:spec:                                                                                                                                    
+          .:                                                                                                                                       
+          f:accessModes:                                                                                                                           
+          f:availabilityZone:                                                                                                                      
+          f:encrypted:                                                                                                                             
+          f:filesystemSchedule:                                                                                                                    
+            .:                                                                                                                                     
+            f:assignedCluster:                                                                                                                     
+              .:                                                                                                                                   
+              f:addr:                                                                                                                              
+              f:name:                                                                                                                              
+              f:uuid:                                                                                                                              
+              f:version:
+ 			f:assignedNamespace:                                                                                                                   
+              .:                                                                                                                                   
+              f:credentialsPath:                                                                                                                   
+              f:name:                                                                                                                              
+              f:password:                                                                                                                          
+              f:user:                                                                                                                              
+            f:assignedUser:                                                                                                                        
+              .:                                                                                                                                   
+              f:credentialsPath:                                                                                                                   
+              f:password:                                                                                                                          
+              f:user:                                                                                                                              
+            f:filesystemName:                                                                                                                      
+          f:mountProtocol:                                                                                                                         
+          f:request:                                                                                                                               
+            .:                                                                                                                                     
+            f:storage:                                                                                                                             
+      Manager:      storage-replicator_image.binary                                                                                                
+      Operation:    Update
+ 	  Time:         2023-11-16T00:20:13Z                                                                                                           
+      API Version:  private.cloud.intel.com/v1alpha1                                                                                               
+      Fields Type:  FieldsV1                                                                                                                       
+      fieldsV1:                                                                                                                                    
+        f:metadata:                                                                                                                                
+          f:finalizers:                                                                                                                            
+            .:                                                                                                                                     
+            v:"private.cloud.intel.com/storagefinalizer":                                                                                          
+            v:"private.cloud.intel.com/storagemeteringmonitorfinalizer":                                                                           
+      Manager:      storage_operator                                                                                                               
+      Operation:    Update                                                                                                                         
+      Time:         2023-11-16T00:20:13Z                                                                                                           
+      API Version:  private.cloud.intel.com/v1alpha1
+ 	  Fields Type:  FieldsV1                                                                                                                       
+      fieldsV1:                                                                                                                                    
+        f:status:                                                                                                                                  
+          .:                                                                                                                                       
+          f:conditions:                                                                                                                            
+          f:message:                                                                                                                               
+          f:mount:                                                                                                                                 
+            .:                                                                                                                                     
+            f:dnsName:                                                                                                                             
+            f:fileSystemName:                                                                                                                      
+          f:namespace:                                                                                                                             
+            .:                                                                                                                                     
+            f:name:
+ 			f:password:                                                                                                                            
+            f:user:                                                                                                                                
+          f:phase:                                                                                                                                 
+          f:user:                                                                                                                                  
+            .:                                                                                                                                     
+            f:password:                                                                                                                            
+            f:user:                                                                                                                                
+      Manager:         storage_operator                                                                                                            
+      Operation:       Update                                                                                                                      
+      Subresource:     status                                                                                                                      
+      Time:            2023-11-16T00:20:15Z                                                                                                        
+    Resource Version:  21055
+ 	UID:               e70d9e9b-a9b3-4252-b56f-a14015eb6b0f                                                                                        
+  Spec:                                                                                                                                            
+    Access Modes:                                                                                                                                  
+    Availability Zone:                                                                                                                             
+    Encrypted:          false                                                                                                                      
+    Filesystem Schedule:                                                                                                                           
+      Assigned Cluster:                                                                                                                            
+        Addr:     pdx05-c01-swds007.us-staging-1.cloud.intel.com                                                                                   
+        Name:     dev-2                                                                                                                            
+        Uuid:     918b5026-d516-48c8-bfd3-5998547265b2 
+ 		Version:  4.1                                                                                                                              
+      Assigned Namespace:                                                                                                                          
+        Credentials Path:  staas/tenant/817145059787/ns817145059787                                                                                
+        Name:              ns-817145059787                                                                                                         
+        Password:                                                                                                                                  
+        User:                                                                                                                                      
+      Assigned User:                                                                                                                               
+        Credentials Path:  staas/tenant/817145059787/u817145059787                                                                                 
+        Password:                                                                                                                                  
+        User:                                                                                                                                      
+      Filesystem Name:     test117                                                                                                                 
+    Mount Protocol:                                                                                                                                
+    Request:                                                                                                                                       
+      Storage:  5000000000                                                                                                                         
+  Status:                                                                                                                                          
+    Conditions:                                                                                                                                    
+      Last Probe Time:       2023-11-16T00:20:13Z                                                                                                  
+      Last Transition Time:  2023-11-16T00:20:13Z                                                                                                  
+      Message:               Storage specification has been accepted and is being provisioned                                                      
+      Status:                True                                                                                                                  
+      Type:                  Accepted                                                                                                              
+      Last Probe Time:       2023-11-16T00:20:13Z                                                                                                  
+      Last Transition Time:  2023-11-16T00:20:13Z                                                                                                  
+      Message:               Create Namespace request completed                                                                                    
+      Status:                True                                                                                                                  
+      Type:                  Namespace Success                                                                                                     
+      Last Probe Time:       2023-11-16T00:20:14Z                                                                                                  
+      Last Transition Time:  2023-11-16T00:20:14Z                                                                                                  
+       Message:               Create FS request completed                                                                                           
+      Status:                True                                                                                                                  
+      Type:                  FileSystem Success                                                                                                    
+      Last Probe Time:       2023-11-16T00:20:15Z                                                                                                  
+      Last Transition Time:  2023-11-16T00:20:15Z                                                                                                  
+      Message:               Create User request completed                                                                                         
+      Status:                True                                                                                                                  
+      Type:                  User creation Success                                                                                                 
+      Last Probe Time:       2023-11-16T00:20:15Z                                                                                                  
+      Last Transition Time:  2023-11-16T00:20:15Z                                                                                                  
+      Message:               Storage FS is running                                                                                                 
+      Reason:                Accepted                                                                                                              
+      Status:                True                                                                                                                  
+      Type:                  Running                                                                                                               
+    Message:                 Storage FS is running                                                                                                 
+    Mount:                                                                                                                                         
+      Dns Name:                                                                                                                                    
+      File System Name:                                                                                                                            
+    Namespace:                                                                                                                                     
+      Name:                                                                                                                                        
+      Password:                                                                                                                                    
+      User:                                                                                                                                        
+    Phase:       Ready                                                                                                                             
+    User:                                                                                                                                          
+      Password:                                                                                                                                    
+      User:                                                                                                                                        
+  Events:        <none>

@@ -1,0 +1,26 @@
+pipeline {
+  agent {
+    label 'bmaas'
+  }
+
+  stages {
+    stage('Hadolint Dockerfile'){
+      agent{
+        docker{
+          image 'internal-placeholder.com/cache/hadolint/hadolint:latest-debian'
+          label 'IDC-Builder-large'
+        }
+      }// end agent
+      steps{
+        dir("${env.WORKSPACE}/idcs_shared/docker"){
+          sh '''
+          #!/bin/bash
+          echo "Run Hadolint for idcs_shared"
+          hadolint --config ../../hack/hadolint.yml Dockerfile*
+          sha256sum Dockerfile*
+          '''
+        }// end dir
+      }// end steps
+    }// end stage
+  }
+}

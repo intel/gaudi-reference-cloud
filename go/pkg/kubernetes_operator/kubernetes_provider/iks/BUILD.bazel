@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "iks",
+    srcs = [
+        "provider.go",
+        "templates.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/kubernetes_operator/kubernetes_provider/iks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/kubernetes_operator/utils",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "@io_k8s_api//certificates/v1:certificates",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_kubectl//pkg/drain",
+    ],
+)

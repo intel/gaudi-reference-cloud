@@ -1,0 +1,11 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_go_image")
+
+idc_go_image(
+    name = "user-credentials_image",
+    embed = [
+        "//go/svc/user-credentials/cmd/user-credentials:user-credentials_lib",
+    ],
+    visibility = ["//visibility:public"],
+)

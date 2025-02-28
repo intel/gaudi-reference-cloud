@@ -1,0 +1,9 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+package: client
+generate:
+  client: true
+  models: true
+  embedded-spec: true
+output-options:
+  skip-prune: true

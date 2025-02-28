@@ -1,0 +1,38 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+CHARTS = [
+]
+
+go_library(
+    name = "kindtestenv",
+    srcs = ["kindtestenv.go"],
+    data = [
+        "before_stop.sh",
+        "experiments.sh",
+        "//deployment:test-e2e-common",
+        "//deployment/universe_deployer/deployment_artifacts:deployment_artifacts_common",
+        "//go/pkg/cloudaccount_enroll:configdata",
+        "//go/pkg/observability:configdata",
+        "//go/pkg/universe_deployer/cmd/manifests_generator",
+        "@helm3_linux_amd64//:helm",
+        "@helmfile_linux_amd64//:helmfile",
+        "@jq_linux_amd64_file//file",
+        "@kind_linux_amd64//file",
+        "@kubectl_linux_amd64//file",
+        "@vault_linux_amd64//:vault",
+        "@yq_linux_amd64_file//file",
+    ] + ["//deployment:%s_chart_version" % chart for chart in CHARTS],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/test/kindtestenv",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/deployer",
+        "//go/pkg/universe_deployer/env_config/reader",
+        "//go/pkg/universe_deployer/filepaths",
+        "//go/pkg/universe_deployer/k8s_provisioner/kind",
+        "//go/pkg/universe_deployer/universe_config",
+        "//go/pkg/universe_deployer/util",
+    ],
+)

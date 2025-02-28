@@ -1,0 +1,13 @@
+# Uses the official PostgreSQL image and loads the schema of this project
+
+FROM postgres:16-alpine
+
+COPY ./secrets/sql-server-cert.pem /var/lib/postgresql/server.crt
+COPY ./secrets/cacert.pem /var/lib/postgresql/ca.crt
+
+COPY --chown=postgres:postgres ./secrets/sql-server-privkey.pem /var/lib/postgresql/server.key
+RUN chmod 600 /var/lib/postgresql/server.key
+
+COPY ./assets/docker/pg_hba.conf /etc/pg_hba.conf
+
+COPY ./db/migrations/frdb.sql /docker-entrypoint-initdb.d/

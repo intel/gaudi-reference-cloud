@@ -1,0 +1,4 @@
+ansible_user: "{{ devops_user}}"
+ansible_password: "{{ devops_password }}"
+ansible_sudo_pass: "{{ devops_password }}"
+ansible_connection: 'ssh'

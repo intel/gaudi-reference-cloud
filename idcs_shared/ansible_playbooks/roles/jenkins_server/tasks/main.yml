@@ -1,0 +1,11 @@
+- include_tasks: ../common/tasks/add_user_w_ssh_keys.yml
+- include_tasks: ../common/tasks/install_apt_packages.yml
+- include_tasks: ../common/tasks/create_tools_folder.yml
+- include_tasks: ../common/tasks/git_lfs_install.yml
+# - name: install openJava version {{ java_version }}
+#   become: true
+#   apt:
+#     name: "{{ java_version }}"
+#     update_cache: yes
+
+- import_tasks: ./install_terraform.yml

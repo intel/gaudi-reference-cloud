@@ -1,0 +1,51 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "ilb-operator.fullname" . }}-manager-role
+  labels:
+  {{- include "ilb-operator.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - ilbs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - ilbs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - ilbs/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "ilb-operator.fullname" . }}-manager-rolebinding
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: ilb
+    app.kubernetes.io/part-of: ilb
+  {{- include "ilb-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: '{{ include "ilb-operator.fullname" . }}-manager-role'
+subjects:
+- kind: ServiceAccount
+  name: '{{ include "ilb-operator.fullname" . }}'
+  namespace: '{{ .Release.Namespace }}'

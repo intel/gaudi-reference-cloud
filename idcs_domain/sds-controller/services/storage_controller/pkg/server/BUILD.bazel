@@ -1,0 +1,65 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "server",
+    srcs = [
+        "cluster_handler.go",
+        "health_controller.go",
+        "namespace_handler.go",
+        "s3_handler.go",
+        "server.go",
+        "user_handler.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//api/intel/storagecontroller/v1:go_proto",
+        "//api/intel/storagecontroller/v1/vast:go_proto",
+        "//api/intel/storagecontroller/v1/weka:go_proto",
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/backend/minio",
+        "//services/storage_controller/pkg/backend/vast",
+        "//services/storage_controller/pkg/backend/weka",
+        "//services/storage_controller/pkg/conf",
+        "//services/storage_controller/pkg/server/helpers",
+        "//services/storage_controller/pkg/server/vast",
+        "//services/storage_controller/pkg/server/weka",
+        "@com_github_bufbuild_protovalidate_go//:protovalidate-go",
+        "@com_github_grpc_ecosystem_go_grpc_middleware_providers_prometheus//:prometheus",
+        "@com_github_grpc_ecosystem_go_grpc_middleware_v2//interceptors/logging",
+        "@com_github_grpc_ecosystem_go_grpc_middleware_v2//interceptors/protovalidate",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@com_github_rs_zerolog//:zerolog",
+        "@com_github_rs_zerolog//log",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials",
+        "@org_golang_google_grpc//status",
+    ],
+)
+
+go_test(
+    name = "server_test",
+    srcs = [
+        "cluster_handler_test.go",
+        "health_controller_test.go",
+        "namespace_handler_test.go",
+        "s3_handler_test.go",
+        "server_test.go",
+        "user_handler_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":server"],
+    deps = [
+        "//api/intel/storagecontroller/v1:go_proto",
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/conf",
+        "@com_github_grpc_ecosystem_go_grpc_middleware_v2//interceptors/logging",
+        "@com_github_rs_zerolog//:zerolog",
+        "@com_github_stretchr_testify//assert",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)

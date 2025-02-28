@@ -1,0 +1,42 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "v1alpha1",
+    srcs = [
+        "bmenrollment_types.go",
+        "bmenrollmentoperatorconfig_types.go",
+        "bminstanceoperatorconfig_types.go",
+        "bucketmeteringmonitorconfig_types.go",
+        "computemeteringmonitorconfig_types.go",
+        "groupversion_info.go",
+        "instance_types.go",
+        "instanceoperatorconfig_types.go",
+        "instancereplicatorconfig_types.go",
+        "loadbalancerreplicatorconfig_types.go",
+        "objectstore_types.go",
+        "objectstoreoperatorconfig_types.go",
+        "sshproxyoperatorconfig_types.go",
+        "sshproxytunnel_types.go",
+        "storage_types.go",
+        "storage_vast_types.go",
+        "storagemeteringmonitorconfig_types.go",
+        "storageoperatorconfig_types.go",
+        "vastmeteringmonitorconfig_types.go",
+        "vaststorageoperatorconfig_types.go",
+        "vminstanceoperatorconfig_types.go",
+        "vminstanceschedulerconfig_types.go",
+        "zz_generated.deepcopy.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/apis/private.cloud/v1alpha1",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_sigs_controller_runtime//pkg/config/v1alpha1",
+        "@io_k8s_sigs_controller_runtime//pkg/scheme",
+    ],
+)

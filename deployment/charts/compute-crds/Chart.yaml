@@ -1,0 +1,5 @@
+apiVersion: v2
+name: compute-crds
+description: IDC Compute Custom Resource Definitions (BMaaS/VMaaS)
+type: application
+version: 0.1.0

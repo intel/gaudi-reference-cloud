@@ -1,0 +1,29 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Config file used when running: go run billing_driver_aria/cmd/main.go --config billing_driver_aria/driver_aria.yaml
+listenPort: 8443
+ClientIdPrefix: "$(ARIA_CLIENT_ID_PREFIX)"
+creditsInstallSchedulerInterval: 3600
+reportUsageSchedulerInterval: 3600
+creditUsageSchedulerInterval: 240
+creditExpirySchedulerInterval: 240
+premiumCloudCreditThreshold: 80
+intelCloudCreditThreshold: 80
+enterpriseCloudCreditThreshold: 80
+premiumCloudCreditNotifyBeforeExpiry: 4320
+intelCloudCreditNotifyBeforeExpiry: 4320
+enterpriseCloudCreditNotifyBeforeExpiry: 4320
+servicesTerminationSchedulerInterval: 240
+servicesTerminationInterval: 1440
+eventExpirySchedulerInterval: 1440
+runSchedulers: false
+features:
+  creditInstallScheduler: true
+  reportUsageScheduler: true
+  creditUsageScheduler: false
+  creditExpiryScheduler: false
+  servicesTerminationScheduler: true
+  eventExpiryScheduler: true
+  creditUsageEmail: true
+  creditExpiryEmail: true
+

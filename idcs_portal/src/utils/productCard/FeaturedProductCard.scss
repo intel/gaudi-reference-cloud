@@ -1,0 +1,32 @@
+.featured-product-card {
+    height: auto;
+}
+
+.featured-product-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    align-self: stretch;
+}
+
+.featured-product-card-item {
+    display: flex;
+    align-items: flex-start;
+    align-self: stretch;
+}
+
+.featured-product-card-item span.lead {
+    max-width: 48rem;
+}
+
+.featureTag {
+    display: flex;
+    align-items: center;
+}
+
+[data-bs-theme=dark] {
+    .featureTag {
+        color: var(--cta-primary);
+    }
+}

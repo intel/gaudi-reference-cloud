@@ -1,0 +1,101 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+{{- if $.Values.components.computeBm.enabled }}
+{{- if ($availabilityZone | get "bmValidationOperator.enabled" $.Values.defaults.availabilityZone.bmValidationOperator.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-bm-validation-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBmValidationOperator
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: bm-validation-operator
+    chart: idc/bm-validation-operator
+    version: {{ readFile (print $helmChartVersionsDir "/bm-validation-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}bm-validation-operator@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            instanceOperator:
+              computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+            validationTaskRepositoryURL: {{ ($availabilityZone.bmValidationOperator).validationTaskRepositoryURL }}
+            validationTaskVersion:
+              clusterVersionMap: {{ $availabilityZone.bmValidationOperator.validationTaskVersion.clusterVersionMap | toJson }}
+              instanceVersionMap: {{ $availabilityZone.bmValidationOperator.validationTaskVersion.instanceVersionMap | toJson }}
+            cloudAccountID: {{ $availabilityZone.bmValidationOperator.cloudAccountId | quote }}
+            enabledInstanceTypes: {{ $availabilityZone.bmValidationOperator.enabledInstanceTypes | toJson }}
+            envConfiguration:
+              region: {{ default $region.region $availabilityZone.bmValidationOperator.region  }}
+              availabilityZone: {{ default $availabilityZone.availabilityZone $availabilityZone.bmValidationOperator.availabilityZone }}
+              subnetPrefixLength: {{ $availabilityZone.bmValidationOperator.subnetPrefixLength }}
+              netboxAddress: {{ $availabilityZone.bmValidationOperator.netboxAddress }}
+              netboxKeyFilePath: {{ $availabilityZone.bmValidationOperator.netboxKeyFilePath }}
+              huggingFaceTokenFilePath: {{ $availabilityZone.bmValidationOperator.huggingFaceTokenFilePath }}
+            featureFlags:
+              deProvisionPostValidationFailure: {{ default $availabilityZone.bmValidationOperator.featureFlags.deProvisionPostValidationFailure }}
+              groupValidation: {{ default $availabilityZone.bmValidationOperator.featureFlags.groupValidation }}
+              enabledGroupInstanceTypes: {{ $availabilityZone.bmValidationOperator.featureFlags.enabledGroupInstanceTypes | toJson }}
+              enableFirmwareUpgrade: {{ default $availabilityZone.bmValidationOperator.featureFlags.enableFirmwareUpgrade }}
+            validationReportS3Config:
+              bucketName: {{ $availabilityZone.bmValidationOperator.validationReportS3Config.bucketName }}
+              accessKeyFilePath: {{ $availabilityZone.bmValidationOperator.validationReportS3Config.accessKeyFilePath }}
+              secretAccessKeyFilePath: {{ $availabilityZone.bmValidationOperator.validationReportS3Config.secretAccessKeyFilePath }}
+              httpsProxy: {{ $availabilityZone.bmValidationOperator.validationReportS3Config.httpsProxy }}
+              cloudfrontPrefix: {{ $availabilityZone.bmValidationOperator.validationReportS3Config.cloudfrontPrefix }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $availabilityZone.availabilityZone }}-bm-validation-operator
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - serviceMonitor:
+            enabled: {{ $.Values.serviceMonitor.regional.enabled }}
+  {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

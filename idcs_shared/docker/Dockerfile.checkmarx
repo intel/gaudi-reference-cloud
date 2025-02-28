@@ -1,0 +1,31 @@
+FROM internal-placeholder.com/cache/library/ubuntu:22.04
+
+ENV http_proxy="http://internal-placeholder.com:911/" \
+    https_proxy="http://internal-placeholder.com:912/" \
+    no_proxy="127.0.0.1,localhost,intel.com"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl tar ca-certificates openjdk-17-jre-headless maven unzip make \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+#  # Install go version 1.19  
+# RUN curl -LO --insecure -s https://go.dev/dl/go1.19.linux-amd64.tar.gz \
+#     && tar -C /usr/local -xzf go1.19.linux-amd64.tar.gz \
+#     && rm go1.19.linux-amd64.tar.gz
+# ENV PATH=$PATH:/usr/local/go/bin
+
+# Install intel certificates
+WORKDIR /tmp
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -LO --insecure -s https://internal-placeholder.com/artifactory/it-btrm-local/intel_cacerts/install_intel_cacerts_linux.sh \
+    && chmod +x install_intel_cacerts_linux.sh \
+    && bash ./install_intel_cacerts_linux.sh \
+    && rm ./install_intel_cacerts_linux.sh
+
+# RUN curl -LO -s https://download.checkmarx.com/9.4.0_GA/Plugins/CxConsolePlugin-1.1.14.zip
+RUN curl -LO -s https://download.checkmarx.com/9.3.0GA/Plugins/CxConsolePlugin-1.1.5.zip \
+    && unzip CxConsolePlugin-1.1.5.zip -d checkmarx \
+    && rm checkmarx/config/cx_console.properties
+COPY cx_console.properties /checkmarx/config/cx_console.properties

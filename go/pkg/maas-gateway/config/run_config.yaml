@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 8443
+region: us-dev-1
+usageServerAddr:  dev.grpcapi.cloud.intel.com.kind.local:443
+usageServerTimeout: 1s
+dispatcherServerAddr: 146.152.224.101:443
+productCatalogServerAddr: dev.grpcapi.cloud.intel.com.kind.local:443
+productId: ea48fac7-886b-4547-adf7-06558413414b
+grpcHealthCheckExecutionPeriod: 30s
+grpcHealthCheckExecutionTimeout: 10s
+modelsProductIds:
+  meta-llama/Llama-3.1-8B-Instruct: ba5d2874-dc83-425e-af98-c810f11dad79
+  meta-llama/Llama-3.1-70B-Instruct: 8d728109-0fb2-46c7-a406-1113634d72ab
+  mistralai/Mistral-7B-Instruct-v0.1: 269c3034-e6c7-4359-9e77-c3efedfaa778
+retryAttempts: 3
+familyId: 4004b07c-14b8-446a-8e63-ed7f1508ee1b
+metrics:
+  enabled: true
+  metricsPort: 2112
+  promCredentialsPath: ./pkg/maas-gateway/config/k8s_secrets/prometheus1

@@ -1,0 +1,44 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: minio-operator
+    url: https://operator.min.io  
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (dict) $.Values.defaults.region $region }}
+
+{{- if $region.minioOperator.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-miniooperator") }} 
+    namespace: minio-operator
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: minioOperator
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: minioOperator
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: minio-operator/operator
+    version: {{ $region.minioOperator.releaseVersion }}
+    values:         
+      - replicaCount: {{ $region.minioOperator.replicaCount }}
+      - resources:
+          requests:
+            cpu: {{ $region.minioOperator.resources.requests.cpu }}
+            memory: {{ $region.minioOperator.resources.requests.memory }}
+            ephemeral-storage: {{ $region.minioOperator.resources.requests.estorage }}
+
+{{- end }}
+
+{{- end }}

@@ -1,0 +1,70 @@
+---
+
+# Create a Guest Host VM
+#
+# Use 'virt-manager' to access graphical console
+# Use 'virsh console <node>' to access serial console tty
+# Use ssh to tunnel VNC remote access:
+# 1. On your local system ssh with a tunnel
+#     ssh -L <VNC_PORT>:localhost:<VNC_PORT> REMOTE_IP
+# i.e. ssh -L 5901:localhost:5901 internal-placeholder.com
+# 2. Open VNC client to locahost:<VNC_PORT>
+# i.e. tightvncconnect localhost:5901
+
+# TODO: refactor to use community.libvirt.virt
+
+- name: Check if Guest Host server gh-node-{{ vmnum }} is already running...
+  ansible.builtin.shell:
+    cmd: >
+      virsh domstate "gh-node-{{ vmnum }}"
+  register: domstate_result
+  failed_when: "domstate_result.rc == 0"
+  changed_when: "domstate_result.rc != 0"
+
+- name: Create temporary file
+  become: true
+  ansible.builtin.tempfile:
+    state: file
+    suffix: temp
+  register: tempfile_host
+
+- name: define Guest Host VM number {{ vmnum }}
+  vars:
+    ansible_network_os: 'ios'
+    vnc_port: "{{ (5900 + vmnum)|int }}"
+    cpuset: "{{ ('--cpuset ' + guest_host_cpuset) if guest_host_cpuset is defined else '' }}"
+  become: true
+  ansible.builtin.shell:
+    cmd: >
+      virt-install --name gh-node-{{ vmnum }} --ram {{ guest_host_memory_mb }}
+      --network network={{ guest_host_network }} --disk size={{ guest_host_disk_gb }} --vcpus {{ guest_host_vcpu }} {{ cpuset }}
+      --network network={{ guest_host_storage_network }}
+      --cpu host-model
+      --osinfo ubuntu22.04
+      --boot network,hd
+      --graphics vnc,port={{ vnc_port }}
+      --print-xml > {{ tempfile_host.path }} 2>&1
+  changed_when: "result.rc != 0"
+
+- name: create Guest Host VM number {{ vmnum }}
+  vars:
+    ansible_network_os: 'ios'
+  become: true
+  command: virsh define --file {{ tempfile_host.path }}
+  register: result
+  changed_when: "result.rc != 0"
+
+- name: start Guest Host VM number {{ vmnum }}
+  vars:
+    ansible_network_os: 'ios'
+  become: true
+  command: virsh start gh-node-{{ vmnum }}
+  register: result
+  changed_when: "result.rc != 0"
+
+- name: Use the registered var and the file module to remove the temporary file
+  become: true
+  ansible.builtin.file:
+    path: "{{ tempfile_host.path }}"
+    state: absent
+  when: tempfile_host.path is defined

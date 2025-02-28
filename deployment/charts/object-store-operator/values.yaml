@@ -1,0 +1,75 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/object-store-operator@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+managerConfig:
+  controllerManagerConfigYaml:
+    storageControllerServerAddr: 100.64.5.132:30051
+    fileStorageClusterAddr: vip1.vast-pdx05-1.us-staging-1.cloud.intel.com:2049
+    health:
+      healthProbeBindAddress: :8081
+    leaderElection:
+      leaderElect: false
+      resourceName: 761e26fd.cloud.intel.com
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    webhook:
+      port: 9443
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+config:
+  vaultAddress: "http://vault.kube-system.svc.cluster.local:8200"
+  vaultAuthPath: "auth/cluster-auth"
+  vaultApproleSecretsPath: "controlplane/data/us-dev-1a/storage/enrollment/approle"
+  vaultAuthRole: "us-dev-1-object-store-role"
+# Path for accessing the secrets inside the vault
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/us-dev-1a/object-store-operator
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https

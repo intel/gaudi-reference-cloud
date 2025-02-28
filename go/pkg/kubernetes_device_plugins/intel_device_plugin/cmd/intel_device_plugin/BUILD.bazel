@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "intel_device_plugin_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/kubernetes_device_plugins/intel_device_plugin/cmd/intel_device_plugin",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/kubernetes_device_plugins/intel_device_plugin/pci",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+    ],
+)
+
+go_binary(
+    name = "intel_device_plugin",
+    embed = [":intel_device_plugin_lib"],
+    visibility = ["//visibility:public"],
+)

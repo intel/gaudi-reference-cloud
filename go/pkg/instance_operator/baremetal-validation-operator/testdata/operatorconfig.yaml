@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: BmInstanceOperatorConfig
+metadata:
+  name: BmInstanceOperatorConfig
+health:
+  healthProbeBindAddress: :8081
+metrics:
+  bindAddress: 127.0.0.1:8082
+enabledInstanceTypes:
+  - bm-virtual
+  - bm-icp-gaudi2
+featureFlags:
+  groupValidation: true
+cloudAccountID: "000000000001"
+instanceOperator:
+  filter:
+    labels:
+      region: "us-dev-test"
+  sshProxyTunnelCluster:
+    kubeConfigFilePath: ""
+osHttpServerUrl: http://172.0.0.1:50001
+ravenConfig:
+  environment: "test"
+  provisioningVlan: 4008
+  acceleratorNetworkDefaultVlan: 100
+  credentialsFilePath: "../testdata/raven"
+  host: "test-raven-devcloud.app.intel.com"
+networkConfig:
+  networkBackEndType: "none" # this indicates that neither Raven nor SDN will be used.
+sshConfig:
+  waitForSSHAccess: false
+  privateKeyFilePath: ../testdata/ssh_private_key
+  hostPublicKeyFilePath: local/secrets/ssh-proxy-operator/host_public_key
+  sshProxyUser: "bmo"

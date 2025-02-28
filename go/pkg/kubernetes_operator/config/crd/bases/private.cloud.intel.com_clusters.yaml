@@ -1,0 +1,848 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: clusters.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: Cluster
+    listKind: ClusterList
+    plural: clusters
+    singular: cluster
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.state
+      name: State
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Cluster is the Schema for the clusters API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterSpec defines the desired state of Cluster.
+            properties:
+              addons:
+                description: Addons specifies the list of k8s addons that will be
+                  deployed in the k8s cluster.
+                items:
+                  properties:
+                    artifact:
+                      description: Artifact specifies the url of the manifest that
+                        will be installed.
+                      type: string
+                    name:
+                      description: Name specifies the name of the provider.
+                      type: string
+                    type:
+                      description: Type specifies the provider and action to use for
+                        puting the addon into the cluster.
+                      type: string
+                  required:
+                  - artifact
+                  - name
+                  - type
+                  type: object
+                type: array
+              advancedConfig:
+                description: Advance configuration for k8s components.
+                properties:
+                  kubeApiServerArgs:
+                    description: KubeApiServerArgs specifies custom arguments for
+                      running the kube-apiserver component.
+                    type: string
+                  kubeControllerManagerArgs:
+                    description: KubeControllerManagerArgs specifies custom arguments
+                      for running the kube-controller-manager component.
+                    type: string
+                  kubeProxyArgs:
+                    description: KubeProxyArgs specifies custom arguments for running
+                      the kube-proxy component.
+                    type: string
+                  kubeSchedulerArgs:
+                    description: KubeSchedulerArgs specifies custom arguments for
+                      running the kube-scheduler component.
+                    type: string
+                  kubeletArgs:
+                    description: KubeletArgs specifies custom arguments for running
+                      the kubelet component.
+                    type: string
+                type: object
+              cloudaccountid:
+                description: Controlplane cloudaccount ID.
+                type: string
+              clusterType:
+                description: ClusterType specifies the type of the cluster created
+                  like supercompute or generalpurpose clusters.
+                type: string
+              customerCloudaccountid:
+                description: Customer cloudaccount ID.
+                type: string
+              etcdBackupConfig:
+                description: EtcdBackup specifies the configuration to take etcd backups.
+                properties:
+                  periodicity:
+                    description: Periodicity specifies how often to create backups.
+                    type: string
+                  retentionPolicy:
+                    description: RetentionPolicy specifies for how long the backups
+                      will be kept.
+                    type: string
+                  s3AccessKey:
+                    description: S3AccessKey specifies the S3 access key.
+                    type: string
+                  s3BackupFolder:
+                    description: S3BackupFolder specifies the local folder for temporary
+                      storing the backup.
+                    type: string
+                  s3BucketName:
+                    description: S3BucketName specifies the name of the bucket where
+                      backups will be stored.
+                    type: string
+                  s3ContentType:
+                    description: S3ContentType specifies the content type for putting
+                      objects into S3.
+                    type: string
+                  s3Path:
+                    description: S3Path specifies the folder within the S3 bucket
+                      where backups will be stored.
+                    type: string
+                  s3SecretKey:
+                    description: S3SecretKey specifies the S3 secret key.
+                    type: string
+                  s3URL:
+                    description: S3URL specifies the S3 URL.
+                    type: string
+                  s3UseSSL:
+                    description: S3UseSSL specifies if client connection needs to
+                      be secure.
+                    type: boolean
+                type: object
+              etcdBackupEnabled:
+                description: EtcdBackupEnabled specifies if etcd backups should be
+                  taken.
+                type: boolean
+              firewall:
+                description: Firewall sepecifies configuration for firewall.
+                items:
+                  properties:
+                    destinationIp:
+                      description: Destination ip
+                      type: string
+                    port:
+                      type: integer
+                    protocol:
+                      type: string
+                    sourceips:
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - destinationIp
+                  - port
+                  - protocol
+                  - sourceips
+                  type: object
+                type: array
+              ilbs:
+                description: Specifies the list of loadbalancers to create.
+                items:
+                  description: ILBTemplateSpec defines the loadbalancers that need
+                    to be created for the cluster.
+                  properties:
+                    description:
+                      type: string
+                    environment:
+                      type: integer
+                    ipprotocol:
+                      default: tcp
+                      type: string
+                    iptype:
+                      default: private
+                      type: string
+                    name:
+                      type: string
+                    owner:
+                      type: string
+                    persist:
+                      default: ""
+                      type: string
+                    pool:
+                      properties:
+                        description:
+                          type: string
+                        loadBalancingMode:
+                          default: least-connections-member
+                          type: string
+                        memberAdminState:
+                          default: enabled
+                          type: string
+                        memberConnectionLimit:
+                          default: 0
+                          type: integer
+                        memberPriorityGroup:
+                          default: 0
+                          type: integer
+                        memberRatio:
+                          default: 1
+                          type: integer
+                        minActiveMembers:
+                          default: 1
+                          type: integer
+                        monitor:
+                          default: i_tcp
+                          type: string
+                        name:
+                          type: string
+                        port:
+                          type: integer
+                      required:
+                      - loadBalancingMode
+                      - memberAdminState
+                      - memberConnectionLimit
+                      - memberPriorityGroup
+                      - memberRatio
+                      - minActiveMembers
+                      - monitor
+                      - name
+                      - port
+                      type: object
+                    port:
+                      type: integer
+                    usergroup:
+                      type: integer
+                  required:
+                  - environment
+                  - ipprotocol
+                  - iptype
+                  - name
+                  - owner
+                  - persist
+                  - pool
+                  - port
+                  - usergroup
+                  type: object
+                type: array
+              instanceIMI:
+                description: InstanceIMI specifies the Intel machine instance to be
+                  used for nodes creation.
+                type: string
+              instanceType:
+                description: InstanceType specifies the compute instance to be used
+                  based on CPU / Memory and Storage requirements.
+                type: string
+              kubernetesProvider:
+                description: KubernetesProvider specifies the provider to use for
+                  provisoning the cluster.
+                type: string
+              kubernetesProviderConfig:
+                additionalProperties:
+                  type: string
+                description: KubernetesProviderConfig specifies custom configuration
+                  used by the kubernetes provider.
+                type: object
+              kubernetesVersion:
+                description: KubernetesVersion specifies the version of k8s to use
+                  for installation.
+                type: string
+              network:
+                default:
+                  clusterDNS: 100.66.0.10
+                  podCIDR: 100.68.0.0/16
+                  serviceCIDR: 100.66.0.0/16
+                description: Network specifies the container network configuration
+                  for the k8s cluster.
+                properties:
+                  clusterDNS:
+                    default: 100.66.0.10
+                    description: ClusterDNS specifies the IP to use for the coredns
+                      service.
+                    type: string
+                  podCIDR:
+                    default: 100.68.0.0/16
+                    description: PodCIDR specifies the IP address range for k8s pods.
+                    type: string
+                  region:
+                    description: Region is cluster specific region
+                    type: string
+                  serviceCIDR:
+                    default: 100.66.0.0/16
+                    description: ServiceCIDR specifies the IP address range for k8s
+                      services.
+                    type: string
+                type: object
+              nodeProvider:
+                description: |-
+                  NodeProvider specifies the provider to use for provisioning the instances that will become nodes
+                  in the cluster.
+                type: string
+              nodegroups:
+                description: Nodegroups specifies a list of nodegroups.
+                items:
+                  description: NodegroupTemplateSpec defines the spec of a nodegroup.
+                  properties:
+                    annotations:
+                      additionalProperties:
+                        type: string
+                      description: Annotations specifies the annotations that must
+                        be added to the nodegroup.
+                      type: object
+                    cloudaccountid:
+                      description: Cloudaccount ID to be used for compute instances.
+                      type: string
+                    clusterType:
+                      description: ClusterType specifies the type of the cluster created
+                        like supercompute or generalpurpose clusters.
+                      type: string
+                    count:
+                      description: Count specifies the number of nodes that should
+                        exist in this node group.
+                      type: integer
+                    instanceIMI:
+                      description: InstanceIMI specifies the Intel machine instance
+                        to be used for nodes creation.
+                      type: string
+                    instanceType:
+                      description: InstanceType specifies the compute instance to
+                        be used based on CPU / Memory and Storage requirements.
+                      type: string
+                    kubernetesVersion:
+                      description: KubernetesVersion specifies the version of k8s
+                        to use for installation.
+                      type: string
+                    labels:
+                      additionalProperties:
+                        type: string
+                      description: Labels specifies node group labels.
+                      type: object
+                    name:
+                      description: Name specifies the suffix used to name the nodegroup.
+                      type: string
+                    runtime:
+                      default: Containerd
+                      description: Runtime specifies the container runtime used in
+                        worker nodes.
+                      type: string
+                    runtimeArgs:
+                      additionalProperties:
+                        type: string
+                      description: RuntimeArgs specifies custom arguments to run the
+                        container runtime.
+                      type: object
+                    sshKey:
+                      description: SSHKey specifies a list of ssh key name or id to
+                        be used during instances provisioning.
+                      items:
+                        type: string
+                      type: array
+                    taints:
+                      additionalProperties:
+                        type: string
+                      description: Taints specifies node group taints.
+                      type: object
+                    upgradeStrategy:
+                      description: UpgradeStrategy specifies the maximum number of
+                        unavailable nodes and node drain enforcement during upgrades.
+                      properties:
+                        drainBefore:
+                          description: DrainBefore specifies if containers must be
+                            moved out to other nodes before a node deletion.
+                          type: boolean
+                        maxUnavailablePercent:
+                          description: MaxUnavailable specifies the allow number nodes
+                            unavailable that the node group supports.
+                          type: integer
+                      type: object
+                    userDataURL:
+                      description: |-
+                        This is an url to a bash script that will be downloaded and executed with cloud init
+                        during node provisioning.
+                      type: string
+                    vnets:
+                      description: Virtual net configuration for compute instances.
+                      items:
+                        properties:
+                          availabilityzone:
+                            type: string
+                          networkvnet:
+                            type: string
+                        required:
+                        - availabilityzone
+                        - networkvnet
+                        type: object
+                      type: array
+                  required:
+                  - cloudaccountid
+                  - clusterType
+                  - count
+                  - instanceIMI
+                  - instanceType
+                  - name
+                  - vnets
+                  type: object
+                type: array
+              runtime:
+                default: Containerd
+                description: Runtime specifies the container runtime used in worker
+                  nodes.
+                type: string
+              runtimeArgs:
+                additionalProperties:
+                  type: string
+                description: RuntimeArgs specifies custom arguments to run the container
+                  runtime.
+                type: object
+              sshKey:
+                description: SSHKey specifies a list of ssh key name or id to be used
+                  during instances provisioning.
+                items:
+                  type: string
+                type: array
+              storage:
+                description: |-
+                  Storage specifies the list of storage providers that need to be
+                  configured in the cluster.
+                items:
+                  description: Storage specifies the configuration for the storage
+                    provider.
+                  properties:
+                    mode:
+                      default: udp
+                      description: Weka mode to use for registering nodes.
+                      type: string
+                    numCores:
+                      default: 1
+                      description: Number of cores used to register nodes.
+                      format: int32
+                      type: integer
+                    provider:
+                      description: Provider specifies the storage provider to use
+                        for the cluster.
+                      type: string
+                    size:
+                      description: Size of the storage to be requested for the cluster.
+                      type: string
+                  type: object
+                type: array
+              vnets:
+                description: Virtual net configuration for compute instances.
+                items:
+                  properties:
+                    availabilityzone:
+                      type: string
+                    networkvnet:
+                      type: string
+                  required:
+                  - availabilityzone
+                  - networkvnet
+                  type: object
+                type: array
+            required:
+            - cloudaccountid
+            - instanceIMI
+            - instanceType
+            - kubernetesProvider
+            - kubernetesVersion
+            - nodeProvider
+            - vnets
+            type: object
+          status:
+            description: ClusterStatus defines the observed state of Cluster
+            properties:
+              addons:
+                description: List of addons.
+                items:
+                  description: AddonStatus defines the observed state of Addon
+                  properties:
+                    artifact:
+                      description: Artifact is the last url used to download and install
+                        the manifest.
+                      type: string
+                    lastUpdate:
+                      description: LastUpdate specifies when the state of the addon
+                        last updated.
+                      format: date-time
+                      type: string
+                    message:
+                      description: Message is a more verbose description of the current
+                        state.
+                      type: string
+                    name:
+                      description: Name specifies the name of the addon.
+                      type: string
+                    reason:
+                      description: Reason is a description of the current state.
+                      type: string
+                    state:
+                      description: State of the addon, one of Active, Updating, Error,
+                        Deleting.
+                      type: string
+                  required:
+                  - artifact
+                  - name
+                  - state
+                  type: object
+                type: array
+              firewall:
+                description: List of source ips.
+                items:
+                  description: Source ips status
+                  properties:
+                    destinationIp:
+                      type: string
+                    firewallrulestatus:
+                      description: FirewallRuleStatus defines the observed state of
+                        FirewallRule
+                      properties:
+                        conditions:
+                          items:
+                            description: Condition contains details for one aspect
+                              of the current state of this API Resource.
+                            properties:
+                              lastTransitionTime:
+                                description: |-
+                                  lastTransitionTime is the last time the condition transitioned from one status to another.
+                                  This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                                format: date-time
+                                type: string
+                              message:
+                                description: |-
+                                  message is a human readable message indicating details about the transition.
+                                  This may be an empty string.
+                                maxLength: 32768
+                                type: string
+                              observedGeneration:
+                                description: |-
+                                  observedGeneration represents the .metadata.generation that the condition was set based upon.
+                                  For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                                  with respect to the current state of the instance.
+                                format: int64
+                                minimum: 0
+                                type: integer
+                              reason:
+                                description: |-
+                                  reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                                  Producers of specific condition types may define expected values and meanings for this field,
+                                  and whether the values are considered a guaranteed API.
+                                  The value should be a CamelCase string.
+                                  This field may not be empty.
+                                maxLength: 1024
+                                minLength: 1
+                                pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                                type: string
+                              status:
+                                description: status of the condition, one of True,
+                                  False, Unknown.
+                                enum:
+                                - "True"
+                                - "False"
+                                - Unknown
+                                type: string
+                              type:
+                                description: type of condition in CamelCase or in
+                                  foo.example.com/CamelCase.
+                                maxLength: 316
+                                pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                                type: string
+                            required:
+                            - lastTransitionTime
+                            - message
+                            - reason
+                            - status
+                            - type
+                            type: object
+                          maxItems: 8
+                          minItems: 1
+                          type: array
+                          x-kubernetes-list-map-keys:
+                          - type
+                          x-kubernetes-list-type: map
+                        message:
+                          type: string
+                        state:
+                          type: string
+                      required:
+                      - message
+                      - state
+                      type: object
+                    port:
+                      type: integer
+                    protocol:
+                      type: string
+                    sourceips:
+                      items:
+                        type: string
+                      type: array
+                  type: object
+                type: array
+              ilbs:
+                description: List of loadbalancers.
+                items:
+                  description: IlbStatus defines the observed state of Ilb
+                  properties:
+                    conditions:
+                      properties:
+                        poolCreated:
+                          type: boolean
+                        vipCreated:
+                          type: boolean
+                        vipPoolLinked:
+                          type: boolean
+                      required:
+                      - poolCreated
+                      - vipCreated
+                      - vipPoolLinked
+                      type: object
+                    message:
+                      type: string
+                    name:
+                      description: define observed state of cluster
+                      type: string
+                    poolID:
+                      type: integer
+                    state:
+                      type: string
+                    vip:
+                      type: string
+                    vipID:
+                      type: integer
+                  required:
+                  - conditions
+                  - message
+                  - name
+                  - poolID
+                  - state
+                  - vip
+                  - vipID
+                  type: object
+                type: array
+              lastUpdate:
+                description: LastUpdate specifies when the state of the cluster last
+                  updated.
+                format: date-time
+                type: string
+              message:
+                description: Message is a more verbose description of the current
+                  state.
+                type: string
+              nodegroups:
+                description: List of nodegroups and nodes.
+                items:
+                  description: NodegroupStatus defines the observed state of Nodegroup
+                  properties:
+                    count:
+                      description: Count holds the current number of nodes in the
+                        nodegroup.
+                      type: integer
+                    message:
+                      description: Message is a more verbose description of the current
+                        state.
+                      type: string
+                    name:
+                      description: Name holds the name of the nodegroup.
+                      type: string
+                    nodes:
+                      description: Nodes holds the status of the nodes.
+                      items:
+                        properties:
+                          autoRepairDisabled:
+                            description: AutoRepairDisabled specifies if node needs
+                              to be autorepaired or not.
+                            type: boolean
+                          creationTime:
+                            description: CreationTime specfies the time where machine
+                              became a kubernetes node.
+                            format: date-time
+                            type: string
+                          dnsName:
+                            description: Domain name of the instance.
+                            type: string
+                          gateway:
+                            description: Specifies the gateway of the node.
+                            type: string
+                          instanceIMI:
+                            description: InstanceIMI specifies the Intel machine instance
+                              used for creating the node.
+                            type: string
+                          ipAddress:
+                            description: IpAddress holds the ip address of the node.
+                            type: string
+                          kubeProxyVersion:
+                            description: Kube-proxy version running on the node.
+                            type: string
+                          kubeletVersion:
+                            description: Kubelet version running on the node.
+                            type: string
+                          lastUpdate:
+                            description: LastUpdate specifies when the state of the
+                              node last updated.
+                            format: date-time
+                            type: string
+                          message:
+                            description: Message is a more verbose description of
+                              the current state.
+                            type: string
+                          name:
+                            description: Name holds the hostname of the node.
+                            type: string
+                          netmask:
+                            description: Specifies the netmask of the node.
+                            format: int32
+                            type: integer
+                          reason:
+                            description: Reason is a description of the current state.
+                            type: string
+                          state:
+                            description: State of the node, one of active, updating,
+                              error, deleting.
+                            type: string
+                          storageBackendGateway:
+                            description: StorageBackendGateway holds the gateway of
+                              the storage backend node.
+                            type: string
+                          storageBackendIP:
+                            description: StorageBackendIP holds the ip address of
+                              the storage backend node.
+                            type: string
+                          storageBackendSubnet:
+                            description: StorageBackendSubnet holds the subnet of
+                              the storage backend node.
+                            type: string
+                          subnet:
+                            description: Specifies the subnet of the node.
+                            type: string
+                          unschedulable:
+                            description: Unschedulable specifies if node can be used
+                              to schedule pods.
+                            type: boolean
+                          wekaStorage:
+                            description: Specifies the status of the weka registration
+                              action for the node.
+                            properties:
+                              clientId:
+                                description: The weka client id used to identify registered
+                                  node.
+                                type: string
+                              customStatus:
+                                description: The custom registration status.
+                                type: string
+                              message:
+                                description: The registration message.
+                                type: string
+                              status:
+                                description: The registration status.
+                                type: string
+                            type: object
+                        required:
+                        - state
+                        type: object
+                      type: array
+                    reason:
+                      description: Reason is a description of the current state.
+                      type: string
+                    state:
+                      description: State of the nodegroup, one of active, updating,
+                        error, deleting.
+                      type: string
+                    type:
+                      description: NodegroupType holds the type of nodegroup, one
+                        of controlplane or worker.
+                      type: string
+                  type: object
+                type: array
+              reason:
+                description: Reason is a description of the current state.
+                type: string
+              state:
+                description: State of the cluster, one of Active, Updating, Deleting
+                  or Error.
+                type: string
+              storage:
+                description: List of storage providers.
+                items:
+                  properties:
+                    activeAt:
+                      description: |-
+                        ActiveAt specifies the time when the storage was created and seen as Active for the first time.
+                        This is used to avoid the recreation of the storage if it was Active once.
+                      format: date-time
+                      type: string
+                    clusterId:
+                      description: ClusterId is the id of the weka cluster.
+                      type: string
+                    createdAt:
+                      description: CreatedAt specifies the time when the storage was
+                        created.
+                      format: date-time
+                      type: string
+                    lastUpdate:
+                      description: LastUpdate specifies when the state of the storage
+                        last updated.
+                      format: date-time
+                      type: string
+                    message:
+                      description: Message is a more verbose description of the current
+                        state.
+                      type: string
+                    namespaceCreated:
+                      description: NamespaceCreated specifies if the storage has been
+                        created.
+                      type: boolean
+                    namespaceName:
+                      description: NamespaceName specifies the namespace where the
+                        storage is created.
+                      type: string
+                    namespaceState:
+                      description: NamespaceState specifies the state of the created
+                        storage.
+                      type: string
+                    provider:
+                      description: Provider specifies the storage provider to use
+                        for the cluster.
+                      type: string
+                    reason:
+                      description: Reason is a description of the current state.
+                      type: string
+                    secretCreated:
+                      description: Specifies if the storage class secret has been
+                        created in the downstream cluster.
+                      type: boolean
+                    size:
+                      description: Size of the storage to be requested for the cluster.
+                      type: string
+                    state:
+                      description: General state of the storage, one of Active, Updating,
+                        deleting or Error.
+                      type: string
+                  type: object
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

@@ -1,0 +1,49 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "runtime",
+    srcs = [
+        "framework.go",
+        "metrics_recorder.go",
+        "registry.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/framework/runtime",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/parallelize",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/feature",
+        "//go/pkg/instance_scheduler/vm/metrics",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/json",
+        "@io_k8s_apimachinery//pkg/util/sets",
+        "@io_k8s_component_base//metrics",
+        "@io_k8s_sigs_yaml//:yaml",
+    ],
+)
+
+go_test(
+    name = "runtime_test",
+    srcs = [
+        "framework_test.go",
+        "registry_test.go",
+    ],
+    embed = [":runtime"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/metrics",
+        "@com_github_google_go_cmp//cmp",
+        "@com_github_google_uuid//:uuid",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_component_base//metrics/testutil",
+    ],
+)

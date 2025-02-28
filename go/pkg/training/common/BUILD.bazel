@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "common",
+    srcs = ["sshkeypair_generator.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/training/common",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@org_golang_x_crypto//ssh",
+    ],
+)

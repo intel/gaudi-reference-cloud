@@ -1,0 +1,23 @@
+---
+# Build Docker Image on master node
+
+- name: Build docker images - build_image role
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - "vars/common.yml"
+  roles:
+    - role: build_image
+      tags: ["build_image"]
+
+
+# Load Docker Images and Launch Docker Containers on all nodes
+
+- name: Load docker images - load_image role
+  hosts: hosts
+  gather_facts: false
+  vars_files:
+    - "vars/common.yml"
+  roles:
+    - role: load_image
+      tags: ["load_image"]

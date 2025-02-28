@@ -1,0 +1,77 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "idc-common.fullname" . }}-manager-role
+  labels:
+  {{- include "idc-common.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - loadbalancers
+  verbs:
+  - create
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - instances
+  verbs:
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - firewallrules
+  verbs:
+  - create
+  - get
+  - list
+  - update
+  - delete
+  - watch
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - loadbalancers/finalizers
+  - firewallrules/finalizers
+  - instances/finalizers
+  verbs:
+  - update
+  - create
+  - delete
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - loadbalancers/status
+  - firewallrules/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "idc-common.fullname" . }}-manager-rolebinding
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: loadbalancer
+    app.kubernetes.io/part-of: loadbalancer
+  {{- include "idc-common.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: '{{ include "idc-common.fullname" . }}-manager-role'
+subjects:
+- kind: ServiceAccount
+  name: '{{ include "idc-common.fullname" . }}'
+  namespace: '{{ .Release.Namespace }}'

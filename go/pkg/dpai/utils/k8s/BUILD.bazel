@@ -1,0 +1,43 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "k8s",
+    srcs = [
+        "az.go",
+        "deployments.go",
+        "iks.go",
+        "istio.go",
+        "main.go",
+        "namespace.go",
+        "pod.go",
+        "secrets.go",
+        "storage_classes.go",
+        "vhosts.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/dpai/utils/k8s",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/dpai/config",
+        "//go/pkg/dpai/db/models",
+        "//go/pkg/grpcutil",
+        "//go/pkg/pb",
+        "@com_github_jackc_pgx_v5//pgtype",
+        "@io_istio_api//networking/v1alpha3",
+        "@io_istio_client_go//pkg/apis/networking/v1alpha3",
+        "@io_istio_client_go//pkg/clientset/versioned",
+        "@io_k8s_api//apps/v1:apps",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//tools/clientcmd",
+        "@io_k8s_client_go//tools/remotecommand",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)

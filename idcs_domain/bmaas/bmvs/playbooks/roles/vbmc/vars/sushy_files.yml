@@ -1,0 +1,4 @@
+---
+
+sushy_conf_file: "{{ sushy_conf_dir }}sushy-gh-{{ vmnum }}-emulator.conf"
+sushy_log_file: "{{ sushy_log_dir }}sushy-gh-{{ vmnum }}-emulator.log"

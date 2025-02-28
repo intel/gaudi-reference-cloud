@@ -1,0 +1,24 @@
+slurm_config:
+  SlurmctldHost: "{{ SlurmctldHost }}"
+  SlurmctldLogFile: "/var/log/slurm/slurmctld.log"
+  SlurmctldPidFile: "/var/run/slurm/slurmctld.pid"
+  StateSaveLocation: "/var/lib/slurm/slurmctld"
+  SlurmdLogFile: "/var/log/slurm/slurmd.log"
+  SlurmdPidFile: "/var/run/slurm/slurmd.pid"
+  SlurmdSpoolDir: "/var/lib/slurm/slurmd"
+slurm_create_dirs: true
+slurm_create_user: true
+slurm_config_dir: "/etc/slurm"
+slurm_nodes:
+  - name: "{{ SlurmNodeNames }}"
+    Sockets: 1
+    CoresPerSocket: 4
+    ThreadsPerCore: 1
+slurm_user:
+  comment: "Slurm Workload Manager"
+  gid: 888
+  group: "slurm"
+  home: "/var/lib/slurm"
+  name: "slurm"
+  shell: "/usr/sbin/nologin"
+  uid: 888

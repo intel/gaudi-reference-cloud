@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: vault-connection
+spec:
+  address: https://internal-placeholder.com
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-auth
+spec:
+  vaultConnectionRef: vault-connection
+  method: kubernetes
+  mount: cluster-auth
+  kubernetes:
+    role: us-region-3-storage-controller-role
+    serviceAccount: storage-controller
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: storage-controller

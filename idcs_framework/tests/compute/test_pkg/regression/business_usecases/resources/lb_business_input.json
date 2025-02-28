@@ -1,0 +1,160 @@
+{
+    "instanceTypeToBeCreated": "vm-spr-tny",
+    "machineImageToBeUsed": "ubuntu-2204-jammy-v20240308",
+    "lbMonitorType": ["tcp", "http", "https"],
+    "vmInstancePayload": {
+        "metadata": {
+            "name": "<<instance-name>>"
+          },
+          "spec": {
+            "availabilityZone": "<<availability-zone>>",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+              "<<ssh-key-name>>"
+            ],
+            "interfaces": [
+              {
+                "name": "eth0",
+                "vNet": "<<vnet-name>>"
+              }
+            ]
+          }
+    },
+    "lbInstancePayload": { 
+        "metadata": { 
+            "name": "<<lb-name>>", 
+            "cloudAccount": "<<cloud-account>>"
+        }, 
+        "spec": { 
+            "listeners": [ 
+                { 
+                    "port": "<<listener-port>>", 
+                    "pool": { 
+                        "port": "8080", 
+                        "monitor": "<<monitor-type>>", 
+                        "loadBalancingMode": "roundRobin", 
+                        "instanceResourceIds": [ 
+                            "<<instance-resource-id>>" 
+                        ] 
+                    } 
+                }
+            ], 
+            "security": { 
+                "sourceips": [ 
+                    "<<source-ips>>"
+                ] 
+            } 
+        } 
+    },
+    "lbMultiListenerInstancePayload": { 
+        "metadata": { 
+            "name": "<<lb-name>>", 
+            "cloudAccount": "<<cloud-account>>"
+        }, 
+        "spec": { 
+            "listeners": [ 
+                { 
+                    "port": "<<listener-port1>>", 
+                    "pool": { 
+                        "port": "8080", 
+                        "monitor": "<<monitor-type>>", 
+                        "loadBalancingMode": "roundRobin", 
+                        "instanceResourceIds": [ 
+                            "<<instance-resource-id>>" 
+                        ] 
+                    } 
+                },
+                { 
+                    "port": "<<listener-port2>>", 
+                    "pool": { 
+                        "port": "8080", 
+                        "monitor": "<<monitor-type>>", 
+                        "loadBalancingMode": "roundRobin", 
+                        "instanceResourceIds": [ 
+                            "<<instance-resource-id>>" 
+                        ] 
+                    } 
+                }
+            ], 
+            "security": { 
+                "sourceips": [ 
+                    "<<source-ips>>"
+                ] 
+            } 
+        } 
+    },
+    "vmWithLabelsPayload": {
+        "metadata": {
+            "name": "<<instance-name>>",
+            "labels":{
+                "automationkey1": "automationvalue1",
+                "automationkey2": "automationvalue2"
+            }
+          },
+          "spec": {
+            "availabilityZone": "<<availability-zone>>",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+              "<<ssh-key-name>>"
+            ],
+            "interfaces": [
+              {
+                "name": "eth0",
+                "vNet": "<<vnet-name>>"
+              }
+            ]
+          }
+    },
+    "lbWithSelectorPayload": {
+        "metadata": { 
+            "name": "<<lb-name>>", 
+            "cloudAccount": "<<cloud-account>>"
+        }, 
+        "spec": { 
+            "listeners": [ 
+                { 
+                    "port": "<<listener-port>>", 
+                    "pool": { 
+                        "port": "8080", 
+                        "monitor": "<<monitor-type>>", 
+                        "loadBalancingMode": "roundRobin", 
+                        "instanceSelectors": {
+                            "automationkey1": "automationvalue1",
+                            "automationkey2": "automationvalue2"
+                        }
+                    } 
+                }
+            ], 
+            "security": { 
+                "sourceips": [ 
+                    "<<source-ips>>"
+                ] 
+            } 
+        }
+    },
+    "lbPutTypePayload":{
+        "spec": { 
+            "listeners": [ 
+                { 
+                    "port": "<<listener-port>>", 
+                    "pool": { 
+                        "port": "8080", 
+                        "monitor": "<<monitor-type>>", 
+                        "instanceResourceIds": [ 
+                            "<<instance-resource-id>>" 
+                        ] 
+                    } 
+                }
+            ],
+            "security": { 
+                "sourceips": [ 
+                    "<<source-ip>>"
+                ] 
+            } 
+        } 
+    }
+}

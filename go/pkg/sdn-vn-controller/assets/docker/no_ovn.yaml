@@ -1,0 +1,45 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+services:
+  local-psql:
+    image:
+      amr-idc-registry-pre.infra-host.com/idc-networking/sdnv2_dev/local-psql:latest
+    build: 
+      context: ../..
+      dockerfile: ./assets/docker/Dockerfile.psql
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: sdncontroller
+      POSTGRES_DB: sdncontroller
+      POSTGRES_PASSWORD: foo
+    command: >
+      -c ssl=on 
+      -c ssl_cert_file=/var/lib/postgresql/server.crt 
+      -c ssl_key_file=/var/lib/postgresql/server.key 
+      -c ssl_ca_file=/var/lib/postgresql/ca.crt
+      -c hba_file=/etc/pg_hba.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sdncontroller -d sdncontroller"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  local-sdncontroller:
+    image:
+      amr-idc-registry-pre.infra-host.com/idc-networking/sdnv2_dev/local-sdncontroller:latest
+    build:
+      context: ../..
+      dockerfile: ./assets/docker/Dockerfile.sdncontroller
+      args:
+        CONFIG_FILE: no_ssl.yaml
+    ports:
+      - "127.0.0.1:50051:50051"
+    environment:
+      OVN_IP: ${OVN_IP:-docker-local-ovn-1}
+      DB_IP: ${DB_IP:-docker-local-psql-1}
+    depends_on:
+      local-psql:
+        condition: service_healthy
+        restart: true

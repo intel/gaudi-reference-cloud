@@ -1,0 +1,4 @@
+region: us-dev-1
+availabilityZone: us-dev-1a
+subnet: 172.16.0.0/22
+vlanId: 1

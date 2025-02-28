@@ -1,0 +1,12 @@
+.auth-mfa-setup-template {
+  #api .intro p,
+  #cancel,
+  .helpLink.tiny,
+  .verifying-modal,
+  .AuthenticatorAppIconControl.authenticatorAppIconControl_li,
+  .Paragraph.QrCodeScanInstruction_li,
+  #totpQrCodeControl_label,
+  #totpQrCodeControl_info_message {
+    display: none;
+  }
+}

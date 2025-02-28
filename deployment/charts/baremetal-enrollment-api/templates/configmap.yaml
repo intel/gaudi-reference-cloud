@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ include "baremetal-enrollment-api.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  name: {{ include "baremetal-enrollment-api.fullname" . }}
+data:
+  config.json: |
+    {
+      "computeApiServerAddr": {{ .Values.apiServer.config.computeApiServerAddr | quote }},
+      "jobplaybookimage": {{ print .Values.apiServer.image.repository ":" .Values.apiServer.image.tag | quote }},
+      "jobbackofflimit": {{ .Values.apiServer.config.backoffLimit }},
+      "provisioningDuration": {{ .Values.apiServer.config.provisioningDuration }},
+      "deprovisioningDuration": {{ .Values.apiServer.config.deprovisioningDuration }},
+      "jobCleanupDelay": {{ .Values.apiServer.config.jobCleanupDelay }},
+      "vaultAddress": {{ .Values.apiServer.config.vaultAddress | quote }},
+      "vaultAuthPath": {{ .Values.apiServer.config.vaultAuthPath | quote }},
+      "vaultApproleSecretsPath": {{ .Values.apiServer.config.vaultApproleSecretsPath | quote }},
+      "vaultAuthRole": {{ .Values.apiServer.config.vaultAuthRole | quote }},
+      "secretCaPemPath": {{ .Values.apiServer.config.secretCaPemPath | quote }},
+      "secretCertKeyPemPath": {{ .Values.apiServer.config.secretCertKeyPemPath | quote }},
+      "netboxAddress": {{ .Values.apiServer.config.netboxAddress | quote }},
+      "netboxSkipTlsVerify": {{ .Values.apiServer.config.netboxSkipTlsVerify }},
+      "dhcpProxy": {
+        "enabled": {{ .Values.apiServer.config.dhcpProxy.enabled }},
+        "url": {{ .Values.apiServer.config.dhcpProxy.url | quote }}
+      },
+      "menAndMice": {
+        "enabled": {{ .Values.apiServer.config.menAndMice.enabled }},
+        "url": {{ .Values.apiServer.config.menAndMice.url | quote }},
+        "tftpServerIp": {{ .Values.apiServer.config.menAndMice.tftpServerIp | quote }},
+        "serverAddress": {{ .Values.apiServer.config.menAndMice.serverAddress | quote }},
+        "insecureSkipVerify": {{ .Values.apiServer.config.menAndMice.insecureSkipVerify }}
+      },
+      "enrollmentRegion": {{ .Values.apiServer.config.enrollmentRegion | quote }},
+      {{- if eq (len .Values.apiServer.imagePullSecrets) 0 }}
+      "imagePullSecrets": []
+      {{- else }}
+      {{- with .Values.apiServer.imagePullSecrets }}
+      "imagePullSecrets":
+        {{- toJson . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+    }

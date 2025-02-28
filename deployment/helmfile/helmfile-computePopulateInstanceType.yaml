@@ -1,0 +1,71 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- $kind := "InstanceType" }}
+{{- $dirConfigPath := "computeApiServer.dirInstanceType" }}
+{{- $dirDefault := "../../go/pkg/compute_api_server/testdata/InstanceType" }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-populate-") }}{{ $kind | kebabcase }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: computePopulate{{ $kind }}
+      service: compute
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: {{ $region.region }}-populate-{{ $kind | kebabcase }}
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/git-to-grpc-synchronizer
+    version: {{ readFile (print $helmChartVersionsDir "/git-to-grpc-synchronizer.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}git-to-grpc-synchronizer@sha256"
+      - kind: {{ $kind | quote }}
+      - target: {{ $computeApiServerAddr | quote }}
+      # sourceMap will be a map from filename to YAML file contents, generated from files in dirConfigPath.
+      - sourceMap:
+          {{- range $index, $filename := readDir ($region | get $dirConfigPath $dirDefault) }}
+          {{- $basename := splitList "/" $filename | last }}
+          {{- $regex := "^[-._a-zA-Z0-9]+$" }}
+          {{- if not (mustRegexMatch $regex $basename) }}
+            {{- fail (print "last element of " $filename " must match the regex `" $regex "`.") }}
+          {{- end }}
+          {{ $basename }}: {{ readFile $filename | quote }}
+          {{- end }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - ttlSecondsAfterFinished: {{ $region.gitToGrpcSynchronizer.ttlSecondsAfterFinished }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+{{- end }}
+{{- end }}

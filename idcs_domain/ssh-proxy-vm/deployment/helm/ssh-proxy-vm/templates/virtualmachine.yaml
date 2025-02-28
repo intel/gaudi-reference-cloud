@@ -1,0 +1,70 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  annotations:
+    field.cattle.io/description: SSH proxy and NAT
+    harvesterhci.io/vmRunStrategy: RerunOnFailure
+    harvesterhci.io/volumeClaimTemplates: '[{"metadata":{"name":"{{ $.Release.Name }}-disk-0","annotations":{"harvesterhci.io/imageId":"{{ $.Values.image.namespace }}/{{ $.Values.image.id }}"}},"spec":{"accessModes":["ReadWriteMany"],"resources":{"requests":{"storage":"10Gi"}},"volumeMode":"Block","storageClassName":"longhorn-{{ .Values.image.id }}"}}]'
+  labels:
+    harvesterhci.io/creator: harvester
+    harvesterhci.io/os: otherLinux
+  name: "{{ $.Release.Name }}"
+spec:
+  runStrategy: RerunOnFailure
+  template:
+    metadata:
+      labels:
+        harvesterhci.io/vmName: "{{ $.Release.Name }}"
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - bootOrder: 1
+            disk:
+              bus: virtio
+            name: disk-0
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+          inputs:
+          - bus: usb
+            name: tablet
+            type: tablet
+          interfaces:
+          - bridge: {}
+            model: virtio
+            name: default
+        features:
+          acpi:
+            enabled: true
+        machine:
+          type: q35
+        memory:
+          guest: 3996Mi
+        resources:
+          limits:
+            cpu: "1"
+            memory: 4Gi
+          requests:
+            cpu: "1"
+            memory: 4Gi
+      evictionStrategy: LiveMigrate
+      hostname: "{{ $.Release.Name }}"
+      networks:
+      - multus:
+          networkName: "{{ $.Values.network.namespace }}/{{ $.Values.network.name }}"
+        name: default
+      volumes:
+      - name: disk-0
+        persistentVolumeClaim:
+          claimName: "{{ $.Release.Name }}-disk-0"
+      - cloudInitNoCloud:
+          networkDataSecretRef:
+            name: "{{ $.Release.Name }}"
+          secretRef:
+            name: "{{ $.Release.Name }}"
+        name: cloudinitdisk

@@ -1,0 +1,40 @@
+@use "sass:map";
+
+.footer {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ align-self: stretch;
+ background: var(--footer-bg);
+ color: var(--footer-color);
+ border-top: 1px solid var(--footer-border-color);
+ @extend .py-s4; 
+}
+
+.footer:not(.learningBarMargingEnd):not(.sideNavBarMargingStart) {
+  @extend .px-s6;
+}
+
+.footer .additional-links {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-left: map.get($spacers, "s7");
+    gap: map.get($spacers, "s7");
+}
+
+.footer a,
+.footer a:not([class*="nav"]):not([class*="btn"]):not([class*="dropdown"]) {
+  text-align: left;
+  color: var(--footer-color);
+  text-decoration: none;
+  font-family: "IntelOne Text", "tahoma", Helvetica, "helvetica", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 150%;
+  box-shadow: none;
+  @extend .py-s0;
+  @extend .px-s0;
+}

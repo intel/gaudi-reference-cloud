@@ -1,0 +1,223 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        #  TODO: Will move it to the common template for both grpc and product catalogue
+        vault.hashicorp.com/agent-inject-secret-gts_username: "{{ .Values.gts.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-gts_username: |-
+          {{`{{- with secret `}}"{{ .Values.gts.vaultCredentialsPath }}"{{` -}}`}}
+          {{`{{ .Data.data.username }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-gts_password: "{{ .Values.gts.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-gts_password: |-
+          {{`{{- with secret `}}"{{ .Values.gts.vaultCredentialsPath }}"{{` -}}`}}
+          {{`{{ .Data.data.password }}`}}
+          {{`{{- end }}`}}
+        {{- if .Values.cognito.enabled }}
+        {{- include "idc-common.vaultCognitoAnnotations" . | nindent 8 }}
+        {{- end }}
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        {{- if eq .Values.envoy.config.suffix "-appclient" }}
+        checksum/configmap-appclient: {{ include (print $.Template.BasePath "/configmap-appclient.yaml") . | sha256sum }}
+        {{- else }}
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- end }}
+        checksum/configmap-authzuser: {{ include (print $.Template.BasePath "/configmap-authzuser.yaml") . | sha256sum }}
+        checksum/configmap-pb: {{ include (print $.Template.BasePath "/configmap-pb.yaml") . | sha256sum }}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+      - name: envoy
+        image: {{ .Values.envoy.image.repository }}:{{ .Values.envoy.image.tag }}
+        ports:
+          {{- include "idc-common.grpcPorts" . | nindent 10}}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/envoy
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65534
+          runAsGroup: 65534
+# TODO: readinessProbe doesn't work with istio
+#        readinessProbe:
+#          httpGet:
+#            port: {{ include "idc-common.listenPort" . }}
+#            httpHeaders:
+#            - name: x-envoy-livenessprobe
+#              value: healthz
+#            path: /healthz
+#            scheme: HTTP
+{{- if .Values.opa.enabled }}
+      - name: opa-envoy
+        image: {{ include "idc-common.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          runAsUser: 1111
+        volumeMounts:
+        - readOnly: true
+          mountPath: /config
+          name: opa-envoy-config
+        - readOnly: true
+          name: pb
+          mountPath: /pb
+        - readOnly: true
+          name: authz-external
+          mountPath: /authz/external
+        - readOnly: true
+          name: authz-appclient
+          mountPath: /authz/appclient
+        - readOnly: true
+          name: authz-internal
+          mountPath: /authz/internal
+        env:
+        {{- include "idc-common.otelEnv" . | nindent 8 }}
+        {{- include "idc-common.proxyEnv" . | nindent 8 }}
+        {{- include "idc-common.commonEnv" . | nindent 8 }}
+        {{- include "idc-common.gtsEnv" . | nindent 8 }}
+        - name: usernameFile
+          value: {{ .Values.gts.usernameFile }}
+        - name: passwordFile
+          value: {{ .Values.gts.passwordFile }}
+        {{- include "idc-common.cognitoEnv" . | nindent 8 }}
+        - name: CLOUDACCOUNT_ADDR
+          value: {{ .Values.cloudAccountAddr | quote }}
+        - name: PRODUCTCATALOG_ADDR
+          value: {{ .Values.productCatalogAddr | quote }}
+        - name: AUTHZ_ENABLED
+          value: {{ .Values.authz.enabled | quote }}
+        - name: AUTHZ_ADDR
+          value: {{ .Values.authzAddr | quote }}
+        args:
+          {{- include "idc-common.logArgs" . | nindent 10 }}
+          - "run"
+          - "--server"
+          - "--config-file=/config/config.yaml"
+          - "--addr=localhost:{{ .Values.opa.port }}"
+          - "--diagnostic-addr=0.0.0.0:{{ .Values.opa.healthPort }}"
+          - "--log-level=error"
+          - "--log-format=json"
+          - "--ignore=.*"
+          - "{{ .Values.opa.files }}"
+        livenessProbe:
+          httpGet:
+            path: /health?plugins
+            scheme: HTTP
+            port: {{ .Values.opa.healthPort }} 
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health?plugins
+            scheme: HTTP
+            port: {{ .Values.opa.healthPort }} 
+          initialDelaySeconds: 5
+          periodSeconds: 5
+{{- end }}          
+{{- if .Values.statsd.enabled }}
+      - args:
+        - --statsd.mapping-config=/etc/prometheus-statsd-exporter/statsd-mapping.conf
+        image: {{ .Values.statsd.image.repository }}:{{ .Values.statsd.image.tag }}
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /metrics
+            port: metrics
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: prometheus-statsd-exporter
+        ports:
+        - containerPort: 9102
+          name: metrics
+          protocol: TCP
+        - containerPort: 9125
+          name: statsd-tcp
+          protocol: TCP
+        - containerPort: 9125
+          name: statsd-udp
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /etc/prometheus-statsd-exporter
+          name: statsd-mapping-config
+{{- end }}
+     # TODO:  OPAL remove policies from the store that are not in the bundle
+     #  will update once this PR goes in https://github.com/permitio/opal/pull/414/files 
+      # - name: opal-client
+      #   image: {{ .Values.opalclient.imageRegistry }}/{{ .Values.opalclient.repository }}:{{ .Values.opalclient.tag }}
+      #   imagePullPolicy: {{ .Values.opalclient.pullPolicy }}
+      #   env:
+      #     - name: OPAL_POLICY_STORE_URL
+      #       value: http://localhost:{{ .Values.opa.port }}  
+      #     - name: OPAL_SERVER_URL
+      #       value: http://idcs-opal-server.opal-server.svc.cluster.local:7002
+      #     - name: OPAL_LOG_MODULE_EXCLUDE_LIST
+      #       value: "[]"
+      #   ports:
+      #     - name: http
+      #       protocol: TCP
+      #       containerPort: {{ .Values.opalclient.port }}  
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "idc-common.fullname" . }}{{ .Values.envoy.config.suffix }}
+{{- if .Values.opa.enabled }}          
+      - name: opa-envoy-config
+        configMap:
+           name: {{ include "idc-common.fullname" . }}-opa-envoy-config
+      - name: authz-internal
+        projected:
+          sources:
+            - configMap:
+                name: {{ include "idc-common.fullname" . }}-authzservice
+            - configMap:
+                name: {{ include "idc-common.fullname" . }}-authzlogs
+      - name: authz-external
+        projected:
+          sources:
+            - configMap:
+                name: {{ include "idc-common.fullname" . }}-authzuser
+            - configMap:
+                name: {{ include "idc-common.fullname" . }}-authzlogs
+      - name: authz-appclient
+        projected:
+          sources:
+            - configMap:
+                name: {{ include "idc-common.fullname" . }}-authzappclient
+      - name: pb
+        configMap:
+          name: {{ include "idc-common.fullname" . }}-pb
+{{- end }}           
+{{- if .Values.statsd.enabled }}
+      - name: statsd-mapping-config
+        configMap:
+          name: {{ include "idc-common.fullname" . }}-prometheus-statsd-exporter
+          defaultMode: 420
+          items:
+          - key: statsd.mappingConf
+            path: statsd-mapping.conf
+{{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

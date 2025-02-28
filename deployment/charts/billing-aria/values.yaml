@@ -1,0 +1,81 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/billing-aria
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+# sync every four hours
+syncInterval: 14400
+# report usage every hour
+usageInterval: 360
+clientIdPrefix: idc
+#Default client plan id
+clientPlanId: "master"
+# Default client Account Group Id
+clientAcctGroupId: "Chase"
+acctPlanActiveInterval: 14400
+enterpriseAcctLinkSchedulerInterval: 14400
+paidServicesDeactivationControllerInterval: 14400
+premiumDefaultCreditAmount: 2500
+premiumDefaultCreditExpirationDays: 31
+entDefaultCreditAmount: 2500
+entDefaultCreditExpirationDays: 31
+instanceSearchWindow: 2
+reportUsageSchedulerInterval: 3600
+reportProductUsageSchedulerInterval: 3600
+authorizationEnabled: true
+storageInstanceTypes:
+  - storage-file
+  - storage-object
+  - sc-storage-file
+database:
+  service: cloudcredits-db-postgresql
+  vaultCredentialsPath: cloudcreditssecret/data/cloudcreditsdb
+
+ariasystem:
+  service: billing-aria
+  vaultCredentialsPath: controlplane/data/billing-aria/secrets
+  authKeyFile: /vault/secrets/authkey
+  clientNoFile: /vault/secrets/clientno
+  apiCrtFile: /vault/secrets/apicrt
+  apiKeyFile: /vault/secrets/apikey
+  insecureSsl: false
+  releaseVersion: "47"
+  coreApiSuffix: "/v1/core"
+  directPostUrl: "https://api.current.stage.ariasystems.net/api/direct_post_eom.php"
+  functionMode: "direct_post_reg"
+  taxGroup: 7
+  clientTaxGroupId: "SERVICES"
+  storageUsageUnitType: "terabyte hour"
+  tokenUsageUnitType: "million tokens" 
+  inferenceUsageUnitType: "inference"  
+  server:
+      coreApiUrl: "https://api.future.stage.ariasystems.net"
+      objectApiUrl: "https://api.future.stage.ariasystems.net/api/AriaQuery/objects.php"
+      adminApiUrl: "https://api.future.stage.ariasystems.net/AdminTools.php/Dispatcher"
+
+# billing aria driver sqs
+aws:
+ sqs:
+   vaultCredentialsPath: controlplane/data/billing-aria/awssecrets
+   credentialsFile: /vault/secrets/aws_credentials
+   region: "us-west-2"
+   accountIdFile: /vault/secrets/accountid
+   queueUrl: "https://sqs.us-west-2.amazonaws.com/accountid/idc-staging-notifications-queue"
+
+billingDriverAria:
+  features:
+    deactivationScheduler: true
+    reportUsageScheduler: true
+    reportProductUsageScheduler: false
+    syncStoragePlan: true
+    syncTokenPlan: false
+    syncInferencePlan: false
+  productcatalog:
+    storageUsageUnitType: "terabyte hour"
+    tokenUsageUnitType: "million tokens" 
+    inferenceUsageUnitType: "inference"
+otel:
+  otelAnnotations: false

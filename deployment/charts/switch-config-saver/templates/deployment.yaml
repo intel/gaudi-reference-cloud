@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+        apparmor.security.beta.kubernetes.io/{{ .Chart.Name }}: runtime/default
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-secret-eapi: {{ .Values.vault.agent.inject.secret.path }}/eapi
+        vault.hashicorp.com/agent-inject-template-eapi: |-
+          {{`{{- with secret `}}"{{ .Values.vault.agent.inject.secret.path }}/eapi"{{` -}}`}}
+          ---
+          credentials:
+            username: "{{`{{ .Data.data.username | trimSpace }}`}}"
+            password: "{{`{{ .Data.data.password | trimSpace }}`}}"
+          {{`{{- end }}`}}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 10
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 10
+      containers:
+      - command:
+        - /app/go/pkg/switch-config-saver/switch-config-saver_image_1.binary
+        args:
+        - --eapiSecretPath=/vault/secrets/eapi
+{{/*        {{- include "idc-common.logArgs" . | nindent 8 }}*/}}
+        env:
+          {{- include "idc-common.proxyEnv" . | nindent 10 }}
+          {{- include "idc-common.otelEnv" . | nindent 10 }}
+        image: {{ include "idc-common.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Chart.Name }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - "ALL"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        ports:
+        # - containerPort: 8082   
+        #   protocol: TCP

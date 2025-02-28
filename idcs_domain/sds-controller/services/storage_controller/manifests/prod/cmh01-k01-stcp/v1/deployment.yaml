@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-controller
+spec:
+  template:
+    metadata:
+      labels:
+        sidecar.istio.io/inject: "true"
+    spec:
+      volumes:
+        - name: cmh01-storage-controller-weka-creds
+          secret:
+            secretName: cmh01-storage-controller-weka-creds
+            items:
+              - key: _raw
+                path: cmh01-storage-controller-weka-creds.json
+        - name: cmh01-storage-controller-minio-creds
+          secret:
+            secretName: cmh01-storage-controller-minio-creds
+            items:
+              - key: _raw
+                path: cmh01-storage-controller-minio-creds.json
+      containers:
+        - name: storage-controller
+          volumeMounts:
+            - name: cmh01-storage-controller-weka-creds
+              mountPath: /app/secret/cmh01-storage-controller-weka-creds.json
+              subPath: cmh01-storage-controller-weka-creds.json
+              readOnly: true
+            - name: cmh01-storage-controller-minio-creds
+              mountPath: /app/secret/cmh01-storage-controller-minio-creds.json
+              subPath: cmh01-storage-controller-minio-creds.json
+              readOnly: true

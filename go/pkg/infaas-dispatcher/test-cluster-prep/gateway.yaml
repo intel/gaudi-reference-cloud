@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: apple-gateway
+  namespace: idcs-system
+spec:
+  selector:
+    istio: ingressgateway # use Istio default ingress gateway
+  servers:
+    - port:
+        number: 443 # was 80 and http
+        name: https
+        protocol: HTTPS # TODO GRPC?
+      tls:
+        mode: SIMPLE
+        credentialName: "ingress-certs" # must be the same as secret
+      hosts:
+        - "*"

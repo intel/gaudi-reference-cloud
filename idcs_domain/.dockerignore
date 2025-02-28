@@ -1,0 +1,17 @@
+# Exclude everything by default.
+*
+
+# Include in Docker context.
+!api_gateway/api
+!api_gateway/cmd
+!api_gateway/internal
+!api_gateway/go.mod
+!api_gateway/go.sum
+!operator/apis
+!operator/controllers
+!operator/internal
+!operator/pkg
+!operator/go.mod
+!operator/go.sum
+!operator/*.go
+

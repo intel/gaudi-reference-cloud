@@ -1,0 +1,24 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idc-common.fullname" . }}-metrics
+  namespace: {{ include "idc-common.namespace" . }}
+spec:
+  type: {{ .Values.metrics.service.type }}
+  {{- if and .Values.metrics.service.clusterIP (eq .Values.metrics.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.metrics.service.clusterIP }}
+  {{- end }}
+  {{- if and (eq .Values.metrics.service.type "LoadBalancer") .Values.metrics.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.metrics.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - name: metrics
+      port: {{ .Values.metrics.service.ports.http }}
+      {{- if .Values.metrics.service.ports.appProtocol }}
+      appProtocol: {{ .Values.metrics.service.ports.appProtocol }}
+      {{- end }}
+      targetPort: http-metrics
+  selector:
+    {{- include "idc-common.selectorLabels" . | nindent 4 }}
+{{- end }}

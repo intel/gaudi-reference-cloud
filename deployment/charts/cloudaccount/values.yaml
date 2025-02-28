@@ -1,0 +1,48 @@
+replicaCount: 1
+image:
+  repository: intelcloud/cloudaccount
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+database:
+  service: cloudaccount-db-postgresql
+  vaultCredentialsPath: database/static-creds/us-dev-1-cloudaccount-db-client
+
+authz:
+  enabled: false
+
+invitationsExpirySchedulerTime: 0 # "00:00:00"
+invitationsExpirySchedulerBatchSize: 100
+runSchedulers: true
+intelMemberInvitationLimit: 15
+premiumMemberInvitationLimit: 10
+enterpriseMemberInvitationLimit: 50
+otpRetryLimit: 3
+otpRetryLimitIntervalDuration: 1
+
+features:
+  invitationsExpiryScheduler: true
+  invitationsExpiryEmail: false
+
+notifications:
+   inviteLink: "https://console.cloud.intel.com"
+   inviteTemplate: "Multi-User-Invitation-Template"
+   senderEmail: "test@dev3.api.idcservice.net"
+   otpTemplate: "Multi-User-OTP-Template"
+   inviteAcceptTemplate: "Multi-User-Invitation-Accept-Template"
+   inviteExpiredTemplate: "Multi-User-Invitation-Expired-Template"
+
+fargateAnnotations:
+  CapacityProvisioned: "1vCPU 2GB"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
+
+otel:
+  otelAnnotations: false

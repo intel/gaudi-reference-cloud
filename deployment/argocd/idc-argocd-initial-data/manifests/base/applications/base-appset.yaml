@@ -1,0 +1,45 @@
+# This ApplicationSet will monitor the Git repo and create an Application for the IDC services defined in it.
+# Based on https://github.com/intel-innersource/frameworks.cloud.devcloud.services.idc-argocd/blob/main/manifests/base/applications/base-appset.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: idc-applications
+  namespace: argocd
+spec:
+  goTemplate: true
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+  generators:
+    - git:
+        repoURL: http://gitea-http.gitea.svc.cluster.local:3000/gitea_admin/idc-argocd.git
+        revision: main
+        pathParamPrefix: environment
+        files:
+          - path: applications/**/config.json
+  template:
+    metadata:
+      name: '{{index .environment.path.segments 3 }}-{{ index .environment.path.segments 4 }}'
+    spec:
+      project: "default"
+      sources:
+        - repoURL: http://gitea-http.gitea.svc.cluster.local:3000/gitea_admin/idc-argocd.git
+          targetRevision: main
+          ref: valuesRepo
+        - repoURL: '{{ .envconfig.chartRegistry }}'
+          targetRevision: '{{ .envconfig.chartVersion }}'
+          chart: '{{ .envconfig.chartName }}'
+          helm:
+            releaseName: '{{ default (printf "%s%s%s" (index .environment.path.segments 3) "-" (index .environment.path.segments 4) ) .envconfig.releaseName }}' # this hack is required, as .metadata.name object can't be refered here
+            ignoreMissingValueFiles: false
+            valueFiles:
+              - $valuesRepo/{{ .environment.path.path }}/values.yaml
+      destination:
+        name: '{{ index .environment.path.segments 3 }}'
+        namespace: '{{ .envconfig.namespace }}'
+      syncPolicy:
+        automated:
+            allowEmpty: true
+            selfHeal: true
+            prune: true
+        syncOptions:
+        - CreateNamespace=true

@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-controller
+spec:
+  selector:
+    matchLabels:
+      name: storage-controller
+  template:
+    metadata:
+      labels:
+        name: storage-controller
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: storage-controller-config
+        - name: ca
+          configMap:
+            name: intel-root-ca
+      containers:
+        - name: storage-controller
+          ports:
+            - containerPort: 50051
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "2000m"
+          env:
+            - name: STORAGE_CONTROLLER_CONFIG_FILE
+              value: /app/config/config.yaml
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+            - name: ca
+              mountPath: /app/ca

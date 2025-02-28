@@ -1,0 +1,9 @@
+- name: LFS install as newuser
+  become: true
+  become_user: "{{ newuser }}"
+  shell: git lfs install
+
+- name: LFS install as default user
+  become: true
+  become_user: "{{ devcloud_default_user }}"
+  shell: git lfs install

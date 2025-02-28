@@ -1,0 +1,31 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "builder",
+    srcs = [
+        "cloudinit.go",
+        "disk.go",
+        "network.go",
+        "vm.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_operator/vm/builder",
+    visibility = [
+        "//go/pkg/instance_operator:__subpackages__",
+        "//go/pkg/kubernetes_operator:__subpackages__",
+    ],
+    deps = [
+        "//go/pkg/instance_operator/util",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/resource",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/util/rand",
+        "@io_kubevirt_api//core/v1:core",
+        "@io_kubevirt_containerized_data_importer_api//pkg/apis/core/v1beta1",
+    ],
+)

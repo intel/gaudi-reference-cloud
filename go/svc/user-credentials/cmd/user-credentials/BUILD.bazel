@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "user-credentials_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/user-credentials/cmd/user-credentials",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/user_credentials",
+        "//go/pkg/user_credentials/config",
+    ],
+)
+
+go_binary(
+    name = "user-credentials",
+    embed = [":user-credentials_lib"],
+    visibility = ["//visibility:public"],
+)

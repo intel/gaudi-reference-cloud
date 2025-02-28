@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+groups:
+  - subject: admin@intel.com
+    systemRole: intel_admin
+    cloudAccountId: "*"

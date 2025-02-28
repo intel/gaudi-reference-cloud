@@ -1,0 +1,57 @@
+{{- if not .Values.deployStandaloneIronic -}}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+{{- if .Values.useVaultPKI }}
+    cert-manager.io/inject-ca-from-secret: {{ .Release.Namespace }}/bmo-webhook-server-cert
+{{- else }}
+  cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/baremetal-operator-serving-cert
+{{- end }}
+  name: {{ .Release.Namespace }}-baremetal-operator-validating-webhook-configuration
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+webhooks:
+- admissionReviewVersions:
+  - v1
+  - v1beta
+  clientConfig:
+    service:
+      name: baremetal-operator-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-metal3-io-v1alpha1-baremetalhost
+  failurePolicy: Fail
+  name: baremetalhost.metal3.io
+  rules:
+  - apiGroups:
+    - metal3.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - baremetalhosts
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta
+  clientConfig:
+    service:
+      name: baremetal-operator-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-metal3-io-v1alpha1-bmceventsubscription
+  failurePolicy: Fail
+  name: bmceventsubscription.metal3.io
+  rules:
+  - apiGroups:
+    - metal3.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - bmceventsubscriptions
+  sideEffects: None
+{{- end }}

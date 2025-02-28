@@ -1,0 +1,11 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_go_image")
+
+package(default_visibility = ["//visibility:public"])
+
+idc_go_image(
+    name = "k8s_resource_patcher_image",
+    embed = ["//go/pkg/k8s_resource_patcher/cmd/k8s_resource_patcher:k8s_resource_patcher_lib"],
+    visibility = ["//visibility:public"],
+)

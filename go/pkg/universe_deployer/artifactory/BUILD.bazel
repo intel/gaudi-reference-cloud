@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "artifactory",
+    srcs = ["artifactory.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/artifactory",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_google_uuid//:uuid",
+    ],
+)

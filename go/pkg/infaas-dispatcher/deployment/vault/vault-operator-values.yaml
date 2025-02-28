@@ -1,0 +1,29 @@
+defaultVaultConnection:
+  enabled: true
+  # address should be a overriden per env
+  # prod:     https://idcvaultproduction.eglb.intel.com
+  # staging:  https://idcvaultstaging.eglb.intel.com
+  # dev:      http://idcvaultdev.eglb.intel.com
+  address: "https://idcvaultstaging.eglb.intel.com" # "https://idcvaultproduction.eglb.intel.com"
+controller:
+  manager:
+    image:
+      pullPolicy: IfNotPresent
+      # TODO change to IDC harbor when we have dev clusters that can access harbor
+#      repository: amr-idc-registry.infra-host.com/cache/hashicorp/vault-secrets-operator
+      tag: 0.9.1
+    clientCache:
+      persistenceModel: none
+      storageEncryption:
+        enabled: false
+        mount: cluster-auth #maas-cluster-auth
+        keyName: vso-client-cache
+        transitMount: maas-iks
+        kubernetes:
+          # role gets overriden during deployment with --set controller.manager.clientCache.storageEncryption.kubernetes.role=...
+          role: <region>-maas-vault-operator-role
+          serviceAccount: vault-secrets-operator-controller-manager
+          tokenAudiences: ["vault"]
+# to activate debug logs:
+#    logging:
+#      level: debug

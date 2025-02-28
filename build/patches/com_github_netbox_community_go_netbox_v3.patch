@@ -1,0 +1,60 @@
+diff --git a/model_device_status_label.go b/model_device_status_label.go
+index e62c74e9..d987dba3 100644
+--- a/model_device_status_label.go
++++ b/model_device_status_label.go
+@@ -27,6 +27,12 @@ const (
+ 	DEVICESTATUSLABEL_FAILED          DeviceStatusLabel = "Failed"
+ 	DEVICESTATUSLABEL_INVENTORY       DeviceStatusLabel = "Inventory"
+ 	DEVICESTATUSLABEL_DECOMMISSIONING DeviceStatusLabel = "Decommissioning"
++	DEVICESTATUSLABEL_RACKED          DeviceStatusLabel = "Racked"
++	DEVICESTATUSLABEL_VALIDATING      DeviceStatusLabel = "Validating"
++	DEVICESTATUSLABEL_INSPECTING      DeviceStatusLabel = "Inspecting"
++	DEVICESTATUSLABEL_ARCHIVE         DeviceStatusLabel = "Archive"
++	DEVICESTATUSLABEL_AVAILABLE       DeviceStatusLabel = "Available"
++	DEVICESTATUSLABEL_PROVISIONING    DeviceStatusLabel = "Provisioning"
+ )
+
+ // All allowed values of DeviceStatusLabel enum
+@@ -38,6 +41,12 @@ var AllowedDeviceStatusLabelEnumValues = []DeviceStatusLabel{
+ 	"Failed",
+ 	"Inventory",
+ 	"Decommissioning",
++	"Racked",
++	"Validating",
++	"Inspecting",
++   "Archive",
++   "Available",
++   "Provisioning",
+ }
+
+ func (v *DeviceStatusLabel) UnmarshalJSON(src []byte) error {
+diff --git a/model_device_status_value.go b/model_device_status_value.go
+index d0a0ee77..75289e0e 100644
+--- a/model_device_status_value.go
++++ b/model_device_status_value.go
+@@ -27,6 +27,12 @@ const (
+ 	DEVICESTATUSVALUE_FAILED          DeviceStatusValue = "failed"
+ 	DEVICESTATUSVALUE_INVENTORY       DeviceStatusValue = "inventory"
+ 	DEVICESTATUSVALUE_DECOMMISSIONING DeviceStatusValue = "decommissioning"
++	DEVICESTATUSVALUE_RACKED          DeviceStatusValue = "racked"
++	DEVICESTATUSVALUE_VALIDATING      DeviceStatusValue = "validating"
++	DEVICESTATUSVALUE_INSPECTING      DeviceStatusValue = "inspecting"
++	DEVICESTATUSVALUE_ARCHIVE         DeviceStatusValue = "archive"
++	DEVICESTATUSVALUE_AVAILABLE       DeviceStatusValue = "available"
++	DEVICESTATUSVALUE_PROVISIONING    DeviceStatusValue = "provisioning"
+ )
+
+ // All allowed values of DeviceStatusValue enum
+@@ -38,6 +41,12 @@ var AllowedDeviceStatusValueEnumValues = []DeviceStatusValue{
+ 	"failed",
+ 	"inventory",
+ 	"decommissioning",
++	"racked",
++	"validating",
++	"inspecting",
++	"archive",
++	"available",
++	"provisioning",
+ }
+
+ func (v *DeviceStatusValue) UnmarshalJSON(src []byte) error {

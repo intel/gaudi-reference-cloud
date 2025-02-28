@@ -1,0 +1,1279 @@
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "compute-api-server";
+
+// -------------------------------------------------------------------------------------------
+// SSH Public Key Service
+// -------------------------------------------------------------------------------------------
+
+service SshPublicKeyService {
+  // Store an SSH public key.
+  rpc Create(SshPublicKeyCreateRequest) returns (SshPublicKey) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // Retrieve a stored SSH public key.
+  rpc Get(SshPublicKeyGetRequest) returns (SshPublicKey) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/id/{metadata.resourceId}"
+      additional_bindings {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // Get a list of stored SSH public keys.
+  rpc Search(SshPublicKeySearchRequest) returns (SshPublicKeySearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // List stored SSH public keys as a stream.
+  // Warning: This does not work with OpenAPI client.
+  // Internal-use only.
+  rpc SearchStream(SshPublicKeySearchRequest) returns (stream SshPublicKey) {};
+  // Delete an SSH public key.
+  rpc Delete(SshPublicKeyDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/id/{metadata.resourceId}"
+      additional_bindings {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/ping"
+    };
+  };
+}
+
+message SshPublicKeyCreateRequest {
+  ResourceMetadataCreate metadata = 1;
+  SshPublicKeySpec spec = 2;
+}
+
+message SshPublicKeyGetRequest {
+  ResourceMetadataReference metadata = 1;
+}
+
+message SshPublicKeySearchRequest {
+  ResourceMetadataSearch metadata = 1;
+}
+
+message SshPublicKeySearchResponse {
+  repeated SshPublicKey items = 1;
+}
+
+message SshPublicKeyUpdateRequest {
+  ResourceMetadataUpdate metadata = 1;
+  // The entire spec will be replaced.
+  SshPublicKeySpec spec = 2;
+}
+
+message SshPublicKeyDeleteRequest {
+  ResourceMetadataReference metadata = 1;
+}
+
+message SshPublicKey {
+  ResourceMetadata metadata = 1;
+  SshPublicKeySpec spec = 2;
+}
+
+message SshPublicKeySpec {
+  // SSH public key in authorized_keys format "ssh-rsa ... comment".
+  string sshPublicKey = 1;
+  string ownerEmail = 2;
+}
+
+// Common resource messages used by SshPublicKey, Instance, and VNet.
+
+message ResourceMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  // A globally unique UUID.
+  string resourceId = 3;
+  map<string, string> labels = 4;
+  google.protobuf.Timestamp creationTimestamp = 5;
+  bool allowDelete = 6;
+}
+
+message ResourceMetadataCreate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  // If Name is not empty, it must be unique within the cloudAccountId.
+  // It will be generated if empty.
+  string name = 2;
+  // Not implemented.
+  map<string, string> labels = 3;
+}
+
+message ResourceMetadataUpdate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  oneof nameOrId {
+    string name = 2;
+    string resourceId = 3;
+  }
+  // The entire set of labels will be replaced with these labels.
+  // Not implemented.
+  map<string, string> labels = 4;
+}
+
+// A reference to a single resource.
+message ResourceMetadataReference {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  oneof nameOrId {
+    string name = 2;
+    string resourceId = 3;
+  }
+}
+
+message ResourceMetadataSearch {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  map<string, string> labels = 2;
+}
+
+// -------------------------------------------------------------------------------------------
+// Instance Service
+// -------------------------------------------------------------------------------------------
+
+service InstanceService {
+  // Launch a new baremetal or virtual machine instance.
+  rpc Create(InstanceCreateRequest) returns (Instance) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.productAccess = true;
+    option (idc.method).authz.gtsCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // Get the status of an instance.
+  rpc Get(InstanceGetRequest) returns (Instance) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/id/{metadata.resourceId}"
+      additional_bindings {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // List instances.
+  rpc Search(InstanceSearchRequest) returns (InstanceSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances"
+      additional_bindings {
+        post: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/search"
+        body: "*"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // Update the specification of an instance.
+  rpc Update(InstanceUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/id/{metadata.resourceId}"
+      body: "*"
+      additional_bindings {
+        put: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/name/{metadata.name}"
+        body: "*"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Request deletion (termination) of an instance.
+  rpc Delete(InstanceDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/id/{metadata.resourceId}"
+      additional_bindings {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+enum RunStrategy {
+  // Instance will initially be running. It will be restarted if a failure occurs.
+  // If the instance powers itself off, it will not be restarted.
+  // Default.
+  RerunOnFailure = 0;
+  // Instance should never be running.
+  Halted = 1;
+  // Instance should always be running.
+  Always = 2;
+}
+
+enum TriState {
+  Undefined = 0;
+  True = 1;
+  False = 2;
+}
+
+message InstanceCreateRequest {
+  InstanceMetadataCreate metadata = 1;
+  InstanceSpec spec = 2;
+}
+
+message InstanceGetRequest {
+  InstanceMetadataReference metadata = 1;
+}
+
+message InstanceSearchRequest {
+  InstanceMetadataSearch metadata = 1;
+}
+
+message InstanceSearchResponse {
+  repeated Instance items = 1;
+}
+
+message InstanceUpdateRequest {
+  InstanceMetadataUpdate metadata = 1;
+  // The entire spec will be replaced.
+  InstanceSpec spec = 2;
+}
+
+message InstanceDeleteRequest {
+  InstanceMetadataReference metadata = 1;
+}
+
+message Instance {
+  InstanceMetadata metadata = 1;
+  InstanceSpec spec = 2;
+  InstanceStatus status = 3;
+}
+
+message NetworkInterface {
+  // Name of the network interface as known by the operating system.
+  // Not implemented.
+  string name = 1;
+  // Name of the VNet that the network interface connects to.
+  string vNet = 2;
+  // Reserved for NetworkInterfacePrivate.
+  reserved 3, 5;
+  reserved  "dnsName", "nameservers";
+}
+
+message LabelSelector {
+  map<string, string> matchLabels = 1;
+}
+
+message TopologySpreadConstraints {
+  LabelSelector labelSelector = 1;
+}
+
+message InstanceSpec {
+  // Not implemented.
+  string availabilityZone = 1;
+  // The name of an InstanceType.
+  string instanceType = 2 [
+    (idc.field).product = true,
+    (idc.field).gtsCheck = true
+  ];
+  // The name of a MachineImage.
+  // Not implemented.
+  string machineImage = 3;
+  // Controls the instance power state.
+  RunStrategy runStrategy = 4;
+  // The name of a previously stored SSH public key.
+  // Users can use the corresponding SSH private key to SSH to this instance.
+  repeated string sshPublicKeyNames = 5;
+  // Not implemented.
+  repeated NetworkInterface interfaces = 6;
+  // Reserved for InstanceSpecPrivate.
+  reserved 7, 8, 9, 10, 11, 12, 13, 14, 16;
+  reserved "instanceTypeSpec", "machineImageSpec", "sshPublicKeySpecs", "clusterGroupId", "clusterId", "region", "nodeId", "serviceType", "partition";
+  // This controls how instances are spread across the failure domains within the availability zone.
+  // This can help to achieve high availability.
+  // If this contains at least one key/value pair in matchLabels, then instances that have all of these key/value pairs
+  // will be placed evenly across failure domains.
+  repeated TopologySpreadConstraints topologySpreadConstraints = 15;
+  // The cloud-config for this instance
+  string userData = 17;
+  // If not empty, this instance is part of the named instance group.
+  string instanceGroup = 18;
+  // If True, Quick Connect will be enabled.
+  // If False, Quick Connect will be disabled.
+  // If Undefined during instance creation, Quick Connect will be disabled.
+  // If Undefined during instance update, the Quick Connect state will be unchanged.
+  TriState quickConnectEnabled = 22;
+  // Reserved for InstanceSpecPrivate.
+  reserved 21, 23;
+  reserved "networkMode" "superComputeGroupId";
+}
+
+message InstanceMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  string resourceId = 3;
+  // resourceVersion can be provided with Update and Delete for concurrency control.
+  string resourceVersion = 4;
+	// Map of string keys and values that can be used to organize and categorize instances.
+  // This is also used by TopologySpreadConstraints.
+  map<string, string> labels = 5;
+  // Not implemented.
+  google.protobuf.Timestamp creationTimestamp = 6;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 7;
+}
+
+message InstanceMetadataCreate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  // Name will be generated if empty.
+  string name = 2;
+  // Map of string keys and values that can be used to organize and categorize instances.
+  // This is also used by TopologySpreadConstraints.
+  map<string, string> labels = 3;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 4 [deprecated = true];
+  string productId = 5 [
+    (idc.field).productAccess = true
+  ];
+}
+
+message InstanceMetadataUpdate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  oneof nameOrId {
+    string name = 2;
+    string resourceId = 3;
+  }
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 4;
+  // The entire set of labels will be replaced with these labels.
+  // Not implemented.
+  map<string, string> labels = 5;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 6 [deprecated = true];
+}
+
+// A reference to a single instance.
+message InstanceMetadataReference {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  oneof nameOrId {
+    string name = 2;
+    string resourceId = 3;
+  }
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 4;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 5 [deprecated = true];
+}
+
+message InstanceMetadataSearch {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  // If not empty, only return instances that have these key/value pairs.
+  map<string, string> labels = 2;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 3 [deprecated = true];
+  // If instanceGroupFilter is ExactValue, return instances in this instance group.
+  // Otherwise, this field is ignored
+  string instanceGroup = 4;
+  // Filter instances by instance group.
+  // If Default, this behaves like Empty and returns instances that are not in any instance group.
+  SearchFilterCriteria instanceGroupFilter = 5;
+}
+
+message InstanceStatus {
+  // Instance phase.
+  InstancePhase phase = 1;
+  // Additional details about the state or any error conditions.
+  string message = 2;
+  // A list of network interfaces, along with the private IP address assigned to the interface.
+  repeated InstanceInterfaceStatus interfaces = 3;
+  // Parameters required to connect to the SSH proxy.
+  SshProxyTunnelStatus sshProxy = 4;
+  // The user name that should be used to SSH into the instance.
+  string userName = 5; 
+}
+
+enum InstancePhase {
+  // The system is creating and starting the instance.
+  // Default.
+  Provisioning = 0;
+  // The instance is running and has completed the running startup process.
+  Ready = 1;
+  // The instance is in the process of being stopped.
+  Stopping = 2;
+  // The instance is stopped.
+  Stopped = 3;
+  // The instance and its associated resources are in the process of being deleted.
+  Terminating = 4;
+  // The instance crashed, failed, or is otherwise unavailable.
+  Failed = 5;
+  // The instance is in the process of startup.
+  Starting = 6;
+  // The instance has completed startup and is available to use.
+  Started = 7;
+}
+
+message InstanceInterfaceStatus {
+  // Not implemented.
+  string name = 1;
+  // Not implemented.
+  string vNet = 2;
+  // Fully qualified domain name (FQDN) of interface.
+  string dnsName = 3;
+  // Subnet prefix length.
+  int32 prefixLength = 4;
+  // List of IP addresses.
+  repeated string addresses = 5;
+  // Subnet IP address in format "1.2.3.4".
+  string subnet = 6;
+  // Gateway IP address.
+  string gateway = 7;
+  // Reserved for InstanceInterfaceStatusPrivate.
+  reserved "vlanId";
+}
+
+message SshProxyTunnelStatus {
+  // The username required to connect to the SSH proxy.
+  string proxyUser = 1;
+  // The IP address or FQDN of the SSH proxy.
+  string proxyAddress = 2;
+  // The TCP port for the SSH proxy.
+  int32 proxyPort = 3;
+}
+
+enum SearchFilterCriteria {
+  // Use the default behavior, which is described in the specific SearchFilterCriteria field.
+  Default = 0;
+  // Return records with any value in this field (including empty).
+  Any = 1;
+  // Return records with an empty value in this field
+  Empty = 2;
+  // Return records with a non-empty value in this field
+  NonEmpty = 3;
+  // Return records with an exact value in this field
+  ExactValue = 4;
+  }
+
+// -------------------------------------------------------------------------------------------
+// InstanceGroup Service
+// -------------------------------------------------------------------------------------------
+
+service InstanceGroupService {
+  // Launch a new group of instances.
+  rpc Create(InstanceGroupCreateRequest) returns (InstanceGroup) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.productAccess = true;
+    option (idc.method).authz.gtsCheck = true;
+  };
+  // Update the specification of an instanceGroup
+  rpc Update(InstanceGroupUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  // List instance groups.
+  rpc Search(InstanceGroupSearchRequest) returns (InstanceGroupSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Request deletion (termination) of an instance group.
+  rpc Delete(InstanceGroupDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Request deletion (termination) of an instance in a group.
+  // It always retains at least one instance in the group to use a template. To delete the entire group, use Delete API instead.
+  rpc DeleteMember(InstanceGroupMemberDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/instance/id/{instanceResourceId}"
+      additional_bindings {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/instance/name/{instanceName}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Create new instances for the group to reach to the desired count.
+  // This returns an error if the desired count is less than the current count.
+  rpc ScaleUp(InstanceGroupScaleRequest) returns (InstanceGroupScaleResponse) {
+    option (google.api.http) = {
+      patch: "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/scale-up"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message InstanceGroupCreateRequest {
+  InstanceGroupMetadataCreate metadata = 1;
+  InstanceGroupSpec spec = 2;
+}
+
+message InstanceGroupUpdateRequest {
+  InstanceGroupMetadataUpdate metadata = 1;
+  InstanceGroupSpec spec = 2;
+}
+
+message InstanceGroupMemberDeleteRequest {
+  InstanceGroupMetadata metadata = 1;
+  oneof instanceNameOrId {
+    string instanceName = 2;
+    string instanceResourceId = 3;
+  }
+}
+
+message InstanceGroupScaleRequest {
+  InstanceGroupMetadata metadata = 1;
+  InstanceGroupSpec spec = 2;
+}
+
+message InstanceGroupScaleResponse {
+  InstanceGroupMetadata metadata = 1;
+  InstanceGroupScaleStatus status = 2;
+}
+
+message InstanceGroupScaleStatus {
+  // the number of instances created in the instanceGroup
+  int32 currentCount = 1;
+  // the number of instances expected in the instanceGroup
+  int32 desiredCount = 2;
+  // The number of instances with a phase of Ready.
+  int32 readyCount = 3;
+  // The names of existing and non-deleting instances in the instanceGroup.
+  repeated string currentMembers = 4;
+  // The names of newly created instances in the instanceGroup.
+  repeated string newMembers = 5;
+  // The names of instances with a phase of Ready.
+  repeated string readyMembers = 6;
+}
+
+message InstanceGroupSpec {
+  InstanceSpec instanceSpec = 1;
+  int32 instanceCount = 2;  
+}
+
+message InstanceGroupSearchRequest {
+  InstanceGroupMetadataSearch metadata = 1;
+}
+
+message InstanceGroupSearchResponse {
+  repeated InstanceGroup items = 1;
+}
+
+message InstanceGroupDeleteRequest {
+  InstanceGroupMetadataReference metadata = 1;
+}
+
+message InstanceGroup {
+  InstanceGroupMetadata metadata = 1;
+  InstanceGroupSpec spec = 2;
+  InstanceGroupStatus status = 3;
+}
+
+message InstanceGroupMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved2 = 100 [deprecated = true];
+}
+
+message InstanceGroupMetadataCreate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string productId = 3 [
+    (idc.field).productAccess = true
+  ];
+  string reserved3 = 101 [deprecated = true];
+}
+
+message InstanceGroupMetadataUpdate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved3 = 102 [deprecated = true];
+}
+
+// A reference to a single instance group.
+message InstanceGroupMetadataReference {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  oneof nameOrId {
+    string name = 2;
+  }
+}
+
+message InstanceGroupMetadataSearch {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message InstanceGroupStatus {
+  // The number of instances with a phase of Ready.
+  // The instance group is Ready when this equals InstanceGroupSpec.instanceCount.
+  int32 readyCount = 1;
+}
+
+// -------------------------------------------------------------------------------------------
+// Instance Type Service
+// -------------------------------------------------------------------------------------------
+
+service InstanceTypeService {
+  // Create or update an instance type.
+  rpc Put(InstanceType) returns (google.protobuf.Empty) {};
+  // Delete an instance typ.
+  rpc Delete(InstanceTypeDeleteRequest) returns (google.protobuf.Empty) {};
+  // Get an instance type.
+  rpc Get(InstanceTypeGetRequest) returns (InstanceType) {
+    option (google.api.http) = {
+      get: "/v1/instancetypes/{metadata.name}"
+    };
+    option (idc.method).authz.user = true;
+  };
+  // List instance types.
+  rpc Search(InstanceTypeSearchRequest) returns (InstanceTypeSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/instancetypes"
+    };
+    option (idc.method).authz.user = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // List instance types as a stream.
+  rpc SearchStream(InstanceTypeSearchRequest) returns (stream InstanceType) {
+    option (idc.method).authz.user = true;
+  };
+}
+
+message InstanceTypeDeleteRequest {
+  message Metadata {
+    // Unique name of the instance type.
+    string name = 1;
+  }
+  Metadata metadata = 1;
+}
+
+message InstanceTypeGetRequest {
+  message Metadata {
+    // Unique name of the instance type.
+    string name = 1;
+  }
+  Metadata metadata = 1;
+}
+
+message InstanceTypeSearchRequest {
+}
+
+message InstanceTypeSearchResponse {
+  repeated InstanceType items = 1;
+}
+
+message InstanceType {
+  message Metadata {
+    // Unique name of the instance type.
+    string name = 1;
+  }
+  Metadata metadata = 1;
+  InstanceTypeSpec spec = 2;
+}
+
+message InstanceTypeSpec {
+  string name = 1;
+  string displayName = 2;
+  string description = 3;
+  InstanceCategory instanceCategory = 4;
+  CpuSpec cpu = 5;
+  MemorySpec memory = 6;
+  repeated DiskSpec disks = 7;
+  GpuSpec gpu = 8;
+  string hbmMode = 9;
+}
+
+enum InstanceCategory {
+  VirtualMachine = 0;
+  BareMetalHost = 1;
+}
+
+message CpuSpec {
+  int32 cores = 1;
+  string id = 2;
+  string modelName = 3;
+  int32 sockets = 4;
+  int32 threads = 5;
+}
+
+message GpuSpec {
+  string modelName = 1;
+  int32 count = 2;
+}
+
+message MemorySpec {
+  string size = 1;
+  string dimmSize = 2;
+  int32 dimmCount = 3;
+  int32 speed = 4;
+}
+
+message DiskSpec {
+  string size = 1;
+}
+
+// -------------------------------------------------------------------------------------------
+// Machine Image Service
+// -------------------------------------------------------------------------------------------
+
+service MachineImageService {
+  // Create or update a machine image.
+  rpc Put(MachineImage) returns (google.protobuf.Empty) {};
+  // Delete a machine image.
+  rpc Delete(MachineImageDeleteRequest) returns (google.protobuf.Empty) {};
+  // Get a machine image.
+  rpc Get(MachineImageGetRequest) returns (MachineImage) {
+    option (google.api.http) = {
+      get: "/v1/machineimages/{metadata.name}"
+    };
+    option (idc.method).authz.user = true;
+  };
+  // List machine images.
+  rpc Search(MachineImageSearchRequest) returns (MachineImageSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/machineimages"
+    };
+    option (idc.method).authz.user = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // List machine images as a stream.
+  rpc SearchStream(MachineImageSearchRequest) returns (stream MachineImage) {
+    option (idc.method).authz.user = true;
+  };
+}
+
+message MachineImageDeleteRequest {
+  message Metadata {
+    // Unique name of the machine image.
+    string name = 1;
+  }
+  Metadata metadata = 1;
+}
+
+message MachineImageGetRequest {
+  message Metadata {
+    // Unique name of the machine image.
+    string name = 1;
+  }
+  Metadata metadata = 1;
+}
+
+message MachineImageSearchRequest {
+  message Metadata {
+    string instanceType = 1;
+  }
+  Metadata metadata = 1;
+}
+
+message MachineImageSearchResponse {
+    repeated MachineImage items = 1;
+}
+
+message MachineImage {
+  message Metadata {
+    // Unique name of the machine image.
+    string name = 1;
+  }  
+  Metadata metadata = 1;
+  MachineImageSpec spec = 2;
+}
+
+message MachineImageSpec {
+  string displayName = 1;
+  string description = 2;
+  string userName = 3;
+  string icon = 4;
+  // If not empty, this machine image is only compatible with the specified instance categories.
+  repeated InstanceCategory instanceCategories = 5;
+  // If not empty, this machine image is only compatible with the specified instance types.
+  repeated string instanceTypes = 6;
+  string md5sum = 7;
+  string sha256sum = 8;
+  string sha512sum = 12;
+  map<string, string> labels = 9;
+  repeated string imageCategories = 10;
+  repeated MachineImageComponent components = 11;
+  // If true, this machine image will not be returned by the MachineImageService.Search method but it can still be used to launch instances.
+  bool hidden = 13;
+  // The virtual image size (size of the disk in the guest). This can be determined with qemu-img info:
+  //   $ qemu-img info ubuntu-2204-jammy-v20250107.qcow2
+  //   virtual size: 10 GiB (10737418240 bytes)
+  uint64 virtualSizeBytes = 14;
+}
+
+message MachineImageComponent {
+  string name = 1;
+  string type = 2;
+  string version = 3;
+  string description = 4;
+  string infoUrl = 5;
+  string imageUrl = 6;
+}
+
+
+// -------------------------------------------------------------------------------------------
+// VNet Service
+// -------------------------------------------------------------------------------------------
+
+service VNetService {
+  // Create or update a VNet.
+  rpc Put(VNetPutRequest) returns (VNet) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // Retrieve a VNet record from DB
+  rpc Get(VNetGetRequest) returns (VNet) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets/id/{metadata.resourceId}"
+      additional_bindings {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Get a list of stored VNets.
+  rpc Search(VNetSearchRequest) returns (VNetSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+  // List stored VNets as a stream.
+  rpc SearchStream(VNetSearchRequest) returns (stream VNet) {};
+  // Delete an VNet from the DB.
+  // Returns FailedPrecondition if VNet has running instances or other consumed IP addresses.
+  rpc Delete(VNetDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets/id/{metadata.resourceId}"
+      additional_bindings {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message VNetPutRequest {
+  message Metadata {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    string name = 2;
+  }
+  Metadata metadata = 1;
+  VNetSpec spec = 2;
+}
+
+message VNetGetRequest {
+  message Metadata {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    oneof nameOrId {
+      string name = 2;
+      string resourceId = 3;
+    }
+  }
+  Metadata metadata = 1;
+}
+
+message VNetSearchRequest {
+  message Metadata {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+  }
+  Metadata metadata = 1;
+}
+
+message VNetSearchResponse {
+  repeated VNet items = 1;
+}
+
+message VNetDeleteRequest {
+  message Metadata {
+    string cloudAccountId = 1;
+    oneof nameOrId {
+      string name = 2;
+      string resourceId = 3;
+    }
+  }
+  Metadata metadata = 1;
+}
+
+message VNet {
+  message Metadata {
+    string cloudAccountId = 1;
+    string name = 2;
+    string resourceId = 3;
+  }
+  Metadata metadata = 1;
+  VNetSpec spec = 2;
+}
+
+message VNetSpec {
+  string region = 1;
+  string availabilityZone = 2;
+  // The reserved subnet will have a prefix length with this value or less.
+  int32 prefixLength = 4;
+}
+
+// -------------------------------------------------------------------------------------------
+// Load Balancer Service
+// -------------------------------------------------------------------------------------------
+
+service LoadBalancerService {
+  // Create a new load balancer.
+  rpc Create(LoadBalancerCreateRequest) returns (LoadBalancer) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.gtsCheck = true;
+  };
+  // Get the status of a load balancer.
+  rpc Get(LoadBalancerGetRequest) returns (LoadBalancer) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/id/{metadata.resourceId}"
+      additional_bindings {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // List load balancers.
+  rpc Search(LoadBalancerSearchRequest) returns (LoadBalancerSearchResponse) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers"
+      additional_bindings {
+        post: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/search"
+        body: "*"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Update the specification of an load balancer.
+  rpc Update(LoadBalancerUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/id/{metadata.resourceId}"
+      body: "*"
+       additional_bindings {
+        put: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/name/{metadata.name}"
+        body: "*"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Request deletion of a load balancer.
+  rpc Delete(LoadBalancerDeleteRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/id/{metadata.resourceId}"
+       additional_bindings {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/name/{metadata.name}"
+      }
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message LoadBalancerCreateRequest {
+  LoadBalancerMetadataCreate metadata = 1;
+  LoadBalancerSpec spec = 2;
+}
+
+message LoadBalancerGetRequest {
+  LoadBalancerMetadataReference metadata = 1;
+}
+
+message LoadBalancerSearchRequest {
+  LoadBalancerMetadataSearch metadata = 1;
+}
+
+message LoadBalancerSearchResponse {
+  repeated LoadBalancer items = 1;
+}
+
+message LoadBalancerUpdateRequest {
+  LoadBalancerMetadataUpdate metadata = 1;
+  // The entire spec will be replaced.
+  LoadBalancerSpecUpdate spec = 2;
+}
+
+message LoadBalancerDeleteRequest {
+  LoadBalancerMetadataReference metadata = 1;
+}
+
+message LoadBalancer {
+  LoadBalancerMetadata metadata = 1;
+  LoadBalancerSpec spec = 2;
+  LoadBalancerStatus status = 3;
+}
+
+message LoadBalancerSpec {
+   repeated LoadBalancerListener listeners = 1;
+   // Security options which apply to the load balancer.
+   LoadBalancerSecurity security = 2;  
+}
+
+message LoadBalancerListener {
+  // The public port of the load balancer.
+  int32 port = 1 [(validate.rules).int32 ={gte: 0,  lte: 65535}];
+  // Pool defines the targets to load balance traffic.
+  LoadBalancerPool pool = 2;
+}
+
+message LoadBalancerPool {
+  // The port to route traffic to each instance.
+  int32 port = 1;
+  // Health check monitor type.
+  // TCP (simple service port check),
+  // HTTP (HTTP request to / expecting a “200 OK” HTTP response),
+  // HTTPS (HTTPS request to / with expecting a “200 OK” HTTP response).
+  LoadBalancerMonitorType monitor = 2;
+  // Load Balacing mode across members of the pool.
+  LoadBalancingMode loadBalancingMode = 3;
+    // (Optional) Map of string keys and values that controls how the lb pool members are selected.
+  //  One of instances or instanceSelectors is valid.
+  map<string, string> instanceSelectors = 4;
+  // (Optional) Set of Instances to make up the members of the pool.
+  // One of instances or instanceSelectors is valid.
+  repeated string instanceResourceIds = 5;
+}
+
+message LoadBalancerSpecUpdate {
+  repeated LoadBalancerListener listeners = 1;
+   // Security options which apply to the load balancer.
+   LoadBalancerSecurity security = 2;  
+}
+
+enum LoadBalancerMonitorType {
+  // Healthcheck monitoring type utilizing TCP checks.
+  // Default.
+  tcp = 0;
+  // HTTP monitoring type expecting a "200 OK" HTTP Response.
+  http = 1;
+  // HTTPS monitoring type expecting a "200 OK" HTTP Response.
+  https = 2;
+}
+
+enum LoadBalancingMode {
+  // Default.
+  roundRobin = 0;
+  leastConnectionsMember  = 1;
+}
+
+enum LoadBalancerInstanceType {
+  // External load balancer type which will provision an external VIP.
+  // Default.
+  public = 0;
+  // Internal load balancer type which will provision an internal VIP.
+  private = 1;
+}
+
+message LoadBalancerMetadataCreate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  // Name will be generated if empty.
+  string name = 2;
+  // Map of string keys and values that can be used to organize and categorize load balancers.
+  map<string, string> labels = 3;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 4 [deprecated = true];
+}
+
+message LoadBalancerMetadataUpdate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+ oneof nameOrId {
+    string name = 2;
+    string resourceId = 3;
+  }
+    // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 4;
+  // Map of string keys and values that can be used to organize and categorize load balancers.
+  map<string, string> labels = 5;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 6 [deprecated = true];
+}
+
+message LoadBalancerMetadata {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  string resourceId = 3;
+  // resourceVersion can be provided with Update and Delete for concurrency control.
+  string resourceVersion = 4;
+	// Map of string keys and values that can be used to organize and categorize load balancers.
+  map<string, string> labels = 5;
+  // Not implemented.
+  google.protobuf.Timestamp creationTimestamp = 6;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 7;
+    // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 8 [deprecated = true];
+}
+
+// A reference to a single load balancer.
+message LoadBalancerMetadataReference {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  oneof nameOrId {
+    string name = 2;
+    string resourceId = 3;
+  }
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 4;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 5 [deprecated = true];
+}
+
+message LoadBalancerMetadataSearch {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  // If not empty, only return load balancers that have these key/value pairs.
+  map<string, string> labels = 2;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 3 [deprecated = true];
+}
+
+message LoadBalancerStatus {
+  LoadBalancerConditionsStatus conditions = 1;
+  repeated LoadBalancerListenerStatus listeners = 2;
+  string state = 3;
+  string vip = 4;
+  string message = 5;
+}
+
+enum LoadBalancerState {
+  // The system is creating and starting the load balancer.
+  // Default.
+  Pending = 0;
+  // The load balancer is running and has completed the running startup process.
+  Active = 1;
+  // The load balancer is in the process of being stopped.
+  Deleting = 2;
+}
+
+message LoadBalancerSecurity {
+  repeated string sourceips = 1;
+}
+
+message LoadBalancerListenerStatus {
+  string name = 1;
+  int32 vipID = 2;
+  string message = 3;
+  repeated LoadBalancerPoolStatusMember poolMembers = 4;
+  int32 poolID = 5;
+  string state = 6;
+  int32 port = 7;
+}
+
+message LoadBalancerPoolStatusMember {
+  string instanceRef = 1;
+  string ip = 2;
+}
+
+message LoadBalancerConditionsStatus{
+  repeated LoadBalancerConditionsListenerStatus listeners = 1;
+  bool firewallRuleCreated = 2;
+}
+
+message LoadBalancerConditionsListenerStatus {
+  int32 port = 1;
+  bool poolCreated = 2;
+  bool vipCreated = 3;
+  bool vipPoolLinked = 4;
+}

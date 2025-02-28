@@ -1,0 +1,14 @@
+/***
+This file is used to customize global variables and classes for dark theme.
+For reference read the default dlux dark theme in file /src/scss/dlux/scss/_darkmode.scss
+Please just customize branding for specific provider. Don't use this file to customize spacing or
+anything common to all providers, if so PR won't be accepted.
+*/
+
+[data-bs-theme="dark"] {
+  .siteLogo {
+    content:url(../../../../src/assets/images/IntelTiberDeveloperCloudLogoDark.svg);
+    padding: 0.5rem 0rem 0.5rem 0rem;
+    height: 3.25rem;
+  }
+}

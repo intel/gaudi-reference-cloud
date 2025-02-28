@@ -1,0 +1,47 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "address_translation_test.go",
+        "global_operations_test.go",
+        "iprm_test.go",
+        "subnet_test.go",
+        "suite_test.go",
+        "vpc_test.go",
+    ],
+    embed = [":test"],
+    deps = [
+        "//go/pkg/cloudaccount",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/network/api_server/config",
+        "//go/pkg/network/api_server/server",
+        "//go/pkg/network/db",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@com_github_amacneil_dbmate//pkg/driver/postgres",
+        "@com_github_golang_mock//gomock",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)
+
+go_library(
+    name = "test",
+    srcs = ["util.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/network/api_server/test",
+    visibility = ["//visibility:public"],
+    deps = ["//go/pkg/pb"],
+)

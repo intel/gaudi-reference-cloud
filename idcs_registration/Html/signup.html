@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>$$CONSOLENAME$$</title>
+    <link rel="icon" href="$$CDN$$/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="$$CDN$$/static/css/main.css" rel="stylesheet" data-preload="true">
+    <script type="text/javascript" src="$$CDN$$/analytics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>  
+  </head>
+  <body>
+    <div id="root" data-bs-theme="light" class="signup-template">
+      <div id="overlay"></div>
+      <div id="ajax-loader">
+        <div class="loader"></div>
+     </div>
+        <div class="container registration-container" role="main">
+                <div class="registration-section">
+                    <div class="siteNavBrand d-flex text-center align-items-center gap-s6">
+                        <div class="logo-mini"></div>
+                        <img class="siteLogo d-none d-sm-flex" intc-id="siteLogo" aria-label="Site Logo">
+                    </div>
+                    <div id="api" role="main"></div>
+                </div>            
+        </div>
+    </div>
+    <script>
+      $(document).ready(function () {
+        // Add styling class
+        $("button").addClass('btn btn-outline-primary w-100')
+        $("#LocalAccountSigninEmailExchange").removeClass('btn-outline-primary').addClass('btn-link')
+        $(".intro").addClass('registration-header')
+        $("#api").addClass('w-100')
+        $("[role=form]").addClass('registration-form')
+        $("[role=form]>.options").addClass('registration-form')
+        $("[role=form]>.options>div").addClass('w-100')        
+
+        // Append new elements
+        $(".intro").prepend('<span>Choose a service to continue</span>')
+        $(".intro").prepend('<h1 class="h3">Sign up</h1>')
+
+        // Relacements
+
+        $("#GoogleExchange").html(
+          ` <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.5446 7.05719C15.6379 7.59414 15.6844 8.13819 15.6836 8.68319C15.6836 11.1172 14.8136 13.1752 13.2996 14.5682H13.3016C11.9776 15.7912 10.1576 16.4992 7.99963 16.4992C5.8779 16.4992 3.84307 15.6563 2.34278 14.156C0.842489 12.6557 -0.000366211 10.6209 -0.000366211 8.49919C-0.000366211 6.37745 0.842489 4.34262 2.34278 2.84233C3.84307 1.34204 5.8779 0.499185 7.99963 0.499185C9.98557 0.475927 11.9035 1.22202 13.3516 2.58119L11.0676 4.86519C10.242 4.07816 9.14013 3.64718 7.99963 3.66518C5.91263 3.66518 4.13963 5.07318 3.50763 6.96918C3.17254 7.96269 3.17254 9.03868 3.50763 10.0322H3.51063C4.14563 11.9252 5.91563 13.3332 8.00263 13.3332C9.08063 13.3332 10.0066 13.0572 10.7246 12.5692H10.7216C11.1385 12.293 11.4952 11.9352 11.77 11.5174C12.0448 11.0996 12.2321 10.6304 12.3206 10.1382H7.99963V7.05819H15.5446V7.05719Z" fill="currentcolor"/>
+            </svg> 
+            Sign up with google`
+        )
+
+        $("#GitHubExchange").html(
+          ` <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7.99963 0.499146C3.57963 0.499146 -0.000366211 4.07915 -0.000366211 8.49915C-0.000366211 12.0391 2.28963 15.0291 5.46963 16.0891C5.86963 16.1591 6.01963 15.9191 6.01963 15.7091C6.01963 15.5191 6.00963 14.8891 6.00963 14.2191C3.99963 14.5891 3.47963 13.7291 3.31963 13.2791C3.22963 13.0491 2.83963 12.3391 2.49963 12.1491C2.21963 11.9991 1.81963 11.6291 2.48963 11.6191C3.11963 11.6091 3.56963 12.1991 3.71963 12.4391C4.43963 13.6491 5.58963 13.3091 6.04963 13.0991C6.11963 12.5791 6.32963 12.2291 6.55963 12.0291C4.77963 11.8291 2.91963 11.1391 2.91963 8.07915C2.91963 7.20915 3.22963 6.48915 3.73963 5.92915C3.65963 5.72915 3.37963 4.90915 3.81963 3.80915C3.81963 3.80915 4.48963 3.59915 6.01963 4.62915C6.65963 4.44915 7.33963 4.35915 8.01963 4.35915C8.69963 4.35915 9.37963 4.44915 10.0196 4.62915C11.5496 3.58915 12.2196 3.80915 12.2196 3.80915C12.6596 4.90915 12.3796 5.72915 12.2996 5.92915C12.8096 6.48915 13.1196 7.19915 13.1196 8.07915C13.1196 11.1491 11.2496 11.8291 9.46963 12.0291C9.75963 12.2791 10.0096 12.7591 10.0096 13.5091C10.0096 14.5791 9.99963 15.4391 9.99963 15.7091C9.99963 15.9191 10.1496 16.1691 10.5496 16.0891C12.1379 15.5531 13.518 14.5325 14.4957 13.1709C15.4733 11.8093 15.9994 10.1754 15.9996 8.49915C15.9996 4.07915 12.4196 0.499146 7.99963 0.499146Z" fill="currentcolor"/>
+            </svg>
+            Sign up with github`
+        )
+
+        $("#LocalAccountSignupExchange").html(
+          ` <svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M-0.000366211 2.49915C-0.000366211 1.96871 0.210348 1.46 0.58542 1.08493C0.960493 0.709859 1.4692 0.499146 1.99963 0.499146H13.9996C14.5301 0.499146 15.0388 0.709859 15.4138 1.08493C15.7889 1.46 15.9996 1.96871 15.9996 2.49915V10.4991C15.9996 11.0296 15.7889 11.5383 15.4138 11.9134C15.0388 12.2884 14.5301 12.4991 13.9996 12.4991H1.99963C1.4692 12.4991 0.960493 12.2884 0.58542 11.9134C0.210348 11.5383 -0.000366211 11.0296 -0.000366211 10.4991V2.49915ZM1.99963 1.49915C1.73442 1.49915 1.48006 1.6045 1.29253 1.79204C1.10499 1.97958 0.999634 2.23393 0.999634 2.49915V2.71615L7.99963 6.91615L14.9996 2.71615V2.49915C14.9996 2.23393 14.8943 1.97958 14.7067 1.79204C14.5192 1.6045 14.2649 1.49915 13.9996 1.49915H1.99963ZM14.9996 3.88215L10.2916 6.70715L14.9996 9.60415V3.88215ZM14.9656 10.7581L9.32563 7.28715L7.99963 8.08215L6.67363 7.28715L1.03363 10.7571C1.09046 10.9699 1.21595 11.158 1.39062 11.2922C1.5653 11.4264 1.77938 11.4991 1.99963 11.4991H13.9996C14.2198 11.4992 14.4337 11.4266 14.6084 11.2926C14.7831 11.1586 14.9086 10.9708 14.9656 10.7581ZM0.999634 9.60415L5.70763 6.70715L0.999634 3.88215V9.60415Z" fill="currentcolor"/>
+            </svg>
+            Sign up with email`
+        )
+
+        // Move elements
+
+        $("#LocalAccountSigninEmailExchange").before(
+          $(`<span class="d-flex justify-content-center pt-s4">
+            Do you already have an account?
+          </span>`)
+        );
+
+        $(document).ajaxStart(function () {
+          $("#ajax-loader, #overlay").fadeIn();
+        });
+
+        $(document).ajaxStop(function () {
+            $("#ajax-loader, #overlay").fadeOut();
+        });
+        $("#GoogleExchange").attr("data-wap_ref", "btn-signup-google")
+        $("#GitHubExchange").attr("data-wap_ref", "btn-signup-github")
+        $("#LocalAccountSignupExchange").attr("data-wap_ref", "btn-signup-email")
+        $("#LocalAccountSigninEmailExchange").attr("data-wap_ref", "btn-signin-email")
+
+        var checkLoadWap = setInterval(function() {
+        if (typeof loadWap === "function") {
+            clearInterval(checkLoadWap); // Stop checking once function is available
+            loadWap(); // Call the function
+        }
+    }, 500); // Check every 500ms
+      });
+    </script>
+  </body>
+</html>

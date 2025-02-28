@@ -1,0 +1,65 @@
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Product
+metadata:
+  name: bm-spr-test
+spec:
+  id: "3bc52387-da79-4947-a562-0020a2e2b116"
+  vendorId: "4015bb99-0522-4387-b47e-c821596dc735"
+  familyId: "61befbee-0607-47c5-b140-c4509dfef835"
+  pcq: "19513"
+  eccn: "EAR99"
+  description: 112 cores, 2 sockets, 256 GB memory, 244 TB disk
+  matchExpr: serviceType == "ComputeAsAService" && instanceType == "bm-virtual"
+  metadata:
+  - key: region
+    value: global
+  - key: billingEnable
+    value: "true"
+  - key: processor
+    value: "CPU"
+  - key: cpu.sockets
+    value: "2"
+  - key: memory.size
+    value: "256GB"
+  - key: disks.size
+    value: "2TB"
+  - key: cpu.cores
+    value: "112"
+  - key: recommendedUseCase
+    value: "Core compute"
+  - key: category
+    value: "singlenode"    
+  - key: releaseStatus
+    value: "Released"
+  - key: service
+    value: "Bare Metal"
+  - key: instanceCategories
+    value: "BareMetalHost"
+  - key: family.displayName
+    value: "4th Generation Intel® Xeon® Scalable processors"
+  - key: family.displayDescription
+    value: "Virtual machines and Bare Metal servers available"
+  - key: instanceType
+    value: bm-spr
+  - key: displayName
+    value: "4th Generation Intel® Xeon® Scalable processors"
+  - key: information
+    value: |
+      For a Xeon® processor overview see the [Technical Overview page](https://www.intel.com/content/www/us/en/developer/articles/technical/fourth-generation-xeon-scalable-family-overview.html?wapkw=4th%20gen%20intel%20xeon%20scalable%20processors#gs.xc9pz8). For detailed processor information see the [Intel product documentation catalog](https://www.intel.com/content/www/us/en/search.html?ws=text#q=4th%20gen&sort=relevancy&f:@disclosure=[Public]&f:@tabfilter=[Developers]&f:@stm_10385_en=[Processors,Intel%C2%AE%20Xeon%C2%AE%20Processors,4th%20Generation%20Intel%C2%AE%20Xeon%C2%AE%20Scalable%20Processors]), [Intel Accelerator Engine page](https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/overview.html#multiasset_copy), and the [Accelerator e-guide](https://www.intel.com/content/www/us/en/now/xeon-accelerated/accelerators-eguide.html).
+  - key: disableForAccountTypes
+    value: ""
+  - key: access
+    value: "open"
+  rates:
+  - accountType: premium
+    unit: dollarsPerMinute
+    usageExpr: time – previous.time
+    rate: ".025"
+  - accountType: enterprise
+    unit: dollarsPerMinute
+    usageExpr: time – previous.time
+    rate: ".025"
+  - accountType: intel
+    unit: dollarsPerMinute
+    usageExpr: time – previous.time
+    rate: ".025"

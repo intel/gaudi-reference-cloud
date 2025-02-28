@@ -1,0 +1,8 @@
+- name: Create tools folder
+  become: true
+  file:
+    path: "~{{ newuser }}/tools"
+    state: directory
+    owner: "{{ newuser }}"
+    group: "users"
+    mode: 0755

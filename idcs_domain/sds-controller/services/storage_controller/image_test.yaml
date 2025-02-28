@@ -1,0 +1,11 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+schemaVersion: 2.0.0
+fileExistenceTests:
+  - name: "app"
+    path: "/app"
+    shouldExist: true
+    permissions: "drwxr-xr-x"
+    uid: 0
+    gid: 0
+    isExecutableBy: "group"

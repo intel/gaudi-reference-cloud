@@ -1,0 +1,9 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+filegroup(
+    name = "scripts_dir",
+    srcs = glob([
+        "**/*",
+    ]),
+    visibility = ["//visibility:public"],
+)

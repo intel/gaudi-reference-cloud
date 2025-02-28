@@ -1,0 +1,10 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "sql",
+    srcs = glob([
+        "*.sql",
+    ]),
+)

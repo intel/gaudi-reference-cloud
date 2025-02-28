@@ -1,0 +1,143 @@
+// After updating this file, run "make generate-go".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "annotations.proto";
+import "network_subnet.proto";
+import "compute_private.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "network-api-server";
+
+// Private Subnet Service
+service SubnetPrivateService {
+    // Create a Subnet.
+    rpc CreatePrivate(SubnetCreatePrivateRequest) returns (SubnetPrivate) {};
+    // Update a Subnet.
+    rpc UpdatePrivate(SubnetUpdatePrivateRequest) returns (google.protobuf.Empty) {};
+    // Retrieve a VPC record from DB
+    rpc GetPrivate(SubnetGetPrivateRequest) returns (SubnetPrivate) {};
+    // List Subnets as a stream.
+    // This returns all non-deleted vpcs as messages with WatchDeltaType=Updated,
+    // followed by a single WatchDeltaType=Bookmark with the last-seen resourceVersion.
+    rpc SearchStreamPrivate(SubnetSearchStreamPrivateRequest) returns (stream SubnetWatchResponse) {};
+    // Return a stream of changes to vpcs using messages with WatchDeltaType=Updated or Deleted.
+    // Messages with WatchDeltaType=Bookmark and the last-seen resourceVersion will be sent periodically.
+    rpc Watch(SubnetWatchRequest) returns (stream SubnetWatchResponse) {
+        option (idc.method).streamForever = true;
+    };
+    // Update the resource status.
+    rpc UpdateStatus(SubnetUpdateStatusRequest) returns (google.protobuf.Empty) {};
+    // PingPrivate always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message SubnetCreatePrivateRequest {
+    SubnetMetadataCreatePrivate metadata = 1;
+    SubnetSpecPrivate spec = 2;
+}
+
+message SubnetUpdatePrivateRequest {
+    SubnetMetadata metadata = 1;
+}
+
+message SubnetMetadataCreatePrivate {
+    string cloudAccountId = 1;
+    // Name will be generated if empty.
+    string name = 2;
+    // Map of string keys and values that can be used to organize and categorize instances.
+    // This is also used by TopologySpreadConstraints.
+    map<string, string> labels = 3;
+    // Reserved. Added this field to overcome openAPi-same-struct issue.
+    string reserved1 = 4 [deprecated = true];
+    string subnetId = 5;
+    string vpcId = 6;
+    string availabilityZone = 7;
+}
+
+message SubnetGetPrivateRequest {
+    SubnetMetadataReference metadata = 1;
+}
+
+message SubnetPrivate {
+    SubnetMetadataPrivate metadata = 1;
+    SubnetSpecPrivate spec = 2;
+    SubnetStatusPrivate status = 3;
+}
+
+message SubnetPrivateWatchResponse {
+    SubnetMetadataPrivate metadata = 1;
+    string spec = 2;
+    string status = 3;
+}
+
+message SubnetMetadataPrivate {
+    string cloudAccountId = 1;
+    string name = 2;
+    string resourceId = 3;
+    // resourceVersion can be provided with Update and Delete for concurrency control.
+    string resourceVersion = 4;
+    // Map of string keys and values that can be used to organize and categorize vpcs.
+    // This can also be used by to evaluate placements for instances.
+    map<string, string> labels = 5;
+    // Not implemented.
+    google.protobuf.Timestamp creationTimestamp = 6;
+    // Timestamp when resource was requested to be deleted.
+    google.protobuf.Timestamp deletionTimestamp = 7;
+    // Timestamp when resource was deleted.
+    google.protobuf.Timestamp deletedTimestamp = 8;
+
+}
+
+message SubnetSpecPrivate {
+    string cidrBlock = 1;
+    string vpcId = 2;
+    string availabilityZone = 3;
+    string subnetType = 4; // TODO (SAS): Make it an enum.
+}
+
+message SubnetStatusPrivate {
+    // Subnet phase.
+    SubnetPhase phase = 1;
+    // Additional details about the state or any error conditions.
+    string message = 2;
+  }
+
+message SubnetSearchStreamPrivateRequest {
+}
+
+// Private only.
+message SubnetWatchResponse {
+    WatchDeltaType type = 1;
+    SubnetPrivateWatchResponse object = 2;
+}
+
+message SubnetUpdateStatusRequest {
+    SubnetIdReference metadata = 1;
+    SubnetStatusPrivate status = 2;
+}
+
+message SubnetIdReference {
+    string cloudAccountId = 1;
+    string resourceId = 2;
+    // If provided, the existing record must have this resourceVersion for the request to succeed.
+    string resourceVersion = 3;
+    // Timestamp when resource was deleted.
+    google.protobuf.Timestamp deletedTimestamp = 4;
+}
+
+message SubnetWatchRequest {
+    string resourceVersion = 1;
+}

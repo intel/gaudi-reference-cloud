@@ -1,0 +1,47 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  - name: cmh01-1
+    uuid: 67fb5f0e-fae3-488c-aa2a-8c1bc3a52065
+    type: Weka
+    labels:
+      operation: production
+      category: ai-storage
+      type: fast
+      wekaBackend: cmh01-1.us-region-4.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: cmh01
+    api:
+      type: REST
+      url: https://cmh01-1.us-region-4.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/cmh01-storage-controller-weka-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: cmh01-1.us-region-4.cloud.intel.com
+  - name: cmh01-2
+    uuid: 79002302-8781-4c5e-8277-7b9cf672fde2
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: production
+      category: shared-tenant
+      type: gp
+      s3Endpoints: https://s3-cmh01-2.tenantiglb.us-region-4.cloud.intel.com:9000
+    location: cmh01
+    api:
+      type: REST
+      url: cmh01-2.us-region-4.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/cmh01-storage-controller-minio-creds.json
+    minioConfig:
+      kesKey: "minio-kes-key"

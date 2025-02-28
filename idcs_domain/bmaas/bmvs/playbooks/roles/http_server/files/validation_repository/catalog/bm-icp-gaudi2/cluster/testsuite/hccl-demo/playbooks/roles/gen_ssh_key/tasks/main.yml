@@ -1,0 +1,35 @@
+---
+- name: Ensure ssh directory exists for ighs SSH key pair
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo/ssh"
+    state: directory
+    mode: "u+rxw,g-rwx,o-rwx"
+
+- name: Generate SSH key pair ighs_rsa and ighs_rsa.pub
+  ansible.builtin.openssh_keypair:
+    path: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo/ssh/ighs_rsa"
+    type: "{{ ssh_key_type }}"
+    size: "{{ ssh_key_bits }}"
+    force: yes
+    state: present
+
+- name: Ensure ssh directory exists for docker containers SSH key pair
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo/template/bare-metal/ssh"
+    state: directory
+    mode: "u+rxw,g-rwx,o-rwx"
+
+- name: Generate SSH key pair id_rsa and id_rsa.pub
+  ansible.builtin.openssh_keypair:
+    path: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo/template/bare-metal/ssh/id_rsa"
+    type: "{{ ssh_key_type }}"
+    size: "{{ ssh_key_bits }}"
+    force: yes
+    state: present
+
+- name: Set authorized_keys with the content of id_rsa.pub
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo/template/bare-metal/ssh/id_rsa.pub"
+    dest: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo/template/bare-metal/ssh/authorized_keys"
+    force: yes
+    mode: "u+rw,g-rw,o-rw"

@@ -1,0 +1,13 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "usages",
+    srcs = [
+        "error_rec.go",
+        "usage_rec.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_aria/client/request/param/usages",
+    visibility = ["//visibility:public"],
+)

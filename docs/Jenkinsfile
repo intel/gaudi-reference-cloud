@@ -1,0 +1,134 @@
+pipeline {
+  environment {
+    REGISTRY = "internal-placeholder.com"
+    PROJECT = "intelcloud"
+    HTTP_PROXY = "http://internal-placeholder.com:911"
+    HTTPS_PROXY = "http://internal-placeholder.com:912"
+    NO_PROXY = ".intel.com,intel.com,localhost,127.0.0.1"
+    APP_VERSION = "0.1.0"
+  }
+  options {
+    timeout(time: 15, unit: 'MINUTES')
+  }
+  agent  {
+    label 'bmaas'
+  }
+  stages {
+    stage('Test Build') {
+      agent {
+        docker {
+          image 'internal-placeholder.com/cache/library/python:3.10.12'
+          args '-e http_proxy=http://internal-placeholder.com:911/ -e https_proxy=http://internal-placeholder.com:912/ -e no_proxy=127.0.0.1,localhost,intel.com,internal-placeholder.com'
+        }
+      }
+      steps {
+        dir("${env.WORKSPACE}/docs") {
+          script{ 
+            def build_exit_code = 0
+            try {
+              sh'''#!/bin/bash
+              curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+              source ~/.profile && nvm install v20.13.0 && node -v && npm -v
+              python3 -m venv .venv
+              . .venv/bin/activate
+              python3 --version
+              python3 -m pip install -U sphinx==5.3.0
+              sphinx-build --version
+              python3 -m pip install -r ./requirements.txt --no-cache-dir
+
+              source ~/.profile && make clean && PROJECT=public make html
+
+              make clean && PROJECT=private make html
+              '''
+            }
+            catch (err){
+              build_exit_code = -1
+            }
+            if (build_exit_code != 0){
+              catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                error "Documentation build failed. Please build docs to view errors and resolve them. For help, review `private/contributing.rst`"
+                sh "exit 1"
+              }
+            }
+          }
+        }
+      }
+    }
+    stage('Build IDCS portal Docker Image and push it to Harbor registry - Dev') {
+      agent {
+          label 'bmaas'
+        }
+      when {
+          not {
+              branch 'main'
+          }
+          beforeAgent true
+      }        
+      steps{
+        dir("${env.WORKSPACE}/idcs_portal"){
+          script {
+            withDockerRegistry(credentialsId: 'sys_idccicd', url: "https://${REGISTRY}/${PROJECT}/") {
+                def tagVersion = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+                def devImage = docker.build(
+                    "${REGISTRY}/${PROJECT}/idcs-portal:dev-${APP_VERSION}-${tagVersion}",
+                    "--build-arg http_proxy=${HTTP_PROXY} --build-arg https_proxy=${HTTPs_PROXY} --build-arg no_proxy=${NO_PROXY}  --force-rm --no-cache -f deployment/Dockerfile .."
+                    )
+                devImage.push()
+            }
+          }
+        }
+      }
+    }
+    stage('Build IDCS portal Docker Image and push it to Harbor registry') {
+      agent {
+          label 'bmaas'
+        }
+      when {
+            beforeAgent true
+            branch 'main'
+      }           
+      steps{
+        dir("${env.WORKSPACE}/idcs_portal"){
+          script {
+            withDockerRegistry(credentialsId: 'sys_idccicd', url: "https://${REGISTRY}/${PROJECT}/") {
+                def tagVersion = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+                def devImage = docker.build(
+                    "${REGISTRY}/${PROJECT}/idcs-portal:dev-${APP_VERSION}-${tagVersion}",
+                    "--build-arg http_proxy=${HTTP_PROXY} --build-arg https_proxy=${HTTPs_PROXY} --build-arg no_proxy=${NO_PROXY}  --force-rm --no-cache -f deployment/Dockerfile .."
+                    )
+                devImage.push()                          
+            }
+          }
+        }
+      }
+    }
+    stage('Package IDCS portal Helm chart and push it to Harbor registry') {
+      agent {
+        docker{
+          image "${REGISTRY}/${PROJECT}/ub22-04-helm:1.4"
+          registryUrl "https://${REGISTRY}"
+          registryCredentialsId 'sys_idccicd'
+          args '-u root --network host'
+          label 'bmaas'
+        }
+      }
+      steps {
+        dir("${env.WORKSPACE}/idcs_portal"){
+            withCredentials([usernamePassword(credentialsId: 'sys_idccicd', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]){
+                sh '''
+                VERSION=$( git rev-parse --short HEAD )
+                chmod +x idcs_portal_helm.sh
+                ./idcs_portal_helm.sh ${VERSION} ${REGISTRY} ${PROJECT} ${HARBOR_USERNAME} ${HARBOR_PASSWORD}
+                '''
+
+          }
+        }
+      }
+    }
+  }
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}

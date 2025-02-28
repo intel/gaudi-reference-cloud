@@ -1,0 +1,152 @@
+{
+  "environments": {
+    "pdx03-c01-rgcp001-vm-10": {
+      "components": {
+        "billing": {
+          "commit": "HEAD"
+        },
+        "cloudaccount": {
+          "commit": "HEAD"
+        },
+        "cloudcredits": {
+          "commit": "HEAD"
+        },
+        "externalSecrets": {
+          "commit": "HEAD"
+        },
+        "grpc": {
+          "commit": "HEAD"
+        },
+        "metering": {
+          "commit": "HEAD"
+        },
+        "oidc": {
+          "commit": "HEAD"
+        },
+        "productCatalog": {
+          "commit": "HEAD"
+        },
+        "telemetry": {
+          "commit": "HEAD"
+        },
+        "tradeScanner": {
+          "commit": "HEAD"
+        }
+      },
+      "regions": {
+        "us-dev-1": {
+          "components": {
+            "compute": {
+              "commit": "HEAD"
+            },
+            "computeApiServer": {
+              "commit": "HEAD"
+            },
+            "computeBm": {
+              "commit": "HEAD"
+            },
+            "computeBmEnrollment": {
+              "commit": "HEAD"
+            },
+            "computePopulateInstanceType": {
+              "commit": "HEAD"
+            },
+            "computePopulateMachineImage": {
+              "commit": "HEAD"
+            },
+            "computePopulateSubnet": {
+              "commit": "HEAD"
+            },
+            "externalSecrets": {
+              "commit": "HEAD"
+            },
+            "fleetAdmin": {
+              "commit": "HEAD"
+            },
+            "grpc": {
+              "commit": "HEAD"
+            },
+            "iks": {
+              "commit": "HEAD"
+            },
+            "kfaas": {
+              "commit": "HEAD"
+            },
+            "storage": {
+              "commit": "HEAD"
+            },
+            "telemetry": {
+              "commit": "HEAD"
+            },
+            "training": {
+              "commit": "HEAD"
+            }
+          },
+          "availabilityZones": {
+            "us-dev-1a": {
+              "components": {
+                "compute": {
+                  "commit": "HEAD"
+                },
+                "computeBm": {
+                  "commit": "HEAD"
+                },
+                "computeBmEnrollment": {
+                  "commit": "HEAD"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "HEAD"
+                },
+                "computeBmMetal3": {
+                  "commit": "HEAD"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "HEAD"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "HEAD"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "HEAD"
+                },
+                "computeSshProxy": {
+                  "commit": "HEAD"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "HEAD"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "HEAD"
+                },
+                "externalSecrets": {
+                  "commit": "HEAD"
+                },
+                "fleetAdmin": {
+                  "commit": "HEAD"
+                },
+                "firewall": {
+                  "commit": "HEAD"
+                },
+                "iks": {
+                  "commit": "HEAD"
+                },
+                "loadbalancer": {
+                  "commit": "HEAD"
+                },
+                "sdn": {
+                  "commit": "HEAD"
+                },
+                "storage": {
+                  "commit": "HEAD"
+                },
+                "telemetry": {
+                  "commit": "HEAD"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

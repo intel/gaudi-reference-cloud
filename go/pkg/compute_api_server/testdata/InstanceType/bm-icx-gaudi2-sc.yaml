@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-icx-gaudi2-sc
+spec:
+  name: bm-icx-gaudi2-sc
+  displayName: 8 Gaudi2 HL-225H mezzanine cards with 3rd Gen Xeon® processors, 1 TB RAM, 30 TB disk
+  description: 8 Gaudi2 HL-225H mezzanine cards with 3rd Gen Xeon® processors, 1 TB RAM, 30 TB disk
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 38
+    id: "0x606A6"
+    modelName: 3rd Generation Intel® Xeon® Scalable Processors (Ice Lake)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 8
+    modelName: HL-225
+  memory:
+    size: 1024Gi
+    dimmSize: 32Gi
+    dimmCount: 32
+    speed: 3200
+  disks:
+    - size: 2000Gi

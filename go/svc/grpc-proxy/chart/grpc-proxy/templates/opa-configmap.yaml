@@ -1,0 +1,20 @@
+---
+############################################################
+# ConfiMap to bootstrap OPA-Envoy sidecars.
+############################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}-opa-envoy-config
+  namespace: {{ include "idc-common.namespace" . }}
+data:
+  config.yaml: |
+    plugins:
+      envoy_ext_authz_grpc:
+        addr: :{{ .Values.opa.grpcPort }} 
+        path: envoy/authz/result
+        dry-run: {{ not .Values.enableJwtValidation }}
+        proto-descriptor: /pb/idc.pb
+        enable-reflection: true
+    decision_logs:
+      console: true

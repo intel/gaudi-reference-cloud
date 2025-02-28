@@ -1,0 +1,614 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+import "productcatalog.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+service BillingAccountService {
+  rpc Create(BillingAccount) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/billing/accounts"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc DowngradePremiumtoStandard(BillingAccountDowngrade) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/billing/accounts/downgrade"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+}
+
+message BillingAccount {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+}
+
+message BillingAccountDowngrade {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  bool force = 2;
+  DowngradeOption downgradeOption = 3;
+}
+
+enum DowngradeOption {
+  DOWNGRADE_OPTION_UNSPECIFIED = 0;
+  DOWNGRADE_PREMIUM_TO_STANDARD_WITH_PAYMENT_OPTION  = 1;
+}
+
+service BillingOptionService {
+  rpc Read(BillingOptionFilter) returns (BillingOption) {
+    option (google.api.http) = {
+      get: "/v1/billing/options"
+    };
+    option (idc.method).authz.ownerCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+  option (idc.service) = {
+    proxyBillingDriver: true;
+  };
+}
+
+message BillingOptionFilter {
+  optional uint64 id = 1;
+  optional string name = 2;
+  optional string cloudAccountId = 3 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  optional google.protobuf.Timestamp startTime = 4;
+  optional google.protobuf.Timestamp endTime = 5;
+}
+
+message BillingOption {
+  uint64 id = 1;
+  google.protobuf.Timestamp created = 2;
+  string name = 3;
+  string cloudAccountId = 4;
+  string firstName = 5;
+  string middleInitial = 6;
+  string lastName = 7;
+  string email = 8;
+  PaymentType paymentType = 9;
+  oneof paymentMethod {
+    CreditCard creditCard = 10;
+    PaymentMethodOther other = 11;
+  }
+}
+
+enum PaymentType {
+  PAYMENT_UNSPECIFIED = 0;
+  PAYMENT_CREDIT_CARD = 1;
+  PAYMENT_OTHER = 2;
+} 
+
+message CreditCard {
+  string suffix = 1;
+  string expiration = 2;
+  string type = 3;
+}
+
+message PaymentMethodOther {
+}
+
+service BillingRateService {
+  rpc Read(BillingRateFilter) returns (stream BillingRate) {
+    option (google.api.http) = {
+      get: "/v1/billing/rates"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  option (idc.service) = {
+    proxyBillingDriver: true;
+  };
+}
+
+message BillingRateFilter {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string productId = 2;
+}
+
+message BillingRate {
+  string cloudAccountId = 1;
+  string productId = 2;
+
+  Rate rate = 3;
+}
+
+service BillingCreditService {
+  rpc Create(BillingCredit) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/deprecated/billing/credit" //New api is /v1/cloudcredits/credit
+      body: "*"
+    };
+    option deprecated = true;
+  };
+  rpc ReadInternal(BillingAccount) returns (stream BillingCredit) {
+    option (idc.method).authz.cloudAccount = true;
+    option deprecated = true;
+  };
+  rpc Read(BillingCreditFilter) returns (BillingCreditResponse) {
+    option (google.api.http) = {
+      get: "/v1/deprecated/billing/credit" //New api is /v1/cloudcredits/credit
+    };
+    option (idc.method).authz.ownerCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+    option deprecated = true;
+  };
+  rpc ReadUnappliedCreditBalance(BillingAccount) returns (BillingUnappliedCreditBalance) {
+    option (google.api.http) = {
+      get: "/v1/deprecated/billing/credit/unapplied" //New api is /v1/cloudcredits/credit/unapplied
+    };
+    option (idc.method).authz.ownerCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+    option deprecated = true;
+  };
+  rpc CreditMigrate(BillingUnappliedCredit) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/deprecated/billing/credit/creditmigrate" //New api is /v1/cloudcredits/credit/creditmigrate
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option deprecated = true;
+  };
+
+  rpc DeleteMigratedCredit(BillingMigratedCredit) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/deprecated/billing/credit/deletemigratedcredit" //New api is /v1/cloudcredits/credit/deletemigratedcredit
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option deprecated = true;
+  };
+}
+
+message BillingMigratedCredit{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message BillingUnappliedCredit{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  double remainingAmount = 2;
+  google.protobuf.Timestamp expiration = 3;
+}
+
+enum BillingCreditReason {
+  CREDIT_UNSPECIFIED = 0;
+  CREDIT_INITIAL = 1;
+  CREDIT_PURCHASED = 2;
+  CREDIT_COUPON = 3;
+}
+
+message BillingCredit {
+  google.protobuf.Timestamp created = 2;
+  google.protobuf.Timestamp expiration = 3;
+  string cloudAccountId = 4 [
+    (idc.field).cloudAccount = true
+  ];
+  BillingCreditReason reason = 5;
+  double originalAmount = 6;
+  double remainingAmount = 7;
+  string couponCode = 8;
+  double amountUsed = 9;
+}
+
+message BillingUnappliedCreditBalance {
+  double unappliedAmount = 1;
+}
+
+message BillingCreditFilter {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  optional bool history = 2;
+}
+
+message BillingCreditResponse {
+  double totalRemainingAmount = 1;
+  double totalUsedAmount = 2;
+  double totalUnAppliedAmount = 3;
+  google.protobuf.Timestamp lastUpdated = 4;
+  google.protobuf.Timestamp expirationDate = 5;
+  repeated BillingCredit credits = 6;
+}
+
+service BillingCouponService {
+  rpc Create(BillingCouponCreate) returns (BillingCoupon) {
+    option (google.api.http) = {
+      post: "/v1/deprecated/billing/coupons" //New api is /v1/cloudcredits/coupons
+      body: "*"
+    };
+    option deprecated = true;
+  };
+  rpc Read(BillingCouponFilter) returns (BillingCouponResponse) {
+    option (google.api.http) = {
+      get: "/v1/deprecated/billing/coupons" //New api is /v1/cloudcredits/coupons
+    };
+    option deprecated = true;
+  };
+  rpc Redeem(BillingCouponRedeem) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/deprecated/billing/coupons/redeem" //New api is /v1/cloudcredits/coupons/redeem
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+    option deprecated = true;
+  };
+  rpc Disable(BillingCouponDisable) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/deprecated/billing/coupons/disable" //New api is /v1/cloudcredits/coupons/disable
+      body: "*"
+    };
+    option deprecated = true;
+  };
+}
+
+message BillingCouponFilter {
+  optional string code = 1;
+  optional google.protobuf.Timestamp redeemed = 2;
+  optional string creator = 3;
+}
+
+message BillingCouponResponse {
+  repeated BillingCoupon coupons = 1;
+  repeated BillingCouponRedemption redemptions = 2;
+}
+
+message BillingCouponRedeem {
+  string code = 1;
+  string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+}
+
+message BillingCouponDisable {
+  string code = 1;
+  google.protobuf.Timestamp disabled = 2;
+}
+
+message BillingCouponCreate {
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp expires = 3;
+  double amount = 5;
+  uint32 numUses = 6;
+  string creator = 7;
+  optional bool isStandard = 8;
+}
+
+message BillingCoupon {
+  string code = 1;
+  string creator = 2;
+  google.protobuf.Timestamp created = 3;
+  google.protobuf.Timestamp start = 4;
+  google.protobuf.Timestamp expires = 5;
+  google.protobuf.Timestamp disabled = 6;
+  double amount = 7;
+  uint32 numUses = 8;
+  uint32 numRedeemed = 9;
+  repeated BillingCouponRedemption redemptions = 10;
+  optional bool isStandard = 11;
+}
+
+message BillingCouponRedemption {
+  string code = 1;
+  string cloudAccountId = 2;
+  google.protobuf.Timestamp redeemed = 3;
+  bool installed = 4;
+  string creator = 5;
+}
+
+service BillingInvoiceService {
+  rpc Read(BillingInvoiceFilter) returns (BillingInvoiceResponse) {
+    option (google.api.http) = {
+      get: "/v1/billing/invoices"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+  rpc ReadDetail(InvoiceId) returns (stream InvoiceDetail) {
+    option (google.api.http) = {
+      get: "/v1/billing/invoices/detail"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  }
+  rpc ReadUnbilled(BillingAccount) returns (stream InvoiceDetail) {
+    option (google.api.http) = {
+      get: "/v1/billing/invoices/unbilled"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+  rpc ReadStatement(InvoiceId) returns (Statement) {
+    option (google.api.http) = {
+      get: "/v1/billing/invoices/statement"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+  option (idc.service) = {
+    proxyBillingDriver: true;
+  };
+}
+
+message BillingInvoiceFilter{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  optional uint64 id = 2;
+  optional google.protobuf.Timestamp searchStart = 3;
+  optional google.protobuf.Timestamp searchEnd = 4;
+}
+
+message BillingInvoiceResponse {
+  google.protobuf.Timestamp lastUpdated = 1;
+  repeated Invoice invoices = 2;
+}
+
+message InvoiceDetail {
+  string productId = 1;
+ google.protobuf.Timestamp start = 3;
+ google.protobuf.Timestamp end = 4;
+  Rate rate = 5;
+ double usage = 6;
+ double amount = 7;
+}
+
+
+message Invoice {
+  string cloudAccountId = 1;
+  uint64 id = 2;
+  double total = 3;
+  double paid = 4;
+  double due = 5;
+  google.protobuf.Timestamp start = 6;
+  google.protobuf.Timestamp end = 7;
+  google.protobuf.Timestamp invoiceDate = 8;
+  google.protobuf.Timestamp dueDate = 9;
+  google.protobuf.Timestamp notifyDate = 10;
+  google.protobuf.Timestamp paidDate = 11;
+  string billingPeriod = 12;
+  string status = 13;
+  string statementLink = 14;
+  string downloadLink = 15;
+}
+
+message InvoiceId {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  int64 invoiceId = 2;
+}
+
+message Statement {
+  string mimeType = 1;
+  bytes statement = 2;
+}
+
+service BillingProductCatalogSyncService {
+  rpc Sync(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/billing/sync"
+      body: "*"
+    };
+  };
+}
+
+service PaymentService {
+
+  // Implements assign_collections_acct_group_m, set_session_m
+  rpc AddPaymentPreProcessing(PrePaymentRequest) returns (PrePaymentResponse) {
+    option (google.api.http) = {
+      get: "/v1/billing/payments/prepayment"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }; 
+  
+  // Implements update_acct_billing_group_m
+  rpc AddPaymentPostProcessing(PostPaymentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/billing/payments/postpayment"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }; 
+  option (idc.service) = {
+    proxyBillingDriver: true;
+  };
+}
+
+message PrePaymentRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message PrePaymentResponse {
+  string sessionId = 1;
+  string directPostUrl = 2;
+  string functionMode = 3;
+}
+
+message PostPaymentRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  int64 primaryPaymentMethodNo = 2;
+}
+
+service BillingInstancesService {
+  rpc Read(BillingPaidInstanceFilter) returns (BillingPaidInstanceResponse) {
+    option (google.api.http) = {
+      get: "/v1/billing/paid/instancetypes"
+    };
+  };
+  option (idc.service) = {
+    proxyBillingDriver: true;
+  };
+}
+
+message BillingPaidInstanceFilter {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message BillingPaidInstanceResponse {
+    repeated string instance_types = 1;
+}
+
+service BillingUsageService {
+  rpc Read(BillingUsageFilter) returns (BillingUsageResponse) {
+    option (google.api.http) = {
+      get: "/v1/billing/usages"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+}
+
+message BillingUsageFilter {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  optional google.protobuf.Timestamp searchStart = 2;
+  optional google.protobuf.Timestamp searchEnd = 3;
+  optional string regionName = 4;
+}
+
+message BillingUsageResponse {
+  double totalAmount = 1;
+  google.protobuf.Timestamp lastUpdated = 2;
+  string downloadUrl = 3;
+  string period = 4;
+  repeated BillingUsage usages = 5;
+  double totalUsage = 6;
+}
+
+message BillingUsage {
+ string serviceName = 1;
+ string productType = 2;
+ google.protobuf.Timestamp start = 3;
+ google.protobuf.Timestamp end = 4;
+ double minsUsed = 5;
+ double amount = 6;
+ string rate = 7;
+ string regionName = 8;
+ BillingUsageMetrics billingUsageMetrics = 9;
+ string productFamily = 10;
+
+
+ // TODO: Enable InstanceName during the splitting of usage based on InstanceName
+ // JIRA-< https://internal-placeholder.com/browse/TWC4726-1002 >
+ // string instanceName = 8;
+}
+
+message BillingUsageMetrics {
+	 double usageQuantity = 1;
+	 string usageUnitName = 2;
+   string usageQuantityUnitName = 3;
+}
+
+service BillingOpsActionService {
+  rpc Create(SchedulerAction) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/billing/ops/actions/scheduler"
+      body: "*"
+    };
+  };
+}
+
+message SchedulerAction {
+  SchedulerActionType action = 1;
+}
+
+enum SchedulerActionType {
+  START_CREDIT_INSTALL_SCHEDULER = 0;
+  START_POST_USAGE_SCHEDULER = 1;
+  START_ENT_LINK_SCHEDULER = 2;
+  START_CREDIT_USAGE_SCHEDULER = 3;
+  START_CREDIT_EXPIRY_SCHEDULER = 4;
+  START_SERVICE_TERMINATION_SCHEDULER = 5;
+}
+
+message InstanceQuotas {
+  string instanceType = 1;
+  int32 limit = 2;
+}
+
+message DeactivateInstances {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  repeated InstanceQuotas quotas = 2;
+}
+
+message DeactivateAccounts {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string email = 2;
+  google.protobuf.Timestamp creditsDepleted = 3;
+}
+
+message DeactivateInstancesResponse {
+  repeated DeactivateInstances deactivationList = 1;
+}
+
+// The request message for getting payment exausted cloud accounts
+message GetDeactivatedAccountsRequest {
+    optional string productFamily = 1; // Filter by product family, e.g., "Storage as Service"
+    optional string cleanupThreshold  = 2; 
+    optional bool tradeRestricted = 3;
+}
+
+service BillingDeactivateInstancesService {
+  rpc GetDeactivateInstances(google.protobuf.Empty) returns (DeactivateInstancesResponse) {
+    option (google.api.http) = {
+      get: "/v1/billing/instances/deactivate"
+    };
+  };
+
+  rpc GetDeactivateInstancesStream(google.protobuf.Empty) returns (stream DeactivateInstancesResponse) {
+    option (google.api.http) = {
+      get: "/v1/billing/instances/deactivate/stream"
+    };
+  };
+
+  rpc GetDeactivatedServiceAccounts(GetDeactivatedAccountsRequest) returns (stream DeactivateAccounts){
+    option (google.api.http) = {
+      get: "/v1/billing/service/deactivate"
+    };
+  };
+
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}

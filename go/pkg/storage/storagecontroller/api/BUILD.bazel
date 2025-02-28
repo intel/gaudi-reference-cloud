@@ -1,0 +1,81 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("//build/helpers:go_proto_library.bzl", "write_go_generated_source_files")
+
+# gazelle:exclude cluster.pb.go
+# gazelle:exclude common.pb.go
+# gazelle:exclude filesystem.pb.go
+# gazelle:exclude namespace.pb.go
+# gazelle:exclude user.pb.go
+# gazelle:exclude s3.pb.go
+# gazelle:proto disable
+
+proto_library(
+    name = "common",
+    srcs = ["common.proto"],
+    visibility = ["//visibility:public"],
+)
+
+proto_library(
+    name = "cluster",
+    srcs = ["cluster.proto"],
+    visibility = ["//visibility:public"],
+)
+
+proto_library(
+    name = "namespace",
+    srcs = ["namespace.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":cluster",
+    ],
+)
+
+proto_library(
+    name = "user",
+    srcs = ["user.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":common",
+        ":namespace",
+    ],
+)
+
+proto_library(
+    name = "s3",
+    srcs = ["s3.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":cluster",
+    ],
+)
+
+go_proto_library(
+    name = "go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api",
+    protos = [
+        ":cluster",
+        ":common",
+        ":namespace",
+        ":s3",
+        ":user",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# Generates files for IDE support, and put them into api folder
+write_go_generated_source_files(
+    name = "write_gen",
+    output_files = [
+        "cluster.pb.go",
+        "common.pb.go",
+        "namespace.pb.go",
+        "user.pb.go",
+        "s3.pb.go",
+    ],
+    target = ":go_proto",
+    visibility = ["//visibility:public"],
+)

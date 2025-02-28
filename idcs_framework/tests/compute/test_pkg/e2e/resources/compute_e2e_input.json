@@ -1,0 +1,93 @@
+{
+    "preDefinedMachineImagesList": {
+      "vm-spr-tny": ["ubuntu-2204-jammy-v20230122", "ubuntu-2204-jammy-v20240308"],
+      "vm-spr-sml": ["ubuntu-2204-jammy-v20230122", "ubuntu-2204-jammy-v20240308"],
+      "vm-spr-med": ["ubuntu-2204-jammy-v20230122", "ubuntu-2204-jammy-v20240308"],
+      "vm-spr-lrg": ["ubuntu-2204-jammy-v20230122", "ubuntu-2204-jammy-v20240308"]
+    },
+    "instancePayload":{
+      "metadata": {
+        "name": "<<instance-name>>"
+      },
+      "spec": {
+        "availabilityZone": "<<availability-zone>>",
+        "instanceType": "<<instance-type>>",
+        "machineImage": "<<machine-image>>",
+        "runStrategy": "RerunOnFailure",
+        "sshPublicKeyNames": [
+          "<<ssh-key-name>>"
+        ],
+        "interfaces": [
+          {
+            "name": "eth0",
+            "vNet": "<<vnet-name>>"
+          }
+        ]
+      }
+    },
+    "lbInstancePayload": { 
+      "metadata": { 
+          "name": "<<lb-name>>", 
+          "cloudAccount": "<<cloud-account>>"
+      }, 
+      "spec": { 
+          "listeners": [ 
+              { 
+                  "port": "80", 
+                  "pool": { 
+                      "port": "8080", 
+                      "monitor": "tcp", 
+                      "loadBalancingMode": "roundRobin", 
+                      "instanceResourceIds": [ 
+                          "<<instance-resource-id>>" 
+                      ] 
+                  } 
+              }
+          ], 
+          "security": { 
+              "sourceips": [ 
+                  "any"
+              ] 
+          } 
+      } 
+    },
+    "meteringMonitoringPayload":{
+      "cloudAccountId": "<<cloud-account-id>>",
+      "resourceId": "<<resource-id>>"
+    },
+    "productsPayload": {
+      "cloudaccountId": "<<cloud-account-id>>"
+    },
+    "instanceGroupPayload": {
+    "metadata": {
+      "name": "<<instance-group-name>>",
+      "reserved3": ""
+    },
+    "spec": {
+        "instanceCount":"<<instance-count>>",
+        "instanceSpec":{
+            "availabilityZone":"<<availability-zone>>",
+            "instanceType":"<<instance-type>>",
+            "instanceGroup": "test-bm-group",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+              "<<ssh-key-name>>"
+            ],
+            "interfaces":[
+                {
+                "vNet":"<<vnet-name>>",
+                "name":"eth0"
+                }
+            ],
+            "userData": ""
+        }
+    }
+  },
+  "instanceSearchPayload": {
+    "metadata": {
+      "instanceGroup": "<<instance-group-name>>",
+      "instanceGroupFilter": "Default"
+    }
+  }
+}

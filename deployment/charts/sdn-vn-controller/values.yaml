@@ -1,0 +1,89 @@
+# Default values for sdn-vn-controller.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+region: us-dev-1
+
+image:
+  registry: amr-registry.caas.intel.com
+  repository: intelcloud/sdn-vn-controller
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+service:
+  type: ClusterIP
+
+ovnCentral: 
+  ovnAddress: 127.0.0.1
+  ovnPort: 6641
+
+database: 
+  dbAvailable: yes
+  dbAddress: 127.0.0.1
+  dbPort: 5432
+  name: sdncontroller
+  user: sdncontroller
+  password: ./secrets/sql-passwd
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  arg: sslmode=disable
+  # The DNS name used to connect to the Postgres database.
+  service: sdn-vn-controller-db-postgresql
+  # credentials path
+  # TODO: vaultCredentialsPath: database/static-creds/us-dev-1-sdn-vn-controller-db-client
+
+
+# We have to figure out what to do with the serviceArea. Whether needed at all.
+# Also the regionID may be duplicating with the Values.region field. Kept the
+# availability zones list as a reminder for future.
+serviceArea:
+  regionID: Region-1
+#  availabilityZones:
+#    - AZ-1
+#    - AZ-2
+#    - AZ-3
+
+security:
+  postgreSqlSSL:
+    enabled: yes
+    verify: yes
+    cA: ./secrets/cacert.pem
+    certificate: ./secrets/sdn-controller-cert.pem
+    privateKey: ./secrets/sdn-controller-privkey.pem
+  ovnCentralSSL:
+    enabled: yes
+    verify: yes
+    cA: ./secrets/cacert.pem
+    certificate: ./secrets/sdn-controller-cert.pem
+    privateKey: ./secrets/sdn-controller-privkey.pem
+  grpcServerSSL:
+    enabled: no
+    verify: no
+    cA: ./secrets/cacert.pem
+    certificate: ./secrets/sdn-controller-cert.pem
+    privateKey: ./secrets/sdn-controller-privkey.pem
+
+gateways:
+  - Uuid: 123e4567-e89b-12d3-a456-426614174007
+    ChassisId: 1
+    Nexthop: 30.0.0.1
+    TargetNetwork: 0.0.0.0/0
+    AccessNetwork: 30.0.0.0/16
+    Service: INTERNET
+    MaxNATs: 512
+  - Uuid: 123e4567-e89b-12d3-a456-426614174008
+    ChassisId: 2
+    Nexthop: 30.1.0.1
+    TargetNetwork: 0.0.0.0/0
+    AccessNetwork: 30.1.0.0/16
+    Service: INTERNET
+    MaxNATs: 512
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "console"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "debug"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"

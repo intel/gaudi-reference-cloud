@@ -1,0 +1,43 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-20.04-gaudi2-v1.13-vm-v1
+spec:
+  hidden: true
+  displayName: ubuntu-20.04-gaudi2-v1.13-vm-v1
+  description: ubuntu-20.04-gaudi2-v1.13-vm-v1
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes:
+    - vm-icp-gaudi2-1
+  md5sum: "3db62aa8fe359814826d8308af4567e7 ci_image.qcow2"
+  sha256sum: "eedf99d0d2fc178233ff30cd3fc988cfea147178c21f93126b6859bc3255d407 ci_image.qcow2"
+  virtualSizeBytes: 34359738368
+  labels:
+    family: ubuntu-2004-server-cloudimg
+    architecture: X86_64 (VM only)
+    kernelVersion: 5.4 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+  components:
+    - name: Ubuntu 20.04 Server Cloudimg
+      type: OS
+      version: "20.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://releases.ubuntu.com/focal
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: SynapseAI SW
+      type: Software kit
+      version: "1.13.0"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/latest/SW_Stack_Packages_Installation/Synapse_SW_Stack_Installation.html#sw-stack-packages-installation
+    - name: SynapseAI SW
+      type: Firmware kit
+      version: "1.13.0"
+      description: Designed to facilitate high-performance DL training on Habana’s Gaudi accelerators.
+      infoUrl: https://docs.habana.ai/en/latest/SW_Stack_Packages_Installation/Synapse_SW_Stack_Installation.html#sw-stack-packages-installation
+  userName: ubuntu

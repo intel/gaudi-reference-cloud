@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "universe_config_cli_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/cmd/universe_config_cli",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/universe_config",
+        "//go/pkg/universe_deployer/util",
+        "@com_github_spf13_cobra//:cobra",
+        "@com_github_thediveo_enumflag_v2//:enumflag",
+    ],
+)
+
+go_binary(
+    name = "universe_config_cli",
+    embed = [":universe_config_cli_lib"],
+    visibility = ["//visibility:public"],
+)

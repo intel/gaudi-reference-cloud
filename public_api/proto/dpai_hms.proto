@@ -1,0 +1,412 @@
+syntax="proto3";
+ 
+package proto;
+ 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+import "annotations.proto";
+import "dpai_deployment.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).service = "dpai";
+option (idc.file).deploy = regional;
+
+// message DpaiMeta {
+//     google.protobuf.Timestamp createdAt = 1;
+//     string createdBy = 2;
+//     google.protobuf.Timestamp updatedAt = 3;
+//     string updatedBy = 4;
+// }
+
+message DpaiHmsDeploymentMeta {
+    string deploymentId = 1;
+    string backendDatabaseId = 2;
+    string nodeGroupId = 3;
+    DpaiDeploymentStatus deploymentStatus = 4;
+}
+
+message DpaiHmsObjectStoreProperties {
+    string storageEndpoint = 1;
+    string warehouseDirectory = 2;
+    string storageAccessKey = 3;
+    string storageAccessSecret = 4;
+    DpaiSecretReference storageAccessKeySecretReference = 5;
+    DpaiSecretReference storageAccessSecretSecretReference = 6;
+}
+
+// HMS Conf Group -- Admin
+message DpaiHmsConfGroup {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    DpaiMeta metadata = 4;
+}
+
+message DpaiHmsConfGroupCreateRequest {
+    string name = 1;
+    string description = 2;
+    string createdBy = 3;
+}
+
+message DpaiHmsConfGroupListRequest {}
+
+message DpaiHmsConfGroupListResponse{
+    repeated DpaiHmsConfGroup data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiHmsConfGroupGetByIdRequest {
+    string id = 1;
+}
+
+message DpaiHmsConfGroupGetByNameRequest {
+    string name = 1;
+}
+
+message DpaiHmsConfGroupUpdateRequest {
+    string id = 1;
+    string description = 3;
+    string UpdatedBy = 4;
+}
+
+message DpaiHmsConfGroupDeleteRequest{
+    string id = 1;
+ }
+
+message DpaiHmsConfGroupDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+service DpaiHmsConfGroupService {
+    rpc DpaiHmsConfGroupCreate(DpaiHmsConfGroupCreateRequest) returns (DpaiHmsConfGroup) {}
+    rpc DpaiHmsConfGroupList(DpaiHmsConfGroupListRequest) returns (DpaiHmsConfGroupListResponse) {}
+    rpc DpaiHmsConfGroupGetById(DpaiHmsConfGroupGetByIdRequest) returns (DpaiHmsConfGroup) {}
+    rpc DpaiHmsConfGroupGetByName(DpaiHmsConfGroupGetByNameRequest) returns (DpaiHmsConfGroup) {}
+    rpc DpaiHmsConfGroupUpdate(DpaiHmsConfGroupUpdateRequest) returns (DpaiHmsConfGroup) {}
+    rpc DpaiHmsConfGroupDelete(DpaiHmsConfGroupDeleteRequest) returns (DpaiHmsConfGroupDeleteResponse) {}
+}
+
+// HMS Conf
+message DpaiHmsConf {
+    string id = 1;
+    string hmsId = 2;
+    string groupId = 3;
+    string key = 4;
+    string value = 5;
+    DpaiMeta metadata = 6;
+}
+
+message DpaiHmsConfCreateRequest {
+    string hmsId = 1;
+    string groupId = 2;
+    string key = 3;
+    string value = 4;
+    string createdBy = 5;
+}
+
+message DpaiHmsConfListRequest {
+    string hmsId = 1;
+}
+
+message DpaiHmsConfListByGroupIdRequest {
+    string hmsId = 1;
+    string groupId = 2;
+}
+
+message DpaiHmsConfListResponse{
+    repeated DpaiHmsConf data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiHmsConfGetByIdRequest {
+    string hmsId = 1;
+    string id = 2;
+}
+
+message DpaiHmsConfUpdateRequest {
+    string id = 1;
+    string key = 2;
+    string value = 3;
+    string UpdatedBy = 4;
+}
+
+message DpaiHmsConfDeleteRequest{
+    string id = 1;
+}
+
+message DpaiHmsConfDeleteByHmsIdRequest{
+    string hmsId = 1;
+}
+
+message DpaiHmsConfDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+service DpaiHmsConfService {
+    rpc DpaiHmsConfCreate(DpaiHmsConfCreateRequest) returns (DpaiHmsConf) {}
+    rpc DpaiHmsConfList(DpaiHmsConfListRequest) returns (DpaiHmsConfListResponse) {}
+    rpc DpaiHmsConfListByGroupId(DpaiHmsConfListByGroupIdRequest) returns (DpaiHmsConfListResponse) {}
+    rpc DpaiHmsConfGetById(DpaiHmsConfGetByIdRequest) returns (DpaiHmsConf) {}
+    rpc DpaiHmsConfUpdate(DpaiHmsConfUpdateRequest) returns (DpaiHmsConf) {}
+    rpc DpaiHmsConfDelete(DpaiHmsConfDeleteRequest) returns (DpaiHmsConfDeleteResponse) {}
+    rpc DpaiHmsConfDeleteByHmsId(DpaiHmsConfDeleteByHmsIdRequest) returns (DpaiHmsConfDeleteResponse) {}
+
+}
+
+
+// HMS Size -- Admin
+
+message DpaiHmsSize {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    int32 numberOfInstancesDefault = 4;
+    int32 numberOfInstancesMin = 5;
+    int32 numberOfInstancesMax = 6;
+    string instanceTypeId = 7;
+    string resourceCpuLimit = 8;
+    string resourceCpuRequest = 9;
+    string resourceMemoryLimit = 10;
+    string resourceMemoryRequest = 11;
+    string backendDatabaseSizeId = 12;
+    DpaiMeta metadata = 13;
+}
+
+message DpaiHmsSizeCreateRequest {
+    string name = 1;
+    string description = 2;
+    int32 numberOfInstancesDefault = 3;
+    int32 numberOfInstancesMin = 4;
+    int32 numberOfInstancesMax = 5;
+    string instanceTypeId = 6;
+    string createdBy = 7;
+    string resourceCpuLimit = 8;
+    string resourceCpuRequest = 9;
+    string resourceMemoryLimit = 10;
+    string resourceMemoryRequest = 11;
+    string backendDatabaseSizeId = 12;
+}
+
+message DpaiHmsSizeListRequest {}
+
+message DpaiHmsSizeListResponse{
+    repeated DpaiHmsSize data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiHmsSizeGetByIdRequest {
+    string id = 1;
+}
+
+message DpaiHmsSizeGetByNameRequest {
+    string name = 1;
+}
+
+message DpaiHmsSizeUpdateRequest {
+    string id = 1;
+    string description = 2;
+    int32 numberOfInstancesDefault = 3;
+    int32 numberOfInstancesMin = 4;
+    int32 numberOfInstancesMax = 5;
+    string instanceTypeId = 6;
+    string createdBy = 7;
+    string resourceCpuLimit = 8;
+    string resourceCpuRequest = 9;
+    string resourceMemoryLimit = 10;
+    string resourceMemoryRequest = 11;
+    string backendDatabaseSizeId = 12;
+}
+
+message DpaiHmsSizeDeleteRequest{
+    string id = 1;
+ }
+
+message DpaiHmsSizeDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+service DpaiHmsSizeService {
+    rpc DpaiHmsSizeCreate(DpaiHmsSizeCreateRequest) returns (DpaiHmsSize) {}
+    rpc DpaiHmsSizeList(DpaiHmsSizeListRequest) returns (DpaiHmsSizeListResponse) {}
+    rpc DpaiHmsSizeGetById(DpaiHmsSizeGetByIdRequest) returns (DpaiHmsSize) {}
+    rpc DpaiHmsSizeGetByName(DpaiHmsSizeGetByNameRequest) returns (DpaiHmsSize) {}
+    rpc DpaiHmsSizeUpdate(DpaiHmsSizeUpdateRequest) returns (DpaiHmsSize) {}
+    rpc DpaiHmsSizeDelete(DpaiHmsSizeDeleteRequest) returns (DpaiHmsSizeDeleteResponse) {}
+}
+
+
+// HMS Version -- Admin
+
+message DpaiHmsVersion {
+    string id = 1;
+    string name = 2;
+    string description=3;
+    string version = 4;
+    string hmsVersion = 5;
+    string backendDatabaseVersionId = 6;
+    DpaiImageReference imageReference = 7;
+    DpaiChartReference chartReference = 8;
+    string backwardCompatibleFrom = 9;
+    DpaiMeta metadata = 11;
+}
+
+message DpaiHmsVersionCreateRequest {
+    string name = 1;
+    string description = 2;
+    string version = 3;
+    string hmsVersion = 4;
+    string backendDatabaseVersionId = 5;
+    DpaiImageReference imageReference = 6;
+    DpaiChartReference chartReference = 7;
+    string backwardCompatibleFrom = 8;
+}
+
+message DpaiHmsVersionListRequest {}
+
+message DpaiHmsVersionListResponse{
+    repeated DpaiHmsVersion data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiHmsVersionGetByIdRequest {
+    string id = 1;
+}
+
+message DpaiHmsVersionGetByNameRequest {
+    string name = 1;
+}
+
+message DpaiHmsVersionUpdateRequest {
+    string id = 1;
+    string description = 2;
+    DpaiImageReference imageReference = 3;
+    DpaiChartReference chartReference = 4;
+    string backwardCompatibleFrom = 5;
+}
+
+message DpaiHmsVersionDeleteRequest{
+    string id = 1;
+ }
+
+message DpaiHmsVersionDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+service DpaiHmsVersionService {
+    rpc DpaiHmsVersionCreate(DpaiHmsVersionCreateRequest) returns (DpaiHmsVersion) {}
+    rpc DpaiHmsVersionList(DpaiHmsVersionListRequest) returns (DpaiHmsVersionListResponse) {}
+    rpc DpaiHmsVersionGetById(DpaiHmsVersionGetByIdRequest) returns (DpaiHmsVersion) {}
+    rpc DpaiHmsVersionGetByName(DpaiHmsVersionGetByNameRequest) returns (DpaiHmsVersion) {}
+    rpc DpaiHmsVersionUpdate(DpaiHmsVersionUpdateRequest) returns (DpaiHmsVersion) {}
+    rpc DpaiHmsVersionDelete(DpaiHmsVersionDeleteRequest) returns (DpaiHmsVersionDeleteResponse) {}
+}
+
+// Service - HMS
+
+message DpaiHmsSizeProperties {
+    string sizeId = 1;
+    int32 numberOfInstances = 2;
+}
+
+message DpaiHms {
+    string workspaceId = 1;
+    string id = 2;
+    string name = 3;
+    string versionId = 4;
+    string description = 5;
+    map<string, string> tags = 6;
+    DpaiHmsSizeProperties sizeProperties = 7;
+    DpaiHmsObjectStoreProperties objectStoreProperties = 8;
+    string endpoint = 9;
+    DpaiMeta metadata = 10;
+    DpaiHmsDeploymentMeta deploymentMetadata = 11;
+}
+
+message DpaiHmsCreateRequest{
+    string workspaceId = 1;
+    string name = 2;
+    string versionId = 3;
+    DpaiHmsSizeProperties sizeProperties = 4;
+    string description = 5;
+    map<string, string> tags = 6;
+    DpaiHmsObjectStoreProperties objectStoreProperties = 7;
+}
+
+message DpaiHmsListRequest{
+    string workspaceId=1;
+}
+
+message DpaiHmsListResponse{
+    repeated DpaiHms data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiHmsGetByIdRequest{
+    string id=1;
+}
+
+message DpaiHmsGetByNameRequest{
+    string name=2;
+    string workspaceId=1;
+}
+
+message DpaiHmsDeleteRequest{
+    string id = 1;
+ }
+ 
+message DpaiHmsUpdateRequest{
+    string id = 1;
+    string description = 2;
+    map<string, string> tags = 3;
+}
+
+message DpaiHmsRestartRequest{
+    string id = 1;
+}
+
+message DpaiHmsResizeRequest{
+    string id = 1;
+    string sizeId = 2;
+    int32 numberOfInstances = 3;
+}
+
+message DpaiHmsListUpgradeRequest{
+    string id = 1;
+}
+
+message DpaiHmsUpgradeRequest{
+    string id = 1;
+    string versionId = 2;
+}
+
+service DpaiHmsService {
+    rpc DpaiHmsCreate(DpaiHmsCreateRequest) returns (DpaiDeploymentResponse) {}
+    rpc DpaiHmsList(DpaiHmsListRequest) returns (DpaiHmsListResponse) {}
+    rpc DpaiHmsGetById(DpaiHmsGetByIdRequest) returns (DpaiHms) {}
+    rpc DpaiHmsGetByName(DpaiHmsGetByNameRequest) returns (DpaiHms) {}
+    rpc DpaiHmsUpdate(DpaiHmsUpdateRequest) returns (DpaiHms) {}
+    rpc DpaiHmsDelete(DpaiHmsDeleteRequest) returns (DpaiDeploymentResponse) {}
+    // Additional actions
+    rpc DpaiHmsListUpgrade(DpaiHmsListUpgradeRequest) returns (DpaiHmsVersionListResponse) {}
+    rpc DpaiHmsUpgrade(DpaiHmsUpgradeRequest) returns (DpaiDeploymentResponse) {}
+    rpc DpaiHmsRestart(DpaiHmsRestartRequest) returns (DpaiDeploymentResponse) {}
+    rpc DpaiHmsResize(DpaiHmsResizeRequest) returns (DpaiDeploymentResponse) {}
+
+}

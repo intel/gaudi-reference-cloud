@@ -1,0 +1,534 @@
+[
+  {
+    "SuitePath": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU",
+    "SuiteDescription": "AllProductsIU Suite",
+    "SuiteLabels": [],
+    "SuiteSucceeded": true,
+    "SuiteHasProgrammaticFocus": false,
+    "SpecialSuiteFailureReasons": null,
+    "PreRunStats": {
+      "TotalSpecs": 7,
+      "SpecsThatWillRun": 7
+    },
+    "StartTime": "2024-04-10T14:06:27.941713335-07:00",
+    "EndTime": "2024-04-10T15:31:45.113115567-07:00",
+    "RunTime": 5117171402244,
+    "SuiteConfig": {
+      "RandomSeed": 1712783186,
+      "RandomizeAllSpecs": false,
+      "FocusStrings": null,
+      "SkipStrings": null,
+      "FocusFiles": null,
+      "SkipFiles": null,
+      "LabelFilter": "",
+      "FailOnPending": false,
+      "FailFast": false,
+      "FlakeAttempts": 0,
+      "DryRun": false,
+      "PollProgressAfter": 0,
+      "PollProgressInterval": 0,
+      "Timeout": 21599007913634,
+      "OutputInterceptorMode": "",
+      "SourceRoots": null,
+      "GracePeriod": 30000000000,
+      "ParallelProcess": 1,
+      "ParallelTotal": 1,
+      "ParallelHost": ""
+    },
+    "SpecReports": [
+      {
+        "ContainerHierarchyTexts": null,
+        "ContainerHierarchyLocations": null,
+        "ContainerHierarchyLabels": null,
+        "LeafNodeType": "BeforeSuite",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Products_IU_suite_test.go",
+          "LineNumber": 81
+        },
+        "LeafNodeLabels": null,
+        "LeafNodeText": "",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:06:27.941900169-07:00",
+        "EndTime": "2024-04-10T14:10:08.125284949-07:00",
+        "RunTime": 220183384777,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Products_IU_suite_test.go",
+              "LineNumber": 81
+            },
+            "TimelineLocation": {
+              "Order": 1,
+              "Time": "2024-04-10T14:06:27.941906551-07:00"
+            },
+            "Message": "TOP-LEVEL",
+            "NodeType": "BeforeSuite"
+          },
+          {
+            "SpecEventType": "By",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Products_IU_suite_test.go",
+              "LineNumber": 99
+            },
+            "TimelineLocation": {
+              "Order": 2,
+              "Time": "2024-04-10T14:07:05.063084813-07:00"
+            },
+            "Message": "Delete cloud account..."
+          },
+          {
+            "SpecEventType": "By",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Products_IU_suite_test.go",
+              "LineNumber": 106
+            },
+            "TimelineLocation": {
+              "Order": 3,
+              "Time": "2024-04-10T14:07:06.029985532-07:00"
+            },
+            "Message": "Create cloud account..."
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Products_IU_suite_test.go",
+              "LineNumber": 81
+            },
+            "TimelineLocation": {
+              "Order": 5,
+              "Time": "2024-04-10T14:10:08.125281874-07:00"
+            },
+            "Message": "TOP-LEVEL",
+            "Duration": 220183375337,
+            "NodeType": "BeforeSuite"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Check Intel User Usages"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+            "LineNumber": 23
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "Product-Catalog-E2E-Intel"
+          ]
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+          "LineNumber": 28
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "Validate Intel cloudAccount",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:10:08.125334939-07:00",
+        "EndTime": "2024-04-10T14:10:08.398774989-07:00",
+        "RunTime": 273440051,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 28
+            },
+            "TimelineLocation": {
+              "Order": 6,
+              "Time": "2024-04-10T14:10:08.125346038-07:00"
+            },
+            "Message": "Validate Intel cloudAccount",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 28
+            },
+            "TimelineLocation": {
+              "Order": 8,
+              "Time": "2024-04-10T14:10:08.398767946-07:00"
+            },
+            "Message": "Validate Intel cloudAccount",
+            "Duration": 273421903,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Check Intel User Usages"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+            "LineNumber": 23
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "Product-Catalog-E2E-Intel"
+          ]
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+          "LineNumber": 40
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "Validating the request of products by Intel Account",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:10:08.398820102-07:00",
+        "EndTime": "2024-04-10T14:10:08.741649882-07:00",
+        "RunTime": 342829779,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 40
+            },
+            "TimelineLocation": {
+              "Order": 9,
+              "Time": "2024-04-10T14:10:08.398822431-07:00"
+            },
+            "Message": "Validating the request of products by Intel Account",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 40
+            },
+            "TimelineLocation": {
+              "Order": 11,
+              "Time": "2024-04-10T14:10:08.741644229-07:00"
+            },
+            "Message": "Validating the request of products by Intel Account",
+            "Duration": 342821798,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Check Intel User Usages"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+            "LineNumber": 23
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "Product-Catalog-E2E-Intel"
+          ]
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+          "LineNumber": 52
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "Create Cloud credits for intel user by redeeming coupons",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:10:08.741675679-07:00",
+        "EndTime": "2024-04-10T14:10:09.35718417-07:00",
+        "RunTime": 615508490,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 52
+            },
+            "TimelineLocation": {
+              "Order": 12,
+              "Time": "2024-04-10T14:10:08.741678041-07:00"
+            },
+            "Message": "Create Cloud credits for intel user by redeeming coupons",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 52
+            },
+            "TimelineLocation": {
+              "Order": 14,
+              "Time": "2024-04-10T14:10:09.357177011-07:00"
+            },
+            "Message": "Create Cloud credits for intel user by redeeming coupons",
+            "Duration": 615498970,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Check Intel User Usages"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+            "LineNumber": 23
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "Product-Catalog-E2E-Intel"
+          ]
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+          "LineNumber": 66
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "Push Metering data for all open products",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:10:09.357208915-07:00",
+        "EndTime": "2024-04-10T14:11:39.962040731-07:00",
+        "RunTime": 90604831821,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 66
+            },
+            "TimelineLocation": {
+              "Order": 15,
+              "Time": "2024-04-10T14:10:09.357211368-07:00"
+            },
+            "Message": "Push Metering data for all open products",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 66
+            },
+            "TimelineLocation": {
+              "Order": 17,
+              "Time": "2024-04-10T14:11:39.962033955-07:00"
+            },
+            "Message": "Push Metering data for all open products",
+            "Duration": 90604822588,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Check Intel User Usages"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+            "LineNumber": 23
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "Product-Catalog-E2E-Intel"
+          ]
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+          "LineNumber": 85
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "Wait for usages to show up",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:11:39.962130158-07:00",
+        "EndTime": "2024-04-10T14:31:40.060558258-07:00",
+        "RunTime": 1200098428100,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 85
+            },
+            "TimelineLocation": {
+              "Order": 18,
+              "Time": "2024-04-10T14:11:39.962132961-07:00"
+            },
+            "Message": "Wait for usages to show up",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 85
+            },
+            "TimelineLocation": {
+              "Order": 20,
+              "Time": "2024-04-10T14:31:40.060542852-07:00"
+            },
+            "Message": "Wait for usages to show up",
+            "Duration": 1200098409891,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Check Intel User Usages"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+            "LineNumber": 23
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "Product-Catalog-E2E-Intel"
+          ]
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+          "LineNumber": 90
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "Validate Usages showing up for all products",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:31:40.060679151-07:00",
+        "EndTime": "2024-04-10T14:31:42.306720417-07:00",
+        "RunTime": 2246041266,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 90
+            },
+            "TimelineLocation": {
+              "Order": 21,
+              "Time": "2024-04-10T14:31:40.060683847-07:00"
+            },
+            "Message": "Validate Usages showing up for all products",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 90
+            },
+            "TimelineLocation": {
+              "Order": 23,
+              "Time": "2024-04-10T14:31:42.30671244-07:00"
+            },
+            "Message": "Validate Usages showing up for all products",
+            "Duration": 2246028577,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "Check Intel User Usages"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+            "LineNumber": 23
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "Product-Catalog-E2E-Intel"
+          ]
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+          "LineNumber": 121
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeText": "Validate Credits",
+        "State": "passed",
+        "StartTime": "2024-04-10T14:31:42.306749862-07:00",
+        "EndTime": "2024-04-10T15:31:45.113023149-07:00",
+        "RunTime": 3602806273287,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 121
+            },
+            "TimelineLocation": {
+              "Order": 24,
+              "Time": "2024-04-10T14:31:42.306752114-07:00"
+            },
+            "Message": "Validate Credits",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/home/josuedbo/frameworks.cloud.devcloud.services.idc/idcs_framework/tests/goFramework/ginkGo/financials/e2e_tests/Instance_Usage_e2e/All_Products_Usage/All_Products_IU/All_Prodcuts_IU_test.go",
+              "LineNumber": 121
+            },
+            "TimelineLocation": {
+              "Order": 26,
+              "Time": "2024-04-10T15:31:45.113015972-07:00"
+            },
+            "Message": "Validate Credits",
+            "Duration": 3602806263871,
+            "NodeType": "It"
+          }
+        ]
+      }
+    ]
+  }
+]

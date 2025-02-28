@@ -1,0 +1,11 @@
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml", 
+    "templates/**",
+  ]),
+  package_name = "argo-cd-resources",  # Must not have underscores.
+  visibility = ["//visibility:public"],
+)

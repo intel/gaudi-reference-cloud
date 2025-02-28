@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "modules",
+    srcs = ["weka.go"],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/ci/k6/modules",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ci/k6/modules/weka/api/v4",
+        "//ci/k6/modules/weka/auth",
+        "@com_github_getkin_kin_openapi//openapi3filter",
+        "@com_github_labstack_echo_v4//:echo",
+        "@com_github_labstack_echo_v4//middleware",
+        "@com_github_oapi_codegen_echo_middleware//:echo-middleware",
+    ],
+)

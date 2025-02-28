@@ -1,0 +1,65 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "noderesources",
+    srcs = [
+        "balanced_allocation.go",
+        "fit.go",
+        "least_allocated.go",
+        "most_allocated.go",
+        "requested_to_capacity_ratio.go",
+        "resource_allocation.go",
+        "test_util.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/framework/plugins/noderesources",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/feature",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/helper",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/names",
+        "//go/pkg/instance_scheduler/vm/util",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "@com_github_google_go_cmp//cmp/cmpopts",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/resource",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/sets",
+        "@io_k8s_apimachinery//pkg/util/validation/field",
+    ],
+)
+
+go_test(
+    name = "noderesources_test",
+    srcs = [
+        "balanced_allocation_test.go",
+        "fit_test.go",
+        "least_allocated_test.go",
+        "most_allocated_test.go",
+        "requested_to_capacity_ratio_test.go",
+    ],
+    embed = [":noderesources"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/feature",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/helper",
+        "//go/pkg/instance_scheduler/vm/framework/runtime",
+        "//go/pkg/instance_scheduler/vm/internal/cache",
+        "//go/pkg/instance_scheduler/vm/testing",
+        "@com_github_google_go_cmp//cmp",
+        "@com_github_stretchr_testify//assert",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/resource",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/util/validation/field",
+        "@io_k8s_apiserver//pkg/util/feature",
+        "@io_k8s_component_base//featuregate",
+        "@io_k8s_component_base//featuregate/testing",
+    ],
+)

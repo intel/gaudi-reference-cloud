@@ -1,0 +1,92 @@
+/***
+This file is used to override variables used by bootstrap and dlux for dark theme
+For reference of which variables can be modified inspect the src/scss/dlux/scss/_custom.scss file
+Although you can add another bootstrap variables if needed
+Remember to add  !default at the end of line so them does not get overritten
+Please do not add any class here, this file is just for customizing the bootstrap and dlux variables,
+if something else is added the PR won't be accepted
+*/
+
+@import "../../dlux/scss/colors";
+
+[data-bs-theme=dark] {
+  // Local Variables
+  $primary: #{$aqua-tint1};
+  $secondary: #{$cobalt-shade3};
+  $body-color: #E9EAEB;
+
+  // Theme Global
+  --primary: #{$primary};
+  --cta-primary: #{$primary};
+  --primary-rgb: 48,233,203;
+  --secondary: #{$secondary};
+  --secondary-rgb: 4,14,53;
+  --body-color: #{$body-color};
+
+  --surface-background-color: #1A1E2E;
+  --surface-background-gradient-color: linear-gradient(180deg, rgba(8, 116, 110, 0.00) 50%, rgba(48, 233, 203, 0.05) 100%), var(--surface-background-color);
+  --surface-background-color-sprite: #242528;
+  --surface-hover-background-color: #313750;
+  --surface-active-background-color: #06060A;
+  --surface-selected-background-color: #{$aqua-shade2};
+  --surface-border-color: #{$aqua-shade2};
+  
+  --surface-background-third-party-product-color: #1C2432;
+
+  --hit-box: #{$hit-box};
+
+  --gray-50: #242528;
+  --gray-75: #2E2F32;
+  --gray-100: #313236;
+  --gray-200: #3C3E42;
+  --gray-300: #484A50;
+  --gray-400: #585A62;
+  --gray-500: #6B6E76;
+  --gray-600: #8E9099;
+  --gray-700: #B7B9BE;
+  --gray-800: #E3E3E5;
+  --gray-900: #FFFFFF;
+
+  --success: #C2E5C2;
+  --warning:  #FFF6CC;
+  --danger: #F5C7C7;
+
+  --focus-shadow-box-color: rgba(183, 185, 190, .5);
+
+  // Theme Components
+
+  // Footer
+  --footer-color: #{$body-color};
+  --footer-border-color: var(--gray-300);
+
+  //Cards
+    --card-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
+    --card-border: 1px solid #{$aqua-shade2};
+    --card-border-top: .25rem solid var(--primary);
+
+  // Dropdowns
+  --dropdown-simple-color: #{$white};
+  --dropdown-item-hover-color: #{$white};
+  --dropdown-item-active-background: var(--gray-50);
+
+  --dropdown-select-caret:  url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%2330E9CB%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
+  --dropdown-select-caret-disabled:  url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23B7B9BE%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
+
+  // Forms
+
+  --form-control-error-color: #{$status-error-natural-dark-mode};
+  --form-control-error-border-color: #{$status-error-natural-dark-mode};
+
+  // Navbar
+  --nav-bar-site-toolbar-border-bottom-color: var(--gray-400);
+
+  // Tabs 
+  --nav-tab-secondary-active-shadow-color: #{$aqua-shade1};
+
+  // Typography
+  --link-hover-color: #{$aqua-shade1};
+  --code-block-background-color: var(--gray-900);
+
+  //Alert
+  --alert-light-color: #{$body-color};
+}

@@ -1,0 +1,89 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: istio-dpai-gw 
+  namespace: istio-system
+spec:
+  profile: default 
+  components:
+    pilot:
+      enabled: true
+      k8s:
+        env:
+          - name: PILOT_TRACE_SAMPLING
+            value: "100"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+    ingressGateways:
+      - namespace: istio-system
+        name: istio-ingressgateway  ## every service which dpai deploys should use this label to use this ingress gw as the edge controller
+        enabled: true
+        k8s:
+          service:
+            ports:
+              - port: 15021
+                targetPort: 15021 
+                name: status-port
+                protocol: TCP
+              - port: 80
+                targetPort: 8080
+                nodePort: 32080
+                name: http2
+                protocol: TCP
+              - port: 443
+                targetPort: 8443
+                nodePort: 32445
+                name: https
+                protocol: TCP
+              - port: 15012
+                targetPort: 15012
+                name: tcp-istiod
+                protocol: TCP
+              - port: 15443
+                targetPort: 15443
+                name: tls
+                protocol: TCP
+              - port: 3000
+                targetPort: 3000
+                name: http-custom-1
+                protocol: TCP
+              - port: 5000
+                targetPort: 5000
+                name: http-custom-2
+                protocol: TCP
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+    egressGateways:
+      - namespace: istio-system
+        name: istio-egressgateway
+        enabled: true
+        k8s:
+          service:
+            ports:
+              - port: 80
+                targetPort: 8080
+                name: http2
+                protocol: TCP
+              - port: 443
+                targetPort: 8443
+                name: https
+                protocol: TCP
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.abc.com/v1alpha1
+kind: Loadbalancer
+metadata:
+  name: dpai-test-lb
+  namespace: default
+  labels:
+    environment: dev
+spec:
+  labels:
+    lb: dpai-lb # labeled nodes of ingress worker nodegroup 
+  listeners:
+  - owner: vedang.parasnis@intel.com
+    vip:
+      ipprotocol: TCP
+      iptype: IPv4
+      persist: true
+      port: 443
+      # sslProfile:
+        # name: my-app-ssl-profile
+    pool:
+      loadbalancingmode: round-robin
+      minactivemembers: 1
+      monitor: "i_tcp"
+      members:
+      - name: dpai-ingress-node1
+        instanceRef: instance-001
+        adminState: active
+        connectionLimit: 100
+        monitorStatus: healthy
+        priorityGroup: 1
+        ratio: 1
+  security:
+    sourceips:
+    - 0.0.0.0/0

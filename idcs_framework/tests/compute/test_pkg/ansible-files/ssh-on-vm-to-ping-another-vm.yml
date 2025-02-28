@@ -1,0 +1,14 @@
+- name: Connect to VM instance created and ping the other VM instance created on same cloud account
+  hosts: vm
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: ping the second instance (positive test)
+    ansible.builtin.shell: ping -c 4 {{ another_vm }}
+    register: ping_result
+
+  - name: Ensure ping was successful
+    ansible.builtin.debug:
+      msg: "Ping successful"
+    when: ping_result.rc == 0

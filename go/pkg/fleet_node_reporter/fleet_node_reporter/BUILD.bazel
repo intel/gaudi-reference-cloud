@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "fleet_node_reporter",
+    srcs = ["fleet_node_reporter.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/fleet_node_reporter/fleet_node_reporter",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/fleet_node_reporter/config",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

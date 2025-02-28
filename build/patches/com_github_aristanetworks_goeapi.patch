@@ -1,0 +1,54 @@
+diff --git a/eapilib.go b/eapilib.go
+index d3d1423..796563b 100644
+--- a/eapilib.go
++++ b/eapilib.go
+@@ -417,9 +417,20 @@ func (conn *HTTPEapiConnection) send(data []byte) (*JSONRPCResponse, error) {
+ 		return &JSONRPCResponse{}, fmt.Errorf("No Connection")
+ 	}
+ 
+-	tr := &http.Transport{
+-		DisableKeepAlives: conn.disableKeepAlive,
++	cipherSuites := []uint16{
++		tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+ 	}
++	for _, cs := range tls.CipherSuites() {
++		cipherSuites = append(cipherSuites, cs.ID)
++	}	
++
++        tr := &http.Transport{
++                TLSClientConfig:   &tls.Config{
++                        InsecureSkipVerify: true,
++                        CipherSuites: cipherSuites,
++                },
++                DisableKeepAlives: conn.disableKeepAlive,
++        }
+ 
+ 	timeOut := time.Duration(time.Duration(conn.timeOut) * time.Second)
+ 	client := &http.Client{
+@@ -535,10 +546,22 @@ func (conn *HTTPSEapiConnection) send(data []byte) (*JSONRPCResponse, error) {
+ 	}
+ 	timeOut := time.Duration(time.Duration(conn.timeOut) * time.Second)
+ 	url := conn.getURL()
+-	tr := &http.Transport{
+-		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+-		DisableKeepAlives: conn.disableKeepAlive,
+-	}
++
++        cipherSuites := []uint16{
++                tls.TLS_RSA_WITH_AES_256_CBC_SHA,
++        }
++        for _, cs := range tls.CipherSuites() {
++                cipherSuites = append(cipherSuites, cs.ID)
++        }
++
++        tr := &http.Transport{
++                TLSClientConfig:   &tls.Config{
++                        InsecureSkipVerify: true,
++                        CipherSuites: cipherSuites,
++                },
++                DisableKeepAlives: conn.disableKeepAlive,
++        }
++
+ 	client := &http.Client{
+ 		Timeout:   timeOut,
+ 		Transport: tr,

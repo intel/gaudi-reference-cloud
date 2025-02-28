@@ -1,0 +1,27 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "productcatalog_controllers",
+    srcs = [
+        "product_controller.go",
+        "vendor_controller.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/productcatalog_operator/controllers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/productcatalog_operator/apis/private.cloud/v1alpha1",
+        "//go/pkg/tradecheck/tradecheckintel",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/builder",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+        "@io_k8s_sigs_controller_runtime//pkg/predicate",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

@@ -1,0 +1,32 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "vast",
+    srcs = ["filesystem_handler.go"],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/server/vast",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//api/intel/storagecontroller/v1:go_proto",
+        "//api/intel/storagecontroller/v1/vast:go_proto",
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/backend/vast",
+        "@com_github_rs_zerolog//log",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)
+
+go_test(
+    name = "vast_test",
+    srcs = ["filesystem_handler_test.go"],
+    embed = [":vast"],
+    deps = [
+        "//api/intel/storagecontroller/v1:go_proto",
+        "//api/intel/storagecontroller/v1/vast:go_proto",
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/backend/vast",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+## Append samples of your project ##
+resources:
+- cloud_v1alpha1_vast_storage.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

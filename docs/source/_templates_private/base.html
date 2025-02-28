@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% block head %}
+<head>
+
+        <link rel="stylesheet" type="text/css" href="/docs/_static/css/custom.css" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <link rel="icon" type="image/x-icon" href="_static/assets/favicon.ico">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300&display=swap" rel="stylesheet">
+
+        <title> 
+            {% block title %} 
+            Intel® Tiber™ AI Cloud Docs
+            {% endblock %} 
+        </title>
+</head>     
+{% endblock %}
+
+<body>
+    <!-- Google tag (gtag.js)
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DT7D3YR0LH">
+    </script> -->
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+  
+</body>
+</html>

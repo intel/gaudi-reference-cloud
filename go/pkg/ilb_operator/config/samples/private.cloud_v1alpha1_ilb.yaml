@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Ilb
+metadata:
+  labels:
+    app.kubernetes.io/name: ilb
+    app.kubernetes.io/instance: ilb-sample
+    app.kubernetes.io/part-of: ilb
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: ilb
+  name: ilb-sample
+spec:
+  # TODO(user): Add fields here

@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infaas-safeguard.fullname" . }}
+  labels:
+    {{- include "infaas-safeguard.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "infaas-safeguard.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ include "infaas-safeguard.fullname" . }}
+    spec:
+      runtimeClassName: habana
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: s3-model-files-mount
+        image: amazon/aws-cli:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            aws s3 sync s3://cnvrg-test-maas/quantization-configs/llama-guard-3-1b /data/quantization_config && 
+            aws s3 sync s3://cnvrg-test-maas/quantization-configs/llama-guard-3-1b/single-device  /data/hqt_output &&
+            aws s3 sync s3://cnvrg-test-maas/models/meta-llama/Llama-Guard-3-1B /models/llm &&
+            chmod -R 400 /data/quantization_config &&
+            chmod -R 400 /data/hqt_output &&
+            chmod -R 400 /models
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-access-secrets
+                key: aws-access-key-id 
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-access-secrets
+                key: aws-secret-access-key
+        volumeMounts:
+          - name: fp8-config-volume
+            mountPath: /data
+          - name: models
+            mountPath: /models
+      containers:
+        - name: tgi-safeguard
+          securityContext:
+            capabilities:
+              add: ["SYS_NICE"]
+          image: {{ .Values.image.tgiSafeguard.repository }}:{{ .Values.image.tgiSafeguard.tag }}
+          imagePullPolicy: {{ .Values.image.tgiSafeguard.pullPolicy }}
+          args:
+            - --max-input-length
+            - "2048"
+            - --max-batch-prefill-tokens
+            - "4096"
+            - --max-total-tokens
+            - "4096"
+            - --max-batch-total-tokens
+            - "131072"
+            - --max-waiting-tokens
+            - "5"
+            - --waiting-served-ratio
+            - "1.1"
+            - --max-concurrent-requests
+            - "128"
+            - "--hostname"
+            - "0.0.0.0"
+            - "--port"
+            - "9000"
+          env:
+            {{- if eq $.Values.precision "fp8" }}
+            - name: QUANT_CONFIG
+              value: "/usr/src/quantization_config/maxabs_quant.json"
+            - name: WARMUP_ENABLED
+              value: "false"
+            {{- end }}
+            - name: HABANA_VISIBLE_DEVICES
+              value: "all"
+            - name: OMPI_MCA_btl_vader_single_copy_mechanism
+              value: "none"
+            - name: TEXT_GENERATION_SERVER_IGNORE_EOS_TOKEN
+              value: "false"
+            - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+              value: "true"
+            - name: BATCH_BUCKET_SIZE
+              value: "64"
+            - name: PREFILL_BATCH_BUCKET_SIZE
+              value: "2"
+            - name: PAD_SEQUENCE_TO_MULTIPLE_OF
+              value: "64"
+            - name: USE_FLASH_ATTENTION
+              value: "true"
+            - name: FLASH_ATTENTION_RECOMPUTE
+              value: "true"
+            - name: MODEL_ID
+              value: /usr/src/models/llm
+            - name: TGI_PROFILER_ENABLED
+              value: "true"
+            - name: SHARDED
+              value: "false"
+          startupProbe:
+            httpGet:
+              port: 9000
+              path: /info
+            initialDelaySeconds: 50
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 48
+          livenessProbe:
+            httpGet:
+              port: 9000
+              path: /info
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 12
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - | 
+                  URL="http://localhost:9000/generate"
+                  DATA='{"inputs":"hi", "parameters":{"max_new_tokens":2}}'
+                  curl --fail -X POST "$URL" -d "$DATA" -H "Content-Type: application/json"
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            limits:
+              habana.ai/gaudi: "1"
+          volumeMounts:
+            - name: fp8-config-volume
+              mountPath: /usr/src/quantization_config
+              subPath: quantization_config
+              readOnly: true
+            - name: fp8-config-volume
+              mountPath: /usr/src/hqt_output
+              subPath: hqt_output
+              readOnly: true
+            - name: models
+              mountPath: /usr/src/models
+              readOnly: true
+
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,355 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: nodegroups.idcnetwork.intel.com
+spec:
+  group: idcnetwork.intel.com
+  names:
+    kind: NodeGroup
+    listKind: NodeGroupList
+    plural: nodegroups
+    shortNames:
+    - ng
+    singular: nodegroup
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .metadata.labels.pool
+      name: pool
+      type: string
+    - jsonPath: .metadata.labels.maintenance
+      name: maintenance
+      type: string
+    - jsonPath: .status.networkNodesCount
+      name: NN_Count
+      type: string
+    - jsonPath: .status.frontEndSwitchCount
+      name: FE_SwCount
+      type: string
+    - jsonPath: .status.storageSwitchCount
+      name: STG_SwCount
+      type: string
+    - jsonPath: .status.accSwitchCount
+      name: ACC_SwCount
+      type: string
+    - jsonPath: .spec.frontEndFabricConfig.vlanConf.vlanID
+      name: FE_Vlan
+      type: string
+    - jsonPath: .status.frontEndFabricStatus.vlanConfigStatus.readinessByNetworkNode
+      name: FE_Ready(Nodes)
+      type: string
+    - jsonPath: .spec.frontEndFabricConfig.bgpConf.bgpCommunity
+      name: FE_BGP
+      type: string
+    - jsonPath: .status.bgpConfigStatus.bgpConfigStatus.readinessBySwitch
+      name: FE_Ready(Switches)
+      type: string
+    - jsonPath: .spec.acceleratorFabricConfig.vlanConf.vlanID
+      name: Acc_Vlan
+      type: string
+    - jsonPath: .status.acceleratorFabricStatus.vlanConfigStatus.readinessByNetworkNode
+      name: Acc_Ready(Nodes)
+      type: string
+    - jsonPath: .spec.acceleratorFabricConfig.bgpConf.bgpCommunity
+      name: Acc_BGP
+      type: string
+    - jsonPath: .status.acceleratorFabricStatus.bgpConfigStatus.readinessBySwitch
+      name: Acc_Ready(Switches)
+      type: string
+    - jsonPath: .spec.storageFabricConfig.vlanConf.vlanID
+      name: Strg_Vlan
+      type: string
+    - jsonPath: .status.storageFabricStatus.vlanConfigStatus.readinessByNetworkNode
+      name: Strg_Ready(Nodes)
+      type: string
+    - jsonPath: .spec.storageFabricConfig.bgpConf.bgpCommunity
+      name: Strg_BGP
+      type: string
+    - jsonPath: .status.storageFabricStatus.bgpConfigStatus.readinessBySwitch
+      name: Strg_Ready(Switches)
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: NodeGroup is the Schema for the nodegroups API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: |-
+              NetworkNodes, FrontEndLeafSwitches and AcceleratorLeafSwitches are the devices that belong to a NodeGroup.
+              NetworkNode CRD has the connections between the NetworkNode and the LeafSwitches. All these above represents
+              the topology of a NodeGroup.
+
+              FrontEndFabricConfig and AcceleratorFabricConfig define the desired values for network configuration(ie, Vlan or BGP).
+
+              NodeGroupSpec defines the desired state of NodeGroup
+            properties:
+              acceleratorFabricConfig:
+                properties:
+                  bgpConf:
+                    properties:
+                      bgpCommunity:
+                        default: -1
+                        format: int64
+                        type: integer
+                    type: object
+                  vlanConf:
+                    properties:
+                      vlanID:
+                        default: -1
+                        format: int64
+                        type: integer
+                    type: object
+                type: object
+              acceleratorLeafSwitches:
+                items:
+                  type: string
+                type: array
+              frontEndFabricConfig:
+                properties:
+                  bgpConf:
+                    properties:
+                      bgpCommunity:
+                        default: -1
+                        format: int64
+                        type: integer
+                    type: object
+                  vlanConf:
+                    properties:
+                      vlanID:
+                        default: -1
+                        format: int64
+                        type: integer
+                    type: object
+                type: object
+              frontEndLeafSwitches:
+                items:
+                  type: string
+                type: array
+              networkNodes:
+                items:
+                  type: string
+                type: array
+              storageFabricConfig:
+                properties:
+                  bgpConf:
+                    properties:
+                      bgpCommunity:
+                        default: -1
+                        format: int64
+                        type: integer
+                    type: object
+                  vlanConf:
+                    properties:
+                      vlanID:
+                        default: -1
+                        format: int64
+                        type: integer
+                    type: object
+                type: object
+              storageLeafSwitches:
+                items:
+                  type: string
+                type: array
+            type: object
+          status:
+            description: NodeGroupStatus defines the observed state of NodeGroup
+            properties:
+              accSwitchCount:
+                type: integer
+              acceleratorFabricStatus:
+                properties:
+                  bgpConfigStatus:
+                    properties:
+                      lastObservedReadyBGP:
+                        description: LastObservedReadyBGP is the last BGP value in
+                          ready state(all switches' BGP configs are in-sync with the
+                          desired value)
+                        format: int64
+                        type: integer
+                      readinessBySwitch:
+                        type: string
+                      ready:
+                        description: Ready
+                        type: boolean
+                      switchBGPConfStatus:
+                        items:
+                          properties:
+                            lastObservedBGPCommunity:
+                              format: int64
+                              type: integer
+                            switchFQDN:
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                  vlanConfigStatus:
+                    properties:
+                      lastObservedReadyVLAN:
+                        description: LastObservedReadyVLAN is the last Vlan value
+                          in ready state(all Vlan configs are in-sync with the desired
+                          value)
+                        format: int64
+                        type: integer
+                      networkNodeVlanStatus:
+                        items:
+                          description: NetworkNodeVlanStatus is a wrapper of the switchPort-vlan
+                            map and the NetworkNode it belongs to.
+                          properties:
+                            lastObservedVlanID:
+                              additionalProperties:
+                                format: int64
+                                type: integer
+                              description: 'key: switch port Name. value: vlan id'
+                              type: object
+                            networkNodeName:
+                              type: string
+                          type: object
+                        type: array
+                      readinessByNetworkNode:
+                        type: string
+                      ready:
+                        type: boolean
+                    type: object
+                type: object
+              frontEndFabricStatus:
+                properties:
+                  bgpConfigStatus:
+                    properties:
+                      lastObservedReadyBGP:
+                        description: LastObservedReadyBGP is the last BGP value in
+                          ready state(all switches' BGP configs are in-sync with the
+                          desired value)
+                        format: int64
+                        type: integer
+                      readinessBySwitch:
+                        type: string
+                      ready:
+                        description: Ready
+                        type: boolean
+                      switchBGPConfStatus:
+                        items:
+                          properties:
+                            lastObservedBGPCommunity:
+                              format: int64
+                              type: integer
+                            switchFQDN:
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                  vlanConfigStatus:
+                    properties:
+                      lastObservedReadyVLAN:
+                        description: LastObservedReadyVLAN is the last Vlan value
+                          in ready state(all Vlan configs are in-sync with the desired
+                          value)
+                        format: int64
+                        type: integer
+                      networkNodeVlanStatus:
+                        items:
+                          description: NetworkNodeVlanStatus is a wrapper of the switchPort-vlan
+                            map and the NetworkNode it belongs to.
+                          properties:
+                            lastObservedVlanID:
+                              additionalProperties:
+                                format: int64
+                                type: integer
+                              description: 'key: switch port Name. value: vlan id'
+                              type: object
+                            networkNodeName:
+                              type: string
+                          type: object
+                        type: array
+                      readinessByNetworkNode:
+                        type: string
+                      ready:
+                        type: boolean
+                    type: object
+                type: object
+              frontEndSwitchCount:
+                type: integer
+              networkNodesCount:
+                type: integer
+              storageFabricStatus:
+                properties:
+                  bgpConfigStatus:
+                    properties:
+                      lastObservedReadyBGP:
+                        description: LastObservedReadyBGP is the last BGP value in
+                          ready state(all switches' BGP configs are in-sync with the
+                          desired value)
+                        format: int64
+                        type: integer
+                      readinessBySwitch:
+                        type: string
+                      ready:
+                        description: Ready
+                        type: boolean
+                      switchBGPConfStatus:
+                        items:
+                          properties:
+                            lastObservedBGPCommunity:
+                              format: int64
+                              type: integer
+                            switchFQDN:
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                  vlanConfigStatus:
+                    properties:
+                      lastObservedReadyVLAN:
+                        description: LastObservedReadyVLAN is the last Vlan value
+                          in ready state(all Vlan configs are in-sync with the desired
+                          value)
+                        format: int64
+                        type: integer
+                      networkNodeVlanStatus:
+                        items:
+                          description: NetworkNodeVlanStatus is a wrapper of the switchPort-vlan
+                            map and the NetworkNode it belongs to.
+                          properties:
+                            lastObservedVlanID:
+                              additionalProperties:
+                                format: int64
+                                type: integer
+                              description: 'key: switch port Name. value: vlan id'
+                              type: object
+                            networkNodeName:
+                              type: string
+                          type: object
+                        type: array
+                      readinessByNetworkNode:
+                        type: string
+                      ready:
+                        type: boolean
+                    type: object
+                type: object
+              storageSwitchCount:
+                type: integer
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

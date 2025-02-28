@@ -1,0 +1,8 @@
+{
+  "Template": {
+    "TemplateName": "Terminate-Instance-Cloud-Credits-Template",
+    "SubjectPart": "Hello {{name}}!",
+    "HtmlPart": "<p>Hello {{name}}, your cloud credit is about to expire.</p>",
+    "TextPart": "Hello {{name}},  your cloud credit is about to expire."
+  }
+}

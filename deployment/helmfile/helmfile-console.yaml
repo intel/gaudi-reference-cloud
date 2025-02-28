@@ -1,0 +1,45 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.console.enabled }}
+  - name: console
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: console
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: console
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/console
+    version: {{ readFile (print $helmChartVersionsDir "/console.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}console@sha256"
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

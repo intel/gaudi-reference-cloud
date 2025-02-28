@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-22.04-spr-5.15-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 22.04 LTS v20250210 with 5.15 kernel
+  description: Ubuntu Server is a version of the Ubuntu operating system designed
+    and engineered as a backbone for the internet.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-spr
+  - bm-spr-pl
+  - bm-spr-pl-sc
+  md5sum: 92cf5d7250e8a50a84dfb526e585057e
+  sha256sum: 179741b9c78cda9ab926641029dbe108b43799ebcc5e56734af9f47b8ac72672
+  sha512sum: e989aa68c5384fad35280eea6039c87beac66b0c15e86345e4f1e5f8678c84200093472d67a03346df23480e159fb9e08eb351ffba417d21f955b582b49624a6
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

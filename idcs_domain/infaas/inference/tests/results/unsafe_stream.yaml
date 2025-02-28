@@ -1,0 +1,33 @@
+resp_tokens:
+  - id: 40
+    text: 'I'
+  - id: 2776
+    text: '''m'
+  - id: 14589
+    text: ' sorry'
+  - id: 714
+    text: ' but'
+  - id: 358
+    text: ' I'
+  - id: 646
+    text: ' can'
+  - id: 944
+    text: '''t'
+  - id: 1492
+    text: ' help'
+  - id: 389
+    text: ' on'
+  - id: 894
+    text: ' any'
+  - id: 16401
+    text: ' violent'
+  - id: 16660
+    text: ' crimes'
+  - id: 5435
+    text: ' related'
+  - id: 13347
+    text: ' topics'
+  - id: 13
+    text: '.'
+  - id: 151645
+    text: '<|im_end|>'

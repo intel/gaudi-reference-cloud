@@ -1,0 +1,166 @@
+{{- if not .Values.deployStandaloneIronic -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
+    webhook: metal3-io-v1alpha1-baremetalhost
+  name: baremetal-operator
+  namespace: {{ .Release.Namespace }}
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+        webhook: metal3-io-v1alpha1-baremetalhost
+        name: baremetal-operator-{{ .Release.Namespace }}
+        app: bmo
+      annotations:
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/baremetal-configmap: {{ include (print $.Template.BasePath "/baremetal-configmap.yaml") . | sha256sum }}
+        checksum/baremetal-fw-update-configmap: {{ include (print $.Template.BasePath "/baremetal-fw-update-configmap.yaml") . | sha256sum }}
+        checksum/baremetal-operator-manager-configmap: {{ include (print $.Template.BasePath "/baremetal-operator-manager-configmap.yaml") . | sha256sum }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - ironic
+              topologyKey: kubernetes.io/hostname
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: name
+                  operator: In
+                  values:
+                  - baremetal-operator-{{ .Release.Namespace }}
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - --metrics-addr=127.0.0.1:8085
+        - --enable-leader-election
+        command:
+        - /baremetal-operator
+        env:
+        {{- if not .Values.watchAllNamespaces }}
+        - name: WATCH_NAMESPACE
+          value: {{ .Release.Namespace }}
+        {{- end }}
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        # Env var to set ironic CA cert when using Vault PKI
+        {{- if .Values.useVaultPKI }}
+        - name: IRONIC_CACERT_FILE
+          value: '/opt/metal3/certs/client/ca.crt'
+        {{- end }}
+        envFrom:
+        - configMapRef:
+            name: ironic-bmo-configmap
+        image: {{ .Values.bareMetalOperatorImageRepo }}:{{ .Values.bareMetalOperatorImageTag }}
+        imagePullPolicy: {{ .Values.bareMetalOperatorImagePullPolicy }}
+        livenessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /healthz
+            port: 9440
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        name: manager
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /readyz
+            port: 9440
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        {{- if .Values.enableTLSandAuth }}
+        # Ironic cert for mTLS
+        {{- if .Values.useVaultPKI }}
+        - name: cert-ironic
+          mountPath: "/opt/metal3/certs/client"
+          readOnly: true
+        {{- else }}
+        - name: cacert
+          mountPath: "/opt/metal3/certs/ca"
+          readOnly: true
+        {{- end }}
+        - name: ironic-credentials
+          mountPath: "/opt/metal3/auth/ironic"
+          readOnly: true
+        - name: ironic-inspector-credentials
+          mountPath: "/opt/metal3/auth/ironic-inspector"
+          readOnly: true
+        {{- end }}
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8085/
+        - --logtostderr=true
+        - --v=10
+        image: {{ .Values.kubeRBACPolicyImageRepo }}:{{ .Values.kubeRBACPolicyImageTag }}
+        imagePullPolicy: {{ .Values.kubeRBACPolicyImagePullPolicy }}
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+      serviceAccountName: baremetal-operator
+      hostNetwork: {{ .Values.useHostNetwork }}
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: bmo-webhook-server-cert
+      {{- if .Values.enableTLSandAuth }}
+      {{- if .Values.useVaultPKI }}
+      # Ironic cert for mTLS
+      - name: cert-ironic
+        secret:
+          secretName: ironic-cert
+      {{- else }}
+      - name: cacert
+        secret:
+          secretName: ironic-cacert
+      {{- end }}
+      - name: ironic-credentials
+        secret:
+          secretName: ironic-credentials
+      - name: ironic-inspector-credentials
+        secret:
+          secretName: ironic-inspector-credentials
+      {{- end }}
+{{- end }}

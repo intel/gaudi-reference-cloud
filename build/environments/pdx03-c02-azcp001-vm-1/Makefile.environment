@@ -1,0 +1,14 @@
+# This Makefile contains environment-specific values used by make.
+# Any values needed only for helmfile should be in /deployment/helmfile instead of this file.
+
+export IDC_ENV_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+DOCKERIO_REGISTRY := docker.io
+HELMFILE_ENVIRONMENT := $(IDC_ENV)
+SKIP_BMVS = 1
+REGION=us-dev-1
+
+export SECRETS_DIR ?= $(ROOT_DIR)/local/secrets
+export VAULT_TOKEN_FILE ?= $(SECRETS_DIR)/VAULT_TOKEN
+export VAULT_TOKEN = $(shell cat $(VAULT_TOKEN_FILE))
+export BAREMETAL_OPERATOR_NAMESPACES = metal3-1

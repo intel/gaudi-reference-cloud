@@ -1,0 +1,63 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+sh_test(
+    name = "integration",
+    srcs = ["test.sh"],
+    args = [
+        "$(location //services/storage_controller/tests/configs:storage-conf.yaml)",
+        "$(location //services/storage_controller/cmd/storage_controller)",
+        "$(location //ci/k6/cmd)",
+        "$(location proto_api.js)",
+        "$(location functional.js)",
+    ],
+    data = [
+        "functional.js",
+        "proto_api.js",
+        "util.js",
+        "//api/intel/storagecontroller/v1:cluster.proto",
+        "//api/intel/storagecontroller/v1:common.proto",
+        "//api/intel/storagecontroller/v1:namespace.proto",
+        "//api/intel/storagecontroller/v1:s3.proto",
+        "//api/intel/storagecontroller/v1:user.proto",
+        "//api/intel/storagecontroller/v1/weka:filesystem.proto",
+        "//api/intel/storagecontroller/v1/weka:statefulclient.proto",
+        "//ci/k6/cmd",
+        "//services/storage_controller/cmd/storage_controller",
+        "//services/storage_controller/tests/configs:storage-conf.yaml",
+        "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+        "@googleapis//google/api:annotations_proto",
+    ],
+    env = {
+        "S3_PROTO": "$(location //api/intel/storagecontroller/v1:s3.proto)",
+        "USER_PROTO": "$(location //api/intel/storagecontroller/v1:user.proto)",
+        "WEKA_FILESYSTEM_PROTO": "$(location //api/intel/storagecontroller/v1/weka:filesystem.proto)",
+        "WEKA_STATEFULCLIENT_PROTO": "$(location //api/intel/storagecontroller/v1/weka:statefulclient.proto)",
+    },
+)
+
+# sh_test(
+#     name = "vast",
+#     srcs = ["vast.sh"],
+#     args = [
+#         "$(location //ci/k6/cmd)",
+#         "$(location vast.js)",
+#     ],
+#     data = [
+#         "vast.js",
+#         "util.js",
+#         "//api/intel/storagecontroller/v1:cluster.proto",
+#         "//api/intel/storagecontroller/v1:common.proto",
+#         "//api/intel/storagecontroller/v1:namespace.proto",
+#         "//api/intel/storagecontroller/v1:s3.proto",
+#         "//api/intel/storagecontroller/v1:user.proto",
+#         "//api/intel/storagecontroller/v1/vast:filesystem.proto",
+#         "//ci/k6/cmd",
+#         "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+#         "@googleapis//google/api:annotations_proto",
+#     ],
+#     env = {
+#         "S3_PROTO": "$(location //api/intel/storagecontroller/v1:s3.proto)",
+#         "USER_PROTO": "$(location //api/intel/storagecontroller/v1:user.proto)",
+#         "VAST_FILESYSTEM_PROTO": "$(location //api/intel/storagecontroller/v1/vast:filesystem.proto)",
+#     },
+# )

@@ -1,0 +1,2 @@
+ALTER TABLE cloud_accounts 
+ADD COLUMN IF NOT EXISTS trade_restricted BOOLEAN DEFAULT FALSE;

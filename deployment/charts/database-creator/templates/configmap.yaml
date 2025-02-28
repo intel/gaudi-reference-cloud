@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-db-init-script
+data:
+  init-db.sql: |
+        GRANT {{ .Values.postgresql.dbUser }} TO {{ .Values.postgresql.adminUser }};
+
+        SELECT 'CREATE DATABASE {{ .Values.postgresql.dbName }} OWNER {{ .Values.postgresql.dbUser }}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ .Values.postgresql.dbName }}')\gexec
+
+        ALTER ROLE {{ .Values.postgresql.dbUser }} WITH LOGIN;
+        GRANT CONNECT ON DATABASE {{ .Values.postgresql.dbName }} TO {{ .Values.postgresql.dbUser }};
+        GRANT ALL PRIVILEGES ON DATABASE {{ .Values.postgresql.dbName }} TO {{ .Values.postgresql.dbUser }};

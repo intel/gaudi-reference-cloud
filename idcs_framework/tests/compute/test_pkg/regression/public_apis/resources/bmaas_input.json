@@ -1,0 +1,109 @@
+{
+    "instanceTypeToBeCreated": "bm-spr",
+    "machineImages": [
+        "ubuntu-22.04-spr-metal-cloudimg-amd64-v20231130", 
+        "ubuntu-22.04-pvc-1550-metal-cloudimg-amd64-v20240129", 
+        "ubuntu-22.04-gaudi2-v1.14-metal-cloudimg-amd64-20240206"
+    ],
+    "instanceTypes": [
+        "bm-spr", "bm-spr-hbm", "bm-spr-hbm-f", "bm-spr-atsm-170-1", "bm-spr-pvc-1100-8", "bm-spr-pvc-1100-4-sa", "bm-icp-gaudi2"
+    ],
+    "machineImagesMapping": [
+        {"instanceType": "bm-spr",            "machineImage": "ubuntu-22.04-spr-metal-cloudimg-amd64-v20240115"},
+        {"instanceType": "bm-icp-gaudi2",     "machineImage": "ubuntu-22.04-gaudi2-v1.14-metal-cloudimg-amd64-v20240212"},
+        {"instanceType": "bm-spr-gaudi2",     "machineImage": ""},
+        {"instanceType": "bm-spr-pvc-1100-4", "machineImage": "ubuntu-22.04-pvc-1100-metal-cloudimg-amd64-v20240129"},
+        {"instanceType": "bm-spr-pvc-1100-8", "machineImage": "ubuntu-22.04-pvc-1100-metal-cloudimg-amd64-v20240129"},
+        {"instanceType": "bm-spr-pvc-1550-8", "machineImage": "ubuntu-22.04-pvc-1550-metal-cloudimg-amd64-v20240129"},
+        {"instanceType": "bm-virtual",        "machineImage": "ubuntu-22.04-server-cloudimg-amd64-latest"},
+        {"instanceType": "bm-srf-sp-quanta",   "machineImage": "ubuntu-24.04-metal-cloudimg-amd64-v20240829"}
+    ],
+    "vnetPayload": {
+        "metadata": {
+            "name": "<<vnet-name>>"
+        },
+        "spec": {
+            "region": "us-dev-1",
+            "availabilityZone": "us-dev-1b",
+            "prefixLength": 22
+        }
+    },
+    "sshPublicKeyPayload": {
+        "metadata": {
+            "name": "<<ssh-key-name>>"
+        },
+        "spec": {
+            "sshPublicKey": "<<ssh-user-public-key>>"
+        }
+    },
+    "instancePayload": {
+        "metadata": {
+            "name": "<<instance-name>>"
+        },
+        "spec": {
+            "availabilityZone": "<<availability-zone>>",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+                "<<ssh-key-name>>"
+            ],
+            "interfaces": [
+                {
+                    "name": "eth0",
+                    "vNet": "<<vnet-name>>"
+                }
+            ]
+        }
+    },
+    "meteringMonitoringPayload": {
+        "resourceId": "<<resource-id>>"
+    },
+    "instancePutPayload": {
+        "spec": {
+          "sshPublicKeyNames": [
+            "<<ssh-public-key>>"
+          ]
+        }
+    },
+    "instanceGroupPayload": {
+        "metadata": {
+            "name": "<<instance-group-name>>",
+            "reserved3": ""
+        },
+        "spec": {
+            "instanceCount": "<<instance-count>>",
+            "instanceSpec": {
+                "availabilityZone": "<<availability-zone>>",
+                "instanceGroup": "automation-bm-group",
+                "instanceType": "<<instance-type>>",
+                "machineImage": "<<machine-image>>",
+                "runStrategy": "RerunOnFailure",
+                "sshPublicKeyNames": [
+                    "<<ssh-key-name>>"
+                ],
+                "interfaces": [
+                    {
+                        "name": "eth0",
+                        "vNet": "<<vnet-name>>"
+                    }
+                ],
+                "userData": ""
+            }
+        }
+    },
+    "instanceGroupPatchPayload": {
+        "spec": {
+          "instanceCount": "<<instance-count>>",
+          "instanceSpec": {
+            "userData": ""
+          }
+        }
+    },
+    "instanceSearchPayload": {
+        "metadata": {
+          "instanceGroup": "<<instance-group-name>>",
+          "instanceGroupFilter": "Default"
+        }
+    }
+}

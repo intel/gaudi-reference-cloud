@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "productcatalog_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/productcatalog/cmd/productcatalog",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/observability",
+        "//go/pkg/productcatalog",
+        "//go/pkg/productcatalog/config",
+        "@com_github_amacneil_dbmate//pkg/driver/postgres",
+        "@com_github_jackc_pgx_v5//stdlib",
+        "@io_k8s_client_go//rest",
+    ],
+)
+
+go_binary(
+    name = "productcatalog",
+    embed = [":productcatalog_lib"],
+    visibility = ["//visibility:public"],
+)

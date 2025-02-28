@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  labels:
+    harvesterhci.io/imageDisplayName: ubuntu-2204-jammy-v20230122
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/os-type: ubuntu
+  name: ubuntu-2204-jammy-v20230122
+  namespace: default
+spec:
+  checksum: "cb54b1be5789e00cc86c080913994f5d5158fe1274dcfdca883b14018627520a878f5166ec1bcc68d82cd855b60803453229568f3d9feb734374dae45c2237eb"
+  displayName: ubuntu-2204-jammy-v20230122
+  sourceType: download
+  url: https://dev.console.idcservice.net/machine-images/cb54b1be5789e00cc86c080913994f5d5158fe1274dcfdca883b14018627520a878f5166ec1bcc68d82cd855b60803453229568f3d9feb734374dae45c2237eb

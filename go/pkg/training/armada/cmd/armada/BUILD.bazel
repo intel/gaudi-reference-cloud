@@ -1,0 +1,46 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_container_image", "idc_go_image")
+
+go_library(
+    name = "armada_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/training/armada/cmd/armada",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/training/armada/pkg/config",
+        "//go/pkg/training/armada/pkg/server",
+    ],
+)
+
+go_binary(
+    name = "armada",
+    embed = [":armada_lib"],
+    visibility = ["//visibility:public"],
+)
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "ansible_container_image",
+    base = "@ansible//image",
+    directory = "/training",
+    entrypoint = ["/training/armada"],
+    files = [
+        "//go/pkg/training/armada/pkg/ansible:ansibleplaybookfilegroups",
+        "//go/pkg/training/armada/pkg/cloud_init:cloudinitscripts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "armada_image",
+    base = ":ansible_container_image",
+    embed = [
+        ":armada_lib",
+    ],
+    visibility = ["//visibility:public"],
+)

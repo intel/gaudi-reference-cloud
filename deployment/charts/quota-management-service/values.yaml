@@ -1,0 +1,89 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/quota-management-service
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+# The address of the Cloudaccount Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+cloudAccountServerAddr: cloudaccount.idcs-system.svc.cluster.local:8443
+
+database:
+  # The DNS name used to connect to the Postgres database.
+  service: quota-management-service-db-postgresql 
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  arg: sslmode=disable
+  # credentials path
+  vaultCredentialsPath: controlplane/data/us-dev-1-quota-management-service-db-client
+config:
+  vaultAddress: "http://vault.kube-system.svc.cluster.local:8200"
+  vaultAuthPath: "auth/cluster-auth"
+  vaultApproleSecretsPath: "controlplane/data/us-dev-1a/quota-management-service/enrollment/approle"
+  vaultAuthRole: "us-dev-1-quota-management-service-role"
+service:
+  type: ClusterIP
+cognito:
+  enabled: false
+  endpoint: ""
+
+bootstrappedServices:
+  - quotaUnit: COUNT
+    maxLimits:
+      - compute:
+          - instances: 10
+          - instance_groups: 6
+      - storage:
+          - filesystems: 2
+          - totalSizeTB: 50
+          - buckets: 100
+          - bucketPrincipals: 50
+    quotaAccountType:
+        ENTERPRISE:
+          defaultLimits:
+            - compute:
+                - bm-icp-gaudi2: 128
+                - bm-icp-gaudi2-debug: 40
+                - bm-icx-gaudi2: 128
+                - bm-spr-gaudi2: 128
+                - bm-icp-gaudi2-sc: 128
+                - bm-icx-gaudi2-sc: 128
+                - bm-spr-gaudi3-dell: 128
+                - bm-emr-gaudi3-dell: 128
+                - bm-gnr-gaudi3-smc: 128
+                - bm-spr-pvc-1100-8: 20
+                - bm-spr-pvc-1100-4: 10
+                - bm-spr-pvc-1550-8: 20
+                - bm-spr: 20
+                - bm-emr: 2
+                - bm-emr-dell: 2
+                - bm-srf-sp-quanta: 2
+                - bm-gnr-sp-quanta: 20
+                - bm-spr-pl: 20
+                - bm-spr-pl-sc: 20
+                - bm-spr-atsm-170-1: 2
+                - bm-spr-hbm-c: 2
+                - bm-spr-hbm-f: 2
+                - bm-spr-hbm: 2
+                - bm-virtual: 5
+                - bm-virtual-sc: 5
+                - vm-spr-lrg: 50
+                - vm-spr-med: 50
+                - vm-spr-sml: 50
+                - vm-iks-tny: 0
+                - vm-spr-tny: 5
+                - vm-icp-gaudi2-1: 0
+                - vm-icp-gaudi2-slurm-1: 0
+                - vm-icp-gaudi2-8: 0
+                - vm-spr-pvc-1100-1: 20
+            - storage:
+                - filesystems: 2
+                - totalSizeTB: 50
+                - buckets: 100
+                - bucketPrincipals: 50
+                - bucketSizeInTB: 5

@@ -1,0 +1,101 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1.weka;
+
+import "go/pkg/storage/storagecontroller/api/common.proto";
+import "go/pkg/storage/storagecontroller/api/namespace.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api/weka";
+
+service FilesystemService {
+  rpc ListFilesystems(ListFilesystemsRequest) returns (ListFilesystemsResponse) {}
+  rpc GetFilesystem(GetFilesystemRequest) returns (GetFilesystemResponse) {}
+  rpc CreateFilesystem(CreateFilesystemRequest) returns (CreateFilesystemResponse) {}
+  rpc UpdateFilesystem(UpdateFilesystemRequest) returns (UpdateFilesystemResponse) {}
+  rpc DeleteFilesystem(DeleteFilesystemRequest) returns (DeleteFilesystemResponse) {}
+}
+
+message ListFilesystemsRequest {
+  NamespaceIdentifier namespace_id = 1;
+  Filter filter = 2;
+    
+  message Filter {
+    repeated string names = 1;
+  }
+  AuthenticationContext auth_ctx = 100;
+}
+
+message ListFilesystemsResponse {
+  repeated Filesystem filesystems = 1;
+}
+
+message GetFilesystemRequest {
+  FilesystemIdentifier filesystem_id = 1;
+  AuthenticationContext auth_ctx = 100;
+}
+
+message GetFilesystemResponse {
+  Filesystem filesystem = 1;
+}
+
+message CreateFilesystemRequest {
+  NamespaceIdentifier namespace_id = 1;
+  string name = 2;
+  uint64 total_bytes = 3;
+  bool encrypted = 4;
+  bool auth_required = 5;
+  AuthenticationContext auth_ctx = 100;
+}
+
+message CreateFilesystemResponse {
+  Filesystem filesystem = 1;
+}
+
+message UpdateFilesystemRequest {
+  FilesystemIdentifier filesystem_id = 1;
+  optional string new_name = 2;
+  optional uint64 new_total_bytes = 3;
+  optional bool new_auth_required = 4;
+  AuthenticationContext auth_ctx = 100;
+}
+
+message UpdateFilesystemResponse {
+  Filesystem filesystem = 1;
+}
+
+message DeleteFilesystemRequest {
+  FilesystemIdentifier filesystem_id = 1;
+  AuthenticationContext auth_ctx = 100;
+}
+
+message DeleteFilesystemResponse {
+}
+
+message FilesystemIdentifier {
+  NamespaceIdentifier namespace_id = 1;
+  string id = 2;
+}
+
+message Filesystem {
+  FilesystemIdentifier id = 1;
+  string name = 2;
+  Status status = 3;
+  bool is_encrypted = 4;
+  bool auth_required = 5;
+  Capacity capacity = 6;
+  string backend = 7;
+  
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_CREATING = 1;
+    STATUS_READY = 2;
+    STATUS_REMOVING = 3;
+  }
+
+  message Capacity {
+    uint64 total_bytes = 1;
+    uint64 available_bytes = 2;
+  }
+}

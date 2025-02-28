@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "idc-common.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--config=/config.yaml"
+          ports:
+            - name: http
+              containerPort: {{ include "idc-common.listenPort" . }}
+          env:
+            {{- include "idc-common.commonEnv" . | nindent 12 }}
+            - name: SWAGGER_ENABLED
+              value: {{ .Values.swagger.enabled | quote }}
+          volumeMounts:
+          - mountPath: /config.yaml
+            name: config
+            subPath: config.yaml
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+      volumes:
+      - configMap:
+          name: {{ include "idc-common.fullname" . }}
+        name: config
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

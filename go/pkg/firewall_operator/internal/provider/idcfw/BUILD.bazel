@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "idcfw",
+    srcs = ["idcfw.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/firewall_operator/internal/provider/idcfw",
+    visibility = ["//go/pkg/firewall_operator:__subpackages__"],
+    deps = [
+        "//go/pkg/firewall_operator/api/v1alpha1",
+        "//go/pkg/firewall_operator/internal/config",
+        "//go/pkg/firewall_operator/internal/provider",
+        "//go/pkg/log",
+    ],
+)
+
+go_test(
+    name = "idcfw_test",
+    srcs = ["idcfw_test.go"],
+    embed = [":idcfw"],
+    deps = [
+        "//go/pkg/firewall_operator/api/v1alpha1",
+        "//go/pkg/firewall_operator/internal/provider",
+        "@com_github_stretchr_testify//assert",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+    ],
+)

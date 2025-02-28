@@ -1,0 +1,1 @@
+INSERT INTO defaultconfig(name, value) VALUES ('max_source_ips','20'); 

@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - v1
+  - istio.yaml
+  - namespace.yaml
+  - secrets.yaml
+  - vault.yaml
+namespace: storage-controller
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: notImportantHere
+      namespace: storage-controller
+    unsetOnly: true

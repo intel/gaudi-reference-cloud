@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+service ConsoleInvoiceService {
+  rpc ReadUnbilled(ConsoleInvoiceUnbilledRequest) returns (stream ConsoleInvoiceUnbilledResponse) {
+    option (google.api.http) = {
+      get: "/v1/console/{cloudAccountId}/invoices/unbilled"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };  
+}
+  
+message ConsoleInvoiceUnbilledRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  // Example: May 2023
+  google.protobuf.Timestamp billingPeriod  = 2;
+}
+
+message ConsoleInvoiceUnbilledResponse {
+  string cloudAccountId = 1;
+  // Example: May 2023
+  google.protobuf.Timestamp billingPeriod  = 2;
+  string estimatedTotal = 3;
+  repeated ConsoleInvoiceUnbilledByService invoiceByService = 4;
+}
+
+message ConsoleInvoiceUnbilledByService {
+  // Example: BMaaS
+  string serviceName = 1;
+  string unbilledBalance = 2;
+  string unbilledActiveInstances = 3;
+  string unbilledActiveMins = 4;
+  repeated ConsoleInvoiceUnbilledByProductType invoiceByProductType = 5;
+}
+
+message ConsoleInvoiceUnbilledByProductType {
+  // Example: m7.metal
+  string productType = 1;
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp end = 3;
+  uint32 minsUsed = 4;
+  uint32 amount = 5;
+}

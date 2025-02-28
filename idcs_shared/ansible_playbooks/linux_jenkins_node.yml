@@ -1,0 +1,9 @@
+-
+  name: Jenkins Linux server 
+  hosts: build_servers
+  become: true
+  roles:
+    - linux_server
+    - jenkins_server
+    - lnx_docker
+    - kind_deployment

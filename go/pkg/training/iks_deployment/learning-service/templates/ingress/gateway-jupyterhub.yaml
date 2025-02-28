@@ -1,0 +1,60 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# apiVersion: networking.istio.io/v1
+# kind: Gateway
+# metadata:
+#   name: cluster-gateway
+#   namespace: istio-ingress
+# spec:
+#   selector:
+#     istio: ingressgateway
+#   servers:
+#     - port:
+#         # number: 443
+#         # name: https
+#         # protocol: HTTPS
+#         number: 443
+#         name: https
+#         protocol: HTTPS
+#       tls:
+#         # mode: SIMPLE
+#         # credentialName: jupyterhub-tls
+#         # minProtocolVersion: TLSV1_3
+#         # cipherSuites: ["AES256-GCM-SHA384"]
+#         # mode: PASSTHROUGH
+#         mode: ISTIO_MUTUAL
+#       hosts:
+#         - {{ .Values.jupyterhub.domain }}
+
+# ---
+
+# apiVersion: networking.istio.io/v1
+# kind: VirtualService
+# metadata:
+#   name: jupyterhub-routing
+#   namespace: istio-ingress
+# spec:
+#   hosts:
+#     - {{ .Values.jupyterhub.domain }}
+#   gateways:
+#     - cluster-gateway
+#   http:
+#     - match:
+#         - port: 443
+#           # uri:
+#           #   prefix: /
+#           # sniHosts:
+#           #   - {{ .Values.jupyterhub.domain }}
+#       route:
+#         - destination:
+#             port:
+#               number: 80
+#               # number: 443
+#             host: proxy-public.jupyterhub.svc.cluster.local
+#           # headers:
+#           #   request:
+#           #     add:
+#           #       access-control-allow-origin: "*"
+#       # corsPolicy:
+#       #   allowOrigins:
+#       #     - exact: {{ .Values.jupyterhub.domain }}

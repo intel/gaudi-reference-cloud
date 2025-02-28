@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "sesutil",
+    srcs = ["sesutil.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sesutil",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_aws_aws_sdk_go//aws",
+        "@com_github_aws_aws_sdk_go//aws/session",
+        "@com_github_aws_aws_sdk_go//service/ses",
+    ],
+)
+
+go_test(
+    name = "sesutil_test",
+    srcs = ["sesutil_test.go"],
+    embed = [":sesutil"],
+    deps = ["//go/pkg/log"],
+)

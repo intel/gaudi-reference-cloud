@@ -1,0 +1,46 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "storagecontroller",
+    srcs = [
+        "bucket.go",
+        "client.go",
+        "cluster.go",
+        "filesystem.go",
+        "filesystem_vast.go",
+        "lifecycle.go",
+        "namelookups.go",
+        "namespace.go",
+        "object_user.go",
+        "statefulagent.go",
+        "user.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "//go/pkg/storage/storagecontroller/api:go_proto",
+        "//go/pkg/storage/storagecontroller/api/vast:go_proto",
+        "//go/pkg/storage/storagecontroller/api/weka:go_proto",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//metadata",
+    ],
+)
+
+write_source_files(
+    name = "update_gen",
+    additional_update_targets = [
+        "//go/pkg/storage/storagecontroller/api:write_gen",
+        "//go/pkg/storage/storagecontroller/api/weka:write_gen",
+        "//go/pkg/storage/storagecontroller/api/vast:write_gen",
+        "//go/pkg/storage/storagecontroller/test/mocks:write_gen_mocks",
+    ],
+)

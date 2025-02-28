@@ -1,0 +1,127 @@
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/compute-api-server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  # The DNS name used to connect to the Postgres database.
+  service: compute-db-postgresql
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  arg: sslmode=disable
+  # credentials path
+  vaultCredentialsPath: database/static-creds/us-dev-1-compute-db-client
+
+# The region that this service is running in.
+region: us-dev-1
+
+# Created instances will be configured to use these DNS nameservers.
+nameservers:
+  - 10.45.117.137
+  - 8.8.8.8
+
+# The address of the VM Instance Scheduler in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+vmInstanceSchedulerAddr: us-dev-1a-vm-instance-scheduler.idcs-system.svc.cluster.local:8443
+
+# The address of the Billing Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+billingServerAddr: billing.idcs-system.svc.cluster.local:8443
+
+# The address of the Cloudaccount Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+cloudAccountServerAddr: cloudaccount.idcs-system.svc.cluster.local:8443
+
+# The address of the Object Storage Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+objectStoragePrivateServerAddr: ""
+
+# The address of the Fleet Admin Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+fleetAdminServerAddr: ""
+
+# The address of the Quota Management Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+quotaManagementServerAddr: ""
+
+vNetService:
+  # The pattern for creating SubnetConsumerId.
+  # If empty, the pattern "{ResourceId}.{CloudAccountId}.vnet" will be used.
+  # VNets that have the same SubnetConsumerId will share a subnet.
+  # Sharing subnets should only occur in development environments.
+  # The following values will be replaced in the string:
+  #   {CloudAccountId}
+  #   {Name}            (VNet name)
+  #   {ResourceId}      (VNet resource ID)
+  #   {Region}
+  #   {AvailabilityZone}
+  subnetConsumerIdPattern: ""
+
+service:
+  type: ClusterIP
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1000m"
+  limits:
+    memory: "1Gi"
+    cpu: "2000m"
+
+podAnnotations:
+
+replicaCount: 1
+
+# Interval of time between attempts to purge all instances.
+purgeInstanceInterval: 1h
+
+# Interval of time between attempts to obtain the instance types that needs to be deleted for each CloudAccountId
+getDeactivateInstancesInterval: 5m
+# Default MaxIdleConnectionCount to the database
+dbMaxIdleConnectionCount: 20
+
+# Purge (permanently delete from database) instances marked for deletion more than this duration in the past.
+purgeInstanceAge: 720h
+domainSuffix: idcservice.net
+
+autoscaling:
+  enabled: false
+
+ingress:
+  enabled: false
+  hosts: []
+
+cognito:
+  enabled: false
+  endpoint: ""
+
+cloudAccountQuota:
+  # Sets the default Loadbalancer quota to 2 for all tenants. This can be
+  # overridden by adding additional tenantIDs with a new quota specified.
+  defaultLoadbalancerQuota: 2
+  defaultLoadBalancerListenerQuota: 20
+  defaultLoadBalancerSourceIPQuota: 50
+
+featureFlags: {}
+
+acceleratorInterface:
+  enableStaticBGP: false
+  enabledInstanceTypes: []
+
+storageInterface:
+  enabled: false
+  enabledOnSingles: false
+  enabledInstanceTypes:
+    - bm-spr-gaudi2
+    - bm-icp-gaudi2
+    - bm-icx-gaudi2

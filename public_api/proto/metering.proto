@@ -1,0 +1,204 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option (idc.file).deploy = global;
+
+service MeteringService {
+    rpc CreateInvalidRecords(CreateInvalidMeteringRecords) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/meteringrecords/invalid"
+            body: "*"
+        };
+    };
+    rpc Create(UsageCreate) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/meteringrecords"
+            body: "*"
+        };
+    }; 
+    rpc Search(UsageFilter) returns (stream Usage) {
+        option (google.api.http) = {
+            post: "/v1/meteringrecords/search"
+            body: "*"
+        };
+    };
+    rpc SearchInvalid(InvalidMeteringRecordFilter) returns (stream InvalidMeteringRecord) {
+        option (google.api.http) = {
+            post: "/v1/meteringrecords/invalid/search"
+            body: "*"
+        };
+    };
+    // this API is only for internal use, please DO NOT expose as a external API as it is not RESTful
+    rpc SearchResourceMeteringRecordsAsStream(MeteringFilter) returns (stream ResourceMeteringRecordsList) {
+        option (google.api.http) = {
+            post: "/v1/meteringrecords/resources/search"
+            body: "*"
+        };
+    };
+    // this API is only for internal use, please DO NOT expose as a external API as it is not RESTful
+    rpc SearchResourceMeteringRecords(MeteringFilter) returns (ResourceMeteringRecordsList) {
+    }; 
+    rpc FindPrevious(UsagePrevious) returns (Usage) {
+        option (google.api.http) = {
+            get: "/v1/meteringrecords/previous"
+        };
+    };
+    rpc IsMeteringRecordAvailable(MeteringAvailableFilter) returns (MeteringAvailableResponse) {
+        option (google.api.http) = {
+            post: "/v1/meteringrecords/resources/available"
+            body: "*"
+        };
+    }; 
+    rpc Update(UsageUpdate) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            patch: "/v1/meteringrecords"
+            body: "*"
+        };
+    }; 
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message UsageCreate { 
+    string transactionId = 1; 
+    string resourceId = 2; 
+    string cloudAccountId = 3; 
+    google.protobuf.Timestamp timestamp = 4; 
+    map<string, string> properties = 5; 
+}
+
+message UsageFilter { 
+    optional int64 id = 1; 
+    optional string transactionId = 2; 
+    optional string resourceId = 3; 
+    optional string cloudAccountId = 4;
+    optional google.protobuf.Timestamp startTime = 5; 
+    optional google.protobuf.Timestamp endTime = 6; 
+    optional bool reported = 7; 
+}
+
+message Usage { 
+    int64 id = 1; 
+    string transactionId = 2; 
+    string resourceId = 3; 
+    string cloudAccountId = 4; 
+    google.protobuf.Timestamp timestamp = 5; 
+    map<string, string> properties = 6; 
+    bool reported = 7; 
+}
+
+message MeteringRecord { 
+    int64 id = 1; 
+    string transactionId = 2; 
+    string resourceId = 3;
+    string resourceName = 4; 
+    string cloudAccountId = 5;
+    string region = 6; 
+    google.protobuf.Timestamp timestamp = 7;
+    map<string, string> properties = 8; 
+    bool reported = 9; 
+}
+
+message InvalidMeteringRecordFilter { 
+    optional int64 id = 1;
+    optional string recordId = 2; 
+    optional string transactionId = 3; 
+    optional string resourceId = 4; 
+    optional string cloudAccountId = 5;
+    optional string region = 6;
+    optional google.protobuf.Timestamp startTime = 7; 
+    optional google.protobuf.Timestamp endTime = 8; 
+}
+
+message CreateInvalidMeteringRecords { 
+    repeated InvalidMeteringRecordCreate createInvalidMeteringRecords = 1; 
+}
+
+message InvalidMeteringRecordCreate { 
+    string recordId = 1; 
+    string transactionId = 2; 
+    string resourceId = 3;
+    string resourceName = 4; 
+    string cloudAccountId = 5;
+    string region = 6; 
+    google.protobuf.Timestamp timestamp = 7;
+    map<string, string> properties = 8;
+    MeteringRecordInvalidityReason meteringRecordInvalidityReason = 9;  
+}
+
+message InvalidMeteringRecords { 
+    repeated InvalidMeteringRecord invalidMeteringRecords = 1; 
+}
+
+message InvalidMeteringRecord {
+    int64 id = 1;  
+    string recordId = 2; 
+    string transactionId = 3; 
+    string resourceId = 4;
+    string resourceName = 5; 
+    string cloudAccountId = 6;
+    string region = 7; 
+    google.protobuf.Timestamp timestamp = 8;
+    map<string, string> properties = 9;
+    MeteringRecordInvalidityReason meteringRecordInvalidityReason = 10;  
+}
+
+message MeteringFilter { 
+    optional string cloudAccountId = 1;
+    optional bool reported = 2;
+    optional google.protobuf.Timestamp startTime = 3; 
+    optional google.protobuf.Timestamp endTime = 4; 
+}
+
+message MeteringAvailableFilter {
+    string  cloudAccountId = 1;
+    int64   meteringDuration = 2;
+}
+
+message MeteringAvailableResponse{
+    bool meteringDataAvailable = 1;
+}
+
+message ResourceMeteringRecords { 
+    string resourceId = 1;
+    string cloudAccountId = 2;
+    string resourceName = 3;
+    string region = 4; 
+    repeated MeteringRecord meteringRecords = 5; 
+}
+
+message ResourceMeteringRecordsList { 
+    repeated ResourceMeteringRecords resourceMeteringRecordsList = 1; 
+}
+
+message UsagePrevious { 
+    int64 id = 1; 
+    string resourceId = 2; 
+} 
+  
+message UsageUpdate { 
+    repeated int64 id = 1; 
+    bool reported = 2; 
+} 
+
+enum MeteringRecordInvalidityReason {
+  DEFAULT_INVALIDITY_REASON = 0;
+  MISSING_CLOUD_ACCOUNT_ID = 1;
+  MISSING_TRANSACTION_ID = 2;
+  MISSING_RESOURCE_NAME = 3;
+  NO_MATCHING_PRODUCT = 4;
+  DUPLICATE_TRANSACTION_ID = 5;
+  INVALID_METERING_QTY = 6;
+  INVALID_METERING_ENTRY = 7;
+  FAILED_TO_CALCULATE_QTY = 8;
+  FAILED_TO_GET_PRODUCT_RATE = 9;
+} 

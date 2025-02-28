@@ -1,0 +1,58 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "server",
+    srcs = [
+        "bucket_utils.go",
+        "buckets.go",
+        "buckets_lifecycle.go",
+        "buckets_ops.go",
+        "buckets_user.go",
+        "filesystem.go",
+        "filesystem_cluster.go",
+        "filesystem_org.go",
+        "filesystem_secgroup_mgr.go",
+        "filesystem_utils.go",
+        "quota.go",
+        "server.go",
+        "types_converter.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/api_server/pkg/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/authutil",
+        "//go/pkg/cloudaccount",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/manageddb",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/storage/database",
+        "//go/pkg/storage/database/query",
+        "//go/pkg/storage/utils",
+        "//go/pkg/utils",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_jackc_pgx_v5//pgconn",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)
+
+go_test(
+    name = "server_test",
+    srcs = ["filesystem_package_test.go"],
+    embed = [":server"],
+    deps = [
+        "//go/pkg/pb",
+        "@com_github_onsi_ginkgo//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

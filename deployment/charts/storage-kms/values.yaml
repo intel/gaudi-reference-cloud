@@ -1,0 +1,46 @@
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/storage-kms
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+# The address of the Storage API Server in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+# change this once we get new ingress for storage APIs
+storageApiServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+config:
+  vaultAddress: "http://vault.kube-system.svc.cluster.local:8200"
+  vaultAuthPath: "auth/cluster-auth"
+  vaultApproleSecretsPath: "controlplane/data/us-dev-1/storage/kms/approle"
+  vaultAuthRole: "us-dev-1-storage-kms-role"
+
+service:
+  type: ClusterIP
+
+vault:
+  enable: true
+  
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1000m"
+  limits:
+    memory: "1Gi"
+    cpu: "2000m"
+
+podAnnotations:
+
+replicaCount: 1
+
+autoscaling:
+  enabled: false

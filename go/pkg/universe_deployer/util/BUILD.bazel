@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "util",
+    srcs = [
+        "bazel_pool.go",
+        "deployment_artifacts.go",
+        "git.go",
+        "pool.go",
+        "runcmd.go",
+        "util.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/util",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_danjacques_gofslock//fslock",
+        "@com_github_spf13_pflag//:pflag",
+    ],
+)
+
+go_test(
+    name = "util_test",
+    srcs = [
+        "runcmd_test.go",
+        "suite_test.go",
+    ],
+    embed = [":util"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

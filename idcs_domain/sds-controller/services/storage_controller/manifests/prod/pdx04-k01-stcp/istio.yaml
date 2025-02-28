@@ -1,0 +1,107 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: ingressgateway
+spec:
+  selector:
+    app: istio-ingressgateway
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 15443
+        name: mtls
+        protocol: HTTPS
+      tls:
+        mode: MUTUAL
+        credentialName: vault-idc-mtls-cert
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: storage-controller-http-vs
+spec:
+  gateways:
+    - ingressgateway
+  hosts:
+    - "*"
+  http:
+    - match:
+        - uri:
+            prefix: /intel.storagecontroller.v1
+      route:
+        - destination:
+            host: storage-controller-v1.storage-controller.svc.cluster.local
+            port:
+              number: 50051
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: storage-controller-mtls-operator-allow
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - when:
+    - key: request.headers[x-forwarded-client-cert]
+      values: [
+        "*DNS=us-region-1a-storage-operator.idcs-system.svc.cluster.local",
+        "*DNS=us-region-1-storage-user.idcs-system.svc.cluster.local",
+        "*DNS=us-region-1a-storage-scheduler.idcs-system.svc.cluster.local",
+        "*DNS=pdx04-stcp001.us-region-1.cloud.intel.com",
+        "*DNS=us-region-1a-object-store-operator.idcs-system.svc.cluster.local",
+        "*DNS=us-region-1a-bucket-replicator.idcs-system.svc.cluster.local",
+        "*DNS=us-region-1-storage-scheduler.idcs-system.svc.cluster.local",
+        "*DNS=us-region-1a-storage-scheduler.idcs-system.svc.cluster.local", # backward comp
+        "*DNS=us-region-1a-storage-user.idcs-system.svc.cluster.local",  # backward comp
+      ]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: storage-controller-mtls-metering-allow
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - to:
+    - operation:
+        ports: ["15443"]
+        hosts: ["*"]
+        paths: [
+          "/intel.storagecontroller.v1.S3Service/ListBuckets",
+          "/intel.storagecontroller.v1.weka.FilesystemService/ListFilesystems",
+          "/intel.storagecontroller.v1.NamespaceService/ListNamespaces",
+          "/intel.storagecontroller.v1.vast.FilesystemService/ListFilesystems"]
+    when:
+    - key: request.headers[x-forwarded-client-cert]
+      values: [
+        "*DNS=us-region-1a-bucket-metering-monitor.idcs-system.svc.cluster.local",
+        "*DNS=us-region-1-storage-custom-metrics-service.idcs-system.svc.cluster.local",
+        "*DNS=us-region-1-storage-admin-api-server.idcs-system.svc.cluster.local",
+      ]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: storage-controller-mtls-get-allow
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - to:
+    - operation:
+        ports: ["15443"]
+        hosts: ["*"]
+        paths: ["/intel.storagecontroller.v1.ClusterService/*"]

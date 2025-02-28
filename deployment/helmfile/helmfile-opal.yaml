@@ -1,0 +1,67 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: opal
+    url: https://permitio.github.io/opal-helm-chart
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.opal.enabled }}
+  - name: idcs-opal
+    namespace: opal-server
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: opal
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: idcs-opal
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: opal/opal
+    version: 0.0.11
+    values:
+      - imageRegistry: "{{ (printf "%s/%s" (.Values.dockerIo).registry (.Values.dockerIo).repositoryPrefix) | trimSuffix "/" }}"
+      - postgresImageRegistry: "{{ (printf "%s/%s" (.Values.dockerIo).registry (.Values.dockerIo).repositoryPrefix) | trimSuffix "/" }}/library"
+      - server:
+          port: 7002
+          policyRepoUrl: "https://github.com/permitio/opal-example-policy-repo"
+          # TODO: add with https://internal-placeholder.com/browse/TWC4724-152 and replace the above with opa-policies internal repo
+          # dataConfigSources:
+          #   config:
+          #     entries: [{
+          #         "url": "http://opal-server.opal.svc.cluster.local:7002/policy-data",
+          #         "topics": ["policy_data"],
+          #         "data": {},
+          #         "dst_path": "/static"
+          #       }]
+          #     external_source_url: "https://your-api.com/path/to/api/endpoint"
+          policyRepoSshKey: null
+          policyRepoClonePath: null
+          pollingInterval: 300
+          broadcastUri: null
+          broadcastPgsql: true
+          uvicornWorkers: 4
+          replicas: 1
+          extraEnv:
+            "http_proxy": {{ (.Values.proxy).http_proxy }}
+            "https_proxy": {{ (.Values.proxy).https_proxy }}
+            "no_proxy": {{ (.Values.proxy).no_proxy }}
+      - client:
+          extraEnv:
+            "OPAL_DATA_UPDATER_ENABLED": "0"
+            "OPAL_OPA_HEALTH_CHECK_POLICY_ENABLED": "1"
+  {{- end }}
+
+{{- end }}
+{{- end }}

@@ -1,0 +1,37 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "pools",
+    srcs = [
+        "mappings_controller.go",
+        "mappings_reader.go",
+        "mappings_reader_local.go",
+        "pool_manager.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/pkg/pools",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/sdn-controller/api/v1alpha1",
+        "//go/pkg/sdn-controller/pkg/utils",
+        "@com_github_hashicorp_go_multierror//:go-multierror",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_client_go//tools/record",
+        "@io_k8s_client_go//util/workqueue",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/builder",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/controller",
+        "@io_k8s_sigs_controller_runtime//pkg/event",
+        "@io_k8s_sigs_controller_runtime//pkg/manager",
+        "@io_k8s_sigs_controller_runtime//pkg/predicate",
+        "@io_k8s_sigs_controller_runtime//pkg/reconcile",
+        "@io_opentelemetry_go_otel//codes",
+    ],
+)

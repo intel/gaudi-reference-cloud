@@ -1,0 +1,18 @@
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/git-to-grpc-synchronizer
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+target: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+
+kind: ""
+
+# sourceMap is a map from source filename to file contents.
+sourceMap:
+
+ttlSecondsAfterFinished: 300
+
+# default chunkSize for machine images and instance types. For subnet this value is set to 1000 in computePopulateSubnet helmfile
+chunkSize: 25

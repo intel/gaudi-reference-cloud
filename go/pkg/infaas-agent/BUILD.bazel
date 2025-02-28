@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "infaas-agent_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/infaas-agent",
+    visibility = ["//visibility:private"],
+    deps = ["//go/pkg/infaas-agent/cmd"],
+)
+
+go_binary(
+    name = "infaas-agent",
+    embed = [":infaas-agent_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "infaas-inference_image",
+    base = "@image_static_x86_64_debug//image",
+    embed = [
+        ":infaas-agent_lib",
+    ],
+    visibility = ["//visibility:public"],
+)

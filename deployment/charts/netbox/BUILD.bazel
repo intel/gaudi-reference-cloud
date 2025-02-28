@@ -1,0 +1,15 @@
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+    name = "chart",
+    package_name = "netbox",
+    srcs = glob([
+        "*.yaml",
+        "templates/**",
+    ]),
+    visibility = ["//visibility:public"],
+    chart_deps = [
+        "//deployment/charts/netbox/charts/postgresql:chart",
+        "//deployment/charts/netbox/charts/redis:chart",
+    ]
+)

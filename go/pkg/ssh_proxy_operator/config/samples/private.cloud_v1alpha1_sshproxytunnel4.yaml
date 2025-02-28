@@ -1,0 +1,13 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: SshProxyTunnel
+metadata:
+  name: my-vm-4  # Name will equal the name of the Instance
+spec:
+  targetAddresses:
+    - "internal-placeholder.com"  # IP or DNS
+  targetPorts:
+    - 22
+  sshPublicKeys:
+    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDlZi5rhqqSvKzD9oD44QDVhuQ1R8eEwvubEilrhf/aUg5yV5JjIhTRxQztNRfDBhXuGeb+H/col41gWDPXId/veV589woNOFT1jJFr9KElUMd7jlTA8E+SHnCUC63XYeFSlgbk6XtRaJ4QVhUeK2330+R2htgEWnvBg83YI6mVhCbSgAtHppuGLXqGhuFsmlJPCUMW08kr7kYO7KPvWzpt9Ihaxb92lNi+Q+NMhI21krhtiAlo026tsOaghlKZaYobCVqlUZdpRB00yD2HJAUYwHBJXqHEWoNP5xhuUHWxsAIQ9eQsSnouSThTOq3aC2QERbvhZrvEHH6jS2LrrDQa9iuVyPbjimBmr6oxLJorwRSgyT63TywJIjq2FFymZnjRKDU/qFKEd5jSgb4gbxRMlllXnNlOOUHtRqHNZf5DVuQQ/fuTEVurtSQ+9sPkTn8vhFEnaooqd0S0MVwAvsFrWHeDRPGIV0L7JVQEFhQdtpgFDnka8SBP82OtpMwF3OE= claudiof@claudiof-w"

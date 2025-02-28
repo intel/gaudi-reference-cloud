@@ -1,0 +1,170 @@
+@use "sass:map";
+
+html,
+body {
+    background: var(--surface-background-color);
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.row {
+    width: 100%;
+}
+
+.row {
+    @extend .g-s6;
+}
+
+.row.g-s8 {
+    @extend .g-s8;
+}
+
+.siteContainer {
+  animation: 0.5s ease-out 0s 1 slideInFromLeft;
+  margin-top: 120px;
+}
+
+@media only screen and (max-width: 576px) {
+    .siteContainer {
+        padding-left: 0;
+        padding-right: 0;
+    }    
+}
+
+.siteContainer:has(.section.no-toolbar) {
+    margin-top: 64px;
+}
+
+.siteContainer-no-toolbar {
+    margin-top: 64px;
+}
+
+.sheet {
+    background: var(--surface-background-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+    @extend .py-s5;
+    @extend .px-s0;
+    @extend .px-sm-s5;
+}
+
+.section {
+    background: var(--surface-background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    @extend .p-s5;
+    @extend .gap-s6;
+}
+
+.section.p-0 {
+    @extend .p-0;
+}
+
+.section.px-0 {
+    @extend .px-0;
+}
+
+.section.py-0 {
+    @extend .py-0;
+}
+
+.section.pt-0 {
+    @extend .pt-0;
+}
+
+.section.pb-0 {
+    @extend .pb-0;
+}
+
+.section.flex-row {
+    align-items: center;
+    flex-flow: wrap;
+}
+
+.section.p-0 {
+    @extend .p-0;
+}
+
+
+.section hr {
+    width: 100%;
+    @extend .m-0;
+}
+
+.section-component {
+    background: var(--surface-background-color);
+}
+
+.jumbotron {
+    padding: 3rem;
+    background: var(--surface-background-color);
+}
+
+.filter {
+    @extend .section;
+    @extend .flex-xs-column;
+    @extend .flex-sm-row;
+    @extend .justify-content-between;
+}
+
+.page-toolbar {
+    @extend .section;
+    @extend .flex-row;
+    flex-wrap: wrap
+}
+
+.modal-body .modal-footer {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    @extend .mt-s6;
+}
+
+#root, #___gatsby {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+@media (min-width: 400px) {
+    .modal-dialog-scrollable .modal-content {
+        max-height: 100% !important;
+        overflow: hidden;
+    }
+}
+
+@media (min-width: 1200px) {
+    .modal-xl {
+        max-width: 1000px;
+    }
+}
+
+@media (min-width: 300px) {
+    .d-col-none {
+        display: none;
+    }
+}
+
+// Negative Margins
+
+.m-ns6 {
+  margin-top: calc(map.get($spacers, "s6")*-1);
+}
+
+//Backward Compat remove it after not needed
+
+.main-grid {
+    width: 100%;
+}
+
+

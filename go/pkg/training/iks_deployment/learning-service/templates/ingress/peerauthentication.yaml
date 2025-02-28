@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: ingress-inbound-disable-mtls
+  namespace: ingress-nginx
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: ingress-nginx
+      app.kubernetes.io/component: controller
+  portLevelMtls:
+    443:
+      mode: DISABLE
+    8443:
+      mode: DISABLE

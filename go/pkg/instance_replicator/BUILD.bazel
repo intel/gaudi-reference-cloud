@@ -1,0 +1,13 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_container_image")
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "instance_replicator",
+    entrypoint = ["/instance_replicator"],
+    files = [
+        "//go/pkg/instance_replicator/cmd/instance_replicator",
+    ],
+    visibility = ["//visibility:public"],
+)

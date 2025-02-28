@@ -1,0 +1,7 @@
+{
+  "environments": {
+    "{IDC_ENV}": {
+      "forceAllComponents": true
+    }
+  }
+}

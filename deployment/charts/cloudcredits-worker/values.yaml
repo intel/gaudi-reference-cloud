@@ -1,0 +1,42 @@
+replicaCount: 1
+image:
+  repository: intelcloud/cloudcredits-worker
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+aws:
+ sqs:
+   queueName: "idc-dev-credits-queue"
+   waitTimeSeconds: 10
+   maxNumberofMessages: 10
+
+notifications:  
+    senderEmail: "test@dev3.api.idcservice.net"
+    consoleUrl: "https://dev3.console.idcservice.net/"  
+    paymentUrl: "https://dev3.console.idcservice.net/upgradeaccount"
+    cloudCreditExpiryTemplate: "Terminate-Instance-100-Used-Template-Dev"
+    cloudCreditEightyPercentUsedTemplate: "Terminate-Instance-80-Used-Template-Dev"
+    cloudCreditHundredPercentUsedTemplate: "Terminate-Instance-100-Used-Template-Dev"
+    opsPDL: "idc-dev-autoterminate-instances@intel.com"
+
+features:
+    servicesTerminationScheduler: true # inactive flag
+    sendCreditUsageEmail: true
+    sendCreditExpiryEmail: true
+    servicesTerminationAccountTypes: # inactive flag
+      - ACCOUNT_TYPE_STANDARD
+    creditUsageEmailAccountTypes:
+      - ACCOUNT_TYPE_STANDARD
+      - ACCOUNT_TYPE_PREMIUM
+    creditExpiryEmailAccountTypes:
+      - ACCOUNT_TYPE_STANDARD
+      - ACCOUNT_TYPE_PREMIUM
+
+workerConfig:
+    initSleepTimeSeconds: 60
+    maxSleepTimeSeconds: 900
+    channelCapacity:  10
+premiumCloudCreditThreshold: 80
+intelCloudCreditThreshold: 80
+enterpriseCloudCreditThreshold: 80

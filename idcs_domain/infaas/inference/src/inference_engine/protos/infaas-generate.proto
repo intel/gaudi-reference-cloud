@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+
+service TextGenerator {
+  rpc GenerateStream(GenerateStreamRequest) returns (stream GenerateStreamResponse);
+  rpc ChatCompletionStream(ChatCompletionStreamRequest) returns (stream ChatCompletionStreamResponse);
+}
+
+message GenerateStreamRequest {
+  string requestID = 1;
+  string prompt = 2;
+  GenerateRequestParameters params = 3;
+}
+
+message ChatCompletionStreamRequest {
+  string requestID = 1;
+  repeated ChatCompletionMessage messages = 2;
+  /// The parameter for repetition penalty. 1.0 means no penalty.
+  /// See [this paper](https://arxiv.org/pdf/1909.05858.pdf) for more details.
+  optional float repetition_penalty = 3;
+  /// The parameter for frequency penalty. 1.0 means no penalty
+  /// Penalize new tokens based on their existing frequency in the text so far,
+  /// decreasing the model's likelihood to repeat the same line verbatim.
+  optional float frequency_penalty = 4;
+  /// Adjust the likelihood of specified tokens.
+  repeated float logit_bias = 5;
+  /// Include log probabilities in the response.
+  optional bool return_logprobs = 6;
+  /// Include the `n` most likely tokens at each step.
+  optional uint32 top_logprobs = 7;
+  /// Maximum number of generated tokens.
+  optional uint32 max_tokens = 8;
+  /// Generate `n` completions.
+  optional uint32 num_completions = 9;
+  /// The parameter for presence penalty. 0.0 means no penalty. 
+  /// See [this paper](https://arxiv.org/pdf/1909.05858.pdf) for more details.
+  optional float presence_penalty = 10;
+  /// Random sampling seed.
+  optional uint64 seed = 11;
+  /// The value used to module the logits distribution.
+  optional float temperature = 12;
+  /// If set to < 1, only the smallest set of most probable tokens with probabilities 
+  /// that add up to `top_p` or higher are kept for generation
+  optional float top_p = 13;
+}
+
+message ChatCompletionMessage {
+  string role = 1;
+  string content = 2;
+}
+
+message GenerateStreamResponse {
+  /// Generated token
+  GenerateAPIToken token = 1;
+  /// Most likely tokens
+  repeated GenerateAPIToken top_tokens = 2;
+  /// Complete generated text
+  /// Only available when the generation is finished
+  optional string generated_text = 3;
+  /// Generation details
+  /// Only available when the generation is finished
+  optional StreamDetails details = 4;
+}
+
+message ChatCompletionStreamResponse {
+    /// A unique identifier for the chat completion.
+    /// If streaming is `true` - all chunks will have the same completion id.
+    string completionID = 1;
+    /// The object type, which is always `chat.completion`.
+    string object = 2;
+    /// The Unix timestamp (in seconds) of when the chat completion was created.
+    uint64 created = 3;
+    /// The model used for the chat completion.
+    string model = 4;
+    /// This fingerprint represents the backend configuration that the model runs with.
+    string system_fingerprint = 5;
+    /// A list of chat completion choices.
+    /// Can be more than one if `n` is greater than 1.
+    repeated ChatCompletionStreamChoice choices = 6;
+}
+
+message ChatCompletionUsage {
+  uint32 prompt_tokens = 1;
+  uint32 completion_tokens = 2;
+}
+
+message ChatCompletionStreamChoice {
+    /// Index of the chat completion
+    uint32 index = 1;
+    /// Chunk specific data (generated token, etc.)
+    optional ChatCompletionMessage delta = 2;
+    /// Log probabilities for the chat completion
+    optional ChatCompletionStreamLogprobsContent logprobs = 3;
+    /// Reason for completion ending
+    optional string finish_reason = 4;
+    /// Usage statistics for the completion request.
+    /// Value is None until lst token's generation.
+    optional ChatCompletionUsage usage = 5;
+}
+
+message ChatCompletionStreamLogprobsContent {
+  repeated ChatCompletionStreamLogprob content = 1;
+}
+
+message ChatCompletionStreamLogprob {
+  string token = 1;
+  float logprob = 2;
+}
+
+message GenerateAPIToken {
+  /// Token ID from the model tokenizer
+  uint32 id = 1;
+  /// Token text
+  string text = 2;
+  /// Logprob
+  optional float logprob = 3;
+  /// Is the token a special token
+  /// Can be used to ignore tokens when concatenating
+  bool special = 4;
+}
+
+message StreamDetails {
+  /// Generation finish reason
+  FinishReason finish_reason = 1;
+  /// Number of generated tokens
+  uint32 generated_tokens = 2;
+  /// Sampling seed if sampling was activated
+  optional uint64 seed = 3;
+}
+
+enum FinishReason {
+  FINISH_REASON_LENGTH = 0;
+  FINISH_REASON_EOS_TOKEN = 1;
+  FINISH_REASON_STOP_SEQUENCE = 2;
+}
+
+message GenerateRequestParameters {
+  /// Activate logits sampling
+  bool do_sample = 1;
+  /// Maximum number of generated tokens
+  uint32 max_new_tokens = 2;
+  /// The parameter for repetition penalty. 1.0 means no penalty.
+  /// See [this paper](https://arxiv.org/pdf/1909.05858.pdf) for more details.
+  optional float repetition_penalty = 3;
+  /// The parameter for frequency penalty. 1.0 means no penalty
+  /// Penalize new tokens based on their existing frequency in the text so far,
+  /// decreasing the model's likelihood to repeat the same line verbatim.
+  optional float frequency_penalty = 4;
+  /// Whether to prepend the prompt to the generated text
+  bool return_full_text = 5;
+  /// Stop generating tokens if a member of `stop_sequences` is generated
+  repeated string stop = 6;
+  /// Random sampling seed
+  optional uint64 seed = 7;
+  /// The value used to module the logits distribution.
+  optional float temperature = 8;
+  /// The number of highest probability vocabulary tokens to keep for top-k-filtering.
+  optional uint32 top_k = 9;
+  /// If set to < 1, only the smallest set of most probable tokens with probabilities that add up to `top_p` or
+  /// higher are kept for generation.
+  optional float top_p = 10;
+  /// truncate inputs tokens to the given size
+  optional uint32 truncate = 11;
+  /// Typical Decoding mass
+  /// See [Typical Decoding for Natural Language Generation](https://arxiv.org/abs/2202.00666) for more information
+  optional float typical_p = 12;
+  /// Generate best_of sequences and return the one if the highest token logprobs
+  optional uint32 best_of = 13;
+  /// Watermarking with [A Watermark for Large Language Models](https://arxiv.org/abs/2301.10226)
+  bool watermark = 14;
+  /// Get generation details
+  bool details = 15;
+  /// Get decoder input token logprobs and ids
+  bool decoder_input_details = 16;
+  /// Return the N most likely tokens at each step
+  optional uint32 top_n_tokens = 17;
+  /// grammars are not supported at the moment
+}

@@ -1,0 +1,12 @@
+# Ignore everything
+*
+
+# Allow files and directories
+!/idcs_portal
+/idcs_portal/node_modules
+
+!/idcs_design_system
+/idcs_design_system/node_modules
+
+!/docs
+/docs/node_modules

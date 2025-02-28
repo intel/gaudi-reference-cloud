@@ -1,0 +1,178 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.cloudaccountDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: cloudaccount-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudaccount
+      database: cloudaccount
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudaccount-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.cloudaccount.database.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/cloudaccount_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/cloudaccount_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.cloudaccountDb.primary.persistence.enabled }}
+  {{- end }}
+
+  - name: cloudaccount
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudaccount
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudaccount
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/cloudaccount
+    version: {{ readFile (print $helmChartVersionsDir "/cloudaccount.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.cloudaccount.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}cloudaccount@sha256"
+      - database:
+          arg: {{ $.Values.global.cloudaccount.database.arg | quote }}
+          name: {{ $.Values.global.cloudaccount.database.name | quote }}
+          service: {{ $.Values.global.cloudaccount.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.cloudaccount.database.vaultCredentialsPath | quote }}
+      - authz:
+          enabled:  {{ $.Values.global.authz.enabled }}
+      - notifications:
+          inviteLink: {{  $.Values.global.notifications.inviteLink | quote }}
+          senderEmail: {{ $.Values.global.notifications.senderEmail | quote }}
+          inviteTemplate: {{ $.Values.global.notifications.inviteTemplate | quote }}
+          inviteAcceptTemplate: {{ $.Values.global.notifications.inviteAcceptTemplate | quote }}
+          inviteExpiredTemplate: {{ $.Values.global.notifications.inviteExpiredTemplate | quote }}
+          otpTemplate: {{ $.Values.global.notifications.otpTemplate | quote }}
+      - invitationsExpirySchedulerTime: {{ $.Values.global.cloudaccount.invitationsExpirySchedulerTime | quote }}
+      - invitationsExpirySchedulerBatchSize: {{ $.Values.global.cloudaccount.invitationsExpirySchedulerBatchSize | quote }}
+      - intelMemberInvitationLimit: {{ $.Values.global.cloudaccount.intelMemberInvitationLimit | quote }}
+      - premiumMemberInvitationLimit: {{ $.Values.global.cloudaccount.premiumMemberInvitationLimit | quote }}
+      - enterpriseMemberInvitationLimit: {{ $.Values.global.cloudaccount.enterpriseMemberInvitationLimit | quote }}
+      - otpRetryLimit: {{ $.Values.global.cloudaccount.otpRetryLimit | quote }}
+      - otpRetryLimitIntervalDuration: {{ $.Values.global.cloudaccount.otpRetryLimitIntervalDuration | quote }}
+      - runSchedulers: {{ $.Values.global.cloudaccount.runSchedulers | quote }}
+      - features:
+          invitationsExpiryScheduler: {{ $.Values.global.cloudaccount.features.invitationsExpiryScheduler | quote }}
+          invitationsExpiryEmail: {{ $.Values.global.cloudaccount.features.invitationsExpiryEmail | quote }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          grpcTlsAuthz: 
+            enabled: {{ $.Values.global.cloudaccount.tls.grpcTlsAuthz.enabled }}
+            allowedCallers: {{ $.Values.global.cloudaccount.tls.grpcTlsAuthz.allowedCallers }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+
+  {{- if $.Values.global.usercredentials.enabled }}
+  - name: user-credentials
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudaccount
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: user-credentials
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/user-credentials
+    version: {{ readFile (print $helmChartVersionsDir "/user-credentials.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.usercredentials.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}user-credentials@sha256"
+      - database:
+          arg: {{ $.Values.global.cloudaccount.database.arg | quote }}
+          name: {{ $.Values.global.cloudaccount.database.name | quote }}
+          service: {{ $.Values.global.cloudaccount.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.cloudaccount.database.vaultCredentialsPath | quote }}
+      - aws:
+          region: {{ $.Values.global.usercredentials.aws.region | quote }}
+          vaultCredentialsPath: {{ $.Values.global.usercredentials.aws.vaultCredentialsPath | quote }}
+          role_arn: {{ $.Values.global.usercredentials.aws.role_arn | quote }}
+          accountIdFile: {{ $.Values.global.usercredentials.aws.accountIdFile | quote }}
+          userPool:  {{ $.Values.global.usercredentials.aws.userPool | quote }}
+          customScope: {{ $.Values.global.usercredentials.aws.customScope | quote }}
+          cognitoUrl:  {{ $.Values.global.usercredentials.aws.cognitoUrl | quote }}
+      - emailExclusionPattern: {{ $.Values.global.usercredentials.emailExclusionPattern | quote }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  - name: cloudaccount-enroll
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudaccount
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudaccount-enroll
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/cloudaccount-enroll
+    version: {{ readFile (print $helmChartVersionsDir "/cloudaccount-enroll.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.cloudaccountEnroll.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}cloudaccount-enroll@sha256"
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          grpcTlsAuthz: 
+            enabled: {{ $.Values.global.cloudaccountEnroll.tls.grpcTlsAuthz.enabled }}
+            allowedCallers: {{ $.Values.global.cloudaccountEnroll.tls.grpcTlsAuthz.allowedCallers }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+      - authz:
+          enabled:  {{ $.Values.global.authz.enabled }}
+
+{{- end }}
+{{- end }}

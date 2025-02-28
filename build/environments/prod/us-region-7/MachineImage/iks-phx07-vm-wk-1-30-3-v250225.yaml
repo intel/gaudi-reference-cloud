@@ -1,0 +1,47 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: iks-phx07-vm-wk-1-30-3-v250225
+spec:
+  displayName: IKS Ubuntu 22.04 Worker for VM v1.30.3 released on 20250225
+  description: Test IKS Ubuntu 22.04 Worker for VM v1.30.3 image with redsocks setup for PHX07.
+  hidden: true
+  instanceCategories:
+  - VirtualMachine
+  instanceTypes:
+  - vm-spr-lrg
+  - vm-spr-med
+  - vm-spr-sml
+  - vm-spr-tny
+  md5sum: 8d733c3edd15fa6ef793257218ad15b7
+  sha256sum: 20aef0b5a6941fa6f603c8c9f129dd7c244b8e085005923192a10a49e9b8e535
+  sha512sum: 94d413639ecb6b5c89ea40aa3d819640f168f616cc1e283175d70ff6adc8841a806dffe27051909c88c4f607d5f983d26b26c716924e5335b42d72247ab15e0d
+  virtualSizeBytes: 10737418240
+  labels:
+    architecture: X86_64 (VM only)
+    family: ubuntu-2204-lts
+    iks: "true"
+    kernelVersion: 5.15 (KVM)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - Internal
+  - AI
+  - General Computing
+  - Deep Learning
+  - App testing
+  - IKS
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: IKS Core Components
+    type: Software kit
+    version: 1.30.3
+    description: core set of tools for Kubernetes.
+    infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20st
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: ubuntu

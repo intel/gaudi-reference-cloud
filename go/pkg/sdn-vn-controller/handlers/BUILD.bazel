@@ -1,0 +1,47 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+# gazelle:exclude concurrency_test.go
+# gazelle:exclude port_test.go
+# gazelle:exclude router_test.go
+# gazelle:exclude routerinterface_test.go
+# gazelle:exclude staticroute_test.go
+# gazelle:exclude subnet_test.go
+# gazelle:exclude vpc_test.go
+
+go_library(
+    name = "handlers",
+    srcs = [
+        "handler.go",
+        "ipManager.go",
+        "nat.go",
+        "port.go",
+        "router.go",
+        "routerinterface.go",
+        "securitygroup.go",
+        "securityrule.go",
+        "sqlutils.go",
+        "staticroute.go",
+        "subnet.go",
+        "vpc.go",
+    ],
+    data = [
+        "//go/pkg/sdn-vn-controller/db/migrations:sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller/handlers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/sdn-vn-controller/api/sdn/v1:sdn",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_lib_pq//:pq",
+        "@com_github_ovn_org_libovsdb//client",
+        "@com_github_ovn_org_ovn_kubernetes_go_controller//pkg/libovsdb/ops",
+        "@com_github_ovn_org_ovn_kubernetes_go_controller//pkg/nbdb",
+        "@com_github_ovn_org_ovn_kubernetes_go_controller//pkg/types",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)

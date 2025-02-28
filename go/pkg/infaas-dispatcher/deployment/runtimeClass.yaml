@@ -1,0 +1,8 @@
+apiVersion: node.k8s.io/v1
+handler: habana
+kind: RuntimeClass
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"node.k8s.io/v1","handler":"habana","kind":"RuntimeClass","metadata":{"annotations":{},"name":"habana"}}
+  name: habana

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/api/annotations.proto";
+import "google/protobuf/duration.proto";
+import "google/rpc/status.proto";
+
+import "annotations.proto";
+import "infaas-generate.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "infaas-dispatcher";
+
+message DispatcherRequest {
+  string model = 1;
+  string requestID = 2;
+  google.protobuf.Duration timeout = 3;
+  GenerateStreamRequest request = 4;
+}
+
+message DispatcherResponse {
+  string model = 1;
+  string requestID = 2;
+  GenerateStreamResponse response = 3;
+  google.rpc.Status status = 4;
+}
+
+service Dispatcher {
+  rpc GenerateStream(DispatcherRequest) returns (stream DispatcherResponse) {
+    option (google.api.http) = {
+      post: "/v1/generateStream/{model}"
+      body: "*"
+    };
+  }
+
+  rpc Generate(DispatcherRequest) returns (DispatcherResponse) {
+    option (google.api.http) = {
+      post: "/v1/generate/{model}"
+      body: "*"
+    };
+  }
+
+  // DoWork is the agent entry point
+  rpc DoWork(stream DispatcherResponse) returns (stream DispatcherRequest) {}
+}

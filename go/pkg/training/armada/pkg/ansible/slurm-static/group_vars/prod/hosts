@@ -1,0 +1,41 @@
+[all]
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmctld-1 ansible_host=100.80.63.218
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmctld-2 ansible_host=100.80.63.105
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-jupyterhub-3 ansible_host=100.80.63.50
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-jupyterhub-4 ansible_host=100.80.63.216
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-login-1 ansible_host=100.80.63.9
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-login-2 ansible_host=100.80.63.148
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmd-1 ansible_host=100.80.63.65 ansible_user=sdp
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmd-2 ansible_host=100.80.63.51 ansible_user=sdp
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-admin-2 ansible_host=100.80.63.63
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-test-1 ansible_host=100.80.63.165
+
+[test]
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-test-1
+
+[slurmctld]
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmctld-1
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmctld-2
+
+[jupyterhub]
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-jupyterhub-3
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-jupyterhub-4
+
+[login]
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-login-1
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-login-2
+
+[slurmd]
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmd-1
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-slurmd-2
+
+[admin]
+c81a40e2-4f0a-4c41-bc14-0fdcc3bb370c-admin-2
+
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -l ubuntu'
+cluster_name="mycluster"
+num_workers=2
+cluster_id="9999"
+cluster_subnet="172.16.0.0/16"
+

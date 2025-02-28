@@ -1,0 +1,405 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1;
+
+import "go/pkg/storage/storagecontroller/api/cluster.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api";
+
+// Provides admin level methods for managing S3 object storage
+service S3Service {
+  // Query all buckets for the `Cluster`
+  rpc ListBuckets(ListBucketsRequest) returns (ListBucketsResponse) {}
+
+  // Get bucket policy for the `Cluster`
+  rpc GetBucketPolicy(GetBucketPolicyRequest) returns (GetBucketPolicyResponse) {}
+
+  // Create new bucket in the `Cluster`
+  rpc CreateBucket(CreateBucketRequest) returns (CreateBucketResponse) {}
+
+  // Updates bucket access policy in the `Cluster`
+  rpc UpdateBucketPolicy(UpdateBucketPolicyRequest) returns (UpdateBucketPolicyResponse) {}
+
+  // Deletes bucket from the `Cluster`
+  rpc DeleteBucket(DeleteBucketRequest) returns (DeleteBucketResponse) {}
+
+  // Query all lifecycle rules for the bucket
+  rpc ListLifecycleRules(ListLifecycleRulesRequest) returns (ListLifecycleRulesResponse) {}
+
+  // Creates new lifecycle rule in the bucket
+  rpc CreateLifecycleRules(CreateLifecycleRulesRequest) returns (CreateLifecycleRulesResponse) {}
+
+  // Updates lifecycle rule parameters in the bucket
+  rpc UpdateLifecycleRules(UpdateLifecycleRulesRequest) returns (UpdateLifecycleRulesResponse) {}
+
+  // Deletes lifecycle rule from the bucket
+  rpc DeleteLifecycleRules(DeleteLifecycleRulesRequest) returns (DeleteLifecycleRulesResponse) {}
+
+  // Get S3 Principal for the `Cluster`
+  rpc GetS3Principal(GetS3PrincipalRequest) returns (GetS3PrincipalResponse) {}
+
+  // Creates S3 Principal, who as access to S3 API in the `Cluster`
+  rpc CreateS3Principal(CreateS3PrincipalRequest) returns (CreateS3PrincipalResponse) {}
+
+  // Updates S3 Principal credentials in the `Cluster`
+  rpc SetS3PrincipalCredentials(SetS3PrincipalCredentialsRequest) returns (SetS3PrincipalCredentialsResponse) {}
+
+  // Updates S3 Principal policies in the `Cluster`
+  rpc UpdateS3PrincipalPolicies(UpdateS3PrincipalPoliciesRequest) returns (UpdateS3PrincipalPoliciesResponse) {}
+
+  // Deletes S3 Principal from the `Cluster`
+  rpc DeleteS3Principal(DeleteS3PrincipalRequest) returns (DeleteS3PrincipalResponse) {}
+}
+
+message ListBucketsRequest {
+  // ID of the `Cluster`
+  ClusterIdentifier cluster_id = 1 ;
+
+  // Filter to restrict search by specifc params
+  Filter filter = 2;
+
+  message Filter {
+    // Collection of `Bucket` names to include
+    repeated string names = 1;
+  }
+}
+
+message ListBucketsResponse {
+  // All found buckets
+  repeated Bucket buckets = 1;
+}
+
+message GetBucketPolicyRequest {
+  // ID of the bucket
+  BucketIdentifier bucket_id = 1 ;
+}
+
+message GetBucketPolicyResponse {
+  // ID of the bucket
+  BucketIdentifier bucket_id = 1 ;
+
+  // If found, returns `Bucket` policy
+  BucketAccessPolicy policy = 2;
+}
+
+message CreateBucketRequest {
+  // ID of the cluster to create `Bucket` in
+  ClusterIdentifier cluster_id = 1 ;
+
+  // Name of the bucket, bucket names can consist only of lowercase letters, numbers and hyphens ("-") and be between 3 and 63 symbols long
+  string name = 2 ;
+
+  // Default access policy for the bucket
+  BucketAccessPolicy access_policy = 3;
+
+  // Is bucket should be versioned, cannot be changed later
+  bool versioned = 4;
+
+  // Hard quota in bytes for the bucket
+  uint64 quota_bytes = 5;
+}
+
+message CreateBucketResponse {
+  // Created `Bucket`
+  Bucket bucket = 1;
+}
+
+message UpdateBucketPolicyRequest {
+  // ID of the `Bucket`
+  BucketIdentifier bucket_id = 1 ;
+
+  // New access policy for the bucket, replaces old one
+  BucketAccessPolicy access_policy = 2;
+}
+
+message UpdateBucketPolicyResponse {}
+
+message DeleteBucketRequest {
+  // ID of the `Bucket`
+  BucketIdentifier bucket_id = 1 ;
+
+  // Force delete bucket contents
+  bool force = 2;
+}
+
+message DeleteBucketResponse {}
+
+message ListLifecycleRulesRequest {
+  // ID of the bucket
+  BucketIdentifier bucket_id = 1 ;
+}
+
+message ListLifecycleRulesResponse {
+  // Found lifecycle rules
+  repeated LifecycleRule lifecycle_rules = 1;
+}
+
+message CreateLifecycleRulesRequest {
+  // ID of the bucket which will have this `LifecycleRule` associated with
+  BucketIdentifier bucket_id = 1 ;
+
+  repeated LifecycleRule lifecycle_rules = 2;
+}
+
+message CreateLifecycleRulesResponse {
+  // Created lifecycle rule
+  repeated LifecycleRule lifecycle_rules = 1;
+}
+
+message UpdateLifecycleRulesRequest {
+  // ID of the bucket which will have this `LifecycleRules` associated with
+  BucketIdentifier bucket_id = 1 ;
+
+  // Updated version of the lifecycle rule, `must` include ID of the lifecycles
+  repeated LifecycleRule lifecycle_rules = 2;
+}
+
+message UpdateLifecycleRulesResponse {
+  // Updated lifecycle rule
+  repeated LifecycleRule lifecycle_rules = 1;
+}
+
+message DeleteLifecycleRulesRequest {
+  // ID of the byte from which lifecyle rules should be removed
+  BucketIdentifier bucket_id = 1 ;
+}
+
+message DeleteLifecycleRulesResponse {}
+
+message CreateS3PrincipalRequest {
+  // ID of the cluster to create `S3Principal` in
+  ClusterIdentifier cluster_id = 1 ;
+
+  // Name of the principal, arbitrary string
+  string name = 2 ;
+
+  // Credentials (key) to set
+  string credentials = 3 ;
+}
+
+message CreateS3PrincipalResponse {
+  // Created `S3Principal` object
+  S3Principal s3_principal = 1;
+}
+
+message GetS3PrincipalRequest {
+  // ID of the principal
+  S3PrincipalIdentifier principal_id = 1 ;
+}
+
+message GetS3PrincipalResponse {
+  // If found, contains `S3Principal` object
+  S3Principal s3_principal = 1;
+}
+
+message SetS3PrincipalCredentialsRequest {
+  // ID of the principal
+  S3PrincipalIdentifier principal_id = 1 ;
+
+  // Credentials (key) to set
+  string credentials = 2 ;
+}
+
+message SetS3PrincipalCredentialsResponse {}
+
+message UpdateS3PrincipalPoliciesRequest {
+  // ID of the principal
+  S3PrincipalIdentifier principal_id = 1 ;
+
+  // List of policies to update
+  repeated S3Principal.Policy policies = 2;
+}
+
+message UpdateS3PrincipalPoliciesResponse {
+  // Updated principal
+  S3Principal s3_principal = 1;
+}
+
+message DeleteS3PrincipalRequest {
+  // ID of the principal
+  S3PrincipalIdentifier principal_id = 1 ;
+}
+
+message DeleteS3PrincipalResponse {}
+
+// Represents S3 bucket entity in the filestorage
+message Bucket {
+  // ID of the bucket
+  BucketIdentifier id = 1;
+
+  // Name of the bucket, bucket names can consist only of lowercase letters, numbers and hyphens ("-") and be between 3 and 63 symbols long
+  // Should be valid domain name https://datatracker.ietf.org/doc/html/rfc1035.html#section-2.3.1
+  // Also should conform to https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html for best comptability reasons
+  string name = 2 ;
+
+  // Is bucket versioned or not
+  bool versioned = 3;
+
+  // Bucket capacity
+  Capacity capacity = 4;
+
+  // URL on which bucket is accessed
+  string endpoint_url = 5;
+
+  // Capacity of the bucket, such as quota and available space
+  message Capacity {
+    // Total amount of allocated bytes for the bucket (quota)
+    uint64 total_bytes = 1;
+
+    // Bytes available in the `Bucket` to be used
+    uint64 available_bytes = 2;
+  }
+}
+
+// Allows to specify default Access Policy on the bucket level, meaning regardless of the principal
+// bucket can be accessed/written by the public entity (e.g., public read only bucket)
+enum BucketAccessPolicy {
+  // If policy was not provided, will default to `ACCESS_POLICY_NONE` on creation
+  BUCKET_ACCESS_POLICY_UNSPECIFIED = 0;
+
+  // No access by default, equals to private, explicit IAM policy need to be attached
+  BUCKET_ACCESS_POLICY_NONE = 1;
+
+  // Read only public access
+  BUCKET_ACCESS_POLICY_READ = 2;
+
+  // Read/Write public access
+  BUCKET_ACCESS_POLICY_READ_WRITE = 3;
+}
+
+// ID of the Bucket, Cluster bound
+message BucketIdentifier {
+  // ID of the `Cluster`
+  ClusterIdentifier cluster_id = 1 ;
+
+  // `Bucket` ID, arbitrary string, but usualy are uuid/uid or same as bucket name
+  string id = 2 ;
+}
+
+// Describes expiration rules for bucket objects
+message LifecycleRule {
+  // ID of the lifecycle rule
+  LifecycleRuleIdentifier id = 1;
+
+  // A path prefix. The rule will be restricted to objects with the specified prefix.
+  // If not specified, the rule will apply to all objects in the bucket.
+  string prefix = 2 ;
+
+  // Expires `current` versions of objects after a specified number of days counted from object creation.
+  uint32 expire_days = 3;
+
+  // Number of days after which to permanently delete non-current versions of objects.
+  // The number of days is timed from when the object becomes non-current, which is when a
+  // versioned object is deleted or overwritten.
+  uint32 noncurrent_expire_days = 4;
+
+  // Deletes versioned objects if there only delete marker as the only version
+  bool delete_marker = 5;
+}
+
+message LifecycleRuleIdentifier {
+  // `LifecycleRule` ID, arbitrary string, but usualy are uuid/uid
+  string id = 1 ;
+}
+
+// S3 principal, used to access S3 APIs
+message S3Principal {
+  // ID of the principal
+  S3PrincipalIdentifier id = 1;
+
+  // Name of the principal, arbitrary string
+  string name = 2;
+
+  // S3 Policies for the user
+  repeated Policy policies = 3;
+
+  // User bound Policy, attaches user owned buckets
+  message Policy {
+    // ID of the bucket policy applies to
+    BucketIdentifier bucket_id = 1;
+
+    // Optional prefix, if set, access rules will only apply to prefix path
+    string prefix = 2 ;
+
+    // Equal to granting:
+    // ```
+    // s3:GetObject
+    // ```
+    bool read = 3;
+
+    // Equal to granting:
+    // ```
+    // s3:AbortMultipartUpload
+    // s3:PutObject
+    // ```
+    bool write = 4;
+
+    // Equal to granting:
+    // ```
+    // s3:DeleteObject
+    // ```
+    bool delete = 5;
+
+    // Allows fine grained controll over bucket actions
+    // if unspecified will default to:
+    // BUCKET_ACTIONS_GET_BUCKET_LOCATION (s3:GetBucketLocation)
+    // BUCKET_ACTIONS_GET_BUCKET_POLICY (s3:GetBucketPolicy)
+    // BUCKET_ACTIONS_LIST_BUCKET (s3:ListBucket)
+    // BUCKET_ACTIONS_GET_LIST_BUCKET_MULTIPART_UPLOADS (s3:ListBucketMultipartUploads)
+    // BUCKET_ACTIONS_LIST_MULTIPART_UPLOAD_PARTS (s3:ListMultipartUploadParts)
+    // BUCKET_ACTIONS_GET_BUCKET_TAGGING (s3:GetBucketTagging)
+    // BUCKET_ACTIONS_LIST_BUCKET_VERSIONS (s3:ListBucketVersions)
+    repeated BucketActions actions = 6;
+
+    // List of Source IP subnets who can/can not access the bucket, if empty, access is granted to any IP
+    SourceIpFilter source_ip_filter = 7;
+
+
+    enum BucketActions {
+      BUCKET_ACTIONS_UNSPECIFIED = 0;
+
+      // s3:GetBucketLocation
+      BUCKET_ACTIONS_GET_BUCKET_LOCATION = 1;
+
+      // s3:GetBucketPolicy
+      BUCKET_ACTIONS_GET_BUCKET_POLICY = 2;
+
+      // s3:ListBucket
+      BUCKET_ACTIONS_LIST_BUCKET = 3;
+
+      // s3:ListBucketMultipartUploads
+      BUCKET_ACTIONS_LIST_BUCKET_MULTIPART_UPLOADS = 4;
+
+      // s3:ListMultipartUploadParts
+      BUCKET_ACTIONS_LIST_MULTIPART_UPLOAD_PARTS = 5;
+
+      // s3:GetBucketTagging
+      BUCKET_ACTIONS_GET_BUCKET_TAGGING = 6;
+
+      // s3:ListBucketVersions
+      BUCKET_ACTIONS_LIST_BUCKET_VERSIONS = 7;
+    }
+
+    // Source IP contains IP net in the ipv4/ipv6 notatation
+    // IP net should contain valid subnet, e.g. `172.1.1.1/32` or `10.0.0.1/16`
+    message SourceIpFilter {
+      // Configures allow subnets (e.g. only subnets listed are allowed)
+      repeated string allow = 1;
+      // Configures disallow subnets (e.g. only subnets listed are not allowed), takes precedence over allow if they overlap
+      // e.g. `192.0.2.0/24` is in allow list but `192.0.2.188/32` in disallow will give access to anyone from `192.0.2.0/24`
+      // but will block access from `192.0.2.188` IP address
+      repeated string disallow = 2;
+    }
+  }
+}
+
+// ID of the Policy, Cluster bound
+message S3PrincipalIdentifier {
+  // ID of the `Cluster`
+  ClusterIdentifier cluster_id = 1 ;
+
+  // `S3Principal` ID, arbitrary string, but usualy are uuid/uid
+  string id = 2 ;
+}

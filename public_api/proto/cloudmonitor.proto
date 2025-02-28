@@ -1,0 +1,147 @@
+
+syntax = "proto3";
+
+package proto;
+
+import "google/api/annotations.proto";
+import "annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).deploy = global;
+
+
+
+
+
+
+
+
+message Metrics{
+  string metric = 1;
+}
+
+message Intervals{
+  string interval = 1;
+}
+
+message Resourcetypes{
+  string resourcetypes = 1;
+  int32 resourceId = 2;
+}
+
+message GetIntervalsResponse{
+  repeated Intervals interval = 1;
+}
+
+message GetMetricTypesResponse{
+  repeated Metrics metric = 1;
+}
+
+message GetResourceCategoriesResponse{
+  repeated Resourcetypes resourcetypes = 1;
+}
+
+message GetIntervalsRequest{
+   string category = 1;
+}
+
+message GetMetricTypesRequest{
+   string category = 1;
+}
+
+
+message QueryResourcesMetricsRequest{
+   string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+   string resourceId = 2;
+   string start = 3;
+   string step = 4;
+   string end = 5;
+   string metric = 6;
+   string category = 7;
+   string resourceType =8;
+}
+
+
+message EnableMonitorRequest{
+   string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message EnableMonitorResponse {
+    string token= 1;
+    string config= 2;
+}
+message DisableMonitorRequest{
+   string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+   string resourceId = 2;
+}
+
+message DisableMonitorResponse {
+    bool success= 1;
+}
+
+message QueryResourcesMetricsResponse {
+    repeated QueryResourcesMetricsResponseItem response= 1;
+}
+
+
+message QueryResourcesMetricsResponseItem{
+   repeated Queryvalue queryvalue = 1;
+   string unit = 2;
+   string item =3 ;
+}
+
+message Queryvalue{
+   string value = 1;
+   string epochtime = 2;
+}
+
+service CloudMonitorService {
+
+   rpc QueryResourcesMetrics(QueryResourcesMetricsRequest) returns (QueryResourcesMetricsResponse) {
+      option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitor/resources/{resourceId}/query"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc EnableMonitor(EnableMonitorRequest) returns (EnableMonitorResponse){
+     option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitor/enable"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+  
+   rpc DisableMonitor(DisableMonitorRequest) returns (DisableMonitorResponse){
+     option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitor/resources/{resourceId}/disable"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc GetMetricTypes(GetMetricTypesRequest) returns (GetMetricTypesResponse) {
+      option (google.api.http) = {
+      get: "/v1/cloudmonitor/admin/metrics/{category}"
+    };
+   }
+      
+   rpc GetIntervals(GetIntervalsRequest) returns (GetIntervalsResponse) {
+      option (google.api.http) = {
+      get: "/v1/cloudmonitor/admin/intervals/{category}"
+    };
+   }
+
+   rpc GetResourceCategories(google.protobuf.Empty) returns (GetResourceCategoriesResponse) {
+      option (google.api.http) = {
+      get: "/v1/cloudmonitor/admin/resourcetypes"
+    };
+   }
+
+}
+  
+

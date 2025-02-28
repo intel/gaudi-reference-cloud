@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "apiservice_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/baremetal_enrollment/cmd/apiservice",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/apiservice",
+        "//go/pkg/baremetal_enrollment/apiservice/config",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "@com_github_gin_gonic_gin//:gin",
+    ],
+)
+
+go_binary(
+    name = "baremetal-enrollment-api",
+    embed = [":apiservice_lib"],
+    visibility = ["//visibility:public"],
+)

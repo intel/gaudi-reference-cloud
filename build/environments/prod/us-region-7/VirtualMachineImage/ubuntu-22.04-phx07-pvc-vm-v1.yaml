@@ -1,0 +1,16 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  labels:
+    harvesterhci.io/os-type: ubuntu
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/imageDisplayName: ubuntu-22.04-phx07-pvc-vm-v1
+  name: ubuntu-22.04-phx07-pvc-vm-v1
+  namespace: default
+spec:
+  checksum: dc1b9cc6970f5be7744336f3bae436c1dd298ba260f3133c6c6f5a45593a3ed8901e324e83a564cd0975f9ef8018b09783c5426ed2e5f442a00a10d5466d1265
+  displayName: ubuntu-22.04-phx07-pvc-vm-v1
+  sourceType: download
+  storageClassParameters:
+    numberOfReplicas: "1"
+  url: http://10.153.84.12/vmaas/images/ubuntu-22.04-phx07-pvc-vm-v1.qcow2

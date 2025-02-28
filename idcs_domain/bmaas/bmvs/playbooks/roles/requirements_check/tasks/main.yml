@@ -1,0 +1,16 @@
+---
+
+# TODO: Enable checking all values of the loop, instead of
+# stopping on first failure. Useful to remote all missing items once.
+
+- include_tasks: check_for.yml
+  loop:
+    - virsh
+    - virt-manager
+    - cloud-localds
+    - sushy-emulator
+    - pkill
+    - ssh-keygen
+    - git
+  loop_control:
+    loop_var: cmd_to_check

@@ -1,0 +1,61 @@
+# Default values for KFAAS.
+# This is a YAML-formatted file.
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/cloudmonitor
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+victoriaMetricsAddr: https://monitoring.dev3.api.idcservice.net/app1/api/v1/query_range
+database: 
+  # The DNS name used to connect to the Postgres database.
+  #service: postgres5327-lb-or-in.dbaas.intel.com
+  service: cloudmonitor-db-postgresql
+  #name: proto_idc_k8aas_db_local
+  name: main
+  #port: "5433" #default is 5432
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  #arg: sslmode=require
+  arg: sslmode=disable
+  # credentials path
+  vaultCredentialsPath: controlplane/data/cloudmonitor/database
+
+
+# The region that this service is running in.
+region: us-dev-1
+
+service:
+  type: ClusterIP
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1000m"
+  limits:
+    memory: "1Gi"
+    cpu: "2000m"
+
+podAnnotations:
+
+replicaCount: 1
+
+
+autoscaling:
+  enabled: false
+
+ingress:
+  enabled: false
+  hosts: []
+
+otel:
+  otelAnnotations: false

@@ -1,0 +1,63 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "tests",
+    srcs = [
+        "test_data.go",
+        "test_util.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_aria/client/tests",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/billing_driver_aria/client",
+        "//go/pkg/billing_driver_aria/client/response",
+        "//go/pkg/billing_driver_aria/client/response/data",
+        "//go/pkg/billing_driver_aria/client/tests/common",
+        "//go/pkg/billing_driver_aria/config",
+        "//go/pkg/cloudaccount",
+        "//go/pkg/pb",
+        "@com_github_google_uuid//:uuid",
+    ],
+)
+
+go_test(
+    name = "tests_test",
+    srcs = [
+        "aria_account_flow_test.go",
+        "aria_account_test.go",
+        "aria_apitests_suit_test.go",
+        "aria_enterprise_account_flow_test.go",
+        "aria_invoice_flow_test.go",
+        "aria_invoice_test.go",
+        "aria_payment_test.go",
+        "aria_plan_test.go",
+        "aria_service_test.go",
+        "aria_usage_test.go",
+        "get_plans_test.go",
+        "main_test.go",
+        "promo_test.go",
+        "service_credits_test.go",
+        "usage_type_test.go",
+    ],
+    data = ["//go/svc/billing_driver_aria:billing-aria-conf"],
+    embed = [":tests"],
+    env = {
+        "IDC_TEST_CONFIG_DIR": "$(location //go/svc/billing_driver_aria:billing-aria-conf)",
+    },
+    deps = [
+        "//go/pkg/billing_driver_aria/client",
+        "//go/pkg/billing_driver_aria/client/response",
+        "//go/pkg/billing_driver_aria/client/response/data",
+        "//go/pkg/billing_driver_aria/client/tests/common",
+        "//go/pkg/billing_driver_aria/config",
+        "//go/pkg/cloudaccount",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

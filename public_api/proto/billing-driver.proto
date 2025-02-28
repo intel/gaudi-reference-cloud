@@ -1,0 +1,33 @@
+//
+// Private APIs between billing service and billing drivers
+//
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+import "annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option (idc.file).deploy = global;
+
+service BillingDriverUsageService {
+  rpc ReportUsage(stream BillingDriverUsage) returns (stream BillingDriverUsageResult) {}
+}
+
+message BillingDriverUsage {
+  string cloudAccountId = 1;
+  string productId = 2;
+  double amount = 3;
+  int64 usageId = 4;
+  google.protobuf.Timestamp lastUpdated = 5;
+  string resourceId = 6;
+  string transactionId = 7;
+  string resourceName = 8;
+  string regionName = 9;
+}
+
+message BillingDriverUsageResult {
+  int64 usageId = 1;
+}

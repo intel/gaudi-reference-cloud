@@ -1,0 +1,60 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: iks-phx07-gd-u22-cd-wk-1-31-3-v250225
+spec:
+  displayName: IKS Ubuntu 22.04 Worker for GD v1.31.3 released on 20250225
+  description: Test IKS Ubuntu 22.04 Worker for GD v1.31.3 image with redsocks setup for PHX07.
+  hidden: true
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-icp-gaudi2
+  - bm-icx-gaudi2
+  md5sum: 2d31bd939a5bc7e661649a1d32cfaaa0
+  sha256sum: 1f28f0fec6292bc0f537faaabddcc9b3ae06072ff29177440615fb755a2e25be
+  sha512sum: 09cffc556b0af133096c6ddf37b20bd33a7420f0f62ab6a4923e0798d2f1eb3379ff58a7fcd42d760e115048358c2576a8ccd92a12962814a5f5c180b9a80eb1
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    iks: "true"
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - Internal
+  - AI
+  - General Computing
+  - Deep Learning
+  - App testing
+  - IKS
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: Intel Gaudi SW
+    type: Software kit
+    version: 1.19.0
+    description: Designed to facilitate high-performance DL training on Habana’s Gaudi
+      accelerators.
+    infoUrl: https://docs.habana.ai/en/v1.19.0/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  - name: Intel Gaudi SW
+    type: Firmware kit
+    version: 1.19.0-561
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  - name: IKS Core Components
+    type: Software kit
+    version: 1.31.3
+    description: core set of tools for Kubernetes.
+    infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20st
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: sdp

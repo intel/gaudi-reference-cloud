@@ -1,0 +1,21 @@
+.SoftwareDetails {
+  display: flex;
+  flex-direction: column;
+  max-width: 48rem;
+}
+
+.SoftwareDetailsActions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;  
+}
+
+@media (min-width: 768px) {
+  .SoftwareDetailsActions {
+    max-width: 32rem;
+  }
+}
+
+.seeker-logo {
+  color: var(--body-text);
+}

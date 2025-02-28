@@ -1,0 +1,15 @@
+# An Ansible playbook demonstrating how to deploy Slurm.
+# This assumes that hosts defind in hosts.ini already exist.
+# See https://galaxy.ansible.com/galaxyproject/slurm
+
+- name: Install Slurm
+  gather_facts: true
+  hosts: all
+  vars_files:
+    - "slurm_vars.yaml"
+  vars:
+    SlurmctldHost: "claudiof-worker-0"
+    SlurmNodeNames: "claudiof-worker-[1-2]"
+  roles:
+    - role: galaxyproject.slurm
+      become: true

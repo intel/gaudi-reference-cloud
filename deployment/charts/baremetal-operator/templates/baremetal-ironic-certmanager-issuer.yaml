@@ -1,0 +1,26 @@
+{{- if .Values.enableTLSandAuth -}}
+{{- if not .Values.useVaultPKI }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+---
+{{- if not .Values.deployStandaloneBaremetalOperator -}}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  ca:
+    secretName: ironic-cacert
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: vm-iks-tny
+spec:
+  name: vm-iks-tny
+  displayName: Tiny VM - Intel® Xeon 4th Gen ® Scalable processor
+  description: 4th Generation Intel® Xeon® Scalable processor
+  instanceCategory: VirtualMachine
+  cpu:
+    cores: 4
+    id: "0x806F2"
+    modelName: 4th Generation Intel® Xeon® Scalable processor
+    sockets: 1
+    threads: 1
+  memory:
+    size: 16Gi
+    dimmSize: 16Gi
+    dimmCount: 1
+    speed: 3200
+  disks:
+    - size: 15Gi

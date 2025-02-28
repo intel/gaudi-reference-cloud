@@ -1,0 +1,662 @@
+{
+  "_doc": "Universe Config File for production. The automatic deployment process will begin when changes to this file are merged into main! Editors of this file must carefully follow the documentation in /docs/source/private/guides/services_upgrade_procedure.rst.",
+  "environments": {
+    "prod": {
+      "components": {
+        "authz": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        },
+        "billing": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        },
+        "cloudaccount": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        },
+        "cloudcredits": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        },
+        "cloudmonitor": {
+          "commit": "faa5e0c3b3fc6010014727a3e0449d96a9d4e201"
+        },
+        "externalSecrets": {
+          "commit": "b1f7b011b4654f81438349b38de2fad28f477e6e"
+        },
+        "grpc": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        },
+        "metering": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        },
+        "productCatalog": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        },
+        "tradeScanner": {
+          "commit": "b52c0bbac8045d25e441abf3af5a20824e465925"
+        }
+      },
+      "regions": {
+        "us-region-1": {
+          "components": {
+            "armada": {
+              "commit": "6e898a8a720752ea90fd9c0875efdc070281085c"
+            },
+            "compute": {
+              "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+            },
+            "computeApiServer": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computeBm": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computeBmEnrollment": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computePopulateInstanceType": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computePopulateMachineImage": {
+              "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+            },
+            "computePopulateSubnet": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "externalSecrets": {
+              "commit": "356698f728f61dd16c50deae8d7aebf252ac98f3"
+            },
+            "fleetAdmin": {
+              "commit": "313561d7a601e519e245ca52ad123d001aa56323"
+            },
+            "grpc": {
+              "commit": "267d672189508c395b0f07ffe1d36387943344c5"
+            },
+            "iks": {
+              "commit": "18097c982451793790cf71c806aab265ed16ff90"
+            },
+            "storage": {
+              "commit": "288bf5dfe72a0938537014f9fe5db27391d54b7b"
+            },
+            "training": {
+              "commit": "d2636919a93896e59e2eb78d30993560ac4cf469"
+            },
+            "quotaManagementService": {
+              "commit": "288bf5dfe72a0938537014f9fe5db27391d54b7b"
+            }
+          },
+          "availabilityZones": {
+            "us-region-1a": {
+              "components": {
+                "compute": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBm": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeBmEnrollment": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBmMetal3": {
+                  "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "3d1427ad4e81984d7a2b558338caefd620d5f504"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeSshProxy": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "externalSecrets": {
+                  "commit": "356698f728f61dd16c50deae8d7aebf252ac98f3"
+                },
+                "firewall": {
+                  "commit": "4b8736a2e0daa4b914c4890a4d16a9208937d157"
+                },
+                "iks": {
+                  "commit": "18097c982451793790cf71c806aab265ed16ff90"
+                },
+                "intelDevicePlugin": {
+                  "commit": "d77572ced509b68000e71fddd914f5d13d87cb57"
+                },
+                "loadbalancer": {
+                  "commit": "98db69f6c6a92ad1121cbb34b02d7c9af80a8d84"
+                },
+                "quickConnect": {
+                  "commit": "81695a872bd1d4fcf0b6381e9f5f430cf0a1eed7"
+                },
+                "sdn": {
+                  "commit": "d2d14064557546f75c5befd1bcfa4ff4432a0e7f"
+                },
+                "storage": {
+                  "commit": "288bf5dfe72a0938537014f9fe5db27391d54b7b"
+                }
+              }
+            }
+          }
+        },
+        "us-region-2": {
+          "components": {
+            "compute": {
+              "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+            },
+            "computeApiServer": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computeBm": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computeBmEnrollment": {
+              "commit": "d02abe6c7cb9890a951cc6ff79f692a388b16337"
+            },
+            "computePopulateInstanceType": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computePopulateMachineImage": {
+              "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+            },
+            "computePopulateSubnet": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "externalSecrets": {
+              "commit": "356698f728f61dd16c50deae8d7aebf252ac98f3"
+            },
+            "fleetAdmin": {
+              "commit": "313561d7a601e519e245ca52ad123d001aa56323"
+            },
+            "grpc": {
+              "commit": "267d672189508c395b0f07ffe1d36387943344c5"
+            },
+            "iks": {
+              "commit": "18097c982451793790cf71c806aab265ed16ff90"
+            },
+            "maas": {
+              "commit": "a51403781367bef0c9a29edce8326b6c86c2840a"
+            },
+            "storage": {
+              "commit": "288bf5dfe72a0938537014f9fe5db27391d54b7b"
+            },
+            "quotaManagementService": {
+              "commit": "288bf5dfe72a0938537014f9fe5db27391d54b7b"
+            }
+          },
+          "availabilityZones": {
+            "us-region-2a": {
+              "components": {
+                "compute": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBm": {
+                  "commit": "8e17de8ffafc944b7b227012214c75c9cbafd50a"
+                },
+                "computeBmEnrollment": {
+                  "commit": "d02abe6c7cb9890a951cc6ff79f692a388b16337"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBmMetal3": {
+                  "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "3d1427ad4e81984d7a2b558338caefd620d5f504"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeSshProxy": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "externalSecrets": {
+                  "commit": "356698f728f61dd16c50deae8d7aebf252ac98f3"
+                },
+                "firewall": {
+                  "commit": "4b8736a2e0daa4b914c4890a4d16a9208937d157"
+                },
+                "iks": {
+                  "commit": "18097c982451793790cf71c806aab265ed16ff90"
+                },
+                "intelDevicePlugin": {
+                  "commit": "d77572ced509b68000e71fddd914f5d13d87cb57"
+                },
+                "loadbalancer": {
+                  "commit": "98db69f6c6a92ad1121cbb34b02d7c9af80a8d84"
+                },
+                "quickConnect": {
+                  "commit": "81695a872bd1d4fcf0b6381e9f5f430cf0a1eed7"
+                },
+                "sdn": {
+                  "commit": "d2d14064557546f75c5befd1bcfa4ff4432a0e7f"
+                },
+                "storage": {
+                  "commit": "288bf5dfe72a0938537014f9fe5db27391d54b7b"
+                }
+              }
+            }
+          }
+        },
+        "us-region-3": {
+          "components": {
+            "compute": {
+              "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+            },
+            "computeApiServer": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computeBm": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computeBmEnrollment": {
+              "commit": "6d976f81f344a558a4ecc0dd2012f2b0f7eafead"
+            },
+            "computePopulateInstanceType": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computePopulateMachineImage": {
+              "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+            },
+            "computePopulateSubnet": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "externalSecrets": {
+              "commit": "e9cb44ce3c9702295d0c5026fa81826a51087da5"
+            },
+            "fleetAdmin": {
+              "commit": "313561d7a601e519e245ca52ad123d001aa56323"
+            },
+            "grpc": {
+              "commit": "66bff3a2c3d9607d549a9baa87ae4f04f591f0f9"
+            },
+            "iks": {
+              "commit": "19b375835e87066462004686aa0cd9bff07005b2"
+            },
+            "storage": {
+              "commit": "f58d53ec0d81171a79a1c8864be6dbb916c678b7"
+            },
+            "quotaManagementService": {
+              "commit": "288bf5dfe72a0938537014f9fe5db27391d54b7b"
+            }
+          },
+          "availabilityZones": {
+            "us-region-3a": {
+              "components": {
+                "compute": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBm": {
+                  "commit": "cbe94dfdbda3eff3a7f171f40058b4f8d3f059fb"
+                },
+                "computeBmEnrollment": {
+                  "commit": "6d976f81f344a558a4ecc0dd2012f2b0f7eafead"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBmMetal3": {
+                  "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "3d1427ad4e81984d7a2b558338caefd620d5f504"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeSshProxy": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "externalSecrets": {
+                  "commit": "e9cb44ce3c9702295d0c5026fa81826a51087da5"
+                },
+                "firewall": {
+                  "commit": "4b8736a2e0daa4b914c4890a4d16a9208937d157"
+                },
+                "iks": {
+                  "commit": "19b375835e87066462004686aa0cd9bff07005b2"
+                },
+                "intelDevicePlugin": {
+                  "commit": "d77572ced509b68000e71fddd914f5d13d87cb57"
+                },
+                "loadbalancer": {
+                  "commit": "98db69f6c6a92ad1121cbb34b02d7c9af80a8d84"
+                },
+                "quickConnect": {
+                  "commit": "81695a872bd1d4fcf0b6381e9f5f430cf0a1eed7"
+                },
+                "sdn": {
+                  "commit": "d2d14064557546f75c5befd1bcfa4ff4432a0e7f"
+                },
+                "storage": {
+                  "commit": "f58d53ec0d81171a79a1c8864be6dbb916c678b7"
+                }
+              }
+            }
+          }
+        },
+        "us-region-4": {
+          "components": {
+            "compute": {
+              "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+            },
+            "computeApiServer": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computeBm": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computeBmEnrollment": {
+              "commit": "1ac09db26f4615fc32eb0d701857cca75ff195df"
+            },
+            "computePopulateInstanceType": {
+              "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+            },
+            "computePopulateMachineImage": {
+              "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+            },
+            "computePopulateSubnet": {
+              "commit": "3bb86957d080ab3ba94e109ad484845e48625779"
+            },
+            "fleetAdmin": {
+              "commit": "313561d7a601e519e245ca52ad123d001aa56323"
+            },
+            "grpc": {
+              "commit": "267d672189508c395b0f07ffe1d36387943344c5"
+            },
+            "iks": {
+              "commit": "18097c982451793790cf71c806aab265ed16ff90"
+            },
+            "storage": {
+              "commit": "aa7c013d2b98dc7fc07f385ffb76f3230a787d6b"
+            },
+            "quotaManagementService": {
+              "commit": "64cc2af16de0c4aae98ded4cc080fb5204eca753"
+            }
+          },
+          "availabilityZones": {
+            "us-region-4a": {
+              "components": {
+                "compute": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBm": {
+                  "commit": "18e526d276e8652d54fba06d7b8b2b4e94f1fa03"
+                },
+                "computeBmEnrollment": {
+                  "commit": "1ac09db26f4615fc32eb0d701857cca75ff195df"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBmMetal3": {
+                  "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "3d1427ad4e81984d7a2b558338caefd620d5f504"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeSshProxy": {
+                  "commit": "a02cc6af07ed6cf9fdcfa6be5a554b0aee1395d3"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "312412f1abe9c11fb4c1028d6986abeba1c77873"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "firewall": {
+                  "commit": "4b8736a2e0daa4b914c4890a4d16a9208937d157"
+                },
+                "intelDevicePlugin": {
+                  "commit": "d77572ced509b68000e71fddd914f5d13d87cb57"
+                },
+                "iks": {
+                  "commit": "18097c982451793790cf71c806aab265ed16ff90"
+                },
+                "loadbalancer": {
+                  "commit": "98db69f6c6a92ad1121cbb34b02d7c9af80a8d84"
+                },
+                "quickConnect": {
+                  "commit": "81695a872bd1d4fcf0b6381e9f5f430cf0a1eed7"
+                },
+                "sdn": {
+                  "commit": "d2d14064557546f75c5befd1bcfa4ff4432a0e7f"
+                },
+                "storage": {
+                  "commit": "aa7c013d2b98dc7fc07f385ffb76f3230a787d6b"
+                }
+              }
+            }
+          }
+        },
+        "us-region-5": {
+          "components": {
+            "compute": {
+              "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+            },
+            "computeApiServer": {
+              "commit": "d2a3ed5cab890ef90b317890c728bedf0337cdc8"
+            },
+            "computeBm": {
+              "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+            },
+            "computeBmEnrollment": {
+              "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+            },
+            "computePopulateInstanceType": {
+              "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+            },
+            "computePopulateMachineImage": {
+              "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+            },
+            "computePopulateSubnet": {
+              "commit": "7aaabd85c4b5d928c66ba7807e1b8eb9e114bf85"
+            },
+            "fleetAdmin": {
+              "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+            },
+            "grpc": {
+              "commit": "cc4b076ea05ed32bc33f9f19e1223aca55ea0f24"
+            },
+            "iks": {
+              "commit": "b8bb53cb3380cc35715d780342e78b9a56ec2cee"
+            },
+            "storage": {
+              "commit": "d2a3ed5cab890ef90b317890c728bedf0337cdc8"
+            }
+          },
+          "availabilityZones": {
+            "us-region-5a": {
+              "components": {
+                "compute": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBm": {
+                  "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+                },
+                "computeBmEnrollment": {
+                  "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBmMetal3": {
+                  "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "3d1427ad4e81984d7a2b558338caefd620d5f504"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+                },
+                "computeSshProxy": {
+                  "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "c89bdfb397aaf97b0a5bb62660b9d4efa727e3cb"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+                },
+                "firewall": {
+                  "commit": "4b8736a2e0daa4b914c4890a4d16a9208937d157"
+                },
+                "intelDevicePlugin": {
+                  "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+                },
+                "iks": {
+                  "commit": "b8bb53cb3380cc35715d780342e78b9a56ec2cee"
+                },
+                "loadbalancer": {
+                  "commit": "98db69f6c6a92ad1121cbb34b02d7c9af80a8d84"
+                },
+                "quickConnect": {
+                  "commit": "81695a872bd1d4fcf0b6381e9f5f430cf0a1eed7"
+                },
+                "sdn": {
+                  "commit": "d2d14064557546f75c5befd1bcfa4ff4432a0e7f"
+                },
+                "storage": {
+                  "commit": "df6a15ff35a1230e42bf299c7e9ade6c49c5f743"
+                }
+              }
+            }
+          }
+        },
+        "us-region-7": {
+          "components": {
+            "compute": {
+              "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+            },
+            "computeApiServer": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computeBm": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computeBmEnrollment": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computePopulateInstanceType": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "computePopulateMachineImage": {
+              "commit": "2613abd687e4f0da4476aa00655d7a9959d66833"
+            },
+            "computePopulateSubnet": {
+              "commit": "507f8c4b48a50f9f9abb68c7a6d355eb2d10ab65"
+            },
+            "fleetAdmin": {
+              "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+            },
+            "grpc": {
+              "commit": "267d672189508c395b0f07ffe1d36387943344c5"
+            },
+            "iks": {
+              "commit": "18097c982451793790cf71c806aab265ed16ff90"
+            },
+            "storage": {
+              "commit": "7c487a1e9750b882d25a04a5c752b9233ee2f8ff"
+            }
+          },
+          "availabilityZones": {
+            "us-region-7a": {
+              "components": {
+                "compute": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBm": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "computeBmEnrollment": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeBmMetal3": {
+                  "commit": "150665678754c1bdbd51e01ceb258da70da0323d"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "1dedc3d4b0236e60f1054d977f4e6320e709e57b"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "69cc301fc5a954e9f5874c91eba765e9aec33718"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "computeSshProxy": {
+                  "commit": "b3d2438f4b4e96344c1bf325a96cf52f4e00c34d"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "82c6de5d8c989cebe6b1f16f9ec323eede437d8c"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "82c6de5d8c989cebe6b1f16f9ec323eede437d8c"
+                },
+                "firewall": {
+                  "commit": "4b8736a2e0daa4b914c4890a4d16a9208937d157"
+                },
+                "intelDevicePlugin": {
+                  "commit": "2f375972b36c1bb6e12ccbae37cdc4eba9852201"
+                },
+                "iks": {
+                  "commit": "18097c982451793790cf71c806aab265ed16ff90"
+                },
+                "loadbalancer": {
+                  "commit": "98db69f6c6a92ad1121cbb34b02d7c9af80a8d84"
+                },
+                "quickConnect": {
+                  "commit": "b93c12375f9e1924d7c082f3cf26a38fe9231798"
+                },
+                "sdn": {
+                  "commit": "eaf2f5f7e2f132c59f0b8f880341eded0ada9bf8"
+                },
+                "storage": {
+                  "commit": "0d2ad754603dc56ee4c8fc8d9ba8a6390aa3f8b3"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

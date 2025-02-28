@@ -1,0 +1,203 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  # - name: phx04-1
+  #   uuid: 780eeb9f-87bd-48c0-be28-8519fca2c7b8
+  #   type: Weka
+  #   labels:
+  #     operation: production
+  #     category: provider-infra-network
+  #     vlan: vlan68
+  #     wekaBackend: phx04-1.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+  #   location: phx04
+  #   api:
+  #     type: REST
+  #     url: https://phx04-1.us-region-2.cloud.intel.com:14000/api/v2
+  #     caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+  #   auth:
+  #     scheme: Basic
+  #     vaultFile: /app/secret/phx04.json
+  #   wekaConfig:
+  #     protectedOrgIds:
+  #       - 00000000-0000-0000-0000-000000000000
+  #     tenantFsGroupName: tenantfsgroup
+  #     fileSystemDeleteWait: 10
+  #     backendFqdn: phx04-1.us-region-2.cloud.intel.com
+  # - name: phx04-2
+  #   uuid: b2040ba5-b4aa-4a2b-9d71-9412c6de4660
+  #   type: Weka
+  #   labels:
+  #     operation: production
+  #     category: dedicated-tenant
+  #     vlan: vlan93
+  #     tenant: slurm
+  #     wekaBackend: phx04-2.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+  #   location: phx04
+  #   api:
+  #     type: REST
+  #     url: https://phx04-2.us-region-2.cloud.intel.com:14000/api/v2
+  #     caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+  #   auth:
+  #     scheme: Basic
+  #     vaultFile: /app/secret/phx04.json
+  #   wekaConfig:
+  #     protectedOrgIds:
+  #       - 00000000-0000-0000-0000-000000000000
+  #     tenantFsGroupName: tenantfsgroup
+  #     fileSystemDeleteWait: 10
+  #     backendFqdn: phx04-2.us-region-2.cloud.intel.com
+  # - name: phx04-3
+  #   uuid: 70f1d649-302a-4bac-b9ce-07a400276138
+  #   type: Weka
+  #   labels:
+  #     operation: production
+  #     category: shared-tenant
+  #     wekaBackend: phx04-3.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+  #   location: phx04
+  #   api:
+  #     type: REST
+  #     url: https://phx04-3.us-region-2.cloud.intel.com:14000/api/v2
+  #     caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+  #   auth:
+  #     scheme: Basic
+  #     vaultFile: /app/secret/phx04.json
+  #   wekaConfig:
+  #     protectedOrgIds:
+  #       - 00000000-0000-0000-0000-000000000000
+  #     tenantFsGroupName: tenantfsgroup
+  #     fileSystemDeleteWait: 10
+  #     backendFqdn: phx04-3.us-region-2.cloud.intel.com
+  # - name: phx04-4
+  #   uuid: 457e4c51-3067-4969-807e-1a53984ca1d2
+  #   type: Weka
+  #   labels:
+  #     operation: production
+  #     category: shared-tenant
+  #     wekaBackend: phx04-4.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+  #   location: phx04
+  #   api:
+  #     type: REST
+  #     url: https://phx04-4.us-region-2.cloud.intel.com:14000/api/v2
+  #     caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+  #   auth:
+  #     scheme: Basic
+  #     vaultFile: /app/secret/phx04.json
+  #   wekaConfig:
+  #     protectedOrgIds:
+  #       - 00000000-0000-0000-0000-000000000000
+  #     tenantFsGroupName: tenantfsgroup
+  #     fileSystemDeleteWait: 10
+  #     backendFqdn: phx04-4.us-region-2.cloud.intel.com
+  # - name: phx04-5
+  #   uuid: 2be64579-4222-480d-84d2-a6eff00a296c
+  #   type: Weka
+  #   labels:
+  #     operation: production
+  #     category: shared-tenant
+  #     wekaBackend: phx04-5.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+  #   location: phx04
+  #   api:
+  #     type: REST
+  #     url: https://phx04-5.us-region-2.cloud.intel.com:14000/api/v2
+  #     caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+  #   auth:
+  #     scheme: Basic
+  #     vaultFile: /app/secret/phx04.json
+  #   wekaConfig:
+  #     protectedOrgIds:
+  #       - 00000000-0000-0000-0000-000000000000
+  #     tenantFsGroupName: tenantfsgroup
+  #     fileSystemDeleteWait: 10
+  #     backendFqdn: phx04-5.us-region-2.cloud.intel.com
+  # - name: phx04-6
+  #   uuid: 518f245a-31d0-481f-8c18-7359d80bb2f6
+  #   type: Weka
+  #   labels:
+  #     operation: production
+  #     category: shared-tenant
+  #     wekaBackend: phx04-6.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+  #   location: phx04
+  #   api:
+  #     type: REST
+  #     url: https://phx04-6.us-region-2.cloud.intel.com:14000/api/v2
+  #     caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+  #   auth:
+  #     scheme: Basic
+  #     vaultFile: /app/secret/phx04.json
+  #   wekaConfig:
+  #     protectedOrgIds:
+  #       - 00000000-0000-0000-0000-000000000000
+  #     tenantFsGroupName: tenantfsgroup
+  #     fileSystemDeleteWait: 10
+  #     backendFqdn: phx04-6.us-region-2.cloud.intel.com
+  - name: phx04-7
+    uuid: 0659b4ff-b2c0-4846-9564-fcfb2270f4d9
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: production
+      category: ai-storage
+      cluster: "1"
+      vlan: vlan94
+      wekaBackend: phx04-7.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: phx04
+    api:
+      type: REST
+      url: https://phx04-7.us-region-2.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx04.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: phx04-7.us-region-2.cloud.intel.com
+  - name: phx04-8
+    uuid: 90496ef7-0833-4aeb-98c0-ec0b8628b1e7
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: production
+      category: ai-storage
+      cluster: "2"
+      vlan: vlan94
+      wekaBackend: phx04-8.us-region-2.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: phx04
+    api:
+      type: REST
+      url: https://phx04-8.us-region-2.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx04.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: phx04-8.us-region-2.cloud.intel.com
+  - name: phx04-5
+    uuid: 42d3bc6e-2a76-4ec5-9035-0e4647f9457c
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: production
+      category: tenant
+      s3Endpoints: https://s3-phx04-5.tenantiglb.us-region-2.cloud.intel.com:9000
+    location: phx04
+    api:
+      type: REST
+      url: phx04-5.us-region-2.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx04.json
+    minioConfig:
+      kesKey: "minio-kes-key"

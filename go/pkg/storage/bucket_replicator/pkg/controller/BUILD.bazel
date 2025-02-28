@@ -1,0 +1,67 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("//build/kubebuilder:kubebuilder.bzl", "kubebuilder_test_env")
+
+go_library(
+    name = "controller",
+    srcs = ["controller.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/bucket_replicator/pkg/controller",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/pb",
+        "//go/pkg/storage/bucket_replicator/pkg/config",
+        "//go/pkg/storage/utils",
+        "@com_github_sethvargo_go_retry//:go-retry",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1/unstructured",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_client_go//dynamic",
+        "@io_k8s_client_go//dynamic/dynamicinformer",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//tools/cache",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)
+
+go_test(
+    name = "controller_test",
+    srcs = [
+        "controller_test.go",
+        "suite_test.go",
+    ],
+    data = [
+        "//build/kubebuilder:kubebuilder_bin",
+        "//go/pkg/k8s/config/crd/bases:crds",
+    ],
+    embed = [":controller"],
+    env = kubebuilder_test_env(path_to_root = "../../../../../.."),
+    deps = [
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/storage/bucket_replicator/pkg/config",
+        "@com_github_golang_mock//gomock",
+        "@com_github_golang_protobuf//ptypes/timestamp",
+        "@com_github_onsi_ginkgo//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_client_go//dynamic",
+        "@io_k8s_client_go//dynamic/dynamicinformer",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/envtest",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)

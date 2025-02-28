@@ -1,0 +1,24 @@
+.tableContainer {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+
+.table th span:not(.d-flex) {
+    display: block;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.table td > span:not(.d-flex):not(:has(.btn)) {
+    display: block;
+    padding: 7px 13px;
+}
+
+.pagination-dropdown {
+ min-width: 10rem;
+}
+
+.headerNoWrap {
+    white-space: nowrap;
+}

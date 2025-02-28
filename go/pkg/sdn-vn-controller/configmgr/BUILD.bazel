@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "configmgr",
+    srcs = [
+        "config.go",
+        "db_config.go",
+        "grpcserver_config.go",
+        "ovncentral_config.go",
+        "security_config.go",
+        "servicearea_config.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller/configmgr",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/manageddb",
+        "//go/pkg/sdn-vn-controller/handlers",
+    ],
+)

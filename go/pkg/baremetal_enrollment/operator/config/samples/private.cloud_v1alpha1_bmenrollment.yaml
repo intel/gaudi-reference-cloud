@@ -1,0 +1,37 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: BMEnrollment
+metadata:
+  name: device-1
+  namespace: idcs-enrollment
+spec:
+  deviceID: 1
+  deviceName: device-1
+  rack: myrack
+  region: us-dev-1
+  az: us-dev-1a
+---
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: BMEnrollment
+metadata:
+  name: device-2
+  namespace: idcs-enrollment
+spec:
+  deviceID: 2
+  deviceName: device-2
+  rack: myrack
+  region: us-dev-1
+  az: us-dev-1a
+---
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: BMEnrollment
+metadata:
+  name: device-3
+  namespace: idcs-enrollment
+spec:
+  deviceID: 3
+  deviceName: device-3
+  rack: myrack
+  region: us-dev-1
+  az: us-dev-1a

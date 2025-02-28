@@ -1,0 +1,13 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-maas-dispatcher-auth
+  namespace: idcs-system
+spec:
+  method: kubernetes
+  mount: cluster-auth
+  kubernetes:
+    role: {{ .Values.region }}-maas-dispatcher-role
+    serviceAccount: infaas-dispatcher
+    audiences:
+      - https://kubernetes.default.svc

@@ -1,0 +1,48 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# gazelle:exclude api.gen.go
+
+go_library(
+    name = "v4",
+    srcs = [
+        "mock_server.go",
+        "simulated_server.go",
+        ":api",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/ci/k6/modules/weka/api/v4",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ci/k6/modules/weka/auth",
+        "//services/storage_controller/pkg/backend",
+        "@com_github_getkin_kin_openapi//openapi3:go_default_library",
+        "@com_github_google_uuid//:go_default_library",
+        "@com_github_labstack_echo_v4//:go_default_library",
+        "@com_github_lestrrat_go_jwx//jwt:go_default_library",
+        "@com_github_oapi_codegen_runtime//:go_default_library",
+    ],
+)
+
+genrule(
+    name = "api",
+    srcs = [
+        "config.yaml",
+        "@weka_openapi//:4.2.json",
+    ],
+    outs = ["api.go"],
+    cmd = "$(location @com_github_deepmap_oapi_codegen_v2//cmd/oapi-codegen) --config=$(location config.yaml) -o=$(location api.go) $(location @weka_openapi//:4.2.json)",
+    tools = [
+        "@com_github_deepmap_oapi_codegen_v2//cmd/oapi-codegen",
+    ],
+)
+
+write_source_files(
+    name = "write_gen",
+    files = {
+        "api.gen.go": ":api",
+    },
+)

@@ -1,0 +1,100 @@
+{
+    "type": "provisioning.cattle.io.cluster",
+    "metadata": {
+        "namespace": "fleet-default",
+        "name": "sea01-k01-azkv"
+    },
+    "spec": {
+        "agentEnvVars": [
+            { "name": "HTTP_PROXY", "value": "${HTTP_PROXY}" },
+            { "name": "HTTPS_PROXY", "value": "${HTTPS_PROXY}" },
+            { "name": "NO_PROXY", "value": "${NO_PROXY}" },
+            { "name": "http_proxy", "value": "${http_proxy}" },
+            { "name": "https_proxy", "value": "${https_proxy}" },
+            { "name": "no_proxy", "value": "${no_proxy}" }
+        ],
+        "rkeConfig": {
+            "chartValues": {
+                "rke2-calico": {
+                    "installation": {
+                        "calicoNetwork": {
+                            "ipPools": [
+                                {
+                                    "blockSize": 24,
+                                    "cidr": "10.52.0.0/16",
+                                    "encapsulation": "VXLAN",
+                                    "natOutgoing": "Enabled"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "upgradeStrategy": {
+                "controlPlaneConcurrency": "1",
+                "controlPlaneDrainOptions": {
+                    "deleteEmptyDirData": true,
+                    "disableEviction": false,
+                    "enabled": false,
+                    "force": false,
+                    "gracePeriod": -1,
+                    "ignoreDaemonSets": true,
+                    "ignoreErrors": false,
+                    "skipWaitForDeleteTimeoutSeconds": 0,
+                    "timeout": 120
+                },
+                "workerConcurrency": "1",
+                "workerDrainOptions": {
+                    "deleteEmptyDirData": true,
+                    "disableEviction": false,
+                    "enabled": false,
+                    "force": false,
+                    "gracePeriod": -1,
+                    "ignoreDaemonSets": true,
+                    "ignoreErrors": false,
+                    "skipWaitForDeleteTimeoutSeconds": 0,
+                    "timeout": 120
+                }
+            },
+            "machineGlobalConfig": {
+                "cluster-cidr": "10.52.0.0/16",
+                "cluster-dns": "10.53.0.10",
+                "cni": "multus,calico",
+                "disable-kube-proxy": false,
+                "etcd-expose-metrics": false,
+                "service-cidr": "10.53.0.0/16",
+                "profile": null
+            },
+            "machineSelectorConfig": [
+                {
+                    "config": {
+                        "protect-kernel-defaults": false
+                    }
+                }
+            ],
+            "etcd": {
+                "disableSnapshots": false,
+                "s3": null,
+                "snapshotRetention": 5,
+                "snapshotScheduleCron": "0 */5 * * *"
+            },
+            "registries": {
+                "configs": {},
+                "mirrors": {}
+            },
+            "machinePools": []
+        },
+        "machineSelectorConfig": [
+            {
+                "config": {}
+            }
+        ],
+        "kubernetesVersion": "v1.24.17+rke2r1",
+        "defaultPodSecurityPolicyTemplateName": "",
+        "localClusterAuthEndpoint": {
+            "enabled": true,
+            "caCerts": "",
+            "fqdn": ""
+        }
+    }
+}

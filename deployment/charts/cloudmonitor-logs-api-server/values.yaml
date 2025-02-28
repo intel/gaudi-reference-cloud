@@ -1,0 +1,40 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: amr-registry.caas.intel.com
+  repository: intelcloud/cloudmonitor-logs-api-server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+openSearchEndpoint: https://cloudmonitor-es.idcstage.intel.com
+openSearchIndex: "cm_logs_987654321000"
+insecureSkipVerify: true
+iKSAggregationFieldNames:
+  - "host"
+  - "system_component"
+clusterRegion: "us-region-1"
+iKSFilterFieldNames:
+  - "host"
+  - "system_component"
+useProxy: true
+
+database:
+  # The DNS name used to connect to the Postgres database.
+  service: cloudmonitor-logs-db-postgresql
+  name: main
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  arg: sslmode=disable
+  # credentials path
+  vaultCredentialsPath: controlplane/data/us-dev-1-cloudmonitor-logs-api-server/database
+
+service:
+  type: ClusterIP
+cognito:
+  enabled: false
+  endpoint: ""
+productcatalog:
+  apiVersion: "v1"

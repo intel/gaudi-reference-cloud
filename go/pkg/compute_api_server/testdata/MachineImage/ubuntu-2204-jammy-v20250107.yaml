@@ -1,0 +1,32 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-2204-jammy-v20250107
+spec:
+  displayName: Ubuntu 22.04 LTS (Jammy Jellyfish) v20250107
+  description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes: []
+  md5sum: b3599cf11aec5fa56bf4120e1e79ab21
+  sha256sum: 0b7f7e65896ca3e4889ed4a92f286aca7a51539926381e43b99e8ed28b243236
+  sha512sum: 923515c3216619a8c3d405735012c034c8cfcd4b4986343eabf8aa2f089d5854b1d9e5f592b8eeca06a9858ab9f86598e16c94679de727f69abeb0e370c5e5f4
+  virtualSizeBytes: 10737418240
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (VM only)
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: ubuntu

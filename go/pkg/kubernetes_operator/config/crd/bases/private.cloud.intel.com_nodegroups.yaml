@@ -1,0 +1,304 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: nodegroups.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: Nodegroup
+    listKind: NodegroupList
+    plural: nodegroups
+    singular: nodegroup
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.state
+      name: State
+      type: string
+    - jsonPath: .status.type
+      name: Type
+      type: string
+    - jsonPath: .status.count
+      name: Count
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Nodegroup is the Schema for the nodegroups API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: NodegroupSpec defines the desired state of Nodegroup
+            properties:
+              apiserverLB:
+                description: The IP of the kube-apiserver loadbalancer.
+                type: string
+              apiserverLBPort:
+                description: The port of the kube-apiserver loadbalancer.
+                type: string
+              cloudaccountid:
+                description: Cloud account Id specifies cloud account id
+                type: string
+              clusterName:
+                description: ClusterName specifies the name of the cluster that owns
+                  this nodegroup.
+                type: string
+              clusterType:
+                description: ClusterType specifies the type of the cluster created
+                  like supercompute or generalpurpose clusters.
+                type: string
+              count:
+                description: Count specifies the number of nodes that should exist
+                  in this node group.
+                type: integer
+              etcdLB:
+                description: The IP of the etcd loadbalancer.
+                type: string
+              etcdLBPort:
+                description: The port of the etcd loadbalancer.
+                type: string
+              instanceIMI:
+                description: InstanceIMI specifies the Intel machine instance to be
+                  used for nodes creation.
+                type: string
+              instanceType:
+                description: InstanceType specifies the compute instance to be used
+                  based on CPU / Memory and Storage requirements.
+                type: string
+              kubernetesProvider:
+                description: |-
+                  KubernetesProvider specifies the provider to use for communicating with the
+                  kubernetes cluster.
+                type: string
+              kubernetesVersion:
+                description: KubernetesVersion specifies the version of k8s to use
+                  for installation.
+                type: string
+              nodeProvider:
+                description: |-
+                  NodeProvider specifies the provider to use for communicating with the
+                  instance provider.
+                type: string
+              nodegroupType:
+                description: NodegroupType specifies if nodes in this nodegroup are
+                  of type controlplane or worker.
+                type: string
+              region:
+                type: string
+              runtime:
+                default: Containerd
+                description: Runtime specifies the container runtime used in worker
+                  nodes.
+                type: string
+              runtimeArgs:
+                additionalProperties:
+                  type: string
+                description: RuntimeArgs specifies custom arguments to run the container
+                  runtime.
+                type: object
+              sshKey:
+                description: SSHKey specifies the ssh key name or id to be used during
+                  instances provisioning.
+                items:
+                  type: string
+                type: array
+              userDataURL:
+                description: |-
+                  This is an url to a bash script that will be downloaded and executed with cloud init
+                  during node provisioning.
+                type: string
+              vnets:
+                items:
+                  properties:
+                    availabilityzone:
+                      type: string
+                    networkvnet:
+                      type: string
+                  required:
+                  - availabilityzone
+                  - networkvnet
+                  type: object
+                type: array
+              wekaStorage:
+                description: This holds the information to register and deregister
+                  nodes from the weka storage provider.
+                properties:
+                  clusterId:
+                    description: ClusterId specifies the weka cluster id.
+                    type: string
+                  enable:
+                    description: Enable specifies if weka storage is enabled for the
+                      nodegroup.
+                    type: boolean
+                  mode:
+                    default: udp
+                    description: Weka mode to use for registering nodes.
+                    type: string
+                  numCores:
+                    default: 1
+                    description: Number of cores used to register nodes.
+                    format: int32
+                    type: integer
+                type: object
+            required:
+            - apiserverLB
+            - apiserverLBPort
+            - clusterName
+            - count
+            - etcdLB
+            - etcdLBPort
+            - instanceIMI
+            - instanceType
+            - kubernetesProvider
+            - kubernetesVersion
+            - nodeProvider
+            - nodegroupType
+            type: object
+          status:
+            description: NodegroupStatus defines the observed state of Nodegroup
+            properties:
+              count:
+                description: Count holds the current number of nodes in the nodegroup.
+                type: integer
+              message:
+                description: Message is a more verbose description of the current
+                  state.
+                type: string
+              name:
+                description: Name holds the name of the nodegroup.
+                type: string
+              nodes:
+                description: Nodes holds the status of the nodes.
+                items:
+                  properties:
+                    autoRepairDisabled:
+                      description: AutoRepairDisabled specifies if node needs to be
+                        autorepaired or not.
+                      type: boolean
+                    creationTime:
+                      description: CreationTime specfies the time where machine became
+                        a kubernetes node.
+                      format: date-time
+                      type: string
+                    dnsName:
+                      description: Domain name of the instance.
+                      type: string
+                    gateway:
+                      description: Specifies the gateway of the node.
+                      type: string
+                    instanceIMI:
+                      description: InstanceIMI specifies the Intel machine instance
+                        used for creating the node.
+                      type: string
+                    ipAddress:
+                      description: IpAddress holds the ip address of the node.
+                      type: string
+                    kubeProxyVersion:
+                      description: Kube-proxy version running on the node.
+                      type: string
+                    kubeletVersion:
+                      description: Kubelet version running on the node.
+                      type: string
+                    lastUpdate:
+                      description: LastUpdate specifies when the state of the node
+                        last updated.
+                      format: date-time
+                      type: string
+                    message:
+                      description: Message is a more verbose description of the current
+                        state.
+                      type: string
+                    name:
+                      description: Name holds the hostname of the node.
+                      type: string
+                    netmask:
+                      description: Specifies the netmask of the node.
+                      format: int32
+                      type: integer
+                    reason:
+                      description: Reason is a description of the current state.
+                      type: string
+                    state:
+                      description: State of the node, one of active, updating, error,
+                        deleting.
+                      type: string
+                    storageBackendGateway:
+                      description: StorageBackendGateway holds the gateway of the
+                        storage backend node.
+                      type: string
+                    storageBackendIP:
+                      description: StorageBackendIP holds the ip address of the storage
+                        backend node.
+                      type: string
+                    storageBackendSubnet:
+                      description: StorageBackendSubnet holds the subnet of the storage
+                        backend node.
+                      type: string
+                    subnet:
+                      description: Specifies the subnet of the node.
+                      type: string
+                    unschedulable:
+                      description: Unschedulable specifies if node can be used to
+                        schedule pods.
+                      type: boolean
+                    wekaStorage:
+                      description: Specifies the status of the weka registration action
+                        for the node.
+                      properties:
+                        clientId:
+                          description: The weka client id used to identify registered
+                            node.
+                          type: string
+                        customStatus:
+                          description: The custom registration status.
+                          type: string
+                        message:
+                          description: The registration message.
+                          type: string
+                        status:
+                          description: The registration status.
+                          type: string
+                      type: object
+                  required:
+                  - state
+                  type: object
+                type: array
+              reason:
+                description: Reason is a description of the current state.
+                type: string
+              state:
+                description: State of the nodegroup, one of active, updating, error,
+                  deleting.
+                type: string
+              type:
+                description: NodegroupType holds the type of nodegroup, one of controlplane
+                  or worker.
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-spr-hbm-f
+spec:
+  name: bm-spr-hbm-f
+  displayName: Intel® Xeon® processors, codenamed Sapphire Rapids with high bandwidth memory (HBM) – Flat mode
+  description: Intel® Xeon® processors, codenamed Sapphire Rapids with high bandwidth memory (HBM) – Flat mode
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 56
+    id: "0x806F8"
+    modelName: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 0
+  hbmMode: Flat-1LM
+  memory:
+    size: 256Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4000
+  disks:
+    - size: 2000Gi

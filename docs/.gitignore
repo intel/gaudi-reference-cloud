@@ -1,0 +1,37 @@
+generated/
+
+# Sphinx _build dirs, html
+venv
+.venv/
+_build/
+docs/_build
+
+# VS Code folder
+.vscode
+
+# Excel spreadsheets
+
+source/~$instance_specs_for_docs.xlsx
+
+
+# pycache
+source/_scripts/__pycache__/
+
+# ignore vi temporary files
+*.swp
+*~
+.*~
+
+#.ignore indeterminate .save files
+*.save
+
+# dependencies
+/node_modules
+
+
+# ignore RST doc templates
+# comment out after dev done
+# .rst-templates/*
+
+# ignore node, used to support mermaid.js during build
+node_modules/

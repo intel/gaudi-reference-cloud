@@ -1,0 +1,16 @@
+{{- if not .Values.deployStandaloneIronic -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ if .Values.watchAllNamespaces }}ClusterRoleBinding{{ else }}RoleBinding{{ end }}
+metadata:
+  name: baremetal-operator-manager-rolebinding
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: {{ if .Values.watchAllNamespaces }}ClusterRole{{ else }}Role{{ end }}
+  name: baremetal-operator-manager-role
+subjects:
+- kind: ServiceAccount
+  name: baremetal-operator
+  namespace: {{ .Release.Namespace }}
+{{- end }}

@@ -1,0 +1,88 @@
+---
+
+# TODO: refactor to use community.libvirt.virt
+
+# Create and configure Guest_Test Server
+- name: Block for creating the Guest_Test server {{ vmnum }}
+  block:
+    - name: Check if Guest_Test server {{ vmnum }} is already running...
+      ansible.builtin.shell:
+        cmd: >
+          virsh domstate "{{ guest_test_server_name }}"
+      register: domstate_result
+      failed_when: "domstate_result.rc == 0"
+      changed_when: "domstate_result.rc != 0"
+    - name: Generate SSH key pair for Guest Test Server {{ vmnum }}
+      vars:
+        ssh_key_server_name: "{{ guest_test_server_name }}"
+      ansible.builtin.include_role:
+        name: gen_ssh_key
+    - name: checking if ssh_key public file exists {{ guest_test_server_name }}
+      stat:
+        path: "{{ ssh_key_pub_file }}"
+      register: ssh_key_file_result
+    - name: Create user-data config file for Guest_Test Server {{ vmnum }}
+      vars:
+        guest_test_ssh_key_public: "{{ lookup('file', ssh_key_pub_file) }}"
+      ansible.builtin.template:
+        src: user-data.cfg.j2
+        dest: "{{ download_dir.path }}/user-data.cfg"
+        owner: root
+        group: root
+        mode: '0644'
+        backup: false
+      when: ssh_key_file_result.stat.exists
+    - name: Create network config file for Guest_Test Server {{ vmnum }}
+      ansible.builtin.template:
+        src: network.cfg.j2
+        dest: "{{ download_dir.path }}/network.cfg"
+        owner: root
+        group: root
+        mode: '0644'
+        backup: false
+    - name: Prepare the ubuntu server cloud image for {{ guest_test_server_name }}
+      block:
+        - name: convert ubuntu server cloud image {{ guest_test_server_name }}
+          ansible.builtin.shell:
+            cmd: >
+              qemu-img convert -f qcow2 -O qcow2
+              "{{ download_dir.path }}/{{ ubuntu_server_cloudimg }}"
+              "{{ libvirt_image_dir }}/{{ guest_test_server_cloudimg }}"
+          register: convert_result
+          changed_when: "convert_result.rc != 0"
+        - name: resize ubuntu server cloud image {{ guest_test_server_name }}
+          ansible.builtin.shell:
+            cmd: >
+              qemu-img resize
+              "{{ libvirt_image_dir }}/{{ guest_test_server_cloudimg }}"
+              10G
+          register: resize_result
+          changed_when: "resize_result.rc != 0"
+        - name: Generate ubuntu install seed ISO for {{ guest_test_server_name }}
+          ansible.builtin.shell:
+            cmd: >
+              cloud-localds -v
+              "--network-config={{ download_dir.path }}/network.cfg"
+              "{{ ubuntu_cloud_init_iso }}"
+              "{{ download_dir.path }}/user-data.cfg"
+          register: cloud_iso_result
+          changed_when: "cloud_iso_result.rc != 0"
+    - name: Create Guest_Test VM {{ guest_test_server_name }}
+      ansible.builtin.shell:
+        cmd: >
+          virt-install --name "{{ guest_test_server_name }}"
+          --ram 2048
+          --vcpus 2
+          --osinfo ubuntu22.04
+          --disk "{{ libvirt_image_dir }}/{{ guest_test_server_cloudimg }},device=disk,bus=virtio,cache=none"
+          --disk "{{ ubuntu_cloud_init_iso }},device=cdrom"
+          --network "network={{ guest_host_network }},mac={{ guest_test_base_mac }}{{ '%02x' % vmnum }}"
+          --graphics none --console pty,target_type=serial
+          --import
+          --noautoconsole
+      register: install_result
+      changed_when: "install_result.rc != 0"
+  vars:
+    ssh_key_pub_file: "{{ ssh_key_dir }}/{{ guest_test_server_name }}.pub"
+  become: true
+  tags: setup

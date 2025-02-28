@@ -1,0 +1,44 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "cloud_init",
+    srcs = [
+        "filters.go",
+        "template_generator.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/training/armada/pkg/cloud_init",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_operator/util",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_flosch_pongo2//:pongo2",
+    ],
+)
+
+filegroup(
+    name = "cloudinitscripts",
+    srcs = glob([
+        "cloud-init-scripts/**/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "cloud_init_test",
+    srcs = [
+        "filters_test.go",
+        "template_generator_test.go",
+    ],
+    data = [
+        "cloudinitscripts",
+    ],
+    embed = [":cloud_init"],
+    deps = [
+        "//go/pkg/pb",
+        "@com_github_flosch_pongo2//:pongo2",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

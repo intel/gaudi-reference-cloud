@@ -1,0 +1,65 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-22.04-pvc-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 22.04 LTS v20250210
+  description: Ubuntu Server is a version of the Ubuntu operating system designed
+    and engineered as a backbone for the internet.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-spr-pvc-1100-1
+  - bm-spr-pvc-1100-4
+  - bm-spr-pvc-1100-8
+  - bm-spr-pvc-1550-8
+  md5sum: 587c2f9ce537a167bb659a073a0bc549
+  sha256sum: b1c9d499b840e7266a376b5dfe3e3d2f7a9438c6c64810813d74d916b9697946
+  sha512sum: e5ec4ccc3c41328b89de05a534d55a06374f846ee81c753507692d1d4448c15ca8c9fd2468fbb1d09e22364d936fe858a68302de6369e964e83e546c20e45a4a
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: oneAPI base kit
+    type: Software kit
+    version: 2025.0.1
+    description: core set of tools and libraries for developing high-performance,
+      data-centric applications across diverse architectures.
+    infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.49uac7
+    imageUrl: https://www.intel.com/content/dam/develop/public/us/en/images/brand/brand-commercial-base-toolkit-16x9.png.rendition.intel.web.368.207.png
+  - name: oneAPI HPC kit
+    type: Software kit
+    version: 2025.0.1
+    description: comprehensive suite of development tools that make it fast and easy
+      to build modern code that gets maximum performance out of the newest Intel®
+      processors.
+    infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit.html#gs.49ueyn
+    imageUrl: https://www.intel.com/content/dam/develop/public/us/en/images/brand/brand-commercial-base-hpc-toolkit-16x9.png.rendition.intel.web.368.207.png
+  - name: oneAPI render kit
+    type: Software kit
+    version: 2024.1.0
+    description: powerful set of open source rendering, ray tracing, denoising, and
+      path guiding libraries for AI synthetic data generation, digital twins, high-fidelity
+      and high-performance visualization, and immersive content creation.
+    infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/rendering-toolkit.html#linklist_1681889240_
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/2022-10/brand-commercial-base-rendering-toolkit.png.rendition.intel.web.368.207.png
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

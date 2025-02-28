@@ -1,0 +1,15 @@
+apiServerIngress:
+  enabled: false
+  className: nginx
+  name: kubernetes-api
+  namespace: default
+  serviceName: kubernetes
+  port: 443
+  cors:
+    enable: "true"
+  domain: ""
+  tlsKey: ""
+  tlsCrt: ""
+  tlsSecretName: api-server-crt
+
+

@@ -1,0 +1,17 @@
+{{- if and (.Values.metallb_layer2_enable) (.Values.metallb_layer2_single_ip_pools) }}
+{{- range $key, $val := .Values.metallb_layer2_single_ip_pools }}
+{{- range $ip_addr, $properties := $val }}
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: {{ $ip_addr }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  addresses:
+  - {{ $ip_addr }}/32
+  autoAssign: {{ $properties.autoAssign }}
+  avoidBuggyIPs: {{ $properties.avoidBuggyIPs }}
+---
+{{- end }}
+{{- end }}
+{{- end }}

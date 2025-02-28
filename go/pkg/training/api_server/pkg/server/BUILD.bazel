@@ -1,0 +1,34 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = [
+        "cluster.go",
+        "server.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/training/api_server/pkg/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/cloudaccount",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/storage/utils",
+        "//go/pkg/training/api_server/pkg/batch_service",
+        "//go/pkg/training/api_server/pkg/db",
+        "//go/pkg/training/config",
+        "//go/pkg/training/database/query",
+        "//go/pkg/training/idc_compute",
+        "@com_github_google_uuid//:uuid",
+        "@io_opentelemetry_go_otel//attribute",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

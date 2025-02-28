@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 5000
+clusters:
+  - name: test
+    uuid: 00000000-0000-0000-0000-000000000000
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+      - "ObjectStore"
+    labels:
+      label: value
+    location: testing
+    api:
+      type: REST
+      url: http://testing.localhost
+    auth:
+      scheme: Basic
+      env: WEKA_CREDS
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+        - 00000000-0000-0000-0000-000000000001
+      tenantFsGroupName: testfsgroup
+      fileSystemDeleteWait: 5
+      backendFqdn: testing.localhost

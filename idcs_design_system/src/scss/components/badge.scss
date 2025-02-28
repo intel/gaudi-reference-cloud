@@ -1,0 +1,8 @@
+.badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge.bg-primary {
+    color: var(--badge-primary-color);
+}

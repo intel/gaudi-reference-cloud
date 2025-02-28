@@ -1,0 +1,6 @@
+hosts:
+  hosts:
+{% for host, ip_address in host_info_dict.items() %}
+    {{ host }}:
+      ansible_host: "{{ ip_address }}"
+{% endfor %}

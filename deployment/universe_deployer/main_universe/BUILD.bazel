@@ -1,0 +1,98 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//deployment/universe_deployer:universe_deployer.bzl", "universe_deployer")
+load("@main_universe_config_file_embed//:defs.bzl", "main_universe_config_file_embed")
+load("@git_archives//:defs.bzl", "git_archives_metadata")
+load("//build/dynamic:universe_deployer.bzl", "MAX_POOL_DIRS", "POOL_DIR")
+
+
+# Create rules for Universe Deployer.
+#
+# Normally, Universe Deployer updates the main branch of the idc-argocd repository only when run in the main branch of the monorepo.
+# During development and testing of Universe Deployer, use parameters such as the following to avoid changing production.
+#   authoritative_git_branch = "PR-6104"
+#   manifests_git_branch = "main-test1",
+#   manifests_git_remote = "https://github.com/ClaudioFaheyIntel/frameworks.cloud.devcloud.services.idc-argocd.git",
+#
+# DEPRECATED: This will be replaced by go/pkg/universe_deployer/cmd/deploy_all_in_k8s/main.go.
+# See deployment/universe_deployer/create_releases/BUILD.bazel which replaces much of the universe_deployer rule.
+#
+universe_deployer(
+    name = "main_universe_deployer",
+    authoritative_git_branch = "main",
+    authoritative_git_remote = "https://github.com/intel-innersource/frameworks.cloud.devcloud.services.idc.git",
+    git_archives = "@git_archives",
+    git_archives_metadata = git_archives_metadata,
+    jobs_per_commit = "8",
+    manifests_git_branch = "main",
+    manifests_git_remote = "https://github.com/intel-innersource/frameworks.cloud.devcloud.services.idc-argocd.git",
+    max_pool_dirs = MAX_POOL_DIRS,
+    # A mapping from a label for a tar file to a comma-separated list of commits
+    # onto which the tar file will be extracted, replacing any files extracted from each git archive.
+    # If the list of commits is 'default', the patch will apply to any commit which is not otherwise listed.
+    # Patches can be used to change Bazel caching or the pushing process.
+    # Patches must not change the container images, Helm charts, or Argo CD manifests.
+    # TODO: Use /deployment/universe_deployer/commit_metadata.json to determine patches needed for a commit.
+    patch_tar_for_commits = {
+        "patch_tar_default": "default",
+        "patch_tar_v1": "05a4fde2861693b18dd0d3e3bbab54306aa161f3,021e9b76415de266bd90a73927ddab8ded48b9ec",
+    },
+    pool_dir = POOL_DIR + "/universe_deployer_pool/v3",
+    # If True, a new branch will be created in the remote. If False, manifests_git_branch will be updated.
+    push_to_new_branch = False,
+    secrets = "//:local_secrets_universe_deployer",
+    # If True, do not push containers and Helm charts.
+    skip_push = False,
+    universe_config_file_embed = main_universe_config_file_embed,
+)
+
+# Targets in this filegroup will be copied to the extracted commit, replacing any files.
+# Patches must not change the container images, Helm charts, or Argo CD manifests.
+filegroup(
+    name = "patches_default",
+    srcs = [
+        "//:local_BAZEL_REMOTE_CACHE_OPTS",
+    ]
+)
+
+# Rule for creating the patch tar that will be extracted on top of the extracted commit.
+pkg_tar(
+    name = "patch_tar_default",
+    remap_paths = {
+        "local/BAZEL_REMOTE_CACHE_OPTS": ".bazelrclocal",
+    },
+    strip_prefix = "/",
+    srcs = [":patches_default"],
+)
+
+# Targets in this filegroup will be copied to the extracted commit, replacing any files.
+# Patches must not change the container images, Helm charts, or Argo CD manifests.
+# This patch will be applied only to the specific commits in the patch_tar_for_commits attribute.
+filegroup(
+    name = "patches_v1",
+    srcs = [
+        "//:local_BAZEL_REMOTE_CACHE_OPTS",
+        # Temporary fix for pusher.go to handle new environments.
+        "//go/pkg/universe_deployer/pusher:pusher.go.v1",
+    ]
+)
+
+# Rule for creating the patch tar that will be extracted on top of the extracted commit.
+pkg_tar(
+    name = "patch_tar_v1",
+    remap_paths = {
+        "local/BAZEL_REMOTE_CACHE_OPTS": ".bazelrclocal",
+        "go/pkg/universe_deployer/pusher/pusher.go.v1": "go/pkg/universe_deployer/pusher/pusher.go",
+    },
+    strip_prefix = "/",
+    srcs = [":patches_v1"],
+)
+
+# This rule can be used to test git_archive.
+genrule(
+    name = "git_archive_test",
+    srcs = [
+        "@git_archives//:git_archives"
+        ],
+    outs = ["git_archive_test_result"],
+    cmd = "ls -lhR > $@",
+)

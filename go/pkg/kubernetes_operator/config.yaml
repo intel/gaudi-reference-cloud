@@ -1,0 +1,126 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# How often the controller will check for the state of the nodes of a cluster.
+monitorPeriodicity: 60s
+
+# How long the controller will give to a node that is not active before it is deleted.
+monitorGracePeriod: 15m
+
+# IDC grpc url to connect to the idc services.
+idcGrpcUrl: "dev.compute.us-dev-1.grpcapi.cloud.intel.com.kind.local:443"
+
+# Number of goroutines to create for concurrently reconcile custom resources.
+# This setting is per controller. If value <= 0 defaults to 1.
+clusterMaxConcurrentReconciles: 1
+nodegroupMaxConcurrentReconciles: 1
+addonMaxConcurrentReconciles: 1
+
+# This is the CIDR of the compute instances. This is used
+# in the controlplane bootstrap script to allow only communication between cp nodes.
+# IKS VM  => 100.80.145.0/24
+# Staging => 100.80.28.0/23
+iptables:
+  enabled: false
+  controlplaneCIDR: ""
+
+# This is the URL used to configure prometheus in controlplane nodes to remote
+# write metrics.
+#
+# Staging =>
+#   enabled: true
+#   remoteWriteURL: "https://internal-placeholder.com/vmagent-iks/api/v1/write"
+monitoring:
+  enabled: false
+  remoteWriteURL: ""
+  username: ""
+  password: ""
+
+# This is the configuration for log collection, enrichment and shipment
+# into OpenSearch cluster
+logging:
+  # disabled by default
+  enabled: false
+  # opensearch host
+  host: ""
+  # opensearch user
+  user: ""
+  # opensearch password
+  password: ""
+
+
+certExpirations:
+  # Setting Default expiration time for CP Nodes as 3 years
+  caCertExpirationPeriod: 26280h
+  # Setting 1 year as Expiration time when a new CP node is provisioned
+  controlPlaneCertExpirationPeriod: 8760h
+  # Expiration time whenever nodegroup controller or addon controller connects to downstream cluster
+  controllerCertExpirationPeriod: 30m
+
+# The supported providers that can be used by the controller to create a k8s cluster.
+kubernetesProviders:
+  rke2:
+    url: https://internal-placeholder.com
+    accessKey: 
+    secretKey: 
+    controlplaneBootstrapScript: /vault/secrets/bootstrap-rke2.sh
+    workerBootstrapScript: /vault/secrets/bootstrap-rke2.sh
+
+  iks:
+    controlplaneBootstrapScript: /vault/secrets/bootstrap-iks-controlplane.sh
+    workerBootstrapScript: /vault/secrets/bootstrap-iks-worker.sh
+
+# The supported providers that can be used by the controller to create nodes for the k8s cluster.
+nodeProviders:
+  harvester:
+    url: https://internal-placeholder.com
+    accessKey: 
+    secretKey: 
+  compute:
+    url: "dev.compute.us-dev-1.grpcapi.cloud.intel.com.kind.local:443"
+
+s3Addons:
+  url: "sccobv59a-s3.sc.intel.com"
+  accessKey: 
+  secretKey: 
+  useSSL: true
+  bucketName: "caas-iks"
+  s3Path: "iks-addons/"
+
+s3Snapshots:
+  enabled: true
+  snapshotsPeriodicity: 6h
+  snapshotsFolder: /tmp/
+  url: "sccobv59a-s3.sc.intel.com"
+  accessKey: 
+  secretKey: 
+  useSSL: true
+  bucketName: "caas-iks"
+  contentType: "application/gzip"
+  s3Path: "etcd-snapshots/"
+
+weka:
+  recreateGracePeriod: 5m
+  softwareVersion: "4.2.2"
+  clusterUrl: "10.45.116.186:14000"
+  scheme: "http"
+  filesystemGroupName: "tenantfsgroup"
+	initialFilesystemSizeGB: "2"
+	reclaimPolicy: "Delete"
+  helmchartRepoUrl: "https://weka.github.io/csi-wekafs"
+	helmchartName: "weka-fs-plugin"
+  instanceTypes:
+    bm-icp-gaudi2:
+      mode: "dpdk"
+      numCores: "4"
+
+metrics:
+  systemMetrics:
+    prometheusRemoteWrite:
+      url: ""
+      basicAuth:
+        username: ""
+        password: ""
+  endUserMetrics:
+    prometheusRemoteWrite:
+      url: ""
+      bearerToken: ""

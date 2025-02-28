@@ -1,0 +1,7 @@
+{
+    "baseUrl": "https://staging.api.idcservice.net",
+    "baseApiUrl": "https://internal-placeholder.com",
+    "slurmaasManagementUsername": "slurmaas-management@intel.com",
+    "adminAuthConfig": {},
+    "authConfig": {}
+}

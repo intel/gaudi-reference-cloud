@@ -1,0 +1,4 @@
+availabilityZone: us-dev-1a
+region: us-dev-1
+subnet: 100.80.149.0/24
+vlanId: 227

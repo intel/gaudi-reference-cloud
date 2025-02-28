@@ -1,0 +1,11 @@
+- name: Connect to the instance and Install Stress-NG package
+  hosts: vm
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Install Stress NG
+    ansible.builtin.apt:
+      name: stress-ng
+      state: latest
+      update_cache: yes

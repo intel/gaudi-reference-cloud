@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "codegen_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/codegen",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "@com_github_rancher_wrangler//pkg/controller-gen",
+        "@com_github_rancher_wrangler//pkg/controller-gen/args",
+        "@io_kubevirt_api//core/v1:core",
+    ],
+)
+
+go_binary(
+    name = "codegen",
+    embed = [":codegen_lib"],
+    visibility = ["//visibility:public"],
+)

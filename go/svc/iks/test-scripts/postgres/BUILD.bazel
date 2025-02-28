@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "postgres_lib",
+    srcs = ["postgres_deploy_migrations.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/iks/test-scripts/postgres",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_golang_migrate_migrate_v4//:migrate",
+        "@com_github_golang_migrate_migrate_v4//database/postgres",
+        "@com_github_golang_migrate_migrate_v4//source/file",
+    ],
+)
+
+go_binary(
+    name = "postgres",
+    embed = [":postgres_lib"],
+    visibility = ["//visibility:public"],
+)

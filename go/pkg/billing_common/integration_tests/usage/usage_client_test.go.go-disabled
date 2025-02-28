@@ -1,0 +1,163 @@
+package tests
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+func TestGetUsagesToReport(t *testing.T) {
+	cloudAccountId := "123456789102"
+	transactionId := uuid.NewString()
+	resourceId := uuid.NewString()
+	usageToCreate := &pb.UsageCreate{
+		CloudAccountId: cloudAccountId,
+		TransactionId:  transactionId,
+		ResourceId:     resourceId,
+		Properties: map[string]string{
+			"region":       DefaultServiceRegion,
+			"service":      IdcComputeServiceName,
+			"billUsage":    "true",
+			"instanceType": Xeon3SmallInstanceType,
+		},
+		Timestamp: timestamppb.Now(),
+	}
+	err := usageClient.CreateUsage(context.Background(), usageToCreate)
+	if err != nil {
+		t.Fatalf("failed to create usage for getting usages to report: %v", err)
+	}
+	usagesToReport, err := usageClient.GetUsagesToReport(context.Background())
+	if err != nil {
+		t.Fatalf("failed to get usages to report: %v", err)
+	}
+	if usagesToReport == nil {
+		t.Fatalf("usages to report cannot be nil")
+	}
+}
+
+func TestUsageAsReported(t *testing.T) {
+	cloudAccountId := "123456789102"
+	transactionId := uuid.NewString()
+	resourceId := uuid.NewString()
+	usageToCreate := &pb.UsageCreate{
+		CloudAccountId: cloudAccountId,
+		TransactionId:  transactionId,
+		ResourceId:     resourceId,
+		Properties: map[string]string{
+			"region":       DefaultServiceRegion,
+			"service":      IdcComputeServiceName,
+			"billUsage":    "true",
+			"instanceType": Xeon3SmallInstanceType,
+		},
+		Timestamp: timestamppb.Now(),
+	}
+	err := usageClient.CreateUsage(context.Background(), usageToCreate)
+	if err != nil {
+		t.Fatalf("failed to create usage for getting usages to report: %v", err)
+	}
+	usagesToReport, err := usageClient.GetUsagesToReport(context.Background())
+	if err != nil {
+		t.Fatalf("failed to get usages to report: %v", err)
+	}
+	if usagesToReport == nil {
+		t.Fatalf("usages to report cannot be nil")
+	}
+	numUpdatedToReported := 0
+	for _, usageToReport := range usagesToReport {
+		if !usageToReport.Reported {
+			err = usageClient.UpdateUsageAsReported(context.Background(), usageToReport)
+			if err != nil {
+				t.Fatalf("failed to mark usage as reported: %v", err)
+			}
+			numUpdatedToReported += 1
+		}
+	}
+	if numUpdatedToReported == 0 {
+		t.Fatalf("at least one usage should have been updated to as reported")
+	}
+}
+
+func TestGetPreviousUsage(t *testing.T) {
+	cloudAccountId := "123456789102"
+	prevTransactionId := uuid.NewString()
+	transactionId := uuid.NewString()
+	resourceId := uuid.NewString()
+	previousUsageToCreate := &pb.UsageCreate{
+		CloudAccountId: cloudAccountId,
+		TransactionId:  prevTransactionId,
+		ResourceId:     resourceId,
+		Properties: map[string]string{
+			"region":       DefaultServiceRegion,
+			"service":      IdcComputeServiceName,
+			"billUsage":    "true",
+			"instanceType": Xeon3SmallInstanceType,
+			"time":         "2h 48m 17s",
+		},
+		// subtract a day
+		Timestamp: timestamppb.New(time.Now().AddDate(0, 0, -1)),
+	}
+	usageToCreate := &pb.UsageCreate{
+		CloudAccountId: cloudAccountId,
+		TransactionId:  transactionId,
+		ResourceId:     resourceId,
+		Properties: map[string]string{
+			"region":       DefaultServiceRegion,
+			"service":      IdcComputeServiceName,
+			"billUsage":    "true",
+			"instanceType": Xeon3SmallInstanceType,
+			"time":         "4h 48m 17s",
+		},
+		Timestamp: timestamppb.Now(),
+	}
+	err := usageClient.CreateUsage(context.Background(), previousUsageToCreate)
+	if err != nil {
+		t.Fatalf("failed to create previous usage for getting usages to report: %v", err)
+	}
+	err = usageClient.CreateUsage(context.Background(), usageToCreate)
+	if err != nil {
+		t.Fatalf("failed to create usage for getting usages to report: %v", err)
+	}
+
+	usagesToReport, err := usageClient.GetUsagesToReport(context.Background())
+	if err != nil {
+		t.Fatalf("failed to get usages to report: %v", err)
+	}
+	if usagesToReport == nil {
+		t.Fatalf("usages to report cannot be nil")
+	}
+	var foundUsageToFindPreviousOf = false
+	var usageToFindPrevious *pb.Usage
+	for _, usageToReport := range usagesToReport {
+		if !usageToReport.Reported {
+			err = usageClient.UpdateUsageAsReported(context.Background(), usageToReport)
+			if err != nil {
+				t.Fatalf("failed to mark usage as reported: %v", err)
+			}
+			if usageToReport.GetTransactionId() == transactionId {
+				foundUsageToFindPreviousOf = true
+				usageToFindPrevious = usageToReport
+			}
+		}
+	}
+	if !foundUsageToFindPreviousOf {
+		t.Fatalf("did not find usage to find previous of")
+	}
+	foundPreviousUsage, err := usageClient.FindPreviousUsage(context.Background(), usageToFindPrevious)
+	if err != nil {
+		t.Fatalf("failed to find previous usage: %v", err)
+	}
+	if foundPreviousUsage == nil {
+		t.Fatalf("failed to find previous usage")
+	}
+	if foundPreviousUsage.GetTransactionId() != prevTransactionId {
+		t.Fatalf("found the wrong previous usage")
+	}
+	_, err = usageClient.FindPreviousUsage(context.Background(), foundPreviousUsage)
+	if err == nil {
+		t.Fatalf("finding the previous usage did not fail as expected")
+	}
+}

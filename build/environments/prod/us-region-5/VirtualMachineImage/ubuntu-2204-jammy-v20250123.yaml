@@ -1,0 +1,24 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  name: ubuntu-2204-jammy-v20250123
+  annotations:
+    harvesterhci.io/storageClassName: harvester-longhorn
+  finalizers:
+    - wrangler.cattle.io/vm-image-controller
+  generateName: image-
+  generation: 4
+  labels:
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/imageDisplayName: ubuntu-2204-jammy-v20250123
+    harvesterhci.io/os-type: ubuntu
+  namespace: default
+spec:
+  checksum: "665d14dc12b23f89eb120c094cfc1f65857f9ff188492d815cb98f37f5ad6e48b0e9ea97fca94a0ec576b832da7027c24f7e20e0949341dba2e096c38361373b"
+  displayName: ubuntu-2204-jammy-v20250123
+  sourceType: download
+  storageClassParameters:
+      migratable: 'true'
+      numberOfReplicas: '3'
+      staleReplicaTimeout: '30'
+  url: http://10.153.16.13/vmaas/images/ubuntu-2204-jammy-v20250123.qcow2

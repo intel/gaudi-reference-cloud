@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "vastmocks",
+    srcs = ["vast_api_mocks.gen.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/test/vastmocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/storage/storagecontroller/api/vast:go_proto",
+        "@com_github_golang_mock//gomock",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)

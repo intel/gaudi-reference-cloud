@@ -1,0 +1,7 @@
+{
+    "regularUser": {
+        "view": "IDC.Standard",
+        "edit": "IDC.Standard",
+        "delete": "IDC.Standard"
+    }
+}

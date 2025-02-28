@@ -1,0 +1,39 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# permissions for end users to edit storage-operators.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: vast-storage-operator-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: vast-storage-operator
+    app.kubernetes.io/part-of: vast-storage-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: vast-storage-operator-editor-role
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - vast-storage-operators
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cloud.intel.com
+  resources:
+  - vast-storage-operators/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

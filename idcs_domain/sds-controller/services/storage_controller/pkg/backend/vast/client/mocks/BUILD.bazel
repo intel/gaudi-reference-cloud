@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "mocks",
+    srcs = [
+        "client.go",
+        "login.go",
+        "quotas.go",
+        "roles.go",
+        "tenants.go",
+        "user.go",
+        "views.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/backend/vast/client/mocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/storage_controller/pkg/backend/vast/client",
+    ],
+)

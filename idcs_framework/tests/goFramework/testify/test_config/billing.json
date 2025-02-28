@@ -1,0 +1,728 @@
+{
+    "urls": {
+		"ariaBaseUrl": "",
+		"billingBaseUrl": "https://endpoint/v1/billing",
+		"baseUrl":"https://endpoint",
+		"cloudAccUrl": "https://endpoint/v1/cloudaccounts/enroll",
+		"cloudAccCreateUrl": "https://endpoint/v1/cloudaccounts",
+		"computeUrl":"https://compute_endpoint",
+		"consoleUrl": "https://consoleurl",
+		"ccReplaceUrl":"https://CreditcardRedirecturl/",
+		"tokenUrl": "https://oidc/token?"
+	},
+
+	"token":{
+        "method" : "azure"
+	},
+	"ariaConfig": {
+		"client_no": "",
+		"auth_key": ""
+
+	},
+    "intelUser": {
+        "userName": "Intel User name",
+        "rates": {
+            "small": "",
+            "medium": "",
+            "large": "",
+            "bm": "",
+            "gaudi": ""
+        }
+    },
+    "premiumUser": {
+        "userName": "Premium User name",
+        "rates": {
+            "small": "",
+            "medium": "",
+            "large": "",
+            "bm": "",
+            "gaudi": ""
+        }
+    },
+    "standardUser": {
+        "userName": "Standard User name",
+        "rates": {
+            "small": ""
+        }
+    },
+    "sshKey": "",
+    "sshKeys": [
+        {
+            "sshKeyName": "testinteluserkey",
+            "sshKey": "user ssh key",
+            "userName": "user email"
+        }
+    ],
+    "vnet": [
+        {
+            "payload": {
+                "metadata": {
+                    "name": "us-dev-1a-default"
+                },
+                "spec": {
+                    "region": "us-dev-1",
+                    "availabilityZone": "us-dev-1a",
+                    "prefixLength": 22
+                }
+            },
+            "userName": ""
+        }
+    ],
+    "coupons": [
+        {
+            "payload": {
+                "amount": "800",
+                "creator": "Visali",
+                "numUses": "2"
+            },
+            "userName": [
+                "",
+                "test@intel.com"
+            ]
+        }
+    ],
+    "billing": {
+        "billingAccount": {
+            "create": {
+                "validPayload": {
+                    "payload": {
+                        "tid": "test172-e005825c3ea9",
+                        "oid": "test172-2b7cfdff221b",
+                        "email": "example11642@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "validPayload1": {
+                    "payload": {
+                        "tid": "test176-e005825c3ea9",
+                        "oid": "test176-2b7cfdff221b",
+                        "email": "example11452@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "missingTid": {
+                    "payload": {
+                        "oid": "test176-2b7cfdff221b",
+                        "email": "example11462@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "missingIod": {
+                    "payload": {
+                        "tid": "test176-e005825c3ea9",
+                        "email": "example11472@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "missingEmail": {
+                    "payload": {
+                        "tid": "test176-e005825c3ea9",
+                        "oid": "test176-2b7cfdff221b",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "missingRoles": {
+                    "payload": {
+                        "tid": "test176-e005825c3ea9",
+                        "oid": "test176-2b7cfdff221b",
+                        "email": "example11482@example.com",
+                        "Premium": true
+                    }
+                },
+                "missingPremium": {
+                    "payload": {
+                        "tid": "test176-e005825c3ea9",
+                        "oid": "test176-2b7cfdff221b",
+                        "email": "example11492@example.com",
+                        "roles": "DevCloud%20Console%20Standard"
+                    }
+                },
+                "EmptyPayload": {
+                    "payload": {}
+                },
+                "Invalidtid": {
+                    "payload": {
+                        "tid": 10,
+                        "oid": "test172-2b7cfdff221b",
+                        "email": "example11502@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "InvalidOid": {
+                    "payload": {
+                        "tid": "test172-e005825c3ea9",
+                        "oid": 10,
+                        "email": "example11482@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "InvalidEMail": {
+                    "payload": {
+                        "tid": "test172-e005825c3ea9",
+                        "oid": "test172-2b7cfdff221b",
+                        "email": 10,
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "InvalidRoles": {
+                    "payload": {
+                        "tid": "test172-e005825c3ea9",
+                        "oid": "test172-2b7cfdff221b",
+                        "email": "example11482@example.com",
+                        "roles": "test",
+                        "Premium": true
+                    }
+                },
+                "InvalidRoles1": {
+                    "payload": {
+                        "tid": "test172-e005825c3ea9",
+                        "oid": "test172-2b7cfdff221b",
+                        "email": "test11722@example.com",
+                        "roles": 10,
+                        "Premium": true
+                    }
+                },
+                "InvalidPremium": {
+                    "payload": {
+                        "tid": "test172-e005825c3ea9",
+                        "oid": "test172-2b7cfdff221b",
+                        "email": "test117212@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": 10
+                    }
+                },
+                "cloudCredits": {
+                    "payload": {
+                        "tid": "test182-e005825c3ea9",
+                        "oid": "test182-2b7cfdff221b",
+                        "email": "test118212@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "morecloudCredits": {
+                    "payload": {
+                        "tid": "test192-e005825c3ea9",
+                        "oid": "test192-2b7cfdff221b",
+                        "email": "test119212@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "getcloudCredits": {
+                    "payload": {
+                        "tid": "test212-e005825c3ea9",
+                        "oid": "test212-2b7cfdff221b",
+                        "email": "test121212@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "getunappliedcloudCredits": {
+                    "payload": {
+                        "tid": "test202-e005825c3ea9",
+                        "oid": "test202-2b7cfdff221b",
+                        "email": "test120212@example.com",
+                        "roles": "DevCloud%20Console%20Standard",
+                        "Premium": true
+                    }
+                },
+                "CloudAccId": {
+                    "payload": {
+                        "cloudAccountId": "1234"
+                    }
+                },
+                "WrongTypeCloudAccId": {
+                    "payload": {
+                        "cloudAccountId": 1234
+                    }
+                }
+            }
+        },
+        "pcSync": {
+            "validPayload": {
+                "payload": {}
+            }
+        },
+        "cloudCredit": {
+            "cloudCredit": {
+                "payload": {
+                    "cloudAccountName": "test1722@example.com"
+                }
+            },
+            "morecloudCredits": {
+                "payload": {
+                    "cloudAccountName": "test1762@example.com"
+                }
+            },
+            "getcloudCredits": {
+                "payload": {
+                    "cloudAccountName": "test2122@example.com"
+                }
+            },
+            "getunappliedcloudCredits": {
+                "payload": {
+                    "cloudAccountName": "test2022@example.com"
+                }
+            },
+            "nonexistingCloudAccId": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "123456789012",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "negativeAmount": {
+                "payload": {
+                    "amountUsed": -100,
+                    "cloudAccountId": "123456789012",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "InvalidCloudAccId": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": 123,
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "InvalidCloudAccIdLessLength": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "123",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "InvalidExpiration": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": 10,
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "WrongReason": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "test",
+                    "remainingAmount": 100
+                }
+            },
+            "InvalidReason": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": 10,
+                    "remainingAmount": 100
+                }
+            },
+            "InvalidAmount": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": "test",
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "InvalidamountUsed": {
+                "payload": {
+                    "amountUsed": "test",
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 100,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "InvalidremainingAmount": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 100,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": "test"
+                }
+            },
+            "InvalidCouponCode": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": 1234,
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 100,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": "test"
+                }
+            },
+            "MissingamountUsed": {
+                "payload": {
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 100,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "MissingremainingAmount": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 100,
+                    "reason": "CREDIT_INITIAL"
+                }
+            },
+            "MissingCouponCode": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 100,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": "test"
+                }
+            },
+            "PreviousExpirationDate": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2021-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "ZeroAmount": {
+                "payload": {
+                    "amountUsed": 0,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 0,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 0
+                }
+            },
+            "MissingCloudAccId": {
+                "payload": {
+                    "amountUsed": 100,
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "MissingExpiration": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "MissingReason": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "remainingAmount": 100
+                }
+            },
+            "MissingAmount": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100
+                }
+            },
+            "EmptyPayload": {
+                "payload": {}
+            },
+            "extraFiled": {
+                "payload": {
+                    "amountUsed": 100,
+                    "cloudAccountId": "743093071479",
+                    "couponCode": "xdfSdfg",
+                    "created": "2023-05-08T09:55:24.403Z",
+                    "expiration": "2023-08-03T09:55:24.403Z",
+                    "originalAmount": 200,
+                    "reason": "CREDIT_INITIAL",
+                    "remainingAmount": 100,
+                    "test": "test"
+                }
+            }
+        },
+        "coupons": {
+            "Create": {
+                "WithoutAmount": {
+                    "payload": {
+                        "creator": "TestAutomation",
+                        "expires": "2025-08-12T16:24:40.526Z",
+                        "numUses": 3,
+                        "start": "2025-05-12T16:24:40.526Z"
+                    }
+                },
+                "WithZeroAmount": {
+                    "payload": {
+                        "amount": 0,
+                        "creator": "TestAutomation",
+                        "expires": "2025-08-12T16:24:40.526Z",
+                        "numUses": 3,
+                        "start": "2025-05-12T16:24:40.526Z"
+                    }
+                },
+                "InvlidTypeAmount": {
+                    "payload": {
+                        "amount": "abc",
+                        "creator": "TestAutomation",
+                        "expires": "2025-08-12T16:24:40.526Z",
+                        "numUses": 3,
+                        "start": "2025-05-12T16:24:40.526Z"
+                    }
+                },
+                "InvlidTypeCreator": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": 10,
+                        "expires": "2025-08-12T16:24:40.526Z",
+                        "numUses": 3,
+                        "start": "2025-05-12T16:24:40.526Z"
+                    }
+                },
+                "WithoutExpiration": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "test",
+                        "numUses": 3,
+                        "start": "2023-07-12T16:24:40.526Z"
+                    }
+                },
+                "WithoutStart": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "test",
+                        "numUses": 3,
+                        "expires": "2023-07-12T16:24:40.526Z"
+                    }
+                },
+                "WithoutStartExpire": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "test",
+                        "numUses": 3
+                    }
+                },
+                "PreviousStart": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "test",
+                        "numUses": 3,
+                        "start": "2020-07-12T16:24:40.526Z"
+                    }
+                },
+                "PreviousExpire": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "test",
+                        "numUses": 3,
+                        "expires": "2020-07-12T16:24:40.526Z"
+                    }
+                },
+                "WithInvalidStart": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "test",
+                        "numUses": 3,
+                        "start": 10
+                    }
+                },
+                "WithInvalidnumUses": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "test",
+                        "numUses": -1,
+                        "expires": "2023-07-12T16:24:40.526Z"
+                    }
+                },
+                "InvlidTypeExpires": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "Test",
+                        "expires": 10,
+                        "numUses": 3,
+                        "start": "2023-05-12T16:24:40.526Z"
+                    }
+                },
+                "WithoutNumUses": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "Test",
+                        "start": "2025-06-12T16:24:40.526Z",
+                        "expires": "2028-07-12T16:24:40.526Z"
+                    }
+                },
+                "Time1": {
+                    "payload": {
+                        "amount": 300,
+                        "creator": "Test",
+                        "start": "2029-06-12T16:24:40.526Z",
+                        "expires": "2028-07-12T16:24:40.526Z"
+                    }
+                }
+            }
+        }
+    },
+
+  "creditCards":{
+    "visaCard":{
+        "CardnumberInput" : "4111111111111111",
+        "MonthInput":"10",
+        "Year":"28",
+        "Cvc":"456",
+        "FirstName":"Test Visa",
+        "LastName":"Visa User",
+        "Email":"testuservisa@premium.com",
+        "Phone":"123456",
+        "Country":"IN",
+        "AddressLine":"Intel Technologies",
+        "City":"Bangalore",
+        "State":"KA",
+        "ZipCode":"560048"
+    },
+    "masterCard":{
+        "CardnumberInput" : "5454545454545454",
+        "MonthInput":"11",
+        "Year":"29",
+        "Cvc":"456",
+        "FirstName":"Test Master",
+        "LastName":"Master User",
+        "Email":"testusermaster@intel.com",
+        "Phone":"123456",
+        "Country":"IN",
+        "AddressLine":"Intel Technologies",
+        "City":"Bangalore",
+        "State":"KA",
+        "ZipCode":"560048"
+    },
+    "discoverCard":{
+        "CardnumberInput" : "6011000995500000",
+        "MonthInput":"12",
+        "Year":"30",
+        "Cvc":"456",
+        "FirstName":"Test Discover",
+        "LastName":"Discover User",
+        "Email":"testuserdiscover@intel.com",
+        "Phone":"123456",
+        "Country":"IN",
+        "AddressLine":"Intel Technologies",
+        "City":"Bangalore",
+        "State":"KA",
+        "ZipCode":"560048"
+    },
+
+    "amexCard":{
+        "CardnumberInput" : "371449635398431",
+        "MonthInput":"10",
+        "Year":"31",
+        "Cvc":"3543",
+        "FirstName":"Test Amex",
+        "LastName":"Amex User",
+        "Email":"testuseramex@intel.com",
+        "Phone":"123456",
+        "Country":"IN",
+        "AddressLine":"Intel Technologies",
+        "City":"Bangalore",
+        "State":"KA",
+        "ZipCode":"560048"
+    },
+
+    "changeCard":{
+        "CardnumberInput" : "5454545454545454",
+        "MonthInput":"11",
+        "Year":"28",
+        "Cvc":"456",
+        "FirstName":"Test Master",
+        "LastName":"Master User",
+        "Email":"testusermaster1@intel.com",
+        "Phone":"123456",
+        "Country":"IN",
+        "AddressLine":"Intel Technologies",
+        "City":"Bangalore",
+        "State":"KA",
+        "ZipCode":"560048"
+    }
+
+  }
+
+}

@@ -1,0 +1,50 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+import "quota_management.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "quota-management-service";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+// Private Quota Management Service
+service QuotaManagementPrivateService {
+    // Lists resource quotas for a service 
+    // if resource type and/or cloudaccount are specified then,
+    // gets the quotas for that cloudaccount and/or resource type if they exist
+    rpc GetResourceQuotaPrivate(ServiceQuotaResourceRequestPrivate) returns (ServiceQuotasPrivate) {};
+    // PingPrivate returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message ServiceQuotaResourceRequestPrivate {
+    string serviceName = 1;
+    string resourceType = 2;
+    string cloudAccountId = 3;
+}
+
+message ServiceQuotaPrivate {
+    string serviceName = 1;
+    repeated proto.ServiceQuotaResource  serviceResources = 2;
+}
+
+message ServiceQuotasPrivate {
+    ServiceQuotaPrivate DefaultQuota = 1;
+    ServiceQuotaPrivate CustomQuota = 2;
+}

@@ -1,0 +1,62 @@
+autoscaling:
+  enabled: false
+
+cognito:
+  enabled: false
+
+database:
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  arg: sslmode=disable
+  # The DNS name used to connect to the Postgres database.
+  service: network-db-postgresql
+  # credentials path
+  vaultCredentialsPath: database/static-creds/us-dev-1-network-db-client
+
+# Default MaxIdleConnectionCount to the database
+dbMaxIdleConnectionCount: 0
+
+image:
+  pullPolicy: IfNotPresent
+  registry: amr-registry.caas.intel.com
+  repository: intelcloud/network-api-server
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+podAnnotations:
+
+# The region that this service is running in.
+region: us-dev-1
+
+# The az's this service can configure
+availabilityZones:
+  - us-dev-1a
+  - us-dev-1b
+
+# The address of the Cloudaccount Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+cloudAccountServerAddr: cloudaccount.idcs-system.svc.cluster.local:8443
+
+# The address of the SDN Service in the format "host:port"
+sdnServerAddr: 100.64.16.125:50051
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+  requests:
+    cpu: "250m"
+    memory: "500Mi"
+
+service:
+  type: ClusterIP

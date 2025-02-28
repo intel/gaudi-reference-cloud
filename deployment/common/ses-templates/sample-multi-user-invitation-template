@@ -1,0 +1,8 @@
+{
+  "TemplateName": "Multi-User-Invitation-Template",
+  "TemplateContent": {
+    "Subject": "Invitation to Join Intel Cloud Services Platform",
+    "Text": "Dear Intel Developer Cloud Customer,\n\nYou are invited to join Intel Cloud Services platform. Please go to the following URL to complete your registration: {{invitationLink}}\n\nSincerely,\nIntel Cloud Services",
+    "Html": "<p>Dear Intel Developer Cloud Customer,</p><p>You are invited to join Intel Cloud Services platform. Please go to the following URL to complete your registration: <a href=\"{{invitationLink}}\">{{invitationLink}}</a><br><br>Please enter the below mentioned invitation code to verify your account.<br><br><b>{{invitationCode}}</b><br><br></p><p>Sincerely,<br>Intel Cloud Services</p>"
+  }
+}

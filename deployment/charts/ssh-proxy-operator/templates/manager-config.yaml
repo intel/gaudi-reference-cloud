@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ssh-proxy-operator.fullname" . }}-manager-config
+  labels:
+  {{- include "ssh-proxy-operator.labels" . | nindent 4 }}
+data:
+  controller_manager_config.yaml: |
+    apiVersion: private.cloud.intel.com/v1alpha1
+    authorizedKeysFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.authorizedKeysFilePath
+      | quote }}
+    authorizedKeysScpTargets: {{ toYaml .Values.managerConfig.controllerManagerConfigYaml.authorizedKeysScpTargets
+      | nindent 6 }}
+    health:
+      healthProbeBindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.health.healthProbeBindAddress
+        | quote }}
+    kind: SshProxyOperatorConfig
+    leaderElection:
+      leaderElect: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.leaderElect
+        }}
+      resourceName: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.resourceName
+        | quote }}
+    metrics:
+      bindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress
+        | quote }}
+    privateKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.privateKeyFilePath
+      | quote }}
+    proxyAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.proxyAddress |
+      quote }}
+    proxyPort: {{ .Values.managerConfig.controllerManagerConfigYaml.proxyPort }}
+    proxyUser: {{ .Values.managerConfig.controllerManagerConfigYaml.proxyUser | quote
+      }}
+    publicKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.publicKeyFilePath
+      | quote }}
+    webhook:
+      port: {{ .Values.managerConfig.controllerManagerConfigYaml.webhook.port }}
+    hostPublicKeyFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.hostPublicKeyFilePath
+      | quote }}

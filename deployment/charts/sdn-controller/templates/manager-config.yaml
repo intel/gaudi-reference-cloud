@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sdn-controller-manager-config
+data:
+  controller_manager_config.yaml: |
+    apiVersion: idcnetwork.intel.com/v1alpha1
+    kind: SDNControllerConfig
+    controllerConfig:
+      switchBackendMode: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.switchBackendMode }}
+      enableReadOnlyMode: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.enableReadOnlyMode }}
+      switchSecretsPath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.switchSecretsPath }}
+      dataCenter: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.dataCenter }}
+      bmhClusterKubeConfigFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.bmhClusterKubeConfigFilePath }}
+      maxConcurrentReconciles: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.maxConcurrentReconciles }}
+      maxConcurrentSwitchReconciles: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.maxConcurrentSwitchReconciles }}
+      maxConcurrentNetworkNodeReconciles: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.maxConcurrentNetworkNodeReconciles }}
+      maxConcurrentNodeGroupReconciles: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.maxConcurrentNodeGroupReconciles }}
+      portResyncPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.portResyncPeriodInSec }}
+      switchResyncPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.switchResyncPeriodInSec }}
+      bmhResyncPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.bmhResyncPeriodInSec }}
+      networkNodeResyncPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.networkNodeResyncPeriodInSec }}
+      nodeGroupResyncPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.nodeGroupResyncPeriodInSec }}
+      switchImportPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.switchImportPeriodInSec }}
+      statusReportPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.statusReportPeriodInSec }}
+      statusReportAcceleratedPeriodInSec: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.statusReportAcceleratedPeriodInSec }}
+      poolsConfigFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.poolsConfigFilePath }}
+      nodeGroupToPoolMappingConfigFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.nodeGroupToPoolMappingConfigFilePath }}
+      nodeGroupToPoolMappingSource: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.nodeGroupToPoolMappingSource }}
+      useDefaultValueInPoolForMovingNodeGroup: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.useDefaultValueInPoolForMovingNodeGroup }}
+      switchImportSource: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.switchImportSource }}
+      switchPortImportSource: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.switchPortImportSource }}
+      bgpCommunityIncomingGroupName: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.bgpCommunityIncomingGroupName }}
+      allowedTrunkGroups:
+{{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedTrunkGroups | toYaml | indent 8 }}
+      allowedModes:
+{{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedModes | toYaml | indent 8 }}
+      allowedVlanIds: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedVlanIds }}
+      allowedNativeVlanIds: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedNativeVlanIds }}
+      portChannelsEnabled: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.portChannelsEnabled }}
+      provisioningVlanIds: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.provisioningVlanIds }}
+      allowedCountAccInterfaces: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.allowedCountAccInterfaces }}
+      netboxServer: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxServer }}
+      netboxTokenPath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxTokenPath }}
+      netboxProviderServersFilterFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxProviderServersFilterFilePath }}
+      netboxProviderInterfacesFilterFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxProviderInterfacesFilterFilePath }}
+      netboxSwitchesFilterFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxSwitchesFilterFilePath }}
+      netboxClientInsecureSkipVerify: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxClientInsecureSkipVerify }}
+      netboxSwitchFQDNDomainName: {{ .Values.managerConfig.controllerManagerConfigYaml.controllerConfig.netboxSwitchFQDNDomainName }}
+
+    
+    ravenConfig:
+      environment: {{ .Values.managerConfig.controllerManagerConfigYaml.ravenConfig.environment }}
+      credentialsFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.ravenConfig.credentialsFilePath }}
+      host: {{ .Values.managerConfig.controllerManagerConfigYaml.ravenConfig.host }}

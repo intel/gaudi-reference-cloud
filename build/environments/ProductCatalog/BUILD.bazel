@@ -1,0 +1,8 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "productcatalog",
+    srcs = glob(["**/*.yaml", "**/*.yml"]),
+)

@@ -1,0 +1,17 @@
+---
+guest_host_deployments: 3
+default_host_network: "vlan{{ vmnum }}"
+default_host_memory_mb: 1024
+default_host_disk_gb: 20
+default_host_vcpu: 2
+default_data_network: "data"
+default_storage_network: "storage"
+default_data_network_file: "net-data-with-dhcp"
+inside_intel: true
+using_vpn: false
+secure: false
+cache_dir: "{{ playbook_dir }}/cache_dir"
+ssh_key_dir: "{{ playbook_dir }}/ssh_keys"
+ubuntu_server_cloudimg: "jammy-server-cloudimg-amd64.img"
+ubuntu_server_cloudimg_base_url: "https://cloud-images.ubuntu.com/jammy/current/"
+ubuntu_server_cloudimg_url: "{{ ubuntu_server_cloudimg_base_url }}/{{ ubuntu_server_cloudimg }}"

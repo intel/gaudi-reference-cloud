@@ -1,0 +1,9 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- hosts: jupyterhub_nodes
+  ignore_unreachable: true
+  gather_facts: yes
+  become: yes
+  roles:
+    - install-jupyterhub
+    

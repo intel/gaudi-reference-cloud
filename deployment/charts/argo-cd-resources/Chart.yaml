@@ -1,0 +1,5 @@
+apiVersion: v2
+name: argo-cd-resources
+description: Argo CD application and secret resources (used for development and testing)
+type: application
+version: 0.1.0

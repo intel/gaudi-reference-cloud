@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-virtual-sc
+spec:
+  name: bm-virtual-sc
+  displayName: Bare metal instance for vBMC
+  description: Virtual bare metal node for development and testing
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 1
+    id: "0x00000"
+    modelName: Intel Xeon Processor (Cooperlake)
+    sockets: 2
+    threads: 1
+  gpu:
+    count: 0
+  memory:
+    size: 16Gi
+    dimmSize: 8Gi
+    dimmCount: 1
+    speed: 4800
+  disks:
+    - size: 32Gi

@@ -1,0 +1,29 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "oidc_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/tools/oidc",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/log",
+        "//go/pkg/tools/oidc/server",
+        "@com_github_zitadel_oidc//example/server/storage",
+    ],
+)
+
+go_binary(
+    name = "oidc",
+    embed = [":oidc_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "oidc_image",
+    embed = [":oidc_lib"],
+    visibility = ["//visibility:public"],
+)

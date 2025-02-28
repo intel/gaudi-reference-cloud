@@ -1,0 +1,8 @@
+---
+
+- name: checking for {{ cmd_to_check }}
+  vars:
+    ansible_network_os: 'ios'
+  command: which {{ cmd_to_check }}
+  register: result
+  changed_when: "result.rc != 0"

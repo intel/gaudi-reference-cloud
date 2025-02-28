@@ -1,0 +1,26 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: {{ include "idc-common.fullname" . }}
+  name: {{ include "idc-common.fullname" . }}
+rules:
+- apiGroups:
+  - "private.cloud.intel.com"
+  resources:
+  - "products"
+  - "vendors"
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - products/status
+  verbs:
+  - get
+  - patch
+  - update
+  - put
+  

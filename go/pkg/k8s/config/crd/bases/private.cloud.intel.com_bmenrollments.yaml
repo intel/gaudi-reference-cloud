@@ -1,0 +1,186 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: bmenrollments.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: BMEnrollment
+    listKind: BMEnrollmentList
+    plural: bmenrollments
+    shortNames:
+    - bme
+    singular: bmenrollment
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.az
+      name: AZ
+      type: string
+    - jsonPath: .spec.deviceID
+      name: DeviceID
+      type: integer
+    - jsonPath: .spec.rack
+      name: Rack
+      type: string
+    - jsonPath: .status.phase
+      name: Phase
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: BMEnrollment is the Schema for the bmenrollments API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: BMEnrollmentSpec defines the desired state of BMEnrollment
+            properties:
+              az:
+                description: Availability Zone
+                type: string
+              cluster:
+                description: Cluster Name
+                type: string
+              deviceID:
+                description: Device ID
+                format: int64
+                type: integer
+              deviceName:
+                description: Device Name
+                type: string
+              rack:
+                description: Rack Name
+                type: string
+              region:
+                description: IDC Region
+                type: string
+            required:
+            - az
+            - deviceID
+            - deviceName
+            - rack
+            - region
+            type: object
+          status:
+            description: BMEnrollmentStatus defines the observed state of BMEnrollment
+            properties:
+              bmc:
+                description: BMC status
+                properties:
+                  address:
+                    description: BMC Address
+                    type: string
+                  createNewBMCUser:
+                    description: Create BMC User
+                    type: string
+                  hardwareType:
+                    description: BMC hardware type
+                    type: string
+                  hci:
+                    description: HCI status
+                    type: string
+                  kcs:
+                    description: KCS status
+                    type: string
+                  macAddress:
+                    description: BMC MAC address
+                    type: string
+                  metal3Address:
+                    description: Host BMC Address(Metal3 format)
+                    type: string
+                  secretName:
+                    description: BMC secret Name
+                    type: string
+                required:
+                - address
+                - createNewBMCUser
+                - hardwareType
+                - hci
+                - kcs
+                - macAddress
+                - metal3Address
+                - secretName
+                type: object
+              bootMACAddress:
+                description: host boot MAC address
+                type: string
+              conditions:
+                description: BM Enrollment conditions
+                items:
+                  properties:
+                    lastProbeTime:
+                      format: date-time
+                      nullable: true
+                      type: string
+                    lastTransitionTime:
+                      format: date-time
+                      nullable: true
+                      type: string
+                    message:
+                      type: string
+                    reason:
+                      type: string
+                    startTime:
+                      format: date-time
+                      nullable: true
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+              errorMessage:
+                description: enrollment error message
+                type: string
+              hostIPAddress:
+                description: Host IP Address
+                type: string
+              ironicIPAddress:
+                description: Ironic IP
+                type: string
+              phase:
+                description: BM enrollment Phase
+                type: string
+              targetBmNamespace:
+                description: Target BM namespace
+                type: string
+            required:
+            - bmc
+            - bootMACAddress
+            - errorMessage
+            - hostIPAddress
+            - ironicIPAddress
+            - phase
+            - targetBmNamespace
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

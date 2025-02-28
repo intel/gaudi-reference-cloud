@@ -1,0 +1,31 @@
+---
+# Generate Validation Directory on all nodes
+- name: Create hostfile using MASTER_IP and MEMBER_IPS
+  gather_facts: false
+  hosts: localhost
+  vars_files:
+    - "vars/common.yml"
+    - "vars/val-dir.yml"
+  roles:
+    - role: create_hostfile
+      tags: ["create_hostfile"]
+
+- name: Generate SSH Key pair
+  gather_facts: false
+  hosts: localhost
+  vars_files:
+    - "vars/common.yml"
+    - "vars/val-dir.yml"
+  roles:
+    - role: gen_ssh_key
+      tags: ["gen_ssh_key"]
+
+- name: Create Validation Directory
+  gather_facts: false
+  hosts: hosts
+  vars_files:
+    - "vars/common.yml"
+    - "vars/val-dir.yml"
+  roles:
+    - role: create_val_dir
+      tags: ["create_val_dir"]

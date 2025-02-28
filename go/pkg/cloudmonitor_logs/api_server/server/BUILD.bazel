@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = ["grpc_server.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudmonitor_logs/api_server/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/cloudmonitor_logs/api_server/cloudmonitor_logs",
+        "//go/pkg/cloudmonitor_logs/api_server/config",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/pb",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//reflection",
+    ],
+)

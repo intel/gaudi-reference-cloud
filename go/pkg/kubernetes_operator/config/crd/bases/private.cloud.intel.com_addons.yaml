@@ -1,0 +1,107 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: addons.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: Addon
+    listKind: AddonList
+    plural: addons
+    singular: addon
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Addon is the Schema for the addons API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: AddonSpec defines the desired state of Addon
+            properties:
+              apiserverLB:
+                description: The IP of the kube-apiserver loadbalancer.
+                type: string
+              apiserverLBPort:
+                description: The port of the kube-apiserver loadbalancer.
+                type: string
+              args:
+                additionalProperties:
+                  type: string
+                description: Args are the required variables to create a configured
+                  manifest out of the template artifact.
+                type: object
+              artifact:
+                description: Artifact specifies the url of the manifest that will
+                  be installed.
+                type: string
+              clusterName:
+                description: ClusterName specifies the name of the cluster that owns
+                  this nodegroup.
+                type: string
+              type:
+                description: Type specifies the provider and action to use for puting
+                  the addon into the cluster.
+                type: string
+            required:
+            - apiserverLB
+            - apiserverLBPort
+            - artifact
+            - clusterName
+            - type
+            type: object
+          status:
+            description: AddonStatus defines the observed state of Addon
+            properties:
+              artifact:
+                description: Artifact is the last url used to download and install
+                  the manifest.
+                type: string
+              lastUpdate:
+                description: LastUpdate specifies when the state of the addon last
+                  updated.
+                format: date-time
+                type: string
+              message:
+                description: Message is a more verbose description of the current
+                  state.
+                type: string
+              name:
+                description: Name specifies the name of the addon.
+                type: string
+              reason:
+                description: Reason is a description of the current state.
+                type: string
+              state:
+                description: State of the addon, one of Active, Updating, Error, Deleting.
+                type: string
+            required:
+            - artifact
+            - name
+            - state
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

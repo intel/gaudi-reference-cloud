@@ -1,0 +1,9 @@
+replicaCount: 1
+image:
+  repository: intelcloud/grpc-reflect
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+listenPort: 8443
+deployment: global

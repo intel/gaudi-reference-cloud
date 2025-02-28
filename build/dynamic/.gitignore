@@ -1,0 +1,8 @@
+create-releases-universe-config.json
+docker_registry.bzl
+helm_registry.bzl
+universe_deployer.bzl
+ARTIFACT_REPOSITORY_URL
+DOCKER_TAG
+HELM_CHART_VERSION
+IDC_FULL_VERSION

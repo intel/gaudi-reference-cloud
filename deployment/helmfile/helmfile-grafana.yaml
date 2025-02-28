@@ -1,0 +1,77 @@
+# This is intended for development environments only.
+# See https://github.com/grafana/helm-charts
+
+bases:
+  - environments.yaml
+
+---
+
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+
+{{- if $.Values.global.grafana.enabled }}
+  {{- if $.Values.global.enabled }}
+        - name: grafana
+          namespace: idcs-system
+          kubeContext: {{ $.Values.global.kubeContext }}
+          labels:
+            component: grafana
+            applicationName: grafana
+          chart: grafana/grafana
+          version: {{ $.Values.global.grafana.version | quote }}
+          values:
+            - ingress:
+                enabled: {{ $.Values.global.grafana.ingress.enabled }}
+                hosts:
+                  - {{ $.Values.global.grafana.ingress.host }}
+            - datasources:
+                datasources.yaml:
+                  apiVersion: 1
+                  datasources:
+                    - name: grafana_billing
+                      type: postgres
+                      url: {{ $.Values.global.billing.database.service | quote }}
+                      user: dbuser
+                      secureJsonData:
+                        password: {{ readFile (print $secretsDir "/billing_db_user_password") | quote }}
+                      database: {{ $.Values.global.billing.database.name | quote }}
+                      jsonData:
+                        sslmode: disable
+                    - name: grafana_metring
+                      type: postgres
+                      url: {{ $.Values.global.metering.database.service | quote }}
+                      user: dbuser
+                      secureJsonData:
+                        password: {{ readFile (print $secretsDir "/metering_db_user_password") | quote }}
+                      database: {{ $.Values.global.metering.database.name | quote }}
+                      jsonData:
+                        sslmode: disable
+                    - name: grafana_cloudaccount
+                      type: postgres
+                      url: {{ $.Values.global.cloudaccount.database.service | quote }}
+                      user: dbuser
+                      secureJsonData:
+                        password: {{ readFile (print $secretsDir "/cloudaccount_db_user_password") | quote }}
+                      database: {{ $.Values.global.cloudaccount.database.name | quote }}
+                      jsonData:
+                        sslmode: disable
+                    {{- range $regionIndex, $region := .Values.regions }}
+                    - name: grafana_{{ $region.region }}_compute
+                      type: postgres
+                      url: {{ $region | get "computeApiServer.database.service" (print $region.region "-compute-db-postgresql") | quote }}
+                      user: dbuser
+                      secureJsonData:
+                        password: {{ readFile (print $secretsDir "/" $region.region "-compute_db_user_password") | quote }}
+                      database: main
+                      jsonData:
+                        sslmode: disable
+                    {{- end }}
+            - adminPassword: {{ readFile (print $secretsDir "/grafana_admin_password") | quote }}
+            - adminUsername: {{ readFile (print $secretsDir "/grafana_admin_username") | quote }}
+  {{- end }}
+{{- end }}

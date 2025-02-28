@@ -1,0 +1,105 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: idcs-enrollment
+  labels:
+    name: bmaas-enrollment
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bmaas-enrollment
+  namespace: idcs-enrollment
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: idcs-enrollment
+  name: bmaas-enrollment
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: bmaas-enrollment
+  namespace: idcs-enrollment
+subjects:
+- kind: ServiceAccount
+  name: bmaas-enrollment
+  namespace: idcs-enrollment
+  apiGroup: ""
+roleRef:
+  kind: Role
+  name: bmaas-enrollment
+  apiGroup: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: bmaas-enrollment
+  namespace: idcs-enrollment
+  name: bmaas-enrollment
+data:
+  config.json: |
+    {
+      "jobplaybookimage": "ubuntu:latest",
+      "jobbackofflimit": 2,
+      "jobduration": 3600,
+      "jobcleanupdelay": 30
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bmaas-enrollment-deployment
+  namespace: idcs-enrollment
+  labels:
+    app: bmaas-enrollment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bmaas-enrollment
+  template:
+    metadata:
+      labels:
+        app: bmaas-enrollment
+    spec:
+      serviceAccountName: bmaas-enrollment
+      containers:
+      - name: nginx
+        image: bmaas-enrollment:v1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config
+          mountPath: /config.json
+          subPath: config.json
+          readOnly: false
+      volumes:
+      - name: config
+        configMap:
+          name: bmaas-enrollment
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bmaas-enrollment
+  namespace: idcs-enrollment
+spec:
+  type: NodePort
+  selector:
+    app: bmaas-enrollment
+  ports:
+    - protocol: TCP
+      port: 8888
+      targetPort: 8080
+      nodePort: 30950

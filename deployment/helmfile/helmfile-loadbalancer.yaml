@@ -1,0 +1,109 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+{{- if $availabilityZone.loadbalancer.enabled }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-loadbalancer-crds") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: loadbalancer
+      service: loadbalancer
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: loadbalancer-crds
+    chart: idc/loadbalancer-crds
+    version: {{ readFile (print $helmChartVersionsDir "/loadbalancer-crds.version") | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-loadbalancer-replicator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: loadbalancer
+      service: loadbalancer
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: loadbalancer-replicator
+    chart: idc/loadbalancer-replicator
+    version: {{ readFile (print $helmChartVersionsDir "/loadbalancer-replicator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}loadbalancer-replicator@sha256"
+      - computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+      - regionId: {{  $region.region | quote }}
+      - availabilityZoneId: {{ $availabilityZone.availabilityZone | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-loadbalancer-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: loadbalancer
+      service: loadbalancer
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: loadbalancer-operator
+    chart: idc/loadbalancer-operator
+    version: {{ readFile (print $helmChartVersionsDir "/loadbalancer-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - highwireAPI:
+          environment: {{ $availabilityZone.loadbalancer.highwireAPI.environment | quote }}
+          userGroup: {{ $availabilityZone.loadbalancer.highwireAPI.userGroup | quote }}
+      - vaultCredentialsPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-loadbalancer-operator/api
+      - serviceMonitor: 
+          enabled: {{ $availabilityZone.loadbalancer.serviceMonitor.enabled }}
+      - regionId: {{  $region.region | quote }}
+      - availabilityZoneId: {{ $availabilityZone.availabilityZone | quote }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}loadbalancer-operator@sha256"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+
+{{- end }}
+{{- end }}
+{{- end }}

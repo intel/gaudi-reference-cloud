@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# This file contains the configuration settings when running tests.
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: SshProxyOperatorConfig
+metadata:
+  name: sshproxyoperatorconfig
+health:
+  healthProbeBindAddress: :8081
+metrics:
+  bindAddress: 127.0.0.1:8082
+authorizedKeysFilePath: /tmp/.ssh/authorized_keys
+authorizedKeysScpTargets:
+    - scp://guest@10.165.62.252:22/home/guest/.ssh/authorized_keys
+proxyAddress: 10.165.62.252
+proxyPort: 22
+proxyUser: guest
+privateKeyFilePath: "config/overlays/development/ssh/ssh-proxy-operator/id_rsa"
+publicKeyFilePath: "config/overlays/development/ssh/ssh-proxy-operator/id_rsa.pub"

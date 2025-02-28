@@ -1,0 +1,293 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+{{- $fleetAdminServerAddr := "" }}
+
+{{- if $region.fleetAdmin.enabled }}
+  {{- $fleetAdminServerAddr = print $region.grpcProxy.internal.ingress.host ":443" }}
+  {{- if $region.fleetAdmin.devDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-fleet-admin-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: fleetAdmin
+      service: fleet-admin
+      database: fleet-admin
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: fleet-admin-db
+      clusterName: {{ $clusterName | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-fleet-admin_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-fleet-admin_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region.fleetAdmin.devDb.primary.persistence.enabled }}
+  {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-fleet-admin-api-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      applicationName: fleet-admin-api-server
+      clusterName: {{ $clusterName | quote }}
+      component: fleetAdmin
+      geographicScope: regional
+      kubeContext: {{ $region.kubeContext }}
+      region: {{ $region.region }}
+      service: fleet-admin
+    chart: idc/fleet-admin-api-server
+    version: {{ readFile (print $helmChartVersionsDir "/fleet-admin-api-server.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - computeNodePoolForUnknownCloudAccount: {{ $region.fleetAdmin.apiServer.computeNodePoolForUnknownCloudAccount | quote }}
+      - database:
+          arg: {{ $region.fleetAdmin.apiServer.database.arg | quote }}
+          name: main
+          service: {{ $region | get "fleetAdmin.apiServer.database.service" (print $region.region "-fleet-admin-db-postgresql") | quote }}
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-fleet-admin-api-server/database"
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}fleet-admin-api-server@sha256"
+      - nodePort: {{ $region.fleetAdmin.apiServer.service.nodePort }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - region: {{ $region.region | quote }}
+      - replicaCount: {{ $region.fleetAdmin.replicaCount }}
+      - service:
+          type: {{ $region.fleetAdmin.apiServer.service.type | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+  {{- if $region.fleetAdminUIServer.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-fleet-admin-ui-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      applicationName: fleet-admin-ui-server
+      clusterName: {{ $clusterName | quote }}
+      component: fleetAdmin
+      geographicScope: regional
+      kubeContext: {{ $region.kubeContext }}
+      region: {{ $region.region }}
+      service: fleet-admin-ui-server
+    chart: idc/fleet-admin-ui-server
+    version: {{ readFile (print $helmChartVersionsDir "/fleet-admin-ui-server.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - database:
+          arg: {{ $region.fleetAdminUIServer.apiServer.database.arg | quote }}
+          name: main
+          service: {{ $region | get "fleetAdminUIServer.apiServer.database.service" (print $region.region "-fleet-admin-db-postgresql") | quote }}
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-fleet-admin-ui-server/database"
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}fleet-admin-ui-server@sha256"
+      - nodePort: {{ $region.fleetAdminUIServer.apiServer.service.nodePort }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - region: {{ $region.region | quote }}
+      - replicaCount: {{ $region.fleetAdminUIServer.replicaCount }}
+      - service:
+          type: {{ $region.fleetAdminUIServer.apiServer.service.type | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+  {{- end }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if $availabilityZone.k8sResourcePatcher.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-k8s-resource-patcher-bm") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      applicationName: k8s-resource-patcher
+      component: fleetAdmin
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      service: k8s-resource-patcher
+    chart: idc/k8s-resource-patcher
+    version: {{ readFile (print $helmChartVersionsDir "/k8s-resource-patcher.version") | quote }}
+    values:
+    - proxy.yaml.gotmpl
+    - idc-common.yaml.gotmpl
+    - fleetAdminServerAddr: {{ $fleetAdminServerAddr | quote }}
+    - image:
+        registry: {{ ($.Values.image).registry | quote }}
+        repository: "{{ ($.Values.image).repositoryPrefix }}k8s-resource-patcher@sha256"
+    - region: {{ $region.region | quote }}
+    - availabilityZone: {{ $availabilityZone.availabilityZone | quote }}
+    # TODO: Integrate with PR#9449 once the PR is ready
+    # Use the local KubeConfig for BMaaS instead of applying a remote one
+    - applyRemoteKubeConfig: false
+    # Hardcoded cluster identifier for BMaaS
+    - clusterId: "BMaaS"
+    - otel:
+        exporter:
+          otlp:
+            endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+    - tls:
+        issueCa: {{ $availabilityZone.availabilityZone }}-ca
+    - vault:
+        agent:
+          inject:
+            secret:
+              path: controlplane/data/{{ $availabilityZone.availabilityZone }}-k8s-resource-patcher-bm
+        authPath: {{ $availabilityZone.vault.authPath | quote }}
+  {{- range $clusterIndex, $cluster := $availabilityZone.harvesterClusters }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-k8s-resource-patcher-" $cluster.clusterId) }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      applicationName: k8s-resource-patcher
+      component: fleetAdmin
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      service: k8s-resource-patcher
+    chart: idc/k8s-resource-patcher
+    version: {{ readFile (print $helmChartVersionsDir "/k8s-resource-patcher.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - fleetAdminServerAddr: {{ $fleetAdminServerAddr | quote }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}k8s-resource-patcher@sha256"
+      - clusterId: {{ $cluster.clusterId }}
+      - region: {{ $region.region | quote }}
+      - availabilityZone: {{ $availabilityZone.availabilityZone | quote }}
+      - applyRemoteKubeConfig: {{ $availabilityZone.k8sResourcePatcher.applyRemoteKubeConfig }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $availabilityZone.availabilityZone }}-k8s-resource-patcher-{{ $cluster.clusterId }}
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+  {{- end }}
+  {{- range $kubeVirtClusterIndex, $kubeVirtCluster := $availabilityZone.kubeVirtClusters }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-k8s-resource-patcher-" $kubeVirtCluster.clusterId) }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      applicationName: k8s-resource-patcher
+      component: fleetAdmin
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      service: k8s-resource-patcher
+    chart: idc/k8s-resource-patcher
+    version: {{ readFile (print $helmChartVersionsDir "/k8s-resource-patcher.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}k8s-resource-patcher@sha256"
+      - clusterId: {{ $kubeVirtCluster.clusterId }}
+      - region: {{ $region.region }}
+      - availabilityZone: {{ $availabilityZone.availabilityZone }}
+      - useKubeVirtCluster: true
+      - remoteKubeConfigFilePath: /vault/secrets/kubeconfig
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $availabilityZone.availabilityZone }}-k8s-resource-patcher-{{ $kubeVirtCluster.clusterId }}
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+  {{- end }}
+  {{- end }}
+
+  {{- if $availabilityZone.fleetNodeReporter.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-fleet-node-reporter") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      applicationName: fleet-node-reporter
+      component: fleetAdmin
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      region: {{ $region.region }}
+      service: fleet-node-reporter
+    chart: idc/fleet-node-reporter
+    version: {{ readFile (print $helmChartVersionsDir "/fleet-node-reporter.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - instanceSchedulerAddr: {{ print ($availabilityZone.vmInstanceScheduler.ingress.host) ":443" | quote }}
+      - fleetAdminServerAddr: {{ $fleetAdminServerAddr | quote }}
+      - schedulerStatisticsPollingInterval: {{ $availabilityZone.fleetNodeReporter.schedulerStatisticsPollingInterval | quote }}
+      - image:
+          registry: {{ $.Values.image.registry | quote }}
+          repository: "{{ $.Values.image.repositoryPrefix }}fleet-node-reporter@sha256"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - region: {{ $region.region | quote }}
+      - availabilityZone: {{ $availabilityZone.availabilityZone | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "bmh_generator_lib",
+    srcs = ["generate.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/bmh_generator",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/sdn-controller/api/v1alpha1",
+        "//go/pkg/sdn-controller/pkg/utils",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+    ],
+)
+
+go_binary(
+    name = "bmh_generator",
+    embed = [":bmh_generator_lib"],
+    visibility = ["//visibility:public"],
+)

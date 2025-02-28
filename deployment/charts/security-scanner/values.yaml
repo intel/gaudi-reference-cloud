@@ -1,0 +1,18 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/security-scanner
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+github:
+  githubVaultPath: /vault/secrets/github_key
+
+schedInterval: 14400
+
+securityInsightsService:
+    url: "us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443"

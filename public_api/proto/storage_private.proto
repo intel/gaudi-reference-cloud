@@ -1,0 +1,1080 @@
+// This file contains PRIVATE services that are intended for IDC infrastructure (controllers)
+// and trusted parties. It is not a part of the public API.
+//
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://protobuf.dev/programming-guides/proto3/
+syntax = "proto3";
+package proto;
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "annotations.proto";
+import "storage.proto";
+import "compute_private.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "storage-api-server";
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+// Private Filesystem storage Service.
+service FilesystemPrivateService {
+    // Provision a new filesystem volume
+    rpc CreatePrivate(FilesystemCreateRequestPrivate) returns (FilesystemPrivate) {};
+    // Get the status of an filesystem.
+    rpc GetPrivate(FilesystemGetRequestPrivate) returns (FilesystemPrivate) {};
+    // Update the status of an filesystem.
+    rpc UpdatePrivate(FilesystemUpdateRequestPrivate) returns (FilesystemPrivate) {};
+    // Request deletion of an filesystem.
+    rpc DeletePrivate(FilesystemDeleteRequestPrivate) returns (google.protobuf.Empty) {};
+    // Update the resource status.
+    rpc GetUserPrivate(FilesystemGetUserRequestPrivate) returns (FilesystemGetUserResponsePrivate) {};
+    // Request user cedentials for a filesystem.
+    rpc CreateorGetUserPrivate(FilesystemGetUserRequestPrivate) returns (FilesystemGetUserResponsePrivate) {};
+    // Delete vast user cedentials for a filesystem.
+    rpc DeleteUserPrivate(FilesystemDeleteUserRequestPrivate) returns (google.protobuf.Empty) {};
+    //update Status
+    rpc UpdateStatus(FilesystemUpdateStatusRequest) returns (google.protobuf.Empty) {};
+    // List Filesystem as a stream.
+    // This returns all filesystem requests that are pending.
+    rpc SearchFilesystemRequests(FilesystemSearchStreamPrivateRequest) returns (stream FilesystemRequestResponse) {};
+    // Remove finalizer from an filesystem that was previously requested to be deleted.
+    // After this returns, the record will no longer be visible to users or controllers.
+    // Used by Filesystem Replicator.
+    rpc RemoveFinalizer(FilesystemRemoveFinalizerRequest) returns (google.protobuf.Empty) {};
+    // PingPrivate returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  }
+  message FilesystemUpdateStatusRequest {
+    FilesystemIdReference metadata = 1;
+    FilesystemStatusPrivate status = 2;
+  }
+  message FilesystemRemoveFinalizerRequest {
+    FilesystemIdReference metadata = 1;
+  }
+  message FilesystemSearchStreamPrivateRequest {
+    // Properties used to filter response
+    string availabilityZone = 1;
+    // resource version is use as a bookmark to indicate 
+    // sending all requests greater than this version. 
+    // If not provided, API should return all non-deleted requests
+    string resourceVersion = 2;
+  }
+  message FilesystemDeleteUserRequestPrivate {
+    string cloudaccountId = 1;
+    string clusterId = 2;
+    string userName = 3;
+  }
+  message FilesystemGetUserRequestPrivate {
+    FilesystemMetadataReference metadata = 1;
+  }
+  message FilesystemRequestResponse {
+    FilesystemPrivate filesystem = 1;
+  }
+  
+  message FilesystemStatusPrivate {
+    // Filesystem phase.
+    FilesystemPhase phase = 1;
+    // Additional details about the state or any error conditions.
+    string message = 2;
+    // A mount interface with backend server
+    FilesystemMountStatusPrivate mount = 3;
+    // A filesystem namespace status
+    FilesystemNamespaceStatusPrivate namespace = 4;
+
+    // User parameters required to login to storage server.
+    FilesystemUserStatusPrivate user = 5;
+
+    // Volume identifiers from the cluster
+    VolumeIdentifiers volumeIdentifiers = 6;
+
+    map<string,string> clusterInfo=7;
+
+  }
+
+  message VolumeIdentifiers {
+    string size = 1;
+    int64 tenantId = 2;
+    int64 filesystemId = 3;
+  }
+
+   message FilesystemGetUserResponsePrivate {
+    // Filesystem user name
+    string user = 1;
+    // Filesystem user password
+    string password = 2;
+  }
+
+  message FilesystemUpdateRequestPrivate {
+  FilesystemMetadataPrivate metadata = 1;
+  FilesystemSpecPrivate spec = 2;
+}
+  
+  message FilesystemUserStatusPrivate {
+    // Filesystem user
+    string user = 1;
+    // Filesystem password
+    string password = 2;
+  }
+
+  message FilesystemIdReference {
+    string cloudAccountId = 1;
+    string resourceId = 2;
+    // If provided, the existing record must have this resourceVersion for the request to succeed.
+    string resourceVersion = 3;
+  }
+  
+  message FilesystemPrivate {
+    FilesystemMetadataPrivate metadata = 1;
+    FilesystemSpecPrivate spec = 2;
+    FilesystemStatusPrivate status = 3;
+  }
+  message FilesystemMetadataPrivate {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    string name = 2;
+    string resourceId = 3;
+    // resourceVersion can be provided with Update and Delete for concurrency control.
+    string resourceVersion = 4;
+    
+    string description = 5;
+    // Map of string keys and values that can be used to organize and categorize instances.
+    map<string, string> labels = 6;
+    google.protobuf.Timestamp creationTimestamp = 7;
+
+    google.protobuf.Timestamp updateTimestamp = 8;
+    // Timestamp when resource was requested to be deleted.
+    google.protobuf.Timestamp deletionTimestamp = 9;
+    //skip flag to skip quota check
+    // If true, quota check will be skipped
+    bool skipQuotaCheck = 10;
+    //skip flag to skip product catalog  check
+    // If true, product check will be skipped
+    bool skipProductCheck = 11;
+
+    // calling api client type
+    APIClientTypes clientType =  12;
+  }
+
+  enum APIClientTypes {
+    // called from private apis from trusted services
+    Private = 0;
+    // called from public apis
+    Public = 1;
+  }
+
+  message FilesystemSpecPrivate {
+    // Not implemented.
+    string availabilityZone = 1;
+    // Requested size in GB
+    FilesystemCapacity request = 2;
+    //storage class - Not Implemented
+    FilesystemStorageClass storageClass = 3;
+    // Filesystem type - GeneralCompute (VM, BM) or K8s
+    FilesystemType filesystemType = 4;
+    //Access mode - Not Implemented
+    FilesystemAccessModes accessModes = 5;
+    //Mount protocols -- Currently supports only weka
+    FilesystemMountProtocols mountProtocol = 6;
+    //Encryption flag
+    bool encrypted = 7;
+    //Provider specs indicating scheduling decision
+    FilesystemSchedule scheduler = 8;
+    //optional volume path for general purpose VAST storage
+    string volumePath = 9;
+    // Volume security group 
+    VolumeSecurityGroup securityGroup = 10;
+    //The name of the Instance type
+    string instanceType = 11 [
+      (idc.field).product = true,
+      (idc.field).gtsCheck = true
+  ];
+    string prefix = 12;
+  }
+
+  message FilesystemSpecUpdatePrivate {
+    // Requested size in GB
+    FilesystemCapacity request = 1;
+  }
+
+  message FilesystemSchedule {
+    // Name of the filesyste volume
+    string filesystemName = 1;
+    AssignedCluster cluster = 2;
+    AssignedNamespace namespace = 3;
+  }
+
+  message AssignedCluster {
+    string clusterName = 1;
+    // cluster address
+    string clusterAddr = 2;
+    // cluster UUID 
+    string clusterUUID = 3;
+    // cluster version when available
+    optional string clusterVersion = 4;
+    // cluster endpoint
+    string accessEndpoint =5;
+  }
+  
+  message AssignedNamespace {
+    // Namespace name
+    string name  = 1;
+    //path to the kms key
+    string credentialsPath = 2;
+  }
+
+  message FilesystemMountStatusPrivate {
+    // clusterName
+    string clusterName = 1;
+    // clusterAddr
+    string clusterAddr = 2;
+    // cluster version when available
+    optional string clusterVersion = 3;
+    // Name of the filesyste organization
+    string namespace = 4;
+    // Username for this filesystem
+    string username = 5;
+    // Name of the filesyste volume
+    string filesystemName = 6;
+  }
+  message FilesystemNamespaceStatusPrivate {
+    // Namespace name
+    string name  = 1;
+    //namespace basic auth -user
+    string user = 2 ;
+    //namespace basic auth -password
+    string password = 3;
+  }
+message FilesystemDeleteRequestPrivate {
+  FilesystemMetadataReference metadata = 1;
+}
+message FilesystemCreateRequestPrivate {
+  FilesystemMetadataPrivate metadata = 1;
+  FilesystemSpecPrivate spec = 2;
+}
+message FilesystemGetRequestPrivate {
+  FilesystemMetadataReference metadata = 1;
+}
+
+message FilesystemInOrgGetRequestPrivate {
+  string cloudAccountId = 1;
+  string name = 2;
+  string clusterId = 3;
+  string namespaceCredsPath = 4;
+}
+
+
+
+// Private Filesystem scheduler Service.
+service FilesystemSchedulerPrivateService {
+  // Schedule filesystem to a cluster
+  rpc ScheduleFile(FilesystemScheduleRequest) returns (FilesystemScheduleResponse) {};
+  // Schedule filesystem to a cluster
+  rpc ScheduleBucket(BucketScheduleRequest) returns (BucketScheduleResponse) {};
+
+  rpc ListClusters (ListClusterRequest) returns (stream FilesystemStorageClusters) {};
+  // List Filesystems in Org
+  rpc ListFilesystemInOrgs (FilesystemInOrgGetRequestPrivate) returns (FilesystemsInOrgListResponsePrivate) {};
+  rpc ListFilesystemOrgs (FilesystemOrgsGetRequestPrivate) returns (FilesystemOrgsResponsePrivate) {};
+  rpc IsOrgExists (FilesystemOrgsIsExistsRequestPrivate) returns (FilesystemOrgsIsExistsResponsePrivate) {};
+
+  // PingPrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message FilesystemOrgsIsExistsResponsePrivate {
+  bool exists = 1;
+}
+
+message FilesystemScheduleRequest {
+  string cloudaccountId =1;
+  // current resource assignments
+  repeated  ResourceSchedule assignments = 2;
+  //Filesystem request : read from public spec
+  FilesystemSpecPrivate requestSpec = 3;
+}
+
+
+message BucketScheduleRequest {
+  // ObjectBucket Spec
+  ObjectBucketSpecPrivate requestSpec = 1;
+  //add any labels 
+  map<string, string> labels = 2; 
+}
+
+message BucketScheduleResponse {
+  string availabilityZone =1;
+  BucketSchedule schedule = 2 ;
+  map<string, string> labels = 3; 
+}
+
+message ResourceSchedule {
+  // weka cluster id for the resource
+  string clusterName = 1;
+  // cluster address
+  string clusterAddr = 2;
+  // cluster UUID 
+  string clusterUUID = 3;
+  // cluster version
+  string clusterVersion = 4;
+  // weka namespace for the the resource
+  string namespace = 5;
+}
+
+message FilesystemScheduleResponse {
+  string cloudaccountId =1;
+  ResourceSchedule schedule = 2 ;
+  // if the recommended schedule contains a new cluster or namespace, 
+  // then this flag should be true
+  bool newSchedule = 3;
+}
+
+// Private Filesystem user Service.
+service FilesystemUserPrivateService {
+  // Create or Update filesystem user creds
+  rpc CreateOrUpdate(FilesystemUserCreateOrUpdateRequest) returns (google.protobuf.Empty) {};
+  // PingPrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingFileUserPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+
+  rpc CreateOrGet(FilesystemUserCreateOrGetRequest) returns (FilesystemUserResponsePrivate) {};
+  rpc Delete(FilesystemDeleteUserRequestPrivate) returns (google.protobuf.Empty) {};
+
+}
+
+// Private Filesystem user Service.
+service FilesystemStorageClusterPrivateService {
+  rpc RegisterAgent(RegisterAgentRequest) returns (FilesystemAgent) {};
+
+  rpc DeRegisterAgent(DeRegisterAgentRequest) returns (google.protobuf.Empty) {};
+
+  rpc GetRegisteredAgent (GetRegisterAgentRequest) returns (FilesystemAgent) {};
+
+  rpc ListRegisteredAgents (ListRegisteredAgentRequest)returns (stream  FilesystemAgent) {};
+
+  rpc ListClusters (ListClusterRequest) returns (stream FilesystemStorageClusters) {};
+
+  rpc PingFilesystemClusterPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message RegisterAgentRequest {
+  string clusterId = 1;
+  string name = 2;
+  string ipAddr = 3;
+}
+
+message FilesystemOrgsGetRequestPrivate {
+  string clusterId = 1;
+  string prefix = 2;
+}
+
+message FilesystemOrgsIsExistsRequestPrivate {
+  string clusterId = 1;
+  string name =2;
+  string prefix = 3;
+}
+
+message FilesystemOrgsListRequestPrivate{
+  FilesystemMetadataReference metadata = 1;
+  string clusterId = 2;
+  string prefix = 3;
+}
+
+message FilesystemUserCreateOrGetRequest {
+  string clusterUUID = 1;
+
+  string namespaceName = 2;
+
+  string userCredsPath = 3;
+
+  string userName = 4;
+
+  string password = 5;
+
+  string namespaceId =6;
+
+}
+
+message FilesystemUserResponsePrivate {
+    // vast Filesystem user name
+    string user = 1;
+    // vast Filesystem user password
+    string password = 2;
+  }
+
+message FilesystemOrgsResponsePrivate {
+  repeated FilesystemOrgsPrivate org = 1;
+}
+
+message FilesystemOrgsPrivate {
+  string name = 1;
+}
+
+message FilesystemAgent {
+  string clusterId = 1;
+
+  string clientId = 2;
+
+  string name = 3;
+
+  string customStatus = 4;
+
+  string predefinedStatus = 5;
+}
+
+message DeRegisterAgentRequest {
+  string clusterId = 1;
+
+  string clientId = 2;
+}
+
+message GetRegisterAgentRequest {
+  string clusterId = 1;
+
+  string clientId = 2;
+}
+
+message ListRegisteredAgentRequest {
+  string clusterId = 1;
+
+  repeated string names = 2;
+}
+
+message ListClusterRequest{
+  repeated string filters = 1;
+}
+
+message FilesystemStorageClusters {
+  string clusterId = 1;
+
+  string name = 2;
+
+  string location = 3;
+
+  string vendorType = 4;
+
+  map<string, string> labels = 5;
+
+  StorageClusterCapacity capacity = 6;
+
+  string health = 7 ;
+}
+
+message StorageClusterCapacity {
+  uint64 totalBytes = 1;
+  uint64 availableBytes = 2;
+}
+
+enum StorageClusterHealth {
+  StorageClusterStatusUnspecified = 0;
+
+  StorageClusterStatusHealthy = 1;
+  StorageClusterStatusDegraded = 2;
+  StorageClusterStatusUnHealthy = 3;
+
+}
+
+// Private Filesystem user Service.
+service WekaStatefulAgentPrivateService {
+
+  rpc RegisterAgent(RegisterAgentRequest) returns (FilesystemAgent) {};
+
+  rpc DeRegisterAgent(DeRegisterAgentRequest) returns (google.protobuf.Empty) {};
+
+  rpc GetRegisteredAgent (GetRegisterAgentRequest) returns (FilesystemAgent) {};
+
+  rpc ListRegisteredAgents (ListRegisteredAgentRequest)returns (stream  FilesystemAgent) {};
+
+  // rpc ListClusters (ListClusterRequest) returns (stream FilesystemStorageClusters) {};
+  
+  // PingPrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingWekaStatefulAgentPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+// Private Bucket user Service.
+service BucketUserPrivateService {
+  rpc CreateBucketUser(CreateBucketUserParams) returns (BucketPrincipal) {};
+
+  rpc UpdateBucketUserPolicy(UpdateBucketUserPolicyParams) returns (BucketPrincipal) {};
+
+  rpc UpdateBucketUserCredentials(UpdateBucketUserCredsParams) returns (BucketPrincipal) {};
+
+  rpc DeleteBucketUser(DeleteBucketUserParams) returns (google.protobuf.Empty) {};
+
+  rpc GetBucketCapacity(BucketFilter) returns (BucketCapacity){};
+  // PingPrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingBucketUserPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message BucketFilter {
+  string clusterId = 1;
+
+  string bucketId = 2;
+}
+
+message BucketCapacity {
+  string id = 1;
+
+  string name = 2;
+
+  // Bucket capacity
+  Capacity capacity = 3;
+}
+
+  message Capacity {
+    // Total amount of allocated bytes for the bucket (quota)
+    uint64 totalBytes = 1;
+
+    // Bytes available in the `Bucket` to be used
+    uint64 availableBytes = 2;
+  }
+
+message CreateBucketUserParams {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+
+  BucketUserParams createParams = 2;
+}
+
+message BucketUserParams {
+  string name = 1;
+
+  string clusterUUID = 2;
+
+  string userId= 3;
+
+  string password = 4;
+
+  repeated ObjectUserPermissionSpec spec = 5 ;
+
+  BucketSecurityGroup securityGroup = 6; 
+
+  string clusterName =7;
+  string accessEndpoint =8;
+}
+
+message BucketUpdateUserPolicyParams {
+  string principalId = 1;
+
+  string clusterUUID = 2;
+
+  repeated ObjectUserPermissionSpec spec = 3 ;
+
+  BucketSecurityGroup securityGroup = 4; 
+
+  string clusterName =5;
+  string accessEndpoint =6;
+
+}
+
+message UpdateBucketUserPolicyParams {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+
+  BucketUpdateUserPolicyParams updateParams = 2;
+}
+
+message BucketUpdateUserCredsParams {
+  string principalId = 1;
+
+  string clusterUUID = 2;
+
+  string userId = 3;
+
+  string password = 4;
+}
+
+message UpdateBucketUserCredsParams {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  BucketUpdateUserCredsParams updateParams = 2 ;
+}
+
+message DeleteBucketUserParams {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clusterId = 2;
+	string principalId = 3; 
+}
+
+message BucketPrincipal {
+	string clusterId = 1;
+	string principalId = 2;
+  string accessEndpoint = 3;
+  repeated ObjectUserPermissionSpec spec = 4 ;
+  string clusterName =5;
+
+}
+
+message FilesystemUserCreateOrUpdateRequest {
+  string clusterUUID = 1;
+
+  string namespaceName = 2;
+
+  string namespaceCredsPath = 3;
+
+  string userName = 4;
+
+  string newUserPassword = 5;
+}
+
+// Private Filesystem Organization storage Service.
+service FilesystemOrgPrivateService {
+  // Provision a new filesystem organization
+  rpc CreateFilesystemOrgPrivate(FilesystemOrgCreateRequestPrivate) returns (FilesystemOrgPrivate) {};
+  // Get the status of an filesystem.
+  rpc GetFilesystemOrgPrivate(FilesystemOrgGetRequestPrivate) returns (FilesystemOrgPrivate) {};
+  // Update the status of an filesystem.
+  rpc UpdateFilesystemOrgPrivate(FilesystemOrgUpdateRequestPrivate) returns (FilesystemOrgPrivate) {};
+  // Request deletion of an filesystem organization.
+  rpc DeleteFilesystemOrgPrivate(FilesystemOrgDeleteRequestPrivate) returns (google.protobuf.Empty) {};
+  // Request listing of filesystems in the org.
+  rpc ListFilesystemsInOrgPrivate(FilesystemsInOrgListRequestPrivate) returns (FilesystemsInOrgListResponsePrivate) {};
+  // Request listing of filesystems orgs.
+  rpc ListFilesystemOrgsPrivate(FilesystemOrgsListRequestPrivate) returns (FilesystemOrgsResponsePrivate) {};
+}
+
+message FilesystemOrgCreateRequestPrivate{
+  FilesystemMetadataPrivate metadata = 1;
+  FilesystemSpecPrivate spec = 2;
+}
+
+message FilesystemOrgUpdateRequestPrivate{
+  FilesystemMetadataPrivate metadata = 1;
+  FilesystemSpecPrivate spec = 2;
+}
+
+message FilesystemOrgPrivate {
+  FilesystemMetadataPrivate metadata = 1;
+  FilesystemSpecPrivate spec = 2;
+  FilesystemStatusPrivate status = 3;
+}
+
+message FilesystemOrgGetRequestPrivate{
+  FilesystemMetadataReference metadata = 1;
+  string prefix = 2;
+}
+
+message FilesystemOrgDeleteRequestPrivate{
+  FilesystemMetadataReference metadata = 1;
+  string prefix = 2;
+}
+
+message FilesystemsInOrgListRequestPrivate{
+  FilesystemMetadataReference metadata = 1;
+  string clusterId = 2;
+  string prefix = 3;
+}
+
+message FilesystemsInOrgListResponsePrivate{
+  repeated FilesystemPrivate items = 1;
+}
+
+
+message FilesystemOrgResponsePrivate{
+  repeated FilesystemOrgPrivate items = 1;
+}
+
+message FilesystemAccountMetadataReference{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string prefix = 2;
+}
+
+
+// -------------------------------------------------------------------------------------------
+// Storage - Object Store (s3) Private Service
+// -------------------------------------------------------------------------------------------
+service ObjectStorageServicePrivate {
+
+  rpc CreateBucketPrivate(ObjectBucketCreatePrivateRequest) returns (ObjectBucketPrivate) {};
+
+  rpc GetBucketPrivate(ObjectBucketGetPrivateRequest) returns (ObjectBucketPrivate) {};
+
+  // List Filesystem as a stream.
+  // This returns all bucket requests that are pending.
+  rpc SearchBucketPrivate(ObjectBucketSearchPrivateRequest) returns (stream ObjectBucketSearchPrivateResponse) {};
+
+  rpc DeleteBucketPrivate(ObjectBucketDeletePrivateRequest) returns (google.protobuf.Empty) {};
+
+  rpc CreateBucketLifecycleRulePrivate(BucketLifecycleRuleCreatePrivateRequest) returns (BucketLifecycleRulePrivate) {};
+
+  rpc GetBucketLifecycleRulePrivate(BucketLifecycleRuleGetPrivateRequest) returns (BucketLifecycleRulePrivate) {};
+
+  rpc SearchBucketLifecycleRulePrivate(BucketLifecycleRuleSearchPrivateRequest) returns (BucketLifecycleRuleSearchPrivateResponse) {};
+
+  rpc UpdateBucketLifecycleRulePrivate(BucketLifecycleRuleUpdatePrivateRequest) returns (BucketLifecycleRulePrivate) {};
+
+  rpc DeleteBucketLifecycleRulePrivate(BucketLifecycleRuleDeletePrivateRequest) returns (google.protobuf.Empty) {};
+
+  rpc CreateObjectUserPrivate(CreateObjectUserPrivateRequest) returns (ObjectUserPrivate) {};
+
+  rpc GetObjectUserPrivate(ObjectUserGetPrivateRequest) returns (ObjectUserPrivate) {};
+
+  rpc SearchObjectUserPrivate(ObjectUserSearchPrivateRequest) returns (stream ObjectUserSearchPrivateResponse) {};
+
+  rpc DeleteObjectUserPrivate(ObjectUserDeletePrivateRequest) returns (google.protobuf.Empty) {};
+
+  rpc UpdateObjectUserPrivate(ObjectUserUpdatePrivateRequest) returns (ObjectUserPrivate) {};
+
+
+  // APIs not mapped to public gRPC 
+  rpc UpdateBucketStatus(ObjectBucketStatusUpdateRequest) returns (google.protobuf.Empty) {};
+    
+  // Remove finalizer from an bucket that was previously requested to be deleted.
+  // After this returns, the record will no longer be visible to users or controllers.
+  // Used by object bucket Replicator.
+  rpc RemoveBucketFinalizer(ObjectBucketRemoveFinalizerRequest) returns (google.protobuf.Empty) {};
+
+  rpc UpdateObjectUserStatus(ObjectUserStatusUpdateRequest) returns (google.protobuf.Empty) {};
+    
+  // Remove finalizer from an object user that was previously requested to be deleted.
+  // After this returns, the record will no longer be visible to users or controllers.
+  // Used by storage user service.
+  rpc RemoveObjectUserFinalizer(ObjectUserRemoveFinalizerRequest) returns (google.protobuf.Empty) {};
+
+  rpc AddBucketSubnet(VNetPrivate) returns (google.protobuf.Empty) {};
+
+  rpc RemoveBucketSubnet(VNetReleaseSubnetRequest) returns (google.protobuf.Empty) {};
+
+  rpc GetBucketSubnetEvent(SubnetEventRequest) returns (stream BucketSubnetUpdateEvent) {};
+
+  rpc UpdateBucketSubnetStatus(BucketSubnetStatusUpdateRequest) returns (google.protobuf.Empty) {};
+
+  rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+//------------------------------------------------
+//      S3 Bucket subnet event structs
+//------------------------------------------------
+message SubnetEventRequest{
+  
+}
+
+message BucketSubnetUpdateEvent {
+  BucketSubnetEventStatus eventType = 1;
+
+  repeated BucketPrincipal principals = 2;
+
+  VNetPrivate vnet = 3; 
+}
+
+message BucketSubnetStatusUpdateRequest {
+  string resourceId = 1;
+
+  string cloudacccountId = 2;
+
+  string vNetName = 3;
+
+  BucketSubnetEventStatus status = 4;
+}
+
+enum BucketSubnetEventStatus {
+  E_UNSPECIFIED = 0;
+
+  E_ADDING = 1;
+
+  E_ADDED = 2;
+
+  E_DELETING = 3;
+
+  E_DELETED = 4;
+
+  E_FAILED = 5;
+}
+
+//------------------------------------------------
+//      S3 Object Bucket structs
+//------------------------------------------------
+message ObjectBucketCreatePrivateRequest {
+  ObjectBucketMetadataPrivate metadata = 1;
+  ObjectBucketSpecPrivate spec = 2;
+}
+
+message ObjectBucketMetadataPrivate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string name = 2;
+  string resourceId = 3;
+
+  string bucketId = 4;
+  // resourceVersion can be provided with Update and Delete for concurrency control.
+  string resourceVersion = 5;
+  
+  string description = 6;
+  // Map of string keys and values that can be used to organize and categorize instances.
+  map<string, string> labels = 7;
+  google.protobuf.Timestamp creationTimestamp = 8;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 9;
+  //skip flag to skip quota check
+  // If true, quota check will be skipped
+  bool skipQuotaCheck = 10;
+  //skip flag to skip product catalog  check
+  // If true, product check will be skipped
+  bool skipProductCheck = 11;
+
+  // calling api client type
+  APIClientTypes clientType =  12;
+}
+
+message ObjectBucketSpecPrivate{
+    // Not used at the momemt.
+    string availabilityZone = 1;
+    // Requested size in GB
+    StorageCapacityRequest request = 2;
+    // Is bucket should be versioned, cannot be changed later
+    bool versioned = 3;
+    // Default access policy for the bucket
+    BucketAccessPolicy accessPolicy = 4;
+
+    BucketSchedule schedule = 5;
+    //The name of the Instance type
+    string instanceType = 6 [
+      (idc.field).product = true,
+      (idc.field).gtsCheck = true
+    ];       
+}
+
+message BucketSchedule{
+    AssignedCluster cluster = 1;
+}
+
+message ObjectBucketPrivate {
+  ObjectBucketMetadataPrivate metadata = 1;
+  ObjectBucketSpecPrivate spec = 2;
+  ObjectBucketStatus status = 3;
+}
+
+message ObjectBucketGetPrivateRequest {
+  ObjectBucketMetadataRef metadata= 1;
+}
+
+message ObjectBucketSearchPrivateRequest {
+    // Properties used to filter response
+    string availabilityZone = 1;
+    // resource version is use as a bookmark to indicate 
+    // sending all requests greater than this version. 
+    // If not provided, API should return all non-deleted requests
+    string resourceVersion = 2;
+}
+
+message ObjectBucketSearchPrivateResponse{
+  ObjectBucketPrivate bucket = 1;
+}
+
+message ObjectBucketDeletePrivateRequest{
+  ObjectBucketMetadataRef metadata= 1;
+}
+
+//------------------------------------------------
+//      S3 Bucket Lifecycle structs
+//------------------------------------------------
+message BucketLifecycleRuleCreatePrivateRequest {
+  BucketLifecycleRuleMetadata metadata = 1 ;
+
+  BucketLifecycleRuleSpec spec = 2;
+}
+
+message BucketLifecycleRulePrivate {
+  BucketLifecycleRuleMetadata metadata = 1;
+
+  BucketLifecycleRuleSpec spec = 2;
+
+  BucketLifecycleRuleStatus status = 3;
+}
+
+message BucketLifecycleRuleGetPrivateRequest{
+  BucketLifecycleRuleMetadataRef metadata = 1;
+}
+
+message BucketLifecycleRuleSearchPrivateRequest{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+
+  string bucketId = 2;
+}
+
+message BucketLifecycleRuleSearchPrivateResponse{
+  BucketLifecycleRulePrivate lifecycleRule = 1;
+}
+
+message BucketLifecycleRuleUpdatePrivateRequest{
+  BucketLifecycleRuleMetadataRef metadata = 1;
+
+  BucketLifecycleRuleSpec spec = 2;
+}
+
+message BucketLifecycleRuleDeletePrivateRequest{
+  BucketLifecycleRuleMetadataRef metadata = 1;
+}
+
+//------------------------------------------------
+//      S3 Object Bucket user structs
+//------------------------------------------------
+
+message CreateObjectUserPrivateRequest{
+  ObjectUserMetadataCreate metadata = 1 ;
+
+  repeated ObjectUserPermissionSpec spec = 2 ;
+}
+
+message ObjectUserPrivate{
+  ObjectUserMetadataPrivate metadata = 1;
+
+  repeated ObjectUserPermissionSpec spec = 2;
+
+  ObjectUserStatusPrivate status = 3;
+}
+
+message ObjectUserMetadataPrivate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  
+  string name = 2;
+  
+  string userId = 3;
+
+  map<string, string> labels = 4;
+  google.protobuf.Timestamp creationTimestamp = 5;
+  google.protobuf.Timestamp updateTimestamp = 6;
+  google.protobuf.Timestamp deleteTimestamp = 7;
+}
+
+message ObjectUserStatusPrivate {
+  ObjectUserPhase phase = 1;
+
+  AccessPrincipalPrivate principal = 2;
+}
+
+message AccessPrincipalPrivate {
+  ObjectCluster cluster = 1;
+
+  ObjectAccessCredentials credentials =  2;
+
+  string principalId = 3;
+}
+
+message ObjectUserGetPrivateRequest {
+  ObjectUserMetadataRef metadata = 1;
+}
+
+message ObjectUserUpdatePrivateRequest {
+  ObjectUserMetadataRef metadata = 1 ;
+
+  repeated ObjectUserPermissionSpec spec = 2 ;
+}
+
+message ObjectUserDeletePrivateRequest {
+  ObjectUserMetadataRef metadata = 1;
+}
+
+message ObjectUserSearchPrivateRequest {
+  // Properties used to filter response
+  string availabilityZone = 1;
+  // resource version is use as a bookmark to indicate 
+  // sending all requests greater than this version. 
+  // If not provided, API should return all non-deleted requests
+  string resourceVersion = 2;
+}
+
+message ObjectUserSearchPrivateResponse {
+  ObjectUser user = 1;
+}
+
+//------------------------------------------------
+//      Private mgmt APIs
+//------------------------------------------------
+
+message ObjectBucketStatusUpdateRequest{
+  ObjectBucketIdReference metadata = 1;
+  ObjectBucketStatus status = 2;
+}
+
+message ObjectBucketRemoveFinalizerRequest {
+  ObjectBucketIdReference metadata = 1;
+}
+
+message ObjectUserStatusUpdateRequest{
+  ObjectUserIdReference metadata = 1;
+  ObjectUserStatus status = 2;
+}
+
+message ObjectUserRemoveFinalizerRequest{
+  ObjectUserIdReference metadata = 1;
+}
+
+message ObjectBucketIdReference {
+  string cloudAccountId = 1;
+  string resourceId = 2;
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 3;
+}
+
+message ObjectUserIdReference {
+  string cloudAccountId = 1;
+  string resourceId = 2;
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 3;
+}
+
+//------------------------------------------------------------------
+// Bukcte lifecycle management private service
+//------------------------------------------------------------------
+
+// Private Bucket lifecycle mgmt Service.
+service BucketLifecyclePrivateService {
+  rpc CreateOrUpdateLifecycleRule(CreateOrUpdateLifecycleRuleRequest) returns (LifecycleRulePrivate) {};
+
+  rpc DeleteLifecycleRule(DeleteLifecycleRuleRequest) returns (google.protobuf.Empty) {};
+
+  // PingBucketLifecyclePrivate returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingBucketLifecyclePrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message CreateOrUpdateLifecycleRuleRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+
+	string clusterId = 2;
+
+	string bucketId = 3;
+
+  repeated BucketLifecycleRuleSpec spec = 4;
+}
+
+
+message LifecycleRulePrivate{
+
+	string clusterId = 1;
+
+	string bucketId = 2;
+
+  repeated BucketLifecycleRuleSpec spec = 3;
+}
+
+message DeleteLifecycleRuleRequest{
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+
+	string clusterId = 2;
+
+	string bucketId = 3;
+
+  string ruleId = 4;
+}

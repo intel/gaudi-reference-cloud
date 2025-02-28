@@ -1,0 +1,493 @@
+// Intel Overrides
+
+// Disabled button styles
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-info,
+.btn-light {
+  --bs-btn-disabled-color: #{$carbon};
+  --bs-btn-disabled-bg: #{$carbon-tint2};
+  --bs-btn-disabled-border-color: #{$carbon-tint1};
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-dark {
+  --bs-btn-disabled-color: #{$carbon-tint1-tint};
+  --bs-btn-disabled-bg: #{$carbon};
+  --bs-btn-disabled-border-color: #{$carbon-shade1-tint};
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-link {
+  --bs-btn-disabled-color: #{$carbon-shade1-tint};
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-outline-info,
+.btn-outline-dark {
+  --bs-btn-disabled-color: #{$carbon};
+  --bs-btn-disabled-border-color: #{$carbon};
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-outline-light {
+  --bs-btn-disabled-color: #{$carbon-tint1-shade};
+  --bs-btn-disabled-border-color: #{$carbon-tint1-shade};
+  --bs-btn-disabled-opacity: 1;
+}
+
+// Redefine secondary buttons
+.btn-secondary {
+  --bs-btn-color: #{$classic-blue};
+  --bs-btn-border-color: #{$classic-blue};
+  --bs-btn-hover-color: #{$classic-blue-shade1};
+  --bs-btn-hover-bg: #{$secondary-bg-hover};
+  --bs-btn-hover-border-color: #{$classic-blue};
+  --bs-btn-focus-shadow-rgb: #{to-rgb($classic-blue)};
+  --bs-btn-active-color: #{$classic-blue-shade1};
+  --bs-btn-active-bg: #{$secondary-bg-active};
+  --bs-btn-active-border-color: #{$classic-blue};
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: #{$classic-blue};
+  --bs-btn-border-color: #{$classic-blue};
+  --bs-btn-hover-color: #{$classic-blue-shade1};
+  --bs-btn-hover-bg: #{$secondary-bg-hover};
+  --bs-btn-hover-border-color: #{$classic-blue};
+  --bs-btn-focus-shadow-rgb: #{to-rgb($classic-blue)};
+  --bs-btn-active-color: #{$classic-blue-shade1};
+  --bs-btn-active-bg: #{$secondary-bg-active};
+  --bs-btn-active-border-color: #{$classic-blue};
+}
+
+.alert-secondary {
+  --bs-alert-bg: #{$white};
+}
+
+.table-secondary {
+  --bs-table-color: #{$classic-blue};
+  --bs-table-bg: #{$white};
+}
+
+.badge.bg-secondary {
+  border: 1px solid $classic-blue;
+  color: $classic-blue;
+  background-color: $white !important;
+}
+
+.btn-warning {
+  --bs-btn-hover-bg: #{shade-color($warning, $btn-hover-bg-shade-amount)};
+  --bs-btn-hover-border-color: #{shade-color(
+      $warning,
+      $btn-hover-border-shade-amount
+    )};
+  --bs-btn-active-bg: #{shade-color($warning, $btn-hover-bg-shade-amount)};
+  --bs-btn-active-border-color: #{shade-color(
+      $warning,
+      $btn-hover-border-shade-amount
+    )};
+}
+
+.btn-info {
+  --bs-btn-hover-bg: #{shade-color($info, $btn-hover-bg-shade-amount)};
+  --bs-btn-hover-border-color: #{shade-color(
+      $info,
+      $btn-hover-border-shade-amount
+    )};
+  --bs-btn-active-bg: #{shade-color($info, $btn-hover-bg-shade-amount)};
+  --bs-btn-active-border-color: #{shade-color(
+      $info,
+      $btn-hover-border-shade-amount
+    )};
+}
+
+// Fix border on disabled buttons in a group
+.btn-group {
+  .btn:disabled,
+  .btn.disabled {
+    &.btn-primary,
+    &.btn-secondary {
+      border-color: $carbon;
+    }
+  }
+}
+
+// List group items
+.list-group-item {
+  &.disabled,
+  &:disabled {
+    border-color: $carbon-tint1;
+  }
+}
+
+.list-group-item-primary {
+  --bs-list-group-action-hover-color: #{$white};
+  --bs-list-group-action-active-color: #{$white};
+  --bs-list-group-active-color: #{$white};
+  --bs-list-group-active-bg: #{shade-color(
+      $primary,
+      $btn-active-bg-shade-amount
+    )};
+  --bs-list-group-active-border-color: #{shade-color(
+      $primary,
+      $btn-active-border-shade-amount
+    )};
+}
+
+.list-group-item-secondary {
+  --bs-list-group-action-hover-color: #{$classic-blue-shade1};
+  --bs-list-group-action-hover-bg: #{$secondary-bg-hover};
+  --bs-list-group-action-active-color: #{$classic-blue-shade1};
+  --bs-list-group-action-active-bg: #{$secondary-bg-active};
+  --bs-list-group-active-color: #{$classic-blue-shade1};
+  --bs-list-group-active-bg: #{$secondary-bg-active};
+  --bs-list-group-active-border-color: #{$classic-blue};
+}
+
+.list-group-item-info {
+  --bs-list-group-active-color: #{$black};
+  --bs-list-group-active-bg: #{shade-color($info, $btn-active-bg-shade-amount)};
+  --bs-list-group-active-border-color: #{$energy-blue-shade1};
+}
+
+.list-group-item-success {
+  --bs-list-group-active-color: #{$white};
+  --bs-list-group-active-bg: #{$success};
+  --bs-list-group-active-border-color: #{shade-color(
+      $success,
+      $btn-active-bg-shade-amount
+    )};
+}
+
+.list-group-item-warning {
+  --bs-list-group-active-color: #{$black};
+  --bs-list-group-active-bg: #{$warning};
+  --bs-list-group-active-border-color: #{shade-color(
+      $warning,
+      $btn-active-bg-shade-amount
+    )};
+}
+
+.list-group-item-danger {
+  --bs-list-group-active-color: #{$white};
+  --bs-list-group-active-bg: #{$danger};
+  --bs-list-group-active-border-color: #{shade-color(
+      $danger,
+      $btn-active-bg-shade-amount
+    )};
+}
+
+.card-link {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.navbar {
+  // Top and Bottom paddings will create a 50px height navbar
+  .navbar-nav {
+    .nav-link {
+      padding-top: 13px;
+      padding-bottom: 11px;
+      border-bottom-width: 2px;
+      border-bottom-style: solid;
+      border-bottom-color: transparent;
+
+      &:hover,
+      &:focus {
+        color: $white;
+        background-color: $classic-blue;
+
+        &:not(.active) {
+          border-bottom-color: $classic-blue;
+        }
+      }
+    }
+
+    .nav-link.active {
+      border-bottom-color: $white;
+    }
+  }
+  .navbar-brand {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .navbar-text {
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+
+  &.navbar-light {
+    .navbar-nav {
+      .nav-link.active {
+        &:hover,
+        &:focus {
+          border-bottom-color: $classic-blue-shade2;
+        }
+      }
+
+      .show > .nav-link,
+      .nav-link.active {
+        border-bottom-color: $classic-blue;
+      }
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: $carbon-tint1-tint;
+    }
+  }
+
+  &.bg-primary {
+    .navbar-nav {
+      .nav-link {
+        &:hover,
+        &:focus {
+          color: $white;
+          background-color: $classic-blue-shade1;
+          &:not(.active) {
+            border-bottom-color: $classic-blue-shade1;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Intel Additions
+
+.no-box-shadow {
+  &:focus,
+  &.focus,
+  &:not(:disabled):active:focus,
+  &:not(:disabled).active:focus {
+    box-shadow: none !important;
+  }
+}
+
+// Fix Bootstrap's focus highlighting to conform to WCAG 1.4.11 Non-Text Contrast
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+a:focus-visible,
+.page-link:focus,
+*[class^="btn"]:focus,
+*[class^="btn"]:focus-visible,
+button[class^="accordion"]:focus,
+button[class^="accordion"]:focus-visible,
+.form-control:focus,
+.form-control:focus-visible,
+.form-select:focus,
+.form-select:focus-visible,
+.form-check-input:focus,
+.form-check-input:focus-visible {
+  outline: revert;
+}
+
+.form-range:focus::-webkit-slider-thumb,
+.form-range:focus::-moz-range-thumb {
+  // note: this will need to be updated per adjacent background as there isn't a browser default to revert for the thumb
+  box-shadow: 0 0 0 1px $white, 0 0 0 0.25rem $energy-blue-shade1;
+  outline: 0.25rem solid transparent;
+}
+
+// Dark Mode
+[data-bs-theme="dark"] {
+  .alert-secondary {
+    --bs-alert-bg: #{$secondary-bg-dark};
+  }
+
+  .btn-secondary {
+    --bs-btn-color: #{$secondary-color-dark};
+    --bs-btn-bg: #{$secondary-bg-dark};
+    --bs-btn-hover-bg: #{$secondary-bg-dark-hover};
+    --bs-btn-active-bg: #{$secondary-bg-dark-active};
+  }
+
+  .btn-outline-primary,
+  .btn-outline-secondary {
+    --bs-btn-color: #{$classic-blue-tint1};
+    --bs-btn-border-color: #{$classic-blue-tint1};
+  }
+
+  .btn-outline-secondary {
+    --bs-btn-hover-bg: #{$secondary-bg-dark};
+    --bs-btn-active-bg: #{$secondary-bg-dark-hover};
+  }
+
+  .btn-outline-dark {
+    --bs-btn-color: #{$carbon};
+    --bs-btn-border-color: #{$carbon};
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-success,
+  .btn-danger,
+  .btn-warning,
+  .btn-info,
+  .btn-light,
+  .btn-dark {
+    --bs-btn-disabled-color: #{$carbon};
+    --bs-btn-disabled-bg: #{$carbon-shade1-shade};
+    --bs-btn-disabled-border-color: #{$carbon-shade1};
+  }
+
+  .btn-link {
+    --bs-btn-disabled-color: #{$carbon};
+  }
+
+  .btn-group {
+    .btn-check:checked + .btn {
+      &.btn-outline-primary,
+      &.btn-outline-secondary {
+        border-color: #{$classic-blue-tint1};
+      }
+    }
+  }
+
+  .badge.bg-secondary {
+    border: 1px solid $classic-blue;
+    color: $secondary-color-dark !important;
+    background-color: $secondary-bg-dark !important;
+  }
+
+  .list-group-item-primary {
+    --bs-list-group-border-color: #{$primary};
+    --bs-list-group-action-hover-bg: #{shade-color(
+        $primary,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-bg: #{shade-color(
+        $primary,
+        $btn-hover-bg-shade-amount
+      )};
+  }
+
+  .list-group-item-secondary {
+    --bs-list-group-border-color: #{$classic-blue};
+    --bs-list-group-active-bg: #{$secondary-bg-dark-active};
+    --bs-list-group-action-hover-bg: #{$secondary-bg-dark-hover};
+    --bs-list-group-action-active-bg: #{$secondary-bg-dark-hover};
+  }
+
+  .list-group-item-info {
+    --bs-list-group-active-color: #{$white};
+    --bs-list-group-action-hover-color: #{$black};
+    --bs-list-group-action-hover-bg: #{shade-color(
+        $energy-blue-shade1,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-hover-border-color: #{shade-color(
+        $energy-blue-shade1,
+        $btn-hover-border-shade-amount
+      )};
+    --bs-list-group-action-active-color: #{$black};
+    --bs-list-group-action-active-bg: #{shade-color(
+        $energy-blue-shade1,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-border-color: #{shade-color(
+        $energy-blue-shade1,
+        $btn-hover-border-shade-amount
+      )};
+  }
+
+  .list-group-item-success {
+    --bs-list-group-action-hover-color: #{$black};
+    --bs-list-group-action-hover-bg: #{shade-color(
+        $status-success-soft-dark-mode,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-color: #{$black};
+    --bs-list-group-action-active-bg: #{shade-color(
+        $status-success-soft-dark-mode,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-border-color: #{shade-color(
+        $status-success-soft-dark-mode,
+        $btn-hover-border-shade-amount
+      )};
+  }
+
+  .list-group-item-warning {
+    --bs-list-group-action-hover-color: #{$black};
+    --bs-list-group-action-hover-bg: #{shade-color(
+        $status-warning-soft-dark-mode,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-color: #{$black};
+    --bs-list-group-action-active-bg: #{shade-color(
+        $status-warning-soft-dark-mode,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-border-color: #{shade-color(
+        $status-warning-soft-dark-mode,
+        $btn-hover-border-shade-amount
+      )};
+  }
+
+  .list-group-item-danger {
+    --bs-list-group-action-hover-color: #{$black};
+    --bs-list-group-action-hover-bg: #{shade-color(
+        $status-error-soft-dark-mode,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-color: #{$black};
+    --bs-list-group-action-active-bg: #{shade-color(
+        $status-error-soft-dark-mode,
+        $btn-hover-bg-shade-amount
+      )};
+    --bs-list-group-action-active-border-color: #{shade-color(
+        $status-error-soft-dark-mode,
+        $btn-hover-border-shade-amount
+      )};
+  }
+
+  .navbar {
+    &.navbar-light {
+      .btn.btn-outline-primary,
+      .btn.btn-outline-secondary {
+        border: 1px solid $classic-blue;
+        color: $classic-blue;
+      }
+
+      .btn.btn-outline-primary {
+        &:hover,
+        &:focus {
+          color: $white;
+        }
+      }
+
+      .btn.btn-outline-secondary {
+        &:hover,
+        &:focus {
+          color: $classic-blue-shade1;
+          background-color: $carbon-tint1;
+        }
+      }
+    }
+  }
+
+  .table-secondary {
+    --bs-table-color: #{$classic-blue-shade1};
+    --bs-table-bg: #{$secondary-bg-dark};
+  }
+
+  .toast {
+    --bs-toast-color: #{$white};
+    --bs-toast-bg: #{rgba($black, 0.92)};
+    --bs-toast-header-color: #{$white};
+    --bs-toast-header-bg: #{rgba($black, 0.45)};
+  }
+}

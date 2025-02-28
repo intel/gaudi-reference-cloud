@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "baremetal-enrollment-operator.fullname" . }}-manager-config
+  labels:
+  {{- include "baremetal-enrollment-operator.labels" . | nindent 4 }}
+data:
+  controller_manager_config.yaml: |
+    computeApiServerAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.computeApiServerAddress | quote }}
+    dhcpProxy:
+      enabled: {{ .Values.managerConfig.controllerManagerConfigYaml.dhcpProxy.enabled }}
+      url: {{ .Values.managerConfig.controllerManagerConfigYaml.dhcpProxy.url | quote }}
+    maxConcurrentReconciles: {{ .Values.managerConfig.controllerManagerConfigYaml.maxConcurrentReconciles }}
+    menAndMice:
+      enabled: {{ .Values.managerConfig.controllerManagerConfigYaml.menAndMice.enabled }}
+      url: {{ .Values.managerConfig.controllerManagerConfigYaml.menAndMice.url| quote }}
+      tftpServerIp: {{ .Values.managerConfig.controllerManagerConfigYaml.menAndMice.tftpServerIp | quote }}
+      serverAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.menAndMice.serverAddress | quote }}
+      insecureSkipVerify: {{ .Values.managerConfig.controllerManagerConfigYaml.menAndMice.insecureSkipVerify }}
+    netbox:
+      address: {{ .Values.managerConfig.controllerManagerConfigYaml.netbox.address | quote }}
+      skipTlsVerify: {{ .Values.managerConfig.controllerManagerConfigYaml.netbox.skipTlsVerify }}
+    region: {{ .Values.managerConfig.controllerManagerConfigYaml.region | quote }}
+    vaultAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.vaultAddress }}
+    apiVersion: private.cloud.intel.com/v1alpha1
+    kind: BMEnrollmentOperatorConfig
+    health:
+      healthProbeBindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.health.healthProbeBindAddress | quote }}
+    leaderElection:
+      leaderElect: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.leaderElect }}
+      resourceName: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.resourceName | quote }}
+    metrics:
+      bindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress | quote }}
+    webhook:
+      port: {{ .Values.managerConfig.controllerManagerConfigYaml.webhook.port }}

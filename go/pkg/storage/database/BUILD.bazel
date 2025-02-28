@@ -1,0 +1,30 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "database",
+    srcs = [
+        "connect.go",
+        "migrate.go",
+    ],
+    embedsrcs = [
+        "migrations/20230926174453_initial.down.sql",
+        "migrations/20230926174453_initial.up.sql",
+        "migrations/20240118174454_alter_fs_account.up.sql",
+        "migrations/20240129174454_bucket_schema.up.sql",
+        "migrations/20240412174464_bucket_netsec_group.up.sql",
+        "migrations/20240829123444_quota_account.up.sql",
+        "migrations/20240926235306_quota_mgmt.up.sql",
+        "migrations/20241119224758_alter_quota_mgmt_scope.up.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/database",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "@com_github_exaring_otelpgx//:otelpgx",
+        "@com_github_jackc_pgx_v5//:pgx",
+        "@com_github_jackc_pgx_v5//stdlib",
+    ],
+)

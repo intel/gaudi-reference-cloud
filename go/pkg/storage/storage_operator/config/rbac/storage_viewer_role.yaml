@@ -1,0 +1,35 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# permissions for end users to view storage-operators.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: storage-operator-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: storage-operator
+    app.kubernetes.io/part-of: storage-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: storage-operator-viewer-role
+rules:
+- apiGroups:
+  - private.cloud.intel.com
+  resources:
+  - storage-operators
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - cloud.intel.com
+  resources:
+  - storage-operators/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

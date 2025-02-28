@@ -1,0 +1,4 @@
+proxy:
+  http_proxy: {{ (.Values.proxy).http_proxy }}
+  https_proxy: {{ (.Values.proxy).https_proxy }}
+  no_proxy: {{ (.Values.proxy).no_proxy }}

@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+iptables_rules:
+  - { chain: 'INPUT', source: 'localhost', protocol: 'all', jump: 'ACCEPT' }
+  - { chain: 'INPUT', protocol: 'tcp', destination_port: '22', match: 'conntrack', ctstate: 'RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'INPUT', match: 'state', match: 'conntrack', ctstate: 'RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'INPUT', source: '100.80.63.63', protocol: 'tcp', destination_port: '22', jump: 'ACCEPT' }
+  - { chain: 'INPUT', source: '100.64.17.3', protocol: 'tcp', destination_port: '22', jump: 'ACCEPT' }
+  - { chain: 'INPUT', source: '100.64.17.4', protocol: 'tcp', destination_port: '22', jump: 'ACCEPT' }
+  - { chain: 'INPUT', source: '100.64.17.5', protocol: 'tcp', destination_port: '22', jump: 'ACCEPT' }
+  - { chain: 'INPUT', source: '146.152.227.30', protocol: 'tcp', destination_port: '22', jump: 'ACCEPT' }
+  - { chain: 'INPUT', source: '100.80.63.218', protocol: 'tcp', destination_port: '9100', jump: 'ACCEPT' }
+  - { chain: 'INPUT', source: '100.80.63.105', protocol: 'tcp', destination_port: '9100', jump: 'ACCEPT' }
+  - { chain: 'INPUT', jump: 'DROP' }
+  - { chain: 'FORWARD', match: 'state', ctstate: 'RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'FORWARD', jump: 'DROP' }
+  - { chain: 'OUTPUT', match: 'state', ctstate: 'RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'OUTPUT', protocol: 'tcp', destination_port: '22', match: 'conntrack', ctstate: 'ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'OUTPUT', jump: 'DROP' }

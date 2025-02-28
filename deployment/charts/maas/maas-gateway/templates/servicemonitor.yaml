@@ -1,0 +1,31 @@
+{{ if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+  labels:
+      {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  endpoints:
+    - interval: {{ .Values.serviceMonitor.interval }}
+      scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
+      path: /metrics
+      port: metrics
+      scheme: https
+      basicAuth:
+        username:
+          key: username
+          name: {{ include "idc-common.fullname" . }}-prometheus
+        password:
+          key: password
+          name: {{ include "idc-common.fullname" . }}-prometheus
+      tlsConfig:
+        insecureSkipVerify: true
+  namespaceSelector:
+    matchNames:
+      - {{ include "idc-common.namespace" . }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "idc-common.name" . }}
+{{- end }}

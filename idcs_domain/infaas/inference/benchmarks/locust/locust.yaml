@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: locust-pod
+spec:
+  restartPolicy: Never
+  containers:
+  - name: locust
+    image: galsarid/intel:locust
+    imagePullPolicy: Always
+    env:
+    - name: MODEL
+      value: mistralai/Mistral-7B-Instruct-v0.1
+    - name: BACKEND
+      value: "e2e"
+    - name: INPUT_TOKENS
+      value: "1024"
+    - name: OUTPUT_TOKENS
+      value: "1024"
+    - name: USERS
+      value: "50"
+    - name: TARGET_RPS
+      value: "20"
+    - name: HF_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: hf-api-token-secret
+          key: HF_API_TOKEN
+    - name: LLM_HOST
+      value: "https://us-staging-1-sdk-api.eglb.intel.com"
+    - name: LLM_ENDPOINT
+      value: "/v1/maas/generatestream"
+    - name: IDC_CLIENT_ID
+      value: jmbsen1fmg1837cj50uuub8dg
+    - name: IDC_CLIENT_SECRET
+      value: "oms0nci6kmghfpaubl11sgqiaogagd4irl1r86hmlkhhcjmi1pc"
+    - name: IDC_CLOUD_ACCOUNT_ID
+      value: "319388893797"
+    - name: MAAS_PRODUCT_NAME
+      value: "maas-model-mistral-7b-v0.1"
+    - name: MAAS_PRODUCT_ID
+      value: "269c3034-e6c7-4359-9e77-c3efedfaa778"
+    args:
+    - "--host=$(LLM_HOST)"
+    - "--run-time=5s"
+    - "--headless"
+    - "--only-summary"
+    - "--csv=locust_results"
+    volumeMounts:
+    - name: results
+      mountPath: /home/locust/results
+    resources:
+      requests:
+          cpu: "4"
+  volumes:
+  - name: results
+    emptyDir: {}

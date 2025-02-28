@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "mock",
+    srcs = [
+        "mock_bmaas.go",
+        "mocks.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/mock",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/sdn-controller/pkg/client",
+        "@io_k8s_apimachinery//pkg/runtime",
+    ],
+)

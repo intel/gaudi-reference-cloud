@@ -1,0 +1,11 @@
+---
+ssh_key_dir: "{{ playbook_dir }}/roles/gen_ssh_key/files"
+ssh_key_type: "rsa"
+ssh_key_bits: "4096"
+create_val_dir: "{{ playbook_dir }}/roles/create_val_dir"
+create_hostfile_dir: "{{ playbook_dir }}/roles/create_hostfile"
+deepspeed_hostfile_path: "{{ playbook_dir }}/roles/deepspeed_test/files/hostfile"
+hostfile_templates_dir: "{{ playbook_dir }}/roles/create_hostfile/templates/"
+ansible_inventory_path: "{{ playbook_dir }}/inventory/"
+val_tmp_dir: "{{ playbook_dir }}/tmp"
+val_dir: "/tmp/validation/validation"

@@ -1,0 +1,32 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "dev.go",
+        "root.go",
+        "start.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/maas-gateway/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/log",
+        "//go/pkg/maas-gateway/internal/adminserver",
+        "//go/pkg/maas-gateway/internal/client",
+        "//go/pkg/maas-gateway/internal/config",
+        "//go/pkg/maas-gateway/internal/gateway",
+        "//go/pkg/maas-gateway/internal/metrics",
+        "//go/pkg/maas-gateway/test/mock",
+        "//go/pkg/pb",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_pkg_errors//:errors",
+        "@com_github_prometheus_client_golang//prometheus/promhttp",
+        "@com_github_spf13_cobra//:cobra",
+        "@com_github_spf13_viper//:viper",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+        "@org_golang_x_sync//errgroup",
+    ],
+)

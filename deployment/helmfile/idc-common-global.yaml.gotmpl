@@ -1,0 +1,12 @@
+# This file contains common Helm values that will be passed to all global IDC charts.
+
+otel:
+  exporter:
+    otlp:
+      endpoint: {{ .Values.global.otel.exporter.otlp.endpoint | quote }}
+  deployment:
+    group: global
+
+log:
+  level: {{ .Values.global.log.level | default .Values.log.level }}
+  

@@ -1,0 +1,87 @@
+@use "sass:map";
+
+.article-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: map.get($spacers, "s4");
+    align-self: stretch;
+}
+
+.article-list .article-description {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: map.get($spacers, "s4");
+    align-self: stretch;
+    @extend .pb-s4;
+}
+
+.article-list .article-description hr {
+    background: var(--gray-400);
+    border-color: var(--gray-400);
+    height: 1px;
+    @extend .w-100;
+    @extend .m-0;
+}
+
+.article-list .article-subtitles {
+    display: flex;
+    flex-direction: column;
+    gap: map.get($spacers, "s3");
+}
+
+.article-list .article-header {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    gap: map.get($spacers, "s3");
+
+    svg {
+        height: 12px;
+        width: 12px;
+        min-height: 12px;
+        min-width: 12px;
+    }
+}
+
+ol:not(.breadcrumb):not(.pagination):has(>li):not(.gap-s3):not(.gap-s4),
+ul:not(.breadcrumb):not(.pagination):has(>li):not(.gap-s3):not(.gap-s4) {
+    display: flex;
+    flex-direction: column;
+    @extend .gap-s6;
+}
+
+.text ol:not(.breadcrumb):not(.pagination):has(>li):not(.gap-s3):not(.gap-s4),
+.text ul:not(.breadcrumb):not(.pagination):has(>li):not(.gap-s3):not(.gap-s4) {
+    display: flex;
+    flex-direction: column;
+    @extend .gap-s4;
+}
+
+.list-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    border-color: var(--gray-300);
+    --bs-border-color: var(--gray-300);
+}
+
+.list-group-item {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: map.get($spacers, "s4");
+}
+
+.list-group-item:hover {
+    color: var(--body-color);
+    background: var(--surface-hover-background-color);
+}
+
+.list-group-item:focus, .list-group-item:active, .list-group-item.active {
+    color: var(--body-color);
+    background: var(--surface-active-background-color);
+    border-color: var(--gray-400);
+}

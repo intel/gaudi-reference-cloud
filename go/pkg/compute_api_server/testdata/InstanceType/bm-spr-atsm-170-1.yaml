@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-spr-atsm-170-1
+spec:
+  name: bm-spr-atsm-170-1
+  displayName: Intel® Data Center GPU Flex Series on 4rd Gen Intel® Xeon® processors – 170 series (1x)
+  description: Intel® Data Center GPU Flex Series on 4rd Gen Intel® Xeon® processors – 170 series (1x)
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 56
+    id: "0x806F8"
+    modelName: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+    sockets: 2
+    threads: 2
+  gpu:
+    modelName: "GPU-Flex-170"
+    count: 1
+  memory:
+    size: 256Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4000
+  disks:
+    - size: 2000Gi

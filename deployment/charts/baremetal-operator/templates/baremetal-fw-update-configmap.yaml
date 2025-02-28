@@ -1,0 +1,215 @@
+apiVersion: v1
+data:
+  ironic-fw-update.json: |
+    {
+        "FIRMWARE_IMAGE_SERVER" : {{ .Values.ironicFWUpdateConfigMap.firmwareImageServer | quote }},
+        "hwTypeMinFirmware": {{.Values.ironicFWUpdateConfigMap.firmwareMinVersion | toJson }},
+        "BKC": {
+          "DNP": {
+            "CONFIG":
+              {
+                "DENALIPASS_BIOS_UPDATE_WAIT_TIME" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassBIOSUpdateWaitTime | quote }},
+                "DENALIPASS_BMC_UPDATE_WAIT_TIME" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassBMCUpdateWaitTime | quote }},
+                "DENALIPASS_CPLD_UPDATE_WAIT_TIME" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassCPLDUpdateWaitTime | quote }},
+                "DENALIPASS_CLEANING_PRIORITY" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassCleaningPriority | quote }},
+                "DENALIPASS_CONNECTION_ATTEMPTS" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassConnectionAttempts | quote }},
+                "DENALIPASS_CONNECTION_RETRY_INTERVAL" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassConnectionRetryInterval | quote }},
+                "DENALIPASS_FIRMWARE_UPDATE_FAIL_INTERVAL" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassFWUpdateFailInterval | quote }},
+                "DENALIPASS_FIRMWARE_UPDATE_STATUS_INTERVAL" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassFWUpdateStatusInterval | quote }},
+                "DENALIPASS_TASK_MONITOR_STATUS_CHECK_ATTEMPTS" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassTaskMonitorCheckAttempts | quote }},
+                "DENALIPASS_TASK_MONITOR_STATUS_CHECK_RETRY_INTERVAL" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassTaskMonitorRetryInterval | quote }},
+                "DENALIPASS_TASK_MONITOR_STATUS_CHECK_TIMEOUT" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.config.denalipassTaskMonitorTimeout | quote }}
+              },
+            "FW_VERSIONS":
+              {
+                "DENALIPASS_BIOS_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.fwVersions.bios | quote }},
+                "DENALIPASS_BMC_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.fwVersions.bmc | quote }},
+                "DENALIPASS_CPLD_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.bkc.dnp.fwVersions.cpld | quote }}
+              }
+          },
+          "REDFISH":{
+            "CONFIG":
+            {
+              "FIRMWARE_CLEANING_PRIORITY": {{ .Values.ironicFWUpdateConfigMap.bkc.redfish.config.firmwareCleaningPriority }}
+            }
+          },
+          "SMC": {
+            "CONFIG":
+              {
+                "BIOS_UPDATE_WAIT_TIME" : {{ .Values.ironicFWUpdateConfigMap.bkc.smc.config.BIOSUpdateWaitTime }},
+                "BMC_UPDATE_WAIT_TIME" : {{ .Values.ironicFWUpdateConfigMap.bkc.smc.config.BMCUpdateWaitTime }}
+              },
+            "FW_VERSIONS":
+              {
+                "PVC_1100":
+                  {{ .Values.ironicFWUpdateConfigMap.bkc.smc.fwVersions.pvc_1100 | toJson }},
+                "PVC_1550":
+                  {{ .Values.ironicFWUpdateConfigMap.bkc.smc.fwVersions.pvc_1550 | toJson }},
+                "TYPE_3":
+                  {{ .Values.ironicFWUpdateConfigMap.bkc.smc.fwVersions.type_3 | toJson }},
+                "GAUDI_2":
+                  {{ .Values.ironicFWUpdateConfigMap.bkc.smc.fwVersions.gaudi_2 | toJson }},
+                "GAUDI_3":
+                  {{ .Values.ironicFWUpdateConfigMap.bkc.smc.fwVersions.gaudi_3 | toJson }}
+              }
+            },
+            "DELL": {
+              "CONFIG":
+                {
+                  "BIOS_UPDATE_WAIT_TIME" : {{ .Values.ironicFWUpdateConfigMap.bkc.dell.config.BIOSUpdateWaitTime }},
+                  "BMC_UPDATE_WAIT_TIME" : {{ .Values.ironicFWUpdateConfigMap.bkc.dell.config.BMCUpdateWaitTime }}
+                },
+              "FW_VERSIONS":
+                {
+                  "HS5620":
+                    {{ .Values.ironicFWUpdateConfigMap.bkc.dell.fwVersions.hs5620 | toJson }},
+                  "XE9680_GAUDI_3":
+                    {{ .Values.ironicFWUpdateConfigMap.bkc.dell.fwVersions.xe9680_gaudi_3 | toJson }}
+                }
+            }
+        },
+        "GAUDI2": {
+          "DELL": {
+            "FW_VERSIONS":
+              {
+                "BUILD_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi2.dell.fwVersions.build | quote }},
+                "SPI_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi2.dell.fwVersions.spi | quote }}
+              }
+          },
+          "SMC": {
+            "FW_VERSIONS":
+              {
+                "BUILD_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.build | quote }},
+                "SPI_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.spi | quote }}
+              }
+          },
+          "WIWYNN": {
+            "FW_VERSIONS":
+              {
+                "BUILD_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.build | quote }},
+                "SPI_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.spi | quote }}
+              }
+          }
+        },
+        "GAUDI3": {
+          "DELL": {
+            "FW_VERSIONS":
+              {
+                "BUILD_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.build | quote }},
+                "CPLD_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.cpld | quote }},
+                "SPI_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.spi | quote }}
+              }
+          },
+          "SMC": {
+            "FW_VERSIONS":
+              {
+                "BUILD_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.build | quote }},
+                "CPLD_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.cpld | quote }},
+                "SPI_VERSION" : {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.spi | quote }}
+              }
+          }
+        },
+        "PVC": {
+          "PVC_1100": {
+            "FW_VERSIONS":
+              {
+                "AMC_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.pvc.pvc_1100.fwVersions.amc | quote }},
+                "IFWI_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.pvc.pvc_1100.fwVersions.ifwi | quote }},
+                "PSC_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.pvc.pvc_1100.fwVersions.psc | quote }}
+              }
+          },
+          "PVC_1550": {
+            "FW_VERSIONS":
+              {
+                "AMC_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.pvc.pvc_1550.fwVersions.amc | quote }},
+                "IFWI_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.pvc.pvc_1550.fwVersions.ifwi | quote }},
+                "PSC_FW_VERSION" : {{ .Values.ironicFWUpdateConfigMap.pvc.pvc_1550.fwVersions.psc | quote }}
+              }
+          }
+      },
+      "MELLANOX": {
+        "MT_0000000436":
+        {
+          "VERSION": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000436.version | quote }},
+          "SHA256": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000436.sha256 | quote }}
+        },
+        "MT_0000000359":
+        {
+          "VERSION": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000359.version | quote }},
+          "SHA256": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000359.sha256 | quote }}
+        },
+        "MT_0000000224":
+        {
+          "VERSION": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000224.version | quote }},
+          "SHA256": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000224.sha256 | quote }}
+        },
+        "MT_0000000838":
+        {
+          "VERSION": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000838.version | quote }},
+          "SHA256": {{ .Values.ironicFWUpdateConfigMap.mellanox.MT_0000000838.sha256 | quote }}
+        }
+      },
+      "instanceTypeFirmwareVersions": {
+        "bm-virtual-sc": {
+          "buildVersion": "1.17.0-495",
+          "spiVersion": "1.17.0-fw-1.2.3",
+          "fullFwVersion": "hl-virtual-1.17.0-fw-1.2.3-sec-0"
+        },
+        "bm-icp-gaudi2": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.full | quote }}
+        },
+        "bm-icx-gaudi2": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.full | quote }}
+        },
+        "bm-spr-gaudi2": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.dell.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.dell.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.dell.fwVersions.full | quote }}
+        },
+        "bm-icp-gaudi2-sc": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.wiwynn.fwVersions.full | quote }}
+        },
+        "bm-icx-gaudi2-sc": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi2.smc.fwVersions.full | quote }}
+        },
+        "bm-gnr-gaudi3-smc": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.full | quote }}
+        },
+        "bm-spr-gaudi3-dell": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.full | quote }}
+        },
+        "bm-gnr-gaudi3-smc-sc": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.smc.fwVersions.full | quote }}
+        },
+        "bm-spr-gaudi3-dell-sc": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.full | quote }}
+        },
+        "bm-emr-gaudi3-dell": {
+          "buildVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.build | quote }},
+          "spiVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.spi | quote }},
+          "fullFwVersion": {{ .Values.ironicFWUpdateConfigMap.gaudi3.dell.fwVersions.full | quote }}
+        }
+      }
+    }
+kind: ConfigMap
+metadata:
+  name: ironic-fw-update
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}

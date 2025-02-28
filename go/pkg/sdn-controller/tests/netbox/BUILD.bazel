@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "netbox_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/netbox",
+    visibility = ["//visibility:private"],
+    deps = ["//go/pkg/sdn-controller/pkg/netbox"],
+)
+
+go_binary(
+    name = "netbox",
+    embed = [":netbox_lib"],
+    visibility = ["//visibility:public"],
+)

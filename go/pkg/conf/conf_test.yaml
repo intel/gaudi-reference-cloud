@@ -1,0 +1,8 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Config file for unit tests.
+listenPort: 8080
+tls:
+  useTLS: true
+  certFile: "server.crt"
+  keyFile: "server.key"

@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+metadata:
+  name: bm-gnr-gaudi3-smc
+spec:
+  name: bm-gnr-gaudi3-smc
+  displayName: 8 Gaudi HL-325H mezzanine cards with 6th Gen Xeon® processors, 2 TB RAM
+  description: 8 Gaudi HL-325H mezzanine cards with 6th Gen Xeon® processors, 2 TB RAM
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 72
+    id: "0xa06d1"
+    modelName: Genuine Intel(R)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 8
+    modelName: HL-325
+  memory:
+    size: 2304Gi
+    dimmSize: 98Gi
+    dimmCount: 24
+    speed: 6400
+  disks:
+    - size: 16096Gi

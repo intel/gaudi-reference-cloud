@@ -1,0 +1,55 @@
+---
+# Generate Validation Directory
+- name: Ensure validation directory exists
+  file:
+    path: "{{ val_tmp_dir }}"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+
+- name: Copy Deepspeed files
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/deepspeed_test/files/"
+    dest: "{{ val_tmp_dir }}"
+  run_once: true
+  delegate_to: localhost
+
+- name: Copy SSH Keys
+  ansible.builtin.copy:
+    src: "{{ ssh_key_dir }}/.ssh_keys"
+    dest: "{{ val_tmp_dir }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Export files to other nodes
+  ansible.builtin.copy:
+    src: "{{ val_tmp_dir }}/"
+    dest: "{{ val_dir }}"
+
+- name: Ensure intermediate directory exists before deletion
+  stat:
+    path: "{{ val_tmp_dir }}"
+  register: val_tmp_dir_exists
+
+- name: Delete intermediate directory if it exists
+  file:
+    path: "{{ val_tmp_dir }}"
+    state: absent
+  when: val_tmp_dir_exists.stat.exists
+  delegate_to: localhost
+
+- name: Generate .deepspeed_env file
+  template:
+    src: "deepspeed-env.j2"
+    dest: "{{ val_dir }}/.deepspeed_env"
+  become: yes
+
+- name: Generate Dockerfile from Jinja2 template
+  template:
+    src: "create-dockerfile.j2"
+    dest: "{{ val_dir }}/Dockerfile"
+
+- name: Generate Deepspeed run.sh script
+  template:
+    src: "deepspeed-run.j2"
+    dest: "{{ val_dir }}/run.sh"

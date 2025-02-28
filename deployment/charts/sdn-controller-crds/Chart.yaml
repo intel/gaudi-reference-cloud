@@ -1,0 +1,5 @@
+apiVersion: v2
+name: sdn-controller-crds
+description: IDC SDN-Controller Custom Resource Definitions
+type: application
+version: 0.1.0

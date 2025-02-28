@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "config_test.go",
+        "healthz_test.go",
+        "proxy_test.go",
+        "suite_test.go",
+    ],
+    data = [
+        "config_test.yaml",
+    ],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/log",
+        "//go/pkg/quick_connect/api_server/api",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

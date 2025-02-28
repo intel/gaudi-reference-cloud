@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenConfig:
+      listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    notifications:
+      inviteLink: {{ .Values.notifications.inviteLink }}
+      senderEmail: {{ .Values.notifications.senderEmail }}
+      inviteTemplate: {{ .Values.notifications.inviteTemplate }}
+      inviteAcceptTemplate: {{ .Values.notifications.inviteAcceptTemplate }}
+      inviteExpiredTemplate: {{ .Values.notifications.inviteExpiredTemplate }}
+      otpTemplate: {{ .Values.notifications.otpTemplate }}
+    authz:
+      enabled: {{ .Values.authz.enabled }}
+    invitationsExpirySchedulerTime: {{ .Values.invitationsExpirySchedulerTime }}
+    invitationsExpirySchedulerBatchSize: {{ .Values.invitationsExpirySchedulerBatchSize }}
+    intelMemberInvitationLimit: {{ .Values.intelMemberInvitationLimit }}
+    premiumMemberInvitationLimit: {{ .Values.premiumMemberInvitationLimit }}
+    enterpriseMemberInvitationLimit: {{ .Values.enterpriseMemberInvitationLimit }}
+    otpRetryLimit: {{ .Values.otpRetryLimit }}
+    otpRetryLimitIntervalDuration: {{ .Values.otpRetryLimitIntervalDuration }}
+    runSchedulers: {{ .Values.runSchedulers }}
+    features:
+      invitationsExpiryScheduler: {{ .Values.features.invitationsExpiryScheduler }}
+      invitationsExpiryEmail: {{ .Values.features.invitationsExpiryEmail }}

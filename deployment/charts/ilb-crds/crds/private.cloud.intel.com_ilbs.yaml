@@ -1,0 +1,172 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: ilbs.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: Ilb
+    listKind: IlbList
+    plural: ilbs
+    singular: ilb
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Ilb is the Schema for the ilbs API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: IlbSpec defines the desired state of Ilb
+            properties:
+              owner:
+                type: string
+              pool:
+                description: Define pool configuration
+                properties:
+                  description:
+                    type: string
+                  environment:
+                    type: integer
+                  loadbalancingmode:
+                    type: string
+                  members:
+                    items:
+                      description: Define member configuration -- part of vPool
+                      properties:
+                        adminState:
+                          type: string
+                        connectionLimit:
+                          type: integer
+                        ip:
+                          type: string
+                        name:
+                          type: string
+                        priorityGroup:
+                          type: integer
+                        ratio:
+                          type: integer
+                      required:
+                      - adminState
+                      - connectionLimit
+                      - ip
+                      - priorityGroup
+                      - ratio
+                      type: object
+                    minItems: 0
+                    type: array
+                  minactivemembers:
+                    type: integer
+                  monitor:
+                    type: string
+                  name:
+                    type: string
+                  port:
+                    type: integer
+                  usergroup:
+                    type: integer
+                required:
+                - description
+                - environment
+                - loadbalancingmode
+                - minactivemembers
+                - monitor
+                - name
+                - usergroup
+                type: object
+              vip:
+                description: define virtual server configuration
+                properties:
+                  description:
+                    type: string
+                  environment:
+                    type: integer
+                  ipprotocol:
+                    type: string
+                  iptype:
+                    type: string
+                  name:
+                    type: string
+                  persist:
+                    type: string
+                  port:
+                    type: integer
+                  usergroup:
+                    type: integer
+                required:
+                - description
+                - environment
+                - ipprotocol
+                - iptype
+                - name
+                - persist
+                - port
+                - usergroup
+                type: object
+            required:
+            - owner
+            - vip
+            type: object
+          status:
+            description: IlbStatus defines the observed state of Ilb
+            properties:
+              conditions:
+                properties:
+                  poolCreated:
+                    type: boolean
+                  vipCreated:
+                    type: boolean
+                  vipPoolLinked:
+                    type: boolean
+                required:
+                - poolCreated
+                - vipCreated
+                - vipPoolLinked
+                type: object
+              message:
+                type: string
+              name:
+                description: define observed state of cluster
+                type: string
+              poolID:
+                type: integer
+              state:
+                type: string
+              vip:
+                type: string
+              vipID:
+                type: integer
+            required:
+            - conditions
+            - message
+            - name
+            - poolID
+            - state
+            - vip
+            - vipID
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

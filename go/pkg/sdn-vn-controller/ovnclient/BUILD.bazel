@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ovnclient",
+    srcs = ["ovnclient.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller/ovnclient",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/sdn-vn-controller/configmgr",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_ovn_org_libovsdb//client",
+        "@com_github_ovn_org_libovsdb//model",
+        "@com_github_ovn_org_ovn_kubernetes_go_controller//pkg/nbdb",
+        "@com_github_ovn_org_ovn_kubernetes_go_controller//pkg/types",
+    ],
+)

@@ -1,0 +1,14 @@
+---
+
+# Bring up the BMVS on a developer system
+
+- name: Bare Metal Virtual Stack Playbook Setup
+  connection: ansible.netcommon.network_cli
+  gather_facts: false
+  hosts: deployhost
+  remote_user: root
+  vars_files:
+    - "vars/defaults.yml"
+
+  roles:
+    - download_cache

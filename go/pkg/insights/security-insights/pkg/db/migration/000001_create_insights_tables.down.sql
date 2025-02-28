@@ -1,0 +1,14 @@
+-- INTEL CONFIDENTIAL
+-- Copyright (C) 2023 Intel Corporation
+-- DROP INDEX  IF EXISTS k8s_release_version_idx;
+-- DROP INDEX  IF EXISTS k8s_release_components_idx;
+-- DROP INDEX  IF EXISTS k8s_release_sbom_idx;
+-- DROP INDEX  IF EXISTS vulnerability_idx;
+
+-- DROP TABLE IF EXISTS  update_policy;
+-- DROP TABLE IF EXISTS  release_scan_vulnerability_report;
+-- DROP TABLE IF EXISTS  vulnerability;
+-- DROP TABLE IF EXISTS  release_scan_vulnerability;
+-- DROP TABLE IF EXISTS  k8s_release_sbom;
+-- DROP TABLE IF EXISTS  k8s_release_components;
+-- DROP TABLE IF EXISTS  k8s_release;

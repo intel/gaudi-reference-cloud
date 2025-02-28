@@ -1,0 +1,62 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NetworkNode
+metadata:
+  name: server1-1
+  namespace: idcs-system
+spec:
+  frontEndFabric:
+    switchPort: ethernet5.clab-allscfabrics-frontend-leaf1
+    vlanId: -1
+  storageFabric:
+    switchPorts:
+     - ethernet5.clab-allscfabrics-storage-leaf1
+    vlanId: -1
+status:
+  acceleratorFabricStatus: {}
+  frontEndFabricStatus:
+    readiness: 0/1
+  storageFabricStatus:
+    readiness: 0/1
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NetworkNode
+metadata:
+  name: server1-2
+  namespace: idcs-system
+spec:
+  frontEndFabric:
+    switchPort: ethernet6.clab-allscfabrics-frontend-leaf1
+    vlanId: -1
+  storageFabric:
+    switchPorts:
+      - ethernet6.clab-allscfabrics-storage-leaf1
+    vlanId: -1
+status:
+  acceleratorFabricStatus: {}
+  frontEndFabricStatus:
+    readiness: 0/1
+  storageFabricStatus:
+    readiness: 0/1
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NetworkNode
+metadata:
+  name: server2-1
+  namespace: idcs-system
+spec:
+  frontEndFabric:
+    switchPort: ethernet5.clab-allscfabrics-frontend-leaf2
+    vlanId: -1
+  storageFabric:
+    switchPorts:
+      - ethernet5.clab-allscfabrics-storage-leaf2
+    vlanId: -1
+status:
+  acceleratorFabricStatus: {}
+  frontEndFabricStatus:
+    readiness: 0/1
+  storageFabricStatus:
+    readiness: 0/1

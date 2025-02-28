@@ -1,0 +1,337 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+environments:
+  us-staging-3-gaudi2:
+    values:
+      - environments/us-staging-3/gaudi2/values.yaml
+  us-staging-3-pvc:
+    values:
+      - environments/us-staging-3/pvc/values.yaml
+
+---
+
+repositories:
+  - name: istio
+    url: https://istio-release.storage.googleapis.com/charts
+  - name: jupyterhub
+    url: https://hub.jupyter.org/helm-chart
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+  - name: crowdstrike
+    url: https://crowdstrike.github.io/falcon-helm
+
+releases:
+  - name: istio-base
+    chart: istio/base
+    version: 1.23.3
+    namespace: istio-system
+    createNamespace: true
+
+  - name: istio-cni
+    chart: istio/cni
+    version: 1.23.3
+    namespace: istio-system
+    createNamespace: true
+    wait: true
+    needs:
+      - istio-system/istio-base
+
+  - name: istiod
+    chart: istio/istiod
+    version: 1.23.3
+    namespace: istio-system
+    createNamespace: true
+    wait: true
+    needs:
+      - istio-system/istio-cni
+    values:
+      # TLS cipher, key size, version, etc guidelines by Intel Crypto team: https://readthedocs.intel.com/cryptoteam/crypto_bkms/tls.html
+      - meshConfig:
+          defaultConfig:
+            proxyMetadata:
+              CITADEL_SELF_SIGNED_CA_RSA_KEY_SIZE: "4096"
+          meshMTLS:
+            minProtocolVersion: TLSV1_3
+            cipherSuites: ["AES256-GCM-SHA384"]
+          tlsDefaults:
+            minProtocolVersion: TLSV1_3
+            cipherSuites: ["AES256-GCM-SHA384"]
+            ecdhCurves: ["P-521"]
+          enablePrometheusMerge: false
+        pilot:
+          env:
+            CITADEL_SELF_SIGNED_CA_RSA_KEY_SIZE: "4096"
+            PILOT_ENABLE_ALPHA_GATEWAY_API: "true"
+          cni:
+            enabled: true
+          nodeSelector:
+            training.cloud.intel.com/role: control-plane
+
+  # - name: istio-ingressgateway
+  #   chart: istio/gateway
+  #   version: 1.23.3
+  #   namespace: istio-ingress
+  #   createNamespace: true
+  #   needs:
+  #     - istio-system/istiod
+  #   values:
+  #     - nodeSelector:
+  #         training.cloud.intel.com/role: control-plane
+
+  # - name: istio-egressgateway
+  #   chart: istio/gateway
+  #   version: 1.23.3
+  #   namespace: istio-system
+  #   createNamespace: true
+  #   needs:
+  #     - istio-system/istiod
+  #   values:
+  #     - nodeSelector:
+  #         training.cloud.intel.com/role: control-plane
+  #       service:
+  #         type: ClusterIP
+
+  - name: jupyterhub
+    chart: jupyterhub/jupyterhub
+    version: 4.0.0
+    namespace: jupyterhub
+    needs:
+      - istio-system/istiod
+      - learning-service/learning-service
+    hooks:
+      - events: ["presync"]
+        command: /bin/sh
+        args:
+          - "-c"
+          - "kubectl create namespace jupyterhub || : ; kubectl label namespace jupyterhub istio-injection=enabled"
+    set:
+      # JupyterHub configurations
+      - name: hub.extraConfig.afterPodCreatedHook
+        file: jupyterhub-config/after_pod_created_hook.py
+      - name: hub.extraConfig.postStopHook
+        file: jupyterhub-config/post_stop_hook.py
+
+      # Policies created for user session
+      - name: hub.extraFiles.internet.stringData
+        file: user-policies/internet.yaml
+      - name: hub.extraFiles.istio.stringData
+        file: user-policies/istio.yaml
+      - name: hub.extraFiles.jupyterhub.stringData
+        file: user-policies/jupyterhub.yaml
+      - name: hub.extraFiles.kube-apiserver.stringData
+        file: user-policies/kube-apiserver.yaml
+      - name: hub.extraFiles.kube-dns.stringData
+        file: user-policies/kube-dns.yaml
+      - name: hub.extraFiles.registrationapi.stringData
+        file: user-policies/registrationapi.yaml
+      - name: hub.extraFiles.registrationdb.stringData
+        file: user-policies/registrationdb.yaml
+      - name: hub.extraFiles.weka.stringData
+        file: user-policies/weka.yaml
+      
+    values:
+      - hub:
+          config:
+            AzureAdOAuthenticator:
+              client_id: {{ .Values.jupyterhub.azuread.client_id }}
+              client_secret: {{ .Values.jupyterhub.azuread.client_secret }}
+              oauth_callback_url: https://{{ .Values.jupyterhub.domain }}/hub/oauth_callback
+              tenant_id: {{ .Values.jupyterhub.azuread.tenant_id }}
+              enable_auth_state: true
+              username_claim: 'enterpriseId'
+              authorize_url: "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/authorize"
+              token_url: "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/token"
+              scope: {{ .Values.jupyterhub.azuread.scope }}
+              allow_all: true
+            JupyterHub:
+              admin_access: true
+              authenticator_class: azuread
+              hub_connect_url: http://hub.jupyterhub.svc.cluster.local:8081
+            KubeSpawner:
+              enable_user_namespaces: true
+              user_namespace_labels:
+                istio-injection: enabled
+              services_enabled: true
+              pod_name_template: "{username}"
+              container_security_context:
+                runAsUser: 0
+              working_dir: "/home/{username}"
+              extra_pod_config:
+                hostname: itac-learning
+          extraConfig:
+            postAuthHook: |
+              from jupyterhub.auth import Authenticator
+
+              import hashlib
+
+              def post_auth_hook(authenticator, handler, authentication):
+                  eid = authentication['name']
+                  hashed = hashlib.sha256(eid.encode()).hexdigest()
+                  user_hash = hashed[:31]
+                  authentication['name'] = "u" + user_hash
+                  return authentication
+
+              c.Authenticator.post_auth_hook = post_auth_hook
+          shutdownOnLogout: true
+          annotations:
+            traffic.sidecar.istio.io/excludeOutboundIPRanges: "{{ .Values.kubeApiServer.ip }}/32"
+          networkPolicy:
+            interNamespaceAccessLabels: accept
+          db:
+            pvc:
+              storageClassName: csi-wekafs-fs
+          extraFiles:
+            internet:
+              mountPath: /usr/local/share/jupyterhub/extra_files/internet.j2
+            istio:
+              mountPath: /usr/local/share/jupyterhub/extra_files/istio.j2
+            jupyterhub:
+              mountPath: /usr/local/share/jupyterhub/extra_files/jupyterhub.j2
+            kube-apiserver:
+              mountPath: /usr/local/share/jupyterhub/extra_files/kube-apiserver.j2
+            kube-dns:
+              mountPath: /usr/local/share/jupyterhub/extra_files/kube-dns.j2
+            registrationapi:
+              mountPath: /usr/local/share/jupyterhub/extra_files/registrationapi.j2
+            registrationdb:
+              mountPath: /usr/local/share/jupyterhub/extra_files/registrationdb.j2
+            weka:
+              mountPath: /usr/local/share/jupyterhub/extra_files/weka.j2
+          templateVars:
+            wekaIpsToBlock: {{ .Values.weka.ipsToBlock }}
+        proxy:
+          chp:
+            extraCommandLineFlags: ["--change-origin"]
+            networkPolicy:
+              interNamespaceAccessLabels: accept
+          service:
+            disableHttpPort: true
+            extraPorts:
+              - port: 8000
+                targetPort: http
+        prePuller:
+          labels:
+            sidecar.istio.io/inject: "false"
+        singleuser:
+          image:
+            name: {{ .Values.image.name }}
+            tag: {{ .Values.image.tag }}
+            pullPolicy: {{ .Values.image.pullPolicy }}
+          cmd: null
+          extraResource:
+            guarantees:
+              {{ .Values.userResources.guarantees | toYaml }}
+            limits:
+              {{ .Values.userResources.limits | toYaml }}
+          extraEnv:
+            NB_USER:
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            NB_GID: "100"
+            CHOWN_HOME: "yes"
+            CHOWN_HOME_OPTS: "-R"
+            HOME:
+              value: "/home/$(NB_USER)"
+            NOTEBOOK_ARGS: "--NotebookApp.allow_origin='*'"
+          lifecycleHooks:
+            postStart:
+              exec:
+                command:
+                  - "sh"
+                  - "-c"
+                  - >
+                    cp -r /tmp/Training /home/$NB_USER/;
+          cloudMetadata:
+            blockWithIptables: false
+          networkPolicy:
+            enabled: false
+          storage:
+            homeMountPath: "/home/{username}"
+            dynamic:
+              storageClass: csi-wekafs-fs
+            extraVolumes:
+              - name: dri
+                hostPath:
+                  path: /dev/dri
+            extraVolumeMounts:
+              - name: dri
+                mountPath: /dev/dri
+        imagePullSecrets:
+          - harbor-registry-secret
+        scheduling:
+          corePods:
+            nodeAffinity:
+              matchNodePurpose: "require"
+          userPods:
+            nodeAffinity:
+              matchNodePurpose: "require"
+
+  - name: learning-service
+    chart: ./learning-service
+    namespace: learning-service
+    createNamespace: true
+    needs:
+      - istio-system/istiod
+      # - istio-ingress/istio-ingressgateway
+      - cnpg-system/cnpg
+      - ingress-nginx/ingress-nginx
+    values:
+      - jupyterhub:
+          domain: {{ .Values.jupyterhub.domain }}
+
+  - name: cnpg
+    chart: cnpg/cloudnative-pg
+    version: 0.23.0
+    namespace: cnpg-system
+    createNamespace: true
+    wait: true
+    hooks:
+      - events: ["presync"]
+        command: /bin/sh
+        args:
+          - "-c"
+          - "kubectl create namespace cnpg-system || : ; kubectl label namespace cnpg-system istio-injection=enabled"
+    needs:
+      - istio-system/istiod
+    values:
+      - podAnnotations:
+          traffic.sidecar.istio.io/excludeInboundPorts: '9443'
+          traffic.sidecar.istio.io/excludeOutboundIPRanges: "{{ .Values.kubeApiServer.ip }}/32"
+
+  - name: ingress-nginx
+    chart: ingress-nginx/ingress-nginx
+    version: 4.12.0
+    namespace: ingress-nginx
+    createNamespace: true
+    hooks:
+      - events: ["presync"]
+        command: /bin/sh
+        args:
+          - "-c"
+          - "kubectl create namespace ingress-nginx || : ; kubectl label namespace ingress-nginx istio-injection=enabled hub.jupyter.org/network-access-hub=true"
+    needs:
+      - istio-system/istiod
+      # - istio-ingress/istio-ingressgateway
+    values:
+      - controller:
+          hostPort:
+            enabled: true
+          nodeSelector:
+            training.cloud.intel.com/role: control-plane
+          podAnnotations:
+            traffic.sidecar.istio.io/excludeOutboundIPRanges: "{{ .Values.kubeApiServer.ip }}/32"
+          admissionWebhooks:
+            patch:
+              labels:
+                sidecar.istio.io/inject: "false"
+          extraArgs:
+            enable-ssl-passthrough: true
+          config:
+            ssl-ciphers: "ECDHE-RSA-AES256-GCM-SHA384"
+            ssl-protocols: "TLSv1.3"
+
+helmDefaults:
+  timeout: 600

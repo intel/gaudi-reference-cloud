@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "builder_pusher_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/cmd/builder_pusher",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/builder",
+        "//go/pkg/universe_deployer/filepaths",
+        "//go/pkg/universe_deployer/util",
+        "@com_github_sethvargo_go_retry//:go-retry",
+        "@com_github_spf13_pflag//:pflag",
+    ],
+)
+
+go_binary(
+    name = "builder_pusher",
+    embed = [":builder_pusher_lib"],
+    visibility = ["//visibility:public"],
+)

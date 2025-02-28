@@ -1,0 +1,10 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_docker//container:container.bzl", "container_layer")
+
+container_layer(
+    name = "intel_certs",
+    directory = "/etc/ssl/certs",
+    files = ["ca-certificates.crt"],
+    visibility = ["//visibility:public"],
+)

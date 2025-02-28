@@ -1,0 +1,6 @@
+apiVersion: v2
+name: vast-metering-monitor
+description: IDC Vast metering Monitor
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

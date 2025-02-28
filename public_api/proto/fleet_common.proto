@@ -1,0 +1,93 @@
+// This file contains common messages that are intended for Fleet Admin Service
+//
+// After updating this file, run "make generate".
+//
+// See:
+//  - https://protobuf.dev/programming-guides/proto3/
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option (idc.file).deploy = regional;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+message GroupVersionResource {
+  string group = 1;
+  string version = 2;
+  string resource = 3;
+}
+
+  // SchedulerStatistics represents a collection of node details.
+message SchedulerStatistics {
+    // Collection of statistics for each node.
+    repeated SchedulerNodeStatistics schedulerNodeStatistics = 1;
+}
+
+// SchedulerNodeStatistics encapsulates the configurations and current status of a single node.
+message SchedulerNodeStatistics {
+    // Embed the SchedulerNode for easy access and identification.
+    SchedulerNode schedulerNode = 1;
+    // Detailed statistics of instances by type.
+    repeated InstanceTypeStatistics instanceTypeStatistics = 2;
+    // Detailed resource usage of the node.
+    NodeResources nodeResources = 3;
+}
+
+// SchedulerNode represents the scheduling attributes of a node in a cluster.
+message SchedulerNode {
+    // Region of the node.
+    string region = 1;
+    // Availability zone within the region.
+    string availabilityZone = 2;
+    // Name of the node.
+    string nodeName = 3;
+    // Cluster identifier.
+    string clusterId = 4;
+    // Namespace of the node.
+    string namespace = 5;
+    // Partition within the cluster.
+    string partition = 6;
+    // Grouping of clusters.
+    string clusterGroup = 7;
+    // Network mode (VV or VB).
+    string networkMode = 8;
+    // Kubernetes API resource by group, version, and resource.
+    GroupVersionResource sourceGvr = 9;
+    // Supported poolIds
+    repeated string computeNodePools = 10;
+}
+
+// InstanceTypeStatistics provides statistical data for a specific instance type.
+message InstanceTypeStatistics {
+    // Type of the instance.
+    string instanceType = 1;
+    // Number of instances currently running.
+    int32 runningInstances = 2;
+    // Maximum number of additional instances that can be started.
+    int32 maxNewInstances = 3;
+    // Category of the instance (VirtualMachine or BareMetalHost).
+    string instanceCategory = 4;
+}
+
+// NodeResources describes the resource usage metrics of a node.
+message NodeResources {
+    // Amount of free CPU in milliunits.
+    int64 freeMilliCPU = 1;
+    // Amount of used CPU in milliunits.
+    int64 usedMilliCPU = 2;
+    // Amount of free memory in bytes.
+    int64 freeMemoryBytes = 3;
+    // Amount of used memory in bytes.
+    int64 usedMemoryBytes = 4;
+    // Number of available GPUs.
+    int32 freeGPU = 5;
+    // Number of used GPUs.
+    int32 usedGPU = 6;
+}

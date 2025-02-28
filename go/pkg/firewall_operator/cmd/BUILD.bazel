@@ -1,0 +1,32 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "firewall_operator_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/firewall_operator/cmd",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/firewall_operator/api/v1alpha1",
+        "//go/pkg/firewall_operator/internal/config",
+        "//go/pkg/firewall_operator/internal/controller",
+        "//go/pkg/firewall_operator/internal/provider/idcfw",
+        "//go/pkg/observability",
+        "@com_github_spf13_viper//:viper",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//plugin/pkg/client/auth",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/healthz",
+        "@io_k8s_sigs_controller_runtime//pkg/log/zap",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
+    ],
+)
+
+go_binary(
+    name = "firewall_operator",
+    embed = [":firewall_operator_lib"],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+   {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels: 
+      {{- include "idc-common.selectorLabels" . | nindent 8 }}
+  template:
+    metadata:
+      annotations:
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-secret-api_username: "{{ .Values.firewallAPI.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-api_username: |-
+          {{`{{- with secret `}}"{{ .Values.firewallAPI.vaultCredentialsPath }}"{{` -}}`}}
+          {{`{{ .Data.data.api_username }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-api_password: "{{ .Values.firewallAPI.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-api_password: |-
+          {{`{{- with secret `}}"{{ .Values.firewallAPI.vaultCredentialsPath }}"{{` -}}`}}
+          {{`{{ .Data.data.api_password }}`}}
+          {{`{{- end }}`}}
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/template-static-secret-render-interval: 2m
+         # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - args: {{- toYaml .Values.controllerManager.manager.args | nindent 8 }}
+        command:
+        - /firewall_operator
+        env:
+          {{- include "idc-common.commonEnv" . | nindent 12 }}
+          {{- include "idc-common.otelEnv" . | nindent 12 }}
+        image: {{ include "idc-common.image" . }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+          - mountPath: /config/config.yaml
+            name: config
+            subPath: config.yaml
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        ports:
+        - name: metrics
+          {{- with (index .Values.metricsService.ports 0) }}
+          containerPort: {{ .port }}
+          protocol: {{ .protocol }}
+          {{- end }}
+        resources: {{- toYaml .Values.controllerManager.manager.resources | nindent 10 }}
+        securityContext: {{- toYaml .Values.controllerManager.manager.containerSecurityContext
+          | nindent 10 }}
+      volumes:
+        - configMap:
+            name: {{ include "idc-common.fullname" . }}
+          name: config
+      securityContext:
+        runAsNonRoot: true
+      serviceAccount: {{ include "idc-common.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10

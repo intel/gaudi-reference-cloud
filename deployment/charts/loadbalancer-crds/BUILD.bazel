@@ -1,0 +1,14 @@
+# This file contains targets to build Helm charts.
+# See https://github.com/masmovil/bazel-rules
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+    name = "chart",
+    package_name = "loadbalancer-crds",  # Must not have underscores.
+    srcs = glob([
+        "*.yaml",
+        "templates/**",
+    ]),
+    visibility = ["//visibility:public"],
+)

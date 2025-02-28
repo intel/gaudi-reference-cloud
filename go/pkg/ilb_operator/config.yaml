@@ -1,0 +1,11 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+baseURL: "https://internal-placeholder.com/v1/"
+providerType: "highwire"
+domain: "amr"
+userName: ""
+secret: ""
+
+# Number of goroutines to create for concurrently reconcile custom resources.
+# This setting is per controller. If value <= 0 defaults to 1.
+ilbMaxConcurrentReconciles: 1

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    cloudaccountServerAddr: {{ .Values.cloudaccountServerAddr | quote }}
+    computeAPIServerAddr: {{ .Values.computeAPIServerAddr | quote }}
+    storageKmsServerAddr: {{ .Values.storageKmsServerAddr | quote }}
+    cloudAccountQuota: {{ .Values.cloudAccountQuota | toJson }}
+    productcatalogServerAddr: {{ .Values.productcatalogServerAddr | quote }}
+    storageSchedulerServerAddr: {{ .Values.storageSchedulerServerAddr | toJson }}
+    storageUserServerAddr: {{ .Values.storageUserServerAddr | quote }}
+    objectStoreEnabled: {{ .Values.objectStoreEnabled}}
+    iksStorageEnabled: {{ .Values.iksStorageEnabled}}
+    defaultBucketSizeInGB: {{ .Values.defaultBucketSizeInGB}}
+    storageControllerAddr: {{ .Values.storageControllerAddr | quote }}
+    storageControllerServerUseMtls: {{ .Values.storageControllerServerUseMtls }}
+    storageAPIServerAddr: {{ .Values.storageAPIServerAddr | quote }}
+    customQuotaMaxAllowedInTB : {{ .Values.customQuotaMaxAllowedInTB }}
+    maxVolumesAllowed : {{ .Values.maxVolumesAllowed }}
+    maxBucketsAllowed : {{ .Values.maxBucketsAllowed }}
+    selectedRegion: {{ .Values.selectedRegion | quote }}
+    quotaManagementEnabled: {{ .Values.quotaManagementEnabled}}
+    quotaManagementServerAddr: {{ .Values.quotaManagementServerAddr | quote }}

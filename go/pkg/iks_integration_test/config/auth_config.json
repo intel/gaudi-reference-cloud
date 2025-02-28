@@ -1,0 +1,48 @@
+{
+  "token": {
+    "method": "azure"
+  },
+  "env": {
+    "staging": {
+      "adminAuthConfig": {
+        "username": "",
+        "password": "",
+        "clientSecret": "",
+        "client_id": "5cf0ff86-a5ea-47ab-a3fc-29934041d044",
+        "redirectUri": "https://admin.staging.console.idcservice.net/",
+        "redirectPort": "8100",
+        "scope": "api://5cf0ff86-a5ea-47ab-a3fc-29934041d044/Read openid profile offline_access",
+        "authEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/authorize",
+        "tokenEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/token"
+      }
+    },
+    "prod": {
+      "adminAuthConfig": {
+        "username": "",
+        "password": "",
+        "clientSecret": "",
+        "client_id": "8d696d04-e138-4c61-bd52-a0a25f9e1d05",
+        "redirectUri": "https://admin.console.idcservice.net/",
+        "redirectPort": "8100",
+        "scope": "api://8d696d04-e138-4c61-bd52-a0a25f9e1d05/Read openid profile offline_access",
+        "authEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/authorize",
+        "tokenEndPoint": "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d/oauth2/v2.0/token"
+      }
+    }
+  },
+  "authConfig": {
+    "userAccounts": [
+      {
+        "email": "",
+        "password": "",
+        "cloudAccountId": ""
+      }
+    ],
+    "client_id": "efa3cc1d-5cd7-48f0-bdfd-b43c8f0078f4",
+    "redirectUri": "https://console.idcservice.net/",
+    "redirectPort": "3000",
+    "scope": "openid https://intelcorpb2c.onmicrosoft.com/435e26cc-529d-45ca-8814-6def72d03e81/Read profile offline_access",
+    "authEndPoint": "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/authorize?",
+    "tokenEndPoint": "https://consumer.intel.com/intelcorpb2c.onmicrosoft.com/b2c_1a_unifiedlogin_sisu_cml_oidc/oauth2/v2.0/token"
+  }
+}

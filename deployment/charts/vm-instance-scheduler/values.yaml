@@ -1,0 +1,89 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/vm-instance-scheduler@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: "16"
+        memory: 8Gi
+      requests:
+        cpu: "2"
+        memory: 4Gi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+managerConfig:
+  controllerManagerConfigYaml:
+    # Directory containing KubeConfig files for all Harvester and Kubevirt clusters that this scheduler will manage.
+    vmClustersKubeConfigDir: /vault/secrets
+    # The address of the Compute API Server in format "host:port"
+    computeApiServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+    region: us-dev-1
+    availabilityZone: us-dev-1a
+    health:
+      healthProbeBindAddress: :8081
+    leaderElection:
+      leaderElect: true
+      resourceName: 06211c9e.cloud.intel.com
+    # GRPC server will listen on this port.
+    listenPort: 8080
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    webhook:
+      port: 9443
+    enableBmaasLocal: true
+    enableBmaasBinpack: false
+    bgpNetworkRequiredInstanceCountThreshold: 9
+    overcommitConfig:
+      cpu: 100
+      memory: 100
+      storage: 100
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+
+targetPort: 8080
+service:
+  type: ClusterIP
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+  # Verbosity level for kube-scheduler (klog). "0" is the default. Higher numbers will log more details.
+  verbosity: 0
+
+clusterIds:
+  - harvester1
+
+kubeVirtClusterIds:
+#  - kubevirt1
+
+# Path for accessing the secrets inside the vault
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1a-vm-instance-scheduler
+
+ingress:
+  enabled: false
+  hosts: []

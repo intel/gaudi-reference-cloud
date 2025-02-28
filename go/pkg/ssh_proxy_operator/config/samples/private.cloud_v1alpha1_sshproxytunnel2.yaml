@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: SshProxyTunnel
+metadata:
+  name: my-vm-2  # Name will equal the name of the Instance
+spec:
+  targetAddresses:
+    - "1.1.1.1"  # IP or DNS
+    - "2.2.2.2"
+  targetPorts:
+    - 22
+    - 443
+  sshPublicKeys:
+    - "ssh-rsa K/pk3/AAAAB3NzaC1yc2EKKKKKKKKKKKKBgQDlZi5rhqqS...MwF3OE= user3@example.com"

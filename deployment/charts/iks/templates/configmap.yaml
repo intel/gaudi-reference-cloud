@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+data:
+  config.yaml: |
+    listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" .}}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    usernameRwFile: /vault/secrets/db_username_rw
+    passwordRwFile: /vault/secrets/db_password_rw
+    encryptionKeys: /vault/secrets/db_encryption_keys
+    adminKey: /vault/secrets/admin_key
+    region: {{ .Values.region }}
+    computeServerAddr: {{ .Values.computeServerAddr | quote }}
+    productcatalogServerAddr: {{ .Values.productcatalogServerAddr | quote }}
+    dbSeed:
+      enabled: {{.Values.dbSeed.enabled}}
+      dataFile: /vault/secrets/db_seed_data
+      data: {{toJson .Values.dbSeed.data}}

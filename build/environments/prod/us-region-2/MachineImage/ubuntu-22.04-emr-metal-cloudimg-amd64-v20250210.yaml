@@ -1,0 +1,61 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-22.04-emr-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 22.04 LTS v20250210
+  description: Ubuntu Server is a version of the Ubuntu operating system designed
+    and engineered as a backbone for the internet.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-emr
+  - bm-emr-dell
+  md5sum: 80c0f112364b154695f4a8a8893eaef3
+  sha256sum: 8ae53edb6da63ab273669e6b7bc8af44616048b8e8e45ff1ebe1509e84dde3d7
+  sha512sum: 0ac43a3aa865b51566efc9dc2b65ac8aa5473300256f0875db4a60615e199f07fb2ddb04bf66fdb4347b1b2f713d2008752fb2b15c0530e0ca96ff0842f082ff
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    kernelVersion: 6.2 (HWE)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/2023-11/intel-xeon-5th-gen-package-angle-right-front-bg-rwd.jpg.rendition.intel.web.368.207.jpg
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: Intel® QuickAssist Technology Library (QATlib)
+    type: Software kit
+    version: 24.02.0
+    description: Intel® QuickAssist Technology (Intel® QAT) provides hardware acceleration
+      for offloading security, authentication and compression services from the CPU,
+      thus significantly increasing the performance and efficiency of standard platform
+      solutions. This package provides user space libraries that allow access to Intel®
+      QuickAssist devices and expose the Intel® QuickAssist APIs and sample codes.
+    infoUrl: https://www.intel.com/content/www/us/en/architecture-and-technology/intel-quick-assist-technology-overview.html
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/xeon-scalable-processors-family-framed-badge.jpg.rendition.intel.web.368.207.jpg
+  - name: Intel® Dynamic Load Balancer Library (Libdlb)
+    type: Software kit
+    version: 8.7.0
+    description: Intel® Dynamic Load Balancer (Intel® DLB) is a PCIe device that provides
+      loadbalanced, prioritized scheduling of events (that is, packets) across CPU
+      cores enabling efficient core-to-core communication. It is a hardware accelerator
+      located inside the latest Intel® Xeon® processors. This software kit provides
+      the client library for building DLB applications without using DPDK framework
+      (Libdlb).
+    infoUrl: https://www.intel.com/content/www/us/en/developer/articles/technical/proof-points-of-dynamic-load-balancer-dlb.html
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/xeon-scalable-processors-family-framed-badge.jpg.rendition.intel.web.368.207.jpg
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

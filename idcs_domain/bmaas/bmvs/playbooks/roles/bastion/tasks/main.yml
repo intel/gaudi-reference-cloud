@@ -1,0 +1,154 @@
+---
+
+# TODO: refactor to use community.libvirt.virt
+
+# Create and configure Bastion Server
+- name: Block for creating the Bastion server
+  block:
+    - name: Check if Bastion server is already running...
+      ansible.builtin.shell:
+        cmd: >
+          virsh domstate "{{ bastion_server_name }}"
+      register: domstate_result
+      failed_when: "domstate_result.rc == 0"
+      changed_when: "domstate_result.rc != 0"
+    - name: Generate SSH key pair for Bastion Server
+      vars:
+        ssh_key_server_name: "{{ bastion_server_name }}"
+      ansible.builtin.include_role:
+        name: gen_ssh_key
+    - name: Generate SSH key pair for Admin Account on Bastion Server
+      vars:
+        ssh_key_server_name: "{{ bastion_server_name }}-admin"
+      ansible.builtin.include_role:
+        name: gen_ssh_key
+    - name: create temporary download directory
+      tempfile:
+        state: directory
+        suffix: download
+      register: download_dir
+    - name: provide read permissions
+      ansible.builtin.file:
+        path: "{{ download_dir.path }}"
+        recurse: true
+        mode: g+rx,o+rx
+    - name: Checking if Cloud image file is in the cache
+      ansible.builtin.include_role:
+        name: download_cache
+    - name: Copying the ubuntu server cloud image
+      ansible.builtin.copy:
+        src: "{{ cache.path }}/{{ ubuntu_server_cloudimg }}"
+        dest: "{{ download_dir.path }}/{{ ubuntu_server_cloudimg }}"
+        mode: '0664'
+    - name: checking if ssh_key public file exists {{ ssh_key_pub_file }}
+      stat:
+        path: "{{ ssh_key_pub_file }}"
+      register: ssh_key_file_result
+    - name: Create user-data config file for Bastion Server
+      vars:
+        bastion_ssh_key_public: "{{ lookup('file', ssh_key_pub_file) }}"
+        bastion_admin_ssh_key_public: "{{ lookup('file', ssh_admin_key_pub_file) }}"
+      ansible.builtin.template:
+        src: user-data.cfg.j2
+        dest: "{{ download_dir.path }}/user-data.cfg"
+        owner: root
+        group: root
+        mode: '0644'
+        backup: false
+      when: ssh_key_file_result.stat.exists
+    - name: Create network config file for Bastion Server
+      ansible.builtin.template:
+        src: network.cfg.j2
+        dest: "{{ download_dir.path }}/network.cfg"
+        owner: root
+        group: root
+        mode: '0644'
+        backup: false
+    - name: Prepare the ubuntu server cloud image
+      block:
+        - name: convert ubuntu server cloud image
+          ansible.builtin.shell:
+            cmd: >
+              qemu-img convert -f qcow2 -O qcow2
+              "{{ download_dir.path }}/{{ ubuntu_server_cloudimg }}"
+              "{{ libvirt_image_dir }}/{{ bastion_server_cloudimg }}"
+          register: convert_result
+          changed_when: "convert_result.rc != 0"
+        - name: resize ubuntu server cloud image
+          ansible.builtin.shell:
+            cmd: >
+              qemu-img resize
+              "{{ libvirt_image_dir }}/{{ bastion_server_cloudimg }}"
+              10G
+          register: resize_result
+          changed_when: "resize_result.rc != 0"
+        - name: Generate ubuntu install seed ISO
+          ansible.builtin.shell:
+            cmd: >
+              cloud-localds -v
+              "--network-config={{ download_dir.path }}/network.cfg"
+              "{{ ubuntu_cloud_init_iso }}"
+              "{{ download_dir.path }}/user-data.cfg"
+          register: cloud_iso_result
+          changed_when: "cloud_iso_result.rc != 0"
+    - name: Create Bastion VM
+      ansible.builtin.shell:
+        cmd: >
+          virt-install --name "{{ bastion_server_name }}"
+          --ram 2048
+          --vcpus 2
+          --osinfo ubuntu22.04
+          --disk "{{ libvirt_image_dir }}/{{ bastion_server_cloudimg }},device=disk,bus=virtio,cache=none"
+          --disk "{{ ubuntu_cloud_init_iso }},device=cdrom"
+          --network "bridge=databr0,mac={{ bastion_macaddress }}"
+          --graphics none --console pty,target_type=serial
+          --import
+          --noautoconsole
+      register: install_result
+      changed_when: "install_result.rc != 0"
+    - name: Attach all VLAN interfaces for Bastion server
+      ansible.builtin.shell:
+        cmd: >
+          virsh attach-interface
+          --domain "{{ bastion_server_name }}"
+          --type network
+          --source vlan{{ vmnum }}
+          --model virtio
+          --mac "{{ vlan_base_mac }}{{ '%02x' % vmnum }}"
+          --config --live
+      register: attach_result
+      changed_when: "attach_result.rc != 0"
+      loop: "{{ range(1, guest_host_deployments|int + 1, 1)|list }}"
+      loop_control:
+        loop_var: vmnum
+    - name: Copying SSH Key deployment script MANUALLY RUN {{ ssh_key_dir }}/deploy_bastion_keys.sh
+      ansible.builtin.copy:
+        src: "deploy_bastion_keys.sh"
+        dest: "{{ ssh_key_dir }}/"
+        mode: '0750'
+      become: false
+  always:
+    - name: Clean up the temporary directory
+      ansible.builtin.file:
+        path: "{{ download_dir.path }}"
+        state: absent
+      when: download_dir.path is defined
+  vars:
+    ssh_key_pub_file: "{{ ssh_key_dir }}/{{ bastion_server_name }}.pub"
+    ssh_admin_key_pub_file: "{{ ssh_key_dir }}/{{ bastion_server_name }}-admin.pub"
+  become: true
+  tags: setup
+
+# Destroy the Bastion server
+- name: Block for stopping the Bastion server
+  block:
+    - name: stop Bastion server
+      command: virsh destroy {{ bastion_server_name }}
+      changed_when: false
+      failed_when: false
+    - name: Undefine Bastion server
+      command: virsh undefine {{ bastion_server_name }} --remove-all-storage
+      changed_when: false
+      failed_when: false
+  become: true
+  tags: [never, teardown]

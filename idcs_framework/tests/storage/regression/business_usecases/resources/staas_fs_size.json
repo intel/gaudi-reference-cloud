@@ -1,0 +1,28 @@
+{
+    "testEnv": "",
+    "baseUrl": "",
+    "cloudAccount": "<<cloudAccount>>",
+    "storage_creation_playload":{
+        "metadata": {
+          "description": "test-volume",
+          "name": "<<storage-name>>"
+        },
+        "spec": {
+          "Encrypted": true,
+          "accessModes": "ReadWrite",
+          "instanceType": "storage-file",
+          "availabilityZone": "us-dev-1a",
+          "mountProtocol": "Weka",
+          "request": {
+            "storage": "<<storage-size>>"
+          }
+        }
+    },
+    "storage_put_payload":{
+        "spec":{
+            "request":{
+                "storage": "<<updated-size>>"
+            }
+        }
+    }
+}

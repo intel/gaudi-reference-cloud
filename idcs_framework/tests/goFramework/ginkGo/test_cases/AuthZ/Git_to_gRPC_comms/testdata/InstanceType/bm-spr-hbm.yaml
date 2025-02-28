@@ -1,0 +1,23 @@
+metadata:
+  name: bm-spr-hbm
+spec:
+  name: bm-spr-hbm
+  displayName: Intel® Xeon® processors, codenamed Sapphire Rapids with high bandwidth memory (HBM) – HBM-only mode
+  description: Intel® Xeon® processors, codenamed Sapphire Rapids with high bandwidth memory (HBM) – HBM-only mode
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 56
+    id: "0x806F8"
+    modelName: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 0
+  hbmMode: HBM-only
+  memory:
+    size: 256Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4000
+  disks:
+    - size: 2000Gi

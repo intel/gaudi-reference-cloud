@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Config file used when running: go run cmd/compute_api_server/main.go --config config_server_run.yaml
+listenPort: 8081
+database:
+  url: postgres://127.0.0.1:5432/compute?sslmode=disable
+  usernameFile: ../../../local/secrets/us-dev-1-compute_db_admin_username
+  passwordFile: ../../../local/secrets/us-dev-1-compute_db_admin_password
+  migrationsDir: ../../pkg/compute_api_server/db/migrations
+bmSubnetConfig:
+  subnet: 172.18.0.0
+  gateway: 172.18.0.1
+  prefixLength: 16
+vmSubnetConfig:
+  subnet: 172.16.0.0
+  gateway: 172.16.0.1
+  prefixLength: 16

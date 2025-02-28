@@ -1,0 +1,10 @@
+.section:has(.d-flex-customInput) .alert:not(.w-100) {
+    width: 100%;
+    max-width: 48rem;    
+}
+
+.alert-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}

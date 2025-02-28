@@ -1,0 +1,56 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SDNControllerConfig
+controllerConfig:
+  enableReadOnlyMode: false
+  switchBackendMode: "mock"
+  switchSecretsPath: /vault/secrets/eapi
+  # switchBackendMode: "eapi"
+  # switchSecretsPath: /vault/secrets/eapitest
+  dataCenter: fxhb3p3r:fxhb3p3s:clab
+  portResyncPeriodInSec: 60
+  switchResyncPeriodInSec: 60
+  networkNodeResyncPeriodInSec: 60
+  bmhResyncPeriodInSec: 60
+  switchImportPeriodInSec: 60
+  nodeGroupResyncPeriodInSec: 60
+  maxConcurrentReconciles: 30
+  maxConcurrentSwitchReconciles: 30
+  maxConcurrentNetworkNodeReconciles: 30
+  maxConcurrentNodeGroupReconciles: 30
+  # bmhClusterKubeConfigFilePath: "/home/jzhen/.kube/cluster1;/home/jzhen/.kube/cluster2;/home/jzhen/.kube/cluster3" # an example of reading 3 metal3 clusters
+  bmhClusterKubeConfigFilePath: "../../../local/secrets/kubeconfig/kind-idc-us-dev-1a.yaml"
+  poolsConfigFilePath: tests/config/big_cluster_conf/pools.json
+  nodeGroupToPoolMappingConfigFilePath: tests/config/big_cluster_conf/mappings.json
+  useDefaultValueInPoolForMovingNodeGroup: true
+  switchImportSource: none
+  switchPortImportSource: bmh
+  statusReportPeriodInSec: 30
+  statusReportAcceleratedPeriodInSec: 10
+  bgpCommunityIncomingGroupName: incoming_group
+  # local, netbox, or crd
+  nodeGroupToPoolMappingSource: crd
+  # Netbox related flags
+  netboxServer: "http://localhost:30980"
+  netboxTokenPath: "../../../local/secrets/NETBOX_TOKEN"
+  netboxProviderServersFilterFilePath: tests/config/globalsdn/netbox_provider_servers_filter.json
+  netboxProviderInterfacesFilterFilePath: tests/config/globalsdn/netbox_provider_interfaces_filter.json
+  netboxSwitchesFilterFilePath: tests/config/globalsdn/switches_filter.json
+  netboxClientInsecureSkipVerify: true
+  netboxSwitchFQDNDomainName: "internal-placeholder.com"
+  allowedTrunkGroups:
+    - none # Not an empty list, because empty means "no restrictions".
+  allowedModes:
+    - "access"
+    - "trunk"
+  allowedVlanIds: "21-39,100-3999,4008"
+  allowedNativeVlanIds: "1,55"
+  portChannelsEnabled: false
+  provisioningVlanIds: "4008,100,2100"
+
+ravenConfig:
+  environment: mock
+  credentialsFilePath: /vault/secrets/raven
+  host: raven-devcloud.app.intel.com

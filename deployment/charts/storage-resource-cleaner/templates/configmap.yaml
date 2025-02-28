@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenPort: {{ include "idc-common.listenPort" . }}
+    serviceInterval: {{ .Values.serviceInterval }}
+    storageAPIServerAddr: {{ .Values.storageAPIServerAddr | quote }}
+    billingServerAddr: {{ .Values.billingServerAddr | quote }}
+    notificationAddr: {{ .Values.notificationAddr | quote }}
+    serviceEnabled: {{ .Values.serviceEnabled }}
+    dryRun: {{ .Values.dryRun }}
+    cleanUpThreshold: {{ .Values.cleanUpThreshold }}
+    senderEmail: {{ .Values.senderEmail | quote }}
+    templateName: {{ .Values.templateName | quote }}
+    consoleUrl: {{ .Values.consoleUrl | quote }}
+    paymentUrl: {{ .Values.paymentUrl | quote }}
+

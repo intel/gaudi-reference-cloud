@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    fleetAdminServerAddr: {{ .Values.fleetAdminServerAddr | quote }}
+    applyRemoteKubeConfig: {{ .Values.applyRemoteKubeConfig }}
+    remoteKubeConfigFilePath: {{ .Values.remoteKubeConfigFilePath | quote }}
+    patchApplyInterval: {{ .Values.patchApplyInterval | quote }}
+    clusterId: {{ .Values.clusterId | quote }}
+    region: {{ .Values.region | quote }}
+    availabilityZone: {{ .Values.availabilityZone | quote }}
+    allowedLabelPrefixes:
+    {{- range .Values.allowedLabelPrefixes }}
+    - {{ . | quote }}
+    {{- end }}

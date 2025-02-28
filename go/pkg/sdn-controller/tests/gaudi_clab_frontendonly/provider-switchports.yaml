@@ -1,0 +1,38 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SwitchPort
+metadata:
+  labels:
+    app.kubernetes.io/name: switchport
+    app.kubernetes.io/instance: switchport-sample
+    app.kubernetes.io/part-of: sdn-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: sdn-controller
+    switch_fqdn: clab-frontendonly-frontend-leaf1
+  name: "ethernet7.clab-frontendonly-frontend-leaf1"
+  namespace: idcs-system
+spec:
+  name: "Ethernet7"
+  mode: "access"
+  vlanId: 58
+---
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SwitchPort
+metadata:
+  labels:
+    app.kubernetes.io/name: switchport
+    app.kubernetes.io/instance: switchport-sample
+    app.kubernetes.io/part-of: sdn-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: sdn-controller
+    switch_fqdn: clab-frontendonly-frontend-leaf2
+  name: ethernet7.clab-frontendonly-frontend-leaf2
+  namespace: idcs-system
+spec:
+  mode: trunk
+  name: Ethernet7
+  trunkGroups:
+   - Provider_Nets
+---

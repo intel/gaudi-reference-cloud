@@ -1,0 +1,24 @@
+- name: "Check that user {{ docker_user }} exists"
+  shell: 'getent passwd {{ docker_user }}'
+  register: output
+  failed_when:
+   - "output.rc != 0"
+   - "output.rc != 2"
+
+- debug:
+    msg: '{{ output }}'
+    verbosity: 0
+
+- name: Create docker group
+  group:
+    name: docker
+    state: present
+  when: output.rc == 0
+
+- name: "Add user {{ docker_user }} to docker group"
+  become: true
+  user: 
+    name: "{{ docker_user }}"
+    groups: docker
+    append: yes
+  when: output.rc == 0

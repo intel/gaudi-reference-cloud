@@ -1,0 +1,35 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "bm_helper",
+    srcs = [
+        "kube_test_helper.go",
+        "netbox_test_helper.go",
+        "vault_test_helper.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/test/compute/helper/bm_helper",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/dcim",
+        "//go/pkg/baremetal_enrollment/util",
+        "@com_github_go_openapi_errors//:errors",
+        "@com_github_go_openapi_runtime//:runtime",
+        "@com_github_go_openapi_runtime//client",
+        "@com_github_go_openapi_strfmt//:strfmt",
+        "@com_github_go_openapi_swag//:swag",
+        "@com_github_hashicorp_vault_api//:api",
+        "@com_github_metal3_io_baremetal_operator_apis//metal3.io/v1alpha1",
+        "@com_github_netbox_community_go_netbox//netbox/client",
+        "@com_github_netbox_community_go_netbox//netbox/client/dcim",
+        "@com_github_netbox_community_go_netbox//netbox/models",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_client_go//dynamic",
+        "@io_k8s_client_go//kubernetes",
+    ],
+)

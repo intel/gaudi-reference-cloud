@@ -1,0 +1,354 @@
+@import 'intel.css';
+@import 'devcloud.css';
+@import 'typography.css';
+@import 'navbar-external.css';
+
+:root {
+    --pst-color-link: var(--bs-cobalt);
+    --pst-color-link-hover: var(--bs-cobalt-shade2);
+    --pst-color-headerlink: var(--bs-cobalt-shade2);
+
+    --pst-color-primary: var(--bs-cobalt);
+    --pst-color-secondary: 0, 153, 236;
+    --pst-color-navbar-background: var(--bs-cobalt-shade1);
+}
+
+.sd-bg-info{
+  background: var(--color-gray-300) !important;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15) !important;
+}
+
+.sd-bg-info.sd-bg-text-info{
+  color: var(--CTA-primary) !important;
+  font-weight: 600 !important;
+}
+
+.sd-summary-content {
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08) !important;
+  background: rgba(242, 242, 242, 0.40) !important; /* #f2f2f2 */
+}
+
+.table-tiber-theme tbody tr:nth-of-type(odd) {
+    background-color: var(--color-gray-200, #E9EAEB) !important;
+  }
+
+.table-tiber-theme tbody tr:nth-of-type(even) {
+  background-color: var(--color-gray-100, #F4F5F5) !important;
+}
+
+/* 3-column, 2-row card layout, root index */
+div.sd-container-fluid{
+  display: grid;
+  position: relative;
+  grid-template-columns: auto auto auto;
+  grid-auto-rows: 1fr;
+}
+
+.sd-card-header {
+  /* remove default border bottom*/
+  border: none;
+  padding-top: 1rem;
+}
+
+div.sd-card-header.docutils p.sd-card-text{
+  /* grid card header */
+  color: var(--CTA-primary) !important;
+  font-weight: var(--bs-font-weight-bold);
+  /* line-height: var(--bs-body-line-height);  */
+}
+
+.sd-card-body{
+  padding: .25rem 1rem;
+}
+
+/*  sidebar section titles */
+.sd-card-title {
+  color: var(--CTA-primary) !important;
+}
+
+div.sd-card-footer {
+  /* remove default border top*/
+  border: none;
+  padding: 1rem 1rem;
+}
+
+div.sd-card-footer.docutils .sd-card-text .sd-badge{
+  /* badge in grid card footer */
+  font-weight: 500;
+  padding: .5rem .5rem;
+}
+
+
+.bd-toc-item {
+  font-size: large;
+}
+
+/* fa-chevron in sidebar section titles */
+label {
+  color: rgb(0, 0, 0);
+}
+
+
+.featured {
+  /* featured whole card in index files */
+  position: relative;
+  z-index: 10;
+  border-radius: 4px;
+  border: 1px solid var(--color-surface-surf-border, #E2E2E4);
+  background: radial-gradient(273.35% 233.04% at 21.33% -13.6%, rgba(112, 0, 255, 0.00) 47.85%, rgba(112, 0, 255, 0.20) 85.93%), radial-gradient(321.95% 301.17% at 195% -168.01%, #30E9CB 0%, #FFF 93.32%), linear-gradient(0deg, var(--color-surface-surf-selected, #8FEFE0) 0%, var(--color-surface-surf-selected, #8FEFE0) 100%), 
+  var(--color-surface-surface, #FFF) !important;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
+}
+
+.table.dataframe.table-tiber-theme{
+  /* color: var(--bs-carbon-shade2) !important; */
+  padding: 2.0em 0.25em 2.5em 0.25em;
+  margin:  2.0em 0.25em 2.5em 0.25em;
+}
+
+.table-tiber-theme{
+  /* color: var(--bs-carbon-shade2) !important; */
+  padding: 1.0em 0.25em 1.5em 0.50em;
+}
+
+.table-tiber-theme-td-inst td,th{
+  min-width: 110px;
+  text-align: left;
+  /* set other flex criteria to adapt to small screens */
+}
+
+#usecase,#devusecase{
+  background-color:var(--bs-carbon-tint2) !important;
+  color: var(--CTA-primary) !important;
+  font-weight: var(--bs-font-weight-bold);
+  border-radius: .25em .25em;
+  padding: .25rem .5rem .25rem;
+	text-align:left;
+	position:relative;
+  border: .0025em solid var(--bs-carbon-tint1);
+  margin-left: .5em;
+}
+
+.table-tiber-theme tr, td{
+  color: var(--bs-black);
+  padding: .5rem;
+  border-left: .25em solid var(--bs-white);
+  border-right: .25em solid var(--bs-white);;
+  border-bottom: .25em solid var(--bs-white);;
+  border-radius: .25em .25em;
+}
+
+.table-tiber-theme th{
+  padding: .5rem;
+  /* color: #000000; */
+  /* color: var(--Black-and-White-Black, #000); */
+  background-color: var(--color-gray-50, #FFF);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%; /* 24px */
+  border-top: .25em solid var(--bs-white);
+  border-bottom: .25em solid var(--bs-white);
+  border-left: .25em solid var(--bs-white);
+  border-right: .25em solid var(--bs-white);
+  outline: none;
+}
+
+#hide {
+  display: none;
+}
+
+caption {
+  display: table-caption;
+  text-align: center;
+  font: inherit;
+}
+
+#tbody caption {
+  caption-side: top;
+}
+
+#usecase:hover{
+  background: -webkit-linear-gradient(rgba(255,255,255,98),rgba(233,233,233,95));
+  background: -moz-linear-gradient(rgba(255,255,255,98),rgba(233,233,233,95));
+  background: -o-linear-gradient(rgba(255,255,255,98),rgba(233,233,233,95));
+  background: linear-gradient(rgba(255,255,255,98),rgba(233,233,233,95));
+  -webkit-transition: background 2s ease-out;
+  -moz-transition: background 2s ease-out;
+  -o-transition: background 2s ease-out;
+  transition: background 2s ease-out;
+}
+
+.nav-item, toc-entry {
+  color: var(--CTA-primary);
+}
+
+.bd-sidebar .nav li {
+  padding-top: 0.125rem;
+  padding-left: 0.5rem;
+  margin-right: 0.0625rem;
+}
+
+ul>.current .toctree-l2 {
+  padding-top: 0.125rem;
+  margin-right: 0.03125rem;
+  /* gap: var(--s4, 0.5rem); repl by padding-top*/
+}
+
+ul>.current .toctree-l3 {
+  padding-top: 0.125rem;
+  margin-right: 0.03125rem;
+}
+
+.bd-sidebar .nav li>a {
+  text-decoration: none !important;
+}
+
+.bd-sidebar .nav li>a:hover{
+  background: var(--color-surface-surf-hover);
+  color: var(--text-colors-body);
+}
+
+.bd-sidebar .nav .active:hover>a {
+  font-weight: 600;
+  color: var(--text-colors-body) !important;
+}
+
+.bd-sidebar .nav .active>a {
+  color: var(--text-colors-body) !important;
+  background: var(--color-surface-surf-active, #E9EAEB);
+}
+
+.bd-content {
+  margin-bottom: 20px;
+}
+
+.bd-main .bd-content .bd-article-container {
+  max-width: 100%;  /* default is 60em */
+}
+
+div.sd-card {
+  display: flex;
+  flex-direction: column;
+  text-wrap: wrap;
+  width: 100%;
+  max-width: 450px;
+  min-height: 175px;
+  border-radius: 4px;
+  background: var(--color-surface-surface, #FFF);
+  /* Small Shadow */
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+div.sd-card:hover {
+  border: 1px solid var(--CTA-primary, #005252);
+}
+
+div.onthispage{
+  color: var(--Body-Text-Body-Color, var(--text-colors-body, #212529)) !important;
+  /* Heading/H6 */
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 120%; /* 19.2px */
+}
+
+.toc-entry a{
+  color: var(--text-colors-body, #212529) !important;
+  /* Body/Regular */
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+  text-decoration: none;
+ }
+
+div.admonition.note{
+  background: var(--pst-color-note-bg);
+}
+
+div.admonition.note .admonition-title {
+  background: var(--pst-color-note-bg);
+}
+
+div.admonition.caution {
+  background: var(--pst-color-caution-bg);
+}
+
+div.admonition.caution .admonition-title{
+  background: var(--pst-color-caution-bg);
+}
+
+div.admonition.tip {
+  background: var(--pst-color-tip-bg);
+}
+
+div.admonition.tip .admonition-title{
+  background: var(--pst-color-tip-bg);
+}
+
+div.admonition.warning{
+  background: var(--pst-color-warning-bg);
+}
+
+div.admonition.warning .admonition-title{
+  background: var(--pst-color-warning-bg);
+}
+
+div.admonition.important {
+  background: var(--pst-color-important-bg);
+}
+
+div.admonition.important .admonition-title{
+  background: var(--pst-color-important-bg);
+}
+
+/* MEDIA QUERIES*/
+
+/* TABLET - Screens smaller than 768px */
+@media screen and (max-width: 768px) {
+  .sd-row-cols-3>* {
+    width: 50%;
+  }
+}
+
+/* MOBILE - Screens smaller than 576px */
+@media screen and (max-width: 576px) {
+  .sd-row-cols-3>* {
+    width: 100%;
+  }
+}
+
+/*Tale styles from design system*/
+
+.tableContainer {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
+
+.tableContainer .table-tiber-theme {
+  min-width: max-content;
+  width: -webkit-fill-available;
+}
+
+.table-tiber-theme.fixedColumn tr>th:first-child,
+.table-tiber-theme.fixedColumn tr>td:first-child {    
+    position: sticky;
+    background-color: inherit;
+    z-index: 2;
+    left: -0.25em;
+}
+
+.table-tiber-theme.fixedColumn tr>th:first-child {
+  background-color: #FFF;
+}
+
+
+.table-tiber-theme.fixedColumn:not(.selectable) tr>th:first-child,
+.table-tiber-theme.fixedColumn:not(.selectable) tr>td:first-child {    
+    max-width: 10rem;
+}
+
+

@@ -1,0 +1,23 @@
+# Default values for metallb-custom-resources.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+metallb_layer2_enable: false
+
+metallb_layer2_single_ip_pools: []
+  #- 172.18.255.101:
+  #    autoAssign: false
+  #    avoidBuggyIPs: true
+  #- 172.18.255.102:
+  #    autoAssign: false
+  #    avoidBuggyIPs: true
+
+metallb_layer2_range_ip_pools: []
+  #- ironic_range_1:
+  #    ipRange: 172.18.255.104 - 172.18.255.105
+  #    autoAssign: false
+  #    avoidBuggyIPs: true
+  #- ironic_range_2:
+  #    ipRange: 172.18.255.106 - 172.18.255.107
+  #    autoAssign: false
+  #    avoidBuggyIPs: true

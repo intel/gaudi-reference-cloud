@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Run the following command to provision the database
+# docker run --name dpai-db -e POSTGRES_USER=dbuser -e POSTGRES_DB=main -e POSTGRES_PASSWORD=yourpassword -p 5432:5432 -d postgres
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "queries"
+    schema: "migrations"
+    database:
+      uri: postgresql://dbuser:yourpassword@localhost:5432/main
+    gen:
+      go:
+        package: "db"
+        out: "models"
+        sql_package: "pgx/v5"
+        rename:
+          hm: "Hms"
+          postgre: "Postgres"

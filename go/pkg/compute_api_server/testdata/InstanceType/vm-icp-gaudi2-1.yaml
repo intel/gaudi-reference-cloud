@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: vm-icp-gaudi2-1
+spec:
+  name: vm-icp-gaudi2-1
+  displayName: 1 Gaudi2 HL-225H mezzanine cards with 3rd Gen Xeon® processors, 100 Gi RAM, 45 Gi disk
+  description: 1 Gaudi2 HL-225H mezzanine cards with 3rd Gen Xeon® processors, 100 Gi RAM, 45 Gi disk
+  instanceCategory: VirtualMachine
+  cpu:
+    cores: 11
+    id: "0x08380"
+    modelName: 3rd Generation Intel® Xeon® Platinum 8380 Processors (Ice Lake)
+    sockets: 1
+    threads: 1
+  gpu:
+    count: 1
+    modelName: HL-225
+  memory:
+    size: 100Gi
+    dimmSize: 100Gi
+    dimmCount: 1
+    speed: 3200
+  disks:
+    - size: 45Gi

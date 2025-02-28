@@ -1,0 +1,78 @@
+/***
+This file is used to override variables used by bootstrap and dlux for dark theme
+For reference of which variables can be modified inspect the src/scss/dlux/scss/_custom.scss file
+Although you can add another bootstrap variables if needed
+Remember to add  !default at the end of line so them does not get overritten
+Please do not add any class here, this file is just for customizing the bootstrap and dlux variables,
+if something else is added the PR won't be accepted
+*/
+
+@import "../../dlux/scss/colors";
+
+// Global Variables
+
+$dark-mode-primary: $cobalt-tint2 !default;
+$dark-mode-footer-bg: $carbon-shade2 !default;
+$dark-mode-site-navbar-bg: $carbon-shade2 !default;
+$dark-mode-site-navbar-logo-bg: #FFFFFF !default;
+$dark-mode-page-bg: #313236 !default;
+$dark-mode-card-bg: #2B2C30 !default;
+
+$dark-mode-black: #1b1f22 !default;
+$dark-mode-white: #f8f8f8 !default;
+$dark-mode-bg: tint-color($dark-mode-black, 10%) !default;
+$dark-mode-info-soft: #20bce7 !default;
+
+//Buttons
+$dark-mode-button-disabled-bg: $carbon-shade1 !default;
+$dark-mode-button-disabled-opacity: 0.67 !default;
+
+$dark-mode-button-primary-color: $dark-mode-black !default;
+$dark-mode-button-primary-bg: $dark-mode-primary !default;
+$dark-mode-button-primary-hover-color: $carbon-shade2 !default;
+$dark-mode-button-primary-hover-bg: $geode-tint1 !default;
+$dark-mode-button-primary-active-color: $carbon-tint1 !default;
+$dark-mode-button-primary-active-bg: $cobalt-tint1 !default;
+$dark-mode-button-primary-disabled-color: $white !default;
+
+$dark-mode-button-secondary-color: $dark-mode-primary !default;
+$dark-mode-button-secondary-bg: transparent !default;
+$dark-mode-button-secondary-hover-color: $black !default;
+$dark-mode-button-secondary-hover-bg: $dark-mode-primary !default;
+$dark-mode-button-secondary-active-color: $black !default;
+$dark-mode-button-secondary-active-bg: $cobalt-tint1 !default;
+$dark-mode-button-secondary-disabled-color: $white !default;
+
+$dark-mode-button-outline-secondary-color: $dark-mode-primary !default;
+
+$dark-mode-button-danger-bg: $status-error-natural-dark-mode !default;
+
+// Text
+
+$dark-mode-valid-feedback: $carbon-tint1 !default;
+$dark-mode-invalid-feedback: $status-error-soft !default;
+
+// Borders
+$dark-mode-border-light-rbg: 73, 80, 87 !default;
+
+//Inputs
+$dark-mode-input-bg: #3C3E42 !default;
+$dark-mode-input-border-color: rgba(206, 212, 218, 1) !default;
+
+// Navs
+$dark-mode-nav-item-active-color: $black !default;
+$dark-mode-nav-item-active-bg: $dark-mode-primary !default;
+
+$dark-mode-tab-inactive-color: #B7B9BE !default;
+
+// Links
+$link-color-dark: $dark-mode-primary !default;
+$link-hover-color-dark: $geode-tint1 !default;
+
+//Tabs
+$dark-mode-nav-tab-border-color: #D0D1D4 !default;
+
+
+[data-bs-theme="dark"] {
+    $danger: $status-error-soft !default;
+}

@@ -1,0 +1,59 @@
+@import 'intel.css';
+@import 'devcloud.css';
+
+
+/* 
+CSS & VARS() USAGE - EXAMPLES
+https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/styling.html
+https://github.com/openvinotoolkit/openvino/blob/master/docs/openvino_sphinx_theme/openvino_sphinx_theme/static/css/openvino_sphinx_theme.css
+*/
+
+
+:root {
+    /*  */
+    --idc-internal-navbar-bg: #fff;
+    --pst-color-navbar-background: var(--bs-cobalt-tint2);
+    --pst-header-height: 80px;
+
+}
+
+.navbar {
+    background:var(--idc-internal-navbar-bg) !important;
+}
+
+.navbar-light .navbar-nav li a.nav-link {
+    color: var(--bs-cobalt) !important;
+    font-size: 1rem;
+    white-space: nowrap!important;
+    padding-right:0;
+    padding: 0 .8rem;
+    text-decoration: none !important;
+}
+
+.navbar-light .navbar-nav li a.nav-link:hover {
+    text-decoration: none;
+  }
+
+.navbar-brand{
+    color: #FFFFFF !important;
+    background-color: var(--bs-white);
+    text-align: center;
+    padding: 0 !important;
+}
+
+
+.navbar-name{
+  font-weight: 400;
+  color: var(--bs-carbon-shade2);
+}
+
+img.logo{
+    height: 100%;
+    width: 100%;
+}
+
+.home-button {
+    color: var(--bs-carbon-shade1);
+    opacity: 1.0;
+    margin: 0 2.0em 0 0;
+ }

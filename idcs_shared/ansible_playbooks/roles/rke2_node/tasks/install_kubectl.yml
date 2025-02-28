@@ -1,0 +1,25 @@
+- name: Is Kubectl installed?
+  stat:
+    path: "/usr/local/bin/kubectl"
+  register: kubectl_bin
+
+- name: Get Kubectl stable version 
+  shell: curl -L -s https://dl.k8s.io/release/stable.txt
+  register: kubectl_version
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+    no_proxy: intel.com,.intel.com
+  when: not kubectl_bin.stat.exists
+
+- name: Download Kubectl
+  shell: curl -LO "https://dl.k8s.io/release/{{ kubectl_version.stdout }}/bin/linux/amd64/kubectl"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+    no_proxy: intel.com,.intel.com
+  when: not kubectl_bin.stat.exists
+
+- name: Install Kubectl
+  shell: install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  when: not kubectl_bin.stat.exists

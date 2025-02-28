@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "highwire",
+    srcs = ["provider.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/ilb_operator/internal/LB_Provider/highwire",
+    visibility = ["//go/pkg/ilb_operator:__subpackages__"],
+    deps = [
+        "//go/pkg/ilb_operator/api/v1alpha1",
+        "//go/pkg/log/logkeys",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+        "@org_golang_x_exp//slices",
+    ],
+)

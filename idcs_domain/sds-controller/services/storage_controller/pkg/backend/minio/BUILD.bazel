@@ -1,0 +1,42 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "minio",
+    srcs = [
+        "minio.go",
+        "s3.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/backend/minio",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/conf",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_minio_madmin_go_v3//:madmin-go",
+        "@com_github_minio_minio_go_v7//:minio-go",
+        "@com_github_minio_minio_go_v7//pkg/credentials",
+        "@com_github_minio_minio_go_v7//pkg/lifecycle",
+        "@com_github_minio_minio_go_v7//pkg/sse",
+        "@com_github_rs_zerolog//log",
+    ],
+)
+
+go_test(
+    name = "minio_test",
+    srcs = [
+        "minio_test.go",
+        "s3_test.go",
+    ],
+    embed = [":minio"],
+    deps = [
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/conf",
+        "@com_github_minio_madmin_go_v3//:madmin-go",
+        "@com_github_minio_minio_go_v7//:minio-go",
+        "@com_github_minio_minio_go_v7//pkg/lifecycle",
+        "@com_github_minio_minio_go_v7//pkg/sse",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

@@ -1,0 +1,72 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/billing
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  service: cloudcredits-db-postgresql
+  vaultCredentialsPath: cloudcreditssecret/data/cloudcreditsdb
+
+creditsInstallSchedulerInterval: 3600
+reportUsageSchedulerInterval: 1800
+reportProdutUsageSchedulerInterval: 1800
+creditUsageSchedulerInterval: 240
+creditExpirySchedulerInterval: 240
+premiumCloudCreditThreshold: 80
+intelCloudCreditThreshold: 80
+enterpriseCloudCreditThreshold: 80
+premiumCloudCreditNotifyBeforeExpiry: 4320
+intelCloudCreditNotifyBeforeExpiry: 4320
+enterpriseCloudCreditNotifyBeforeExpiry: 4320
+servicesTerminationSchedulerInterval: 240
+instanceTerminationMeteringDuration: 2
+servicesTerminationInterval: 4320
+creditsExpiryMinimumInterval: 38
+eventExpirySchedulerInterval: 1440
+runSchedulers: true
+cloudCreditUsageReportSchedulerInterval: 3600
+
+features:
+  creditInstallScheduler: true
+  reportUsageScheduler: true
+  reportProductUsageScheduler: false
+  creditUsageScheduler: false
+  creditExpiryScheduler: false
+  servicesTerminationScheduler: true
+  eventExpiryScheduler: true
+  cloudCreditUsageReportScheduler: true
+  creditUsageEmail: true
+  creditExpiryEmail: true
+  servicesTerminationAccountTypes:
+    - ACCOUNT_TYPE_STANDARD
+  creditUsageEmailAccountTypes:
+    - ACCOUNT_TYPE_STANDARD
+    - ACCOUNT_TYPE_PREMIUM
+  creditExpiryEmailAccountTypes:
+    - ACCOUNT_TYPE_STANDARD
+    - ACCOUNT_TYPE_PREMIUM
+notifications:  
+    senderEmail: "test@dev3.api.idcservice.net"
+    consoleUrl: "https://dev3.console.idcservice.net/"  
+    paymentUrl: "https://dev3.console.idcservice.net/upgradeaccount"  
+    cloudCreditHundredPercentUsedTemplate: "Terminate-Instance-100-Used-Template-Dev"
+    cloudCreditEightyPercentUsedTemplate: "Terminate-Instance-80-Used-Template-Dev"
+    cloudCreditExpiryTemplate: "Cloud-Credit-Expiry-Template-Dev"
+    pdlEmail: "idc-dev-autoterminate-instances@intel.com"
+
+fargateAnnotations:
+  CapacityProvisioned: "16vCPU 72GB"
+
+resources:
+  requests:
+    memory: "16Gi"
+    cpu: "4000m"
+  limits:
+    memory: "16Gi"
+    cpu: "8000m"
+
+otel:
+  otelAnnotations: false

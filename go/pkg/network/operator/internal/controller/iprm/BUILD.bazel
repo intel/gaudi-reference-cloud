@@ -1,0 +1,43 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "iprm",
+    srcs = [
+        "listwatcher.go",
+        "reconciler.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/network/operator/internal/controller/iprm",
+    visibility = ["//go/pkg/network/operator:__subpackages__"],
+    deps = [
+        "//go/pkg/core/cache",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/network/operator/api/v1alpha1",
+        "//go/pkg/network/operator/internal/controller/helper",
+        "//go/pkg/network/sdn",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/tools/atomicduration",
+        "//go/pkg/tools/idletimer",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_apimachinery//pkg/watch",
+        "@io_k8s_client_go//tools/cache",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/controller",
+        "@io_k8s_sigs_controller_runtime//pkg/handler",
+        "@io_k8s_sigs_controller_runtime//pkg/manager",
+        "@io_k8s_sigs_controller_runtime//pkg/predicate",
+        "@io_k8s_sigs_controller_runtime//pkg/reconcile",
+        "@io_k8s_sigs_controller_runtime//pkg/source",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)

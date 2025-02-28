@@ -1,0 +1,194 @@
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).deploy = regional;
+
+
+
+
+message KubeFlowDeploymentCreate {
+    string deploymentName = 1;
+    string kfVersion = 2;
+    string k8sClusterID = 3;
+    string k8sClusterName = 4;
+    string storageClassName = 5;
+    string createdDate = 6;
+    string cloudAccountId = 7;
+    string status = 8;
+
+}
+message KubeFlowDeployment {
+    string deploymentID = 1;
+    string deploymentName = 2;
+    string kfVersion = 3;
+    string k8sClusterID = 4;
+    string k8sClusterName = 5;
+    string storageClassName = 6;
+    string createdDate = 7;
+    string cloudAccountId = 8;
+    string status = 9;
+}
+
+
+message ListKubeFlowDeploymentRequest {
+    string cloudAccountId = 1;
+}
+
+message ListKubeFlowDeploymentResponse {
+    repeated KubeFlowDeployment response= 1;
+}
+
+
+message CreateKubeFlowDeploymentRequest {
+    string deploymentName = 1;
+    string kfVersion = 2;
+    string k8sClusterID = 3;
+    string k8sClusterName = 4;
+    string storageClassName = 5;
+    string cloudAccountId = 6;
+    string status = 7;
+}
+message CreateKubeFlowDeploymentResponse {
+   string deploymentID = 1;
+}
+
+message GetUserCredentialsRequest {
+   string deploymentID = 1;
+   string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message GetUserCredentialsResponse {
+   string password = 1;
+   string username = 2;
+}
+
+message GetExternalIPRequest {
+   string deploymentID = 1;
+   string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+}
+message GetExternalIPResponse {
+   string ip = 1;
+}
+
+message GetKFStatusRequest {
+   string deploymentID = 1;
+   string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+   string namespace =3;
+
+}
+
+message KFStatus{
+    string pod = 1;
+    string status = 2;
+    string namespace = 3;
+
+}
+
+
+message GetKFStatusResponse {
+    repeated KFStatus components= 1;
+}
+
+message DeleteKubeFlowDeploymentRequest {
+   string deploymentID = 1;
+   string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+}
+message DeleteKubeFlowDeploymentResponse {
+   bool status = 1;
+}
+message ExecuteKFPreCheckRequest {
+   string k8sClusterID =1;
+   string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+   string check =3;
+}
+message ExecuteKFPreCheckResponse {
+   bool status = 1;
+}
+message GetJobStatusRequest {
+   string deploymentID =1;
+   string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+   string job =3;
+}
+message GetJobStatusResponse {
+   string status = 1;
+}
+
+
+
+
+
+service KFService {
+   rpc GetKFStatus (GetKFStatusRequest) returns (GetKFStatusResponse) {
+      option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/kfaas/deployments/{deploymentID}/status/namespace/{namespace}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc GetUserCredentials(GetUserCredentialsRequest) returns (GetUserCredentialsResponse){
+      option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/kfaas/deployments/{deploymentID}/credentials"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc GetExternalIP(GetExternalIPRequest) returns (GetExternalIPResponse){
+      option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/kfaas/deployments/{deploymentID}/externalip"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc CreateKubeFlowDeployment(CreateKubeFlowDeploymentRequest) returns (CreateKubeFlowDeploymentResponse) {
+      option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/kfaas/deployments"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   
+   rpc ListKubeFlowDeployment(ListKubeFlowDeploymentRequest) returns (ListKubeFlowDeploymentResponse) {
+      option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/kfaas/deployments"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc DeleteKubeFlowDeployment(DeleteKubeFlowDeploymentRequest) returns (DeleteKubeFlowDeploymentResponse) {
+      option (google.api.http) = {
+      delete: "/v1/cloudaccounts/{cloudAccountId}/kfaas/deployments/{deploymentID}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc ExecuteKFPreCheck (ExecuteKFPreCheckRequest) returns (ExecuteKFPreCheckResponse) {
+      option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/kfaas/clusters/{k8sClusterID}/check/{check}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+   rpc GetJobStatus (GetJobStatusRequest) returns (GetJobStatusResponse) {
+      option (google.api.http) = {
+      get: "/v1/cloudaccounts/{cloudAccountId}/kfaas/deployments/{deploymentID}/job/{job}"
+    };
+    option (idc.method).authz.cloudAccount = true;
+   }
+}
+
+
+

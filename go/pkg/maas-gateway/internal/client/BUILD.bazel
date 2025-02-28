@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "client",
+    srcs = [
+        "grpcserviceconnector.go",
+        "grpcserviceconnector_mock.go",
+        "serviceclient.go",
+        "serviceclients.go",
+        "types.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/maas-gateway/internal/client",
+    visibility = ["//go/pkg/maas-gateway:__subpackages__"],
+    deps = [
+        "//go/pkg/authutil",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/maas-gateway/internal/config",
+        "//go/pkg/pb",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_pkg_errors//:errors",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//backoff",
+        "@org_golang_google_grpc//credentials",
+    ],
+)

@@ -1,0 +1,13 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+baseURL: "https://lb-api.local/v1/"
+providerType: "mock"
+domain: "amr"
+userName: ""
+password: ""
+environment: 0
+userGroup: 0
+
+# Number of goroutines to create for concurrently reconcile custom resources.
+# This setting is per controller. If value <= 0 defaults to 1.
+loadbalancerMaxConcurrentReconciles: 1

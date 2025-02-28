@@ -1,0 +1,24 @@
+# Configuration used by Universe Deployer Pusher and Manifests Generator.
+# The version of this file at the component-specific commit is used.
+# See schema in go/pkg/universe_deployer/deployer_config/deployer_config.go.
+
+# TODO: Move helmRepositories to deployment/helmfile/defaults.yaml.gotmpl instead of this file.
+helmRepositories:
+  bitnami:
+    registry: https://charts.bitnami.com/bitnami
+  bootc:
+    registry: https://charts.boo.tc
+  external-secrets:
+    registry: https://charts.external-secrets.io
+  hashicorp:
+    registry: https://helm.releases.hashicorp.com
+  idc-observability:
+    registry: amr-idc-registry.infra-host.com/idc-observability
+  jetstack:
+    registry: https://charts.jetstack.io
+  minio:
+    registry: https://charts.min.io
+  opal:
+    registry: https://permitio.github.io/opal-helm-chart
+  idc-networking:
+    registry: amr-idc-registry-pre.infra-host.com/idc-networking

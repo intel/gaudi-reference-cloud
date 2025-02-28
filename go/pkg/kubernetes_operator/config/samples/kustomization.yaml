@@ -1,0 +1,8 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+## Append samples of your project ##
+resources:
+- private.cloud_v1alpha1_cluster.yaml
+- private.cloud_v1alpha1_nodegroup.yaml
+- private.cloud_v1alpha1_addon.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

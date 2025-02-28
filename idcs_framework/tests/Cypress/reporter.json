@@ -1,0 +1,19 @@
+{
+    "reporterEnabled": "@reportportal/agent-js-cypress, mochawesome",
+    "mochawesomeReporterOptions": {
+        "reportDir": "cypress/reports/mocha",
+        "quite": true,
+        "overwrite": false,
+        "html": false,
+        "json": true
+    },
+    "reportportalAgentJsCypressReporterOptions": {
+        "endpoint": "http://<rp_ip:8080/api/v1",
+        "token": "report portal token",
+        "launch": "IDC1.0_UI_Test",
+        "project": "superadmin_personal",
+        "description": "Test_build",
+        "isLaunchMergeRequired": true,
+        "tag": "IDC1.0_UI_Tag"
+    }
+}

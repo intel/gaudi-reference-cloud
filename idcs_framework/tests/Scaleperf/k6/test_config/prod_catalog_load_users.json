@@ -1,0 +1,21 @@
+[
+    {
+        "cloudaccountId": "725990433695",
+        "productFilter": {
+            "accountType": "ACCOUNT_TYPE_INTEL",
+            "name": "vm-iks-tny"
+        }
+    },
+    {
+        "cloudaccountId": "725990433695",
+        "productFilter": {
+            "accountType": "ACCOUNT_TYPE_STANDARD"
+        }
+    },
+    {
+        "cloudaccountId": "725990433695",
+        "productFilter": {
+            "accountType": "ACCOUNT_TYPE_PREMIUM"
+        }
+    }
+]

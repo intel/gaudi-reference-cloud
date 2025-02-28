@@ -1,0 +1,51 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "main_lib",
+    srcs = ["main.go"],
+    data = [
+        "@trivy_linux_64//:trivy",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/insights/security-scanner/cmd/main",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/insights/security-scanner/pkg/config",
+        "//go/pkg/insights/security-scanner/pkg/server",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+    ],
+)
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+container_image(
+    name = "debian_container_image",
+    base = "@image_alpine_x86_64//image",
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "main",
+    embed = [":main_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "security-scanner_image",
+    base = ":debian_container_image",
+    embed = [
+        ":main_lib",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+#genrule(
+#    name = "trivy_dep_extracted",
+#    srcs = ["@trivy_dep//file"],
+#    outs = ["trivy/trivy"],
+#    cmd = "mkdir -p $@ && tar -xf $< -C $@ && chmod 0755 $@",
+#)

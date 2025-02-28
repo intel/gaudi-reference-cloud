@@ -1,0 +1,12 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+iptables_rules:
+  - { chain: 'INPUT', source: 'localhost', protocol: 'all', jump: 'ACCEPT' }
+  - { chain: 'INPUT', protocol: 'tcp', destination_port: '22', match: 'conntrack', ctstate: 'NEW,RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'INPUT', match: 'state', ctstate: 'RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'INPUT', jump: 'DROP' }
+  - { chain: 'FORWARD', match: 'state', ctstate: 'RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'FORWARD', jump: 'DROP' }
+  - { chain: 'OUTPUT', match: 'state', ctstate: 'RELATED,ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'OUTPUT', protocol: 'tcp', destination_port: '22', match: 'conntrack', ctstate: 'ESTABLISHED', jump: 'ACCEPT' }
+  - { chain: 'OUTPUT', jump: 'DROP' }

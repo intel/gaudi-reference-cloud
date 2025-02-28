@@ -1,0 +1,3 @@
+load(":universe_config_test.bzl", "universe_config_test_suite")
+
+universe_config_test_suite(name = "universe_config_tests")

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b2c.helper.api", "b2c.helper.api.csproj", "{41605C30-9B87-46D2-8A73-1D08A9AF036E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{41605C30-9B87-46D2-8A73-1D08A9AF036E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41605C30-9B87-46D2-8A73-1D08A9AF036E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41605C30-9B87-46D2-8A73-1D08A9AF036E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41605C30-9B87-46D2-8A73-1D08A9AF036E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {92265235-88E6-429B-AE4E-6DA0E40F7486}
+	EndGlobalSection
+EndGlobal

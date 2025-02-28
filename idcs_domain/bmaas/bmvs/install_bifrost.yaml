@@ -1,0 +1,11 @@
+---
+# Installation overrides environment variables
+
+# DHCP Pool
+dhcp_pool_start: 172.16.0.100
+dhcp_pool_end: 172.16.255.200
+
+developer_mode: true
+
+network_interface: "databr0"
+noauth_mode: true

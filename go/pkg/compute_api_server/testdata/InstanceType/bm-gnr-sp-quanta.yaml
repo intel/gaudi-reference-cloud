@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+metadata:
+  name: bm-gnr-sp-quanta
+spec:
+  name: bm-gnr-sp-quanta
+  displayName: 6th Generation Intel® Xeon® Scalable processors
+  description: 6th Generation Intel® Xeon® Scalable processors
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 48
+    id: "0x00000"
+    modelName: 6th Generation Intel® Xeon® Scalable processors
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 0
+  memory:
+    size: 1024Gi
+    dimmSize: 64Gi
+    dimmCount: 16
+    speed: 6400
+  disks:
+    - size: 3576Gi

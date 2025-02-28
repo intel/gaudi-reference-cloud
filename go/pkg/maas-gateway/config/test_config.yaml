@@ -1,0 +1,20 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 8443
+region: us-dev-1
+usageServerAddr: metering.idcs-system.svc.cluster.local:8443
+usageServerTimeout: 1s
+dispatcherServerAddr: 146.152.224.101:443
+productCatalogServerAddr: productcatalog.idcs-system.svc.cluster.local:8443
+productId: ea48fac7-886b-4547-adf7-06558413414b
+grpcHealthCheckExecutionPeriod: 30s
+grpcHealthCheckExecutionTimeout: 10s
+modelsProductIds:
+  model1: ea48fac7-886b-4547-adf7-06558413414b
+  model2: 8d728109-0fb2-46c7-a406-1113634d72ab
+retryAttempts: 3
+familyId: 4004b07c-14b8-446a-8e63-ed7f1508ee1b
+metrics:
+  enabled: false
+  metricsPort: 2112
+  promCredentialsPath: ./pkg/maas-gateway/config/k8s_secrets/prometheus1

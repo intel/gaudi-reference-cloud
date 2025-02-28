@@ -1,0 +1,33 @@
+---
+- name: Run Deepspeed End-To-End
+  gather_facts: false
+  hosts: hosts
+
+  vars_files:
+    - vars/common.yml
+    - vars/val-dir.yml
+
+  tasks:
+    - name: Build Docker Image
+      command: docker build --rm -f "{{ val_dir }}/Dockerfile" -t btower ./
+      args:
+        chdir: "{{ val_dir }}"
+      register: build_output
+      async: 2500
+      poll: 30
+
+    - name: Print image created
+      debug:
+        msg: "Image created: {{ item }}"
+      loop: "{{ build_output.stdout_lines }}"
+      when: "'Successfully built' in item"
+
+    - name: Launch Docker Container
+      command: sh "{{ val_dir }}"/launch_container.sh
+      args:
+        chdir: "{{ val_dir }}"
+      register: docker_output
+
+    - name: Docker Containers Launched
+      debug:
+        msg: "Docker Container ID: {{ docker_output.stdout }}"

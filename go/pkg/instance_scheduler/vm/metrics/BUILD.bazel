@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "metrics",
+    srcs = [
+        "metrics.go",
+        "profile_metrics.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/metrics",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@io_k8s_component_base//metrics",
+        "@io_k8s_component_base//metrics/legacyregistry",
+    ],
+)

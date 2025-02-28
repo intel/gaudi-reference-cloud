@@ -1,0 +1,7 @@
+-
+  name: Add docker 
+  hosts: docker
+  become: true
+  roles:
+    - linux_server
+    - lnx_docker

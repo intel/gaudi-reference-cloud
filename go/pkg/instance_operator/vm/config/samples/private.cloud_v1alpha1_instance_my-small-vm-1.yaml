@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Instance
+metadata:
+  name: my-small-vm-1
+spec:
+  availabilityZone: "us-dev-1a"
+  instanceType:
+    name: tiny
+    spec:
+      cpu:
+        cores: 8
+        sockets: 1
+        threads: 1
+      disks:
+        - size: 20Gi
+      memory:
+        size: 16Gi
+  machineImage:
+    naem: ubuntu-22.04
+  runStrategy: "RerunOnFailure"
+  sshPublicKeys:
+    - name: testuser.example.com
+      value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCdgSx/IbI6V7lJe8dn75sMZZjCkJjhH47BqD4G2W7qfRoCWBtlV79SuML8z/umKQD5Fhk+9wGi0w5/MD+UGmbb2B5NuxV9iW6GhZWweyxSk34WyJ7kU/kh3Mpq+XWmGxC8WfupNlF/1h9yi2pmMtwYcp+9rQE5itasCgrnFBPsUgI8YubeBTqoru7sHo+1+KW9c2tY+ID0czYoJu9x5DazqiauQCiJNzoMi+7IluGew5sfuQU8LJ9+6JFzQ7y5+8PEysODZP/BtNm2t15rMXjiuUQej9w6pt3cQi2t4ThB/ehJInKRKUzfPmOtVQZZcRVTzYUUh/pena3XBmLdFfwneNZWuMpnCB1d678pm+9BRoWLQv8KBxGIP4AuI17zmoXqBhH/KfLiI3iI0wyHXQXGha390zN7b8vtC2VkJExnwu+gZAbK7ROwA6NLyamxXa97YdQAmxzu0gxMO8tD2Y7Bhhorz6SUGk7aSo21WrXdodW4yqanjiOF2m2Cpuu3N/tjYOJJCxuFtkXdW1ap16PtAhG7KJT5SZF7nDpYm5nfKeupiaQ/6Aa/jOsYIEE73qX6gB/ehgrpLPFQAR0YzOGgZazuPxZcoz0Ot6T8wa0FflZ4WN+g6zkNN3sYDYPS1SSZst535WVzw32Lhmdt/N2i9L5xqif7J5thjIqN3kZnaQ== guptani2@guptani2-ws"
+  interfaces:
+    - name: "eth0"
+      vNet:
+        name: us-dev-1a-default
+        subnet: "172.16.0.0"
+        gateway: "172.16.0.1"
+        prefixLength: 16
+        vlanId: 1
+        dnsName: "my-virtual-machine-small-1.03165859732720551183.us-dev-1.cloud.intel.com"
+  clusterGroupId: "us-dev-1a-2"
+  clusterId: "us-dev-1a-2-4"

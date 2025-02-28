@@ -1,0 +1,117 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: switches.idcnetwork.intel.com
+spec:
+  group: idcnetwork.intel.com
+  names:
+    kind: Switch
+    listKind: SwitchList
+    plural: switches
+    shortNames:
+    - sw
+    singular: switch
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.maintenance
+      name: Maintenance
+      type: string
+    - jsonPath: .spec.ipOverride
+      name: IP_OVERRIDE
+      type: string
+    - jsonPath: .spec.bgpConf.bgpCommunity
+      name: desired_bgp_cmty
+      type: string
+    - jsonPath: .status.switchBGPConfigStatus.lastObservedBGPCommunity
+      name: last_observed_bgp_cmty
+      type: string
+    - jsonPath: .metadata.labels.fabric_type
+      name: Fabric_Type
+      type: string
+    - jsonPath: .status.lastStatusUpdateTime
+      name: Last_Status_Update_Time
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Switch is the Schema for the switches API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: SwitchSpec defines the desired state of Switch
+            properties:
+              bgpConf:
+                properties:
+                  bgpCommunity:
+                    default: -1
+                    format: int64
+                    type: integer
+                type: object
+              eapiConf:
+                properties:
+                  credentialPath:
+                    description: CredentialPath is the file that stores the eAPI credential
+                      for a switch. This file is expected to be injected by Vault.
+                    type: string
+                  port:
+                    type: integer
+                  transport:
+                    type: string
+                required:
+                - credentialPath
+                - port
+                - transport
+                type: object
+              fqdn:
+                type: string
+              ip:
+                type: string
+              ipOverride:
+                type: string
+              maintenance:
+                type: string
+            required:
+            - fqdn
+            - ip
+            type: object
+          status:
+            description: SwitchStatus defines the observed state of Switch
+            properties:
+              lastStatusUpdateTime:
+                format: date-time
+                type: string
+              switchBGPConfigStatus:
+                description: Conditions            []metav1.Condition     `json:"conditions,omitempty"`
+                properties:
+                  lastObservedBGPCommunity:
+                    format: int64
+                    type: integer
+                  switchFQDN:
+                    type: string
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

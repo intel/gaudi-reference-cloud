@@ -1,0 +1,10 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# This file contains the configuration settings when running tests.
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: VastStorageOperatorConfig
+metadata:
+  name: vastStorageOperatorConfig
+health:
+  healthProbeBindAddress: :8081
+

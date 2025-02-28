@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/obj
+/b2c.helper.api.csproj.user
+/.vs/b2c.helper.api/FileContentIndex
+/.vs/b2c.helper.api/DesignTimeBuild
+/.vs/b2c.helper.api/v17/.suo
+/.vs/b2c.helper.api/v17/.futdcache.v2
+/.vs/ProjectEvaluation
+/bin/Debug/net7.0
+/.vs/b2c.helper.api/config

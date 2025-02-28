@@ -1,0 +1,17 @@
+{% extends "!layout.html" %}
+{% block extrahead %}
+    <script type="text/javascript"> 
+        // Configure TMS settings 
+        window.wapProfile = 'profile-microsite'; // This is mapped by WAP authorize value       
+        window.wapLocalCode = 'us-en'; // Dynamically set per localized site, see mapping table for values 
+        window.wapSection = 'intel-dev-cloud-public'; // WAP team will give you a unique section for your site 
+        window.wapEnv = 'prod'; // environment to be use in Adobe Tags. 'prod' for production and 'dev' for development  
+        var wapSinglePage = false; // Include this variable only if your site is a single page application, such as one developed with the React framework 
+        // Load TMS 
+        (() => { 
+            let url = 'https://www.intel.com/content/dam/www/global/wap/main/wap-microsite.js'; 
+            let po = document.createElement('script'); po.type = 'text/javascript'; po.async = true; po.src = url; 
+            let s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        }) ();	 
+    </script>
+{% endblock %}

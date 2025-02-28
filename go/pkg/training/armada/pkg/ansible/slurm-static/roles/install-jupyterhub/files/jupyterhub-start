@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#
+# jupyterhub startup script for convenience
+# called from systemd
+#
+export NODE=/srv/jupyter/n/bin/node-v18.17.1-linux-x64
+export PATH=${NODE}/bin:${PATH}
+
+#
+# generate server key, unique for each startup
+#
+export JUPYTERHUB_CRYPT_KEY=$(openssl rand -hex 32)
+
+#
+# activate jupyterhub dedicated python virtual env 
+#
+source /srv/jupyter/python-venv/bin/activate
+
+#cd /var/lib/jupyterhub
+
+#
+# launch jupyterhub app 
+#
+/srv/jupyter/python-venv/bin/jupyterhub -f /srv/jupyter/etc/jupyterhub_config.py

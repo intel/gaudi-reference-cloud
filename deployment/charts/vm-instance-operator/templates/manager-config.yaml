@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vm-instance-operator.fullname" . }}-manager-config
+  labels:
+  {{- include "vm-instance-operator.labels" . | nindent 4 }}
+data:
+  controller_manager_config.yaml: |
+    apiVersion: private.cloud.intel.com/v1alpha1
+    vmProvisionConfig:
+      cloudInitData:
+        networkData:
+          network:
+            config: {{ toYaml .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.networkData.network.config
+              | nindent 14 }}
+            version: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.networkData.network.version
+              }}
+        userData:
+          fqdn: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.userData.fqdn
+            | quote }}
+          hostname: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.userData.hostname
+            | quote }}
+          manage_etc_hosts: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.userData.manageEtcHosts
+            | quote }}
+          package_update: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.userData.packageUpdate
+            }}
+          runcmd: {{ toYaml .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.userData.runcmd
+            | nindent 12 }}
+          ssh_authorized_keys: null
+          users: {{ toYaml .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.userData.users
+            | nindent 12 }}
+          write_files: {{ toYaml .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.cloudInitData.userData.writeFiles
+            | nindent 12 }}
+      kubeConfigFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.kubeConfigFilePath
+        | quote }}
+      vmClusterNetwork: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.vmClusterNetwork
+        | quote }}
+      storageClusterNetwork: {{ .Values.managerConfig.controllerManagerConfigYaml.vmProvisionConfig.storageClusterNetwork
+        | quote }}
+    health:
+      healthProbeBindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.health.healthProbeBindAddress
+        | quote }}
+    instanceOperator:
+      computeApiServerAddr: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.computeApiServerAddr | quote }}
+      ddi:
+        method: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.method
+          | quote }}
+        mmws:
+          baseUrl: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.mmws.baseUrl
+            | quote }}
+          passwordFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.mmws.passwordFilePath
+            | quote }}
+          userNameFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.ddi.mmws.userNameFilePath
+            | quote }}
+      enableMeteringMonitorFinalizer: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.enableMeteringMonitorFinalizer
+        }}
+      filter:
+        labels:
+          cluster-group-id: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.filter.labels.clusterGroupId
+            | quote }}
+          cluster-id: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.filter.labels.clusterId
+            | quote }}
+          instance-category: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.filter.labels.instanceCategory
+            | quote }}
+          region: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.filter.labels.region
+            | quote }}
+      httpClient:
+        insecureSkipVerify: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.insecureSkipVerify
+          }}
+        keepAlive: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.keepAlive
+          }}
+        timeoutInSecs: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.timeoutInSecs
+          }}
+        tlsHandshakeTimeout: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.httpClient.tlsHandshakeTimeout
+          }}
+      sshProxyTunnelCluster:
+        kubeConfigFilePath: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.sshProxyTunnelCluster.kubeConfigFilePath
+        | quote }}
+      operatorFeatureFlags: {{ toYaml .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.operatorFeatureFlags
+        | nindent 8 }}
+      quickConnectHost: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.quickConnectHost }}
+      storageClusterAddr: {{ .Values.managerConfig.controllerManagerConfigYaml.instanceOperator.storageClusterAddr }}
+    kind: VmInstanceOperatorConfig
+    leaderElection:
+      leaderElect: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.leaderElect
+        }}
+      resourceName: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.resourceName
+        | quote }}
+    metrics:
+      bindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress
+        | quote }}
+    storageServerSubnets: {{ .Values.managerConfig.controllerManagerConfigYaml.storageServerSubnets | toJson }}
+    webhook:
+      port: {{ .Values.managerConfig.controllerManagerConfigYaml.webhook.port }}

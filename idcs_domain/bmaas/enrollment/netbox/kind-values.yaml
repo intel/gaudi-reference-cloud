@@ -1,0 +1,13 @@
+postgresql:
+  postgresqlPostgresPassword: "p@ssw0rd"
+  postgresqlPassword: "p@ssw0rd"
+
+redis:
+  replica:
+    replicaCount: 1
+  auth:
+    password: "p@ssw0rd"
+
+service:
+  type: NodePort
+  nodePort: "30001"

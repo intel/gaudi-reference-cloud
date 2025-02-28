@@ -1,0 +1,7 @@
+installWekaClient: {{ Values.InstallWekaClient }}
+wekaClusterAddr: {{ Values.WekaClusterAddr }}
+wekaNamespace: {{ Values.WekaNamespace }}
+user: {{ Values.User }}
+password: {{ Values.Password }}
+localMountDir: {{ Values.LocalMountDir }}
+remoteMountPoint: {{ Values.RemoteMountPoint }}

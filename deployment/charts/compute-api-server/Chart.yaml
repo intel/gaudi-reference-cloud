@@ -1,0 +1,6 @@
+apiVersion: v2
+name: compute-api-server
+description: IDC Compute API Server (BMaaS/VMaaS)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

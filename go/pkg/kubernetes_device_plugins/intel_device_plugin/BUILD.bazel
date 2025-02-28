@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_container_image")
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "intel_device_plugin_image",
+    entrypoint = ["/intel_device_plugin"],
+    files = [
+        "//go/pkg/kubernetes_device_plugins/intel_device_plugin/cmd/intel_device_plugin",
+    ],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

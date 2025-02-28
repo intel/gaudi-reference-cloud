@@ -1,0 +1,136 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+# Define Helm chart dependencies used by helmfile environment test-e2e-compute-vm.
+# Since Helm charts contain the container image sha256 hash, there is a transitive dependency on the container image.
+CHARTS = [
+    "authz",
+    "argo-cd-resources",
+    "billing-aria",
+    "billing-intel",
+    "billing-schedulers",
+    "billing-standard",
+    "billing",
+    "cloudaccount-enroll",
+    "cloudaccount",
+    "cloudcredits",
+    "compute-api-server",
+    "compute-crds",
+    "compute-metering-monitor",
+    "debug-tools",
+    "fleet-admin-api-server",
+    "git-to-grpc-synchronizer",
+    "grpc-proxy",
+    "grpc-reflect",
+    "grpc-rest-gateway",
+    "instance-replicator",
+    "k8s-resource-patcher",
+    "metal3-crds",
+    "metering",
+    "notification-gateway",
+    "oidc",
+    "productcatalog-crds",
+    "productcatalog-operator",
+    "productcatalog",
+    "rate-limit",
+    "rate-limit-redis",
+    "ssh-proxy-operator",
+    "usage",
+    "user-credentials",
+    "vm-instance-operator",
+    "vm-instance-scheduler",
+]
+
+suite_data = [
+    "//:local_secrets_test-e2e-compute-vm",
+    "//deployment/helmfile:test-e2e-compute-vm",
+    "//go/pkg/compute_api_server:testdata",
+] + ["//deployment:%s_chart_version" % chart for chart in CHARTS]
+
+suite_deps = [
+    "//go/pkg/cloudaccount",
+    "//go/pkg/log",
+    "//go/test/compute/helper",
+    "//go/test/compute/restyclient",
+    "//go/test/kindtestenv",
+    "//go/pkg/compute_api_server/openapi",
+    "@com_github_google_uuid//:uuid",
+    "@com_github_onsi_ginkgo_v2//:ginkgo",
+    "@com_github_onsi_gomega//:gomega",
+    "@io_k8s_apimachinery//pkg/types",
+    "@com_github_go_resty_resty_v2//:resty",
+    "@com_github_tidwall_gjson//:gjson",
+]
+
+suite_env_inherit = [
+    "DOCKER_REGISTRY",
+    "DOCKER_IMAGE_PREFIX",
+    "HELM_REGISTRY",
+    "http_proxy",
+    "https_proxy",
+    "LOCAL_REGISTRY_NAME",
+    "LOCAL_REGISTRY_PORT",
+    "no_proxy",
+    "SKIP_TEAR_DOWN",  # Set to "1" to keep kind cluster running after the test.
+    "SSH_PROXY_USER",
+]
+
+# This target runs the full test suite.
+# To see the full list of dependencies, run: BAZEL_QUERY_DEPS=//go/test/compute/e2e/vm:vm_test make bazel-query-deps
+go_test(
+    name = "vm_test",
+    size = "enormous",
+    srcs = [
+        "compute_e2e_vm_test.go",
+        "compute_reg_instance_type_test.go",
+        "compute_reg_machine_image_test.go",
+        "compute_reg_sshkey_test.go",
+        "compute_reg_vm_instance_test.go",
+        "compute_reg_vnet_test.go",
+        "suite_test.go",
+    ],
+    data = suite_data,
+    env_inherit = suite_env_inherit,
+    rundir = ".",
+    tags = [
+        "jenkins",
+        "manual",
+    ],
+    deps = [
+        "//go/pkg/compute_api_server/openapi",
+        "//go/pkg/log",
+        "//go/test/compute/helper",
+        "//go/test/kindtestenv",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_tidwall_gjson//:gjson",
+    ],
+)
+
+# This target runs the "quick" test suite that uses a previously started Kind cluster with all IDC services running.
+# This can be used for iterative test development.
+go_test(
+    name = "vm_quick_test",
+    size = "large",
+    srcs = [
+        "compute_e2e_vm_test.go",
+        "compute_reg_instance_type_test.go",
+        "compute_reg_machine_image_test.go",
+        "compute_reg_sshkey_test.go",
+        "compute_reg_vm_instance_test.go",
+        "compute_reg_vnet_test.go",
+        "suite_test.go",
+    ],
+    data = suite_data + [
+        "//:local_secrets_test-e2e-compute-vm_quick",
+    ],
+    env = {
+        "SKIP_ALL": "1",
+    },
+    env_inherit = suite_env_inherit,
+    rundir = ".",
+    tags = ["manual"],
+    deps = suite_deps,
+)

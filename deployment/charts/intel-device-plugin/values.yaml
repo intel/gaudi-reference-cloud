@@ -1,0 +1,16 @@
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/intel-device-plugin@sha256
+  tag: v1
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi
+
+# The testMode configuration parameter enables a simultaneous Function Level Reset on all PCI devices.
+# This feature is primarily intended for testing in a development environment and should only be set to true for such purposes.
+testMode: false

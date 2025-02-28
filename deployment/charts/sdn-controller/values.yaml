@@ -1,0 +1,147 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/sdn-controller
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+nodePort: null
+deployment: global
+
+managerConfig:
+  controllerManagerConfigYaml:
+    controllerConfig:   
+      # set switchBackendMode to `eapi` to allow SDN to talk a switch directly via eAPI.
+      # set it to `raven` to use Raven as backend,
+      # and `mock` to use a mock switch.
+      switchBackendMode: mock
+      enableReadOnlyMode: false
+      switchSecretsPath: /vault/secrets/eapi
+      dataCenter: fxhb3p3r
+      maxConcurrentReconciles: 10
+      maxConcurrentSwitchReconciles: 10
+      maxConcurrentNetworkNodeReconciles: 10
+      maxConcurrentNodeGroupReconciles: 10
+      portResyncPeriodInSec: 300 # SDN-Controller SwitchPort reconciliation interval
+      bmhResyncPeriodInSec: 300 # every 5 minutes to scan BMH and add SwitchPort CR
+      switchImportPeriodInSec: 300 # every 5 minutes to scan Raven and add Switch CR
+      switchResyncPeriodInSec: 300 # Switch reconciliation interval
+      networkNodeResyncPeriodInSec: 300 # every 5 minutes to resync the NetworkNodes
+      nodeGroupResyncPeriodInSec: 300 # every 5 minutes to resync the NetworkNodes
+      statusReportPeriodInSec: 600 # every 10 minutes to report the switch configuration to Switch and SwitchPort CR status.
+      statusReportAcceleratedPeriodInSec: 10 # every 10 seconds when a change is expected.
+      bmhClusterKubeConfigFilePath: "/vault/secrets/bmhkubeconfig"
+      poolsConfigFilePath: "/pool_config.json"
+      nodeGroupToPoolMappingConfigFilePath: "/group_pool_mapping_config.json"
+      # options: local/netbox/fleetmanager(TBD).
+      # when set to "local", SDN will read the mapping from "nodeGroupToPoolMappingConfigFilePath"
+      # when set to "netbox", SDN will read the mapping from the Netbox Cluster and its custom field network_mode.
+      # when set to "crd", SDN will read the mapping from the mappings from the CRD NodeGroupToPoolMapping.
+      nodeGroupToPoolMappingSource: "crd"
+      useDefaultValueInPoolForMovingNodeGroup: false
+      bgpCommunityIncomingGroupName: "incoming_group"
+      allowedTrunkGroups:
+        - none # Not an empty list, because empty means "no restrictions".
+      allowedModes:
+        - "access"
+        - "trunk"
+      allowedVlanIds: "21-39,100-3999,4008"
+      allowedNativeVlanIds: "1,55"
+      portChannelsEnabled: false
+      provisioningVlanIds: "4008,100,2100"
+      allowedCountAccInterfaces: "0,24"
+
+      # Netbox/DCIM related flags
+      switchImportSource: none # options: raven/netbox/none. "none" is for environment that doesn't need to import switch.
+      switchPortImportSource: none # options: bmh/netbox/none。 "none" is for environment that doesn't need to import switchPort.
+      netboxServer: "https://internal-placeholder.com"
+      netboxTokenPath: "/vault/secrets/netboxtoken"
+      netboxProviderServersFilterFilePath: /netbox/netbox_provider_servers_filter.json
+      netboxProviderInterfacesFilterFilePath: /netbox/netbox_provider_interfaces_filter.json
+      netboxSwitchesFilterFilePath: /netbox/switches_filter.json
+      netboxClientInsecureSkipVerify: false
+      netboxSwitchFQDNDomainName: "internal-placeholder.com"
+
+    ravenConfig:
+      environment: mock # used in Raven API call paths. or "mock", to use the mock client and not call raven.
+      credentialsFilePath: /vault/secrets/raven
+      host: raven-devcloud.app.intel.com
+      # host: internal-placeholder.com
+  groupToPoolMappingConfigJson:
+    nodeGroupToPoolMap:
+      # group-1: VV
+     
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/us-dev-1a/nw-sdn-controller
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "debug"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+netbox:
+  providerServersFilter:
+    site:
+      - us-dev-1a
+      # - pdx05
+    role:
+      - rgcp
+      - rgdb
+  providerInterfacesFilter:
+    interfaceName:
+      - net0/0
+      - net0/1
+      - net1/0
+      - net1/1
+  switchesFilter:
+    status:
+      - active
+    site:
+      - us-dev-1a
+      # - pdx05
+    role:
+      - leaf-switch
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https
+
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+
+kubeRBACPolicyImageRepo: bitnami/kube-rbac-proxy
+kubeRBACPolicyImagePullPolicy: IfNotPresent
+kubeRBACPolicyImageTag: 0.18.1
+kubeRBACProxyResources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi

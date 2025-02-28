@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "metrics",
+    srcs = ["prommetrics.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/infaas-dispatcher/metrics",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/infaas-dispatcher/config",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_grpc_ecosystem_go_grpc_middleware_providers_prometheus//:prometheus",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@com_github_prometheus_client_golang//prometheus/promauto",
+    ],
+)

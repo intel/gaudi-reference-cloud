@@ -1,0 +1,19 @@
+{"level":"info","ts":"2025-02-06T08:01:19.181-0800","caller":"auth/auth.go:45","msg":"Entry not found in tokens map, Hence token will be created using authorization flow for the user idc_billing@intel.com"}
+{"level":"info","ts":"2025-02-06T08:01:19.896-0800","caller":"azure_auth/browser.go:47","msg":"Starting local Listener"}
+{"level":"info","ts":"2025-02-06T08:01:43.196-0800","caller":"azure_auth/browser.go:50","msg":"Processing Get JWT Token"}
+{"level":"info","ts":"2025-02-06T08:01:48.229-0800","caller":"azure_auth/browser.go:124","msg":"Successfullly fetched the JWT Token, Closing the local listener"}
+{"level":"info","ts":"2025-02-06T08:01:48.235-0800","caller":"azure_auth/browser.go:50","msg":"Processing Get JWT Token"}
+{"level":"info","ts":"2025-02-06T08:01:53.235-0800","caller":"azure_auth/browser.go:55","msg":"Redirecting"}
+{"level":"info","ts":"2025-02-06T08:02:57.303-0800","caller":"auth/auth.go:184","msg":"Storing token data in map for user idc_billing@intel.com"}
+{"level":"info","ts":"2025-02-06T08:02:57.304-0800","caller":"auth/auth.go:45","msg":"Entry not found in tokens map, Hence token will be created using authorization flow for the user jc-premium-p8QRyvFZDYVK@mailslurp.net"}
+{"level":"info","ts":"2025-02-06T08:02:58.410-0800","caller":"azure_auth/browser.go:47","msg":"Starting local Listener"}
+{"level":"info","ts":"2025-02-06T08:04:44.728-0800","caller":"azure_auth/browser.go:50","msg":"Processing Get JWT Token"}
+{"level":"info","ts":"2025-02-06T08:04:49.731-0800","caller":"azure_auth/browser.go:236","msg":"Successfullly fetched the JWT Token, Closing the local listener"}
+{"level":"info","ts":"2025-02-06T08:04:49.758-0800","caller":"azure_auth/browser.go:50","msg":"Processing Get JWT Token"}
+{"level":"info","ts":"2025-02-06T08:04:54.759-0800","caller":"azure_auth/browser.go:55","msg":"Redirecting"}
+{"level":"info","ts":"2025-02-06T08:05:59.074-0800","caller":"auth/auth.go:102","msg":"Storing token data in map for user jc-premium-p8QRyvFZDYVK@mailslurp.net"}
+{"level":"info","ts":"2025-02-06T08:07:01.128-0800","caller":"AaaS/AaaS_suite_test.go:117","msg":"Delete SSH keys..."}
+{"level":"info","ts":"2025-02-06T08:07:01.197-0800","caller":"AaaS/AaaS_suite_test.go:124","msg":"Delete FileStorage..."}
+{"level":"info","ts":"2025-02-06T08:07:01.220-0800","caller":"AaaS/AaaS_suite_test.go:127","msg":"FS delete response: {\"code\":5,\"message\":\"Not Found\",\"details\":[]}"}
+{"level":"info","ts":"2025-02-06T08:07:01.220-0800","caller":"AaaS/AaaS_suite_test.go:131","msg":"Delete ObjectStorage..."}
+{"level":"info","ts":"2025-02-06T08:07:01.247-0800","caller":"AaaS/AaaS_suite_test.go:134","msg":"OS delete response: {\"code\":5,\"message\":\"Not Found\",\"details\":[]}"}

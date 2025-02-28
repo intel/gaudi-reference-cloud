@@ -1,0 +1,18 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  labels:
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/imageDisplayName: ubuntu-2204-jammy-v20240308
+    harvesterhci.io/os-type: ubuntu
+  name: ubuntu-2204-jammy-v20240308
+  namespace: default
+spec:
+  checksum: 56e90df75d80f5aee0e5d34eb87ea997114322e0f20324c003da9fa850705878e454fee189b6d6612cfce0eeadd17c517047c1a75f1ccc2f2debd2e45f836465
+  displayName: ubuntu-2204-jammy-v20240308
+  sourceType: download
+  storageClassParameters:
+    migratable: "true"
+    numberOfReplicas: "3"
+    staleReplicaTimeout: "30"
+  url: http://internal-placeholder.com:8000/ubuntu-2204-jammy-v20240308.qcow2

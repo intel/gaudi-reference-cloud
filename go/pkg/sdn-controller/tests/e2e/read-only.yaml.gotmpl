@@ -1,0 +1,20 @@
+tls:
+  client:
+    rootCa: kind-singlecluster-root-ca
+
+regions:
+  us-dev-1:
+    availabilityZones:
+      us-dev-1a:
+        sdnController:
+          managerConfig:
+            controllerManagerConfigYaml:
+              controllerConfig:
+                enableReadOnlyMode: true
+                switchPortImportSource: bmh
+                switchBackendMode: eapi
+                nodeGroupToPoolMappingSource: crd
+                allowedCountAccInterfaces: "0,1,2,4,24" # Allowing lower numbers means we don't have to create clab topologies with 24 interfaces per server
+                allowedTrunkGroups:
+                  - Provider_Nets
+                  - Tenant_Nets

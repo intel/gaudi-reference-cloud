@@ -1,0 +1,145 @@
+# This deploys Argo CD and Gitea for development and testing in kind.
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+  - name: gitea-charts
+    url: https://dl.gitea.com/charts/
+
+releases:
+
+{{- if $.Values.argocd.enabled }}
+
+        # See https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+        - name: argocd
+          namespace: argocd
+          kubeContext: {{ $.Values.global.kubeContext }}
+          labels:
+            applicationName: argocd
+            crd: true
+            geographicScope: global
+            environmentName: {{ $.Values.global.environmentName }}
+            kubeContext: {{ $.Values.global.kubeContext }}
+          chart: argo/argo-cd
+          version: {{ $.Values.argocd.version | quote }}
+          values:
+            - applicationSet:
+                enabled: true
+            - configs:
+                cm:
+                  # Use same resource tracking method used in production Argo CD.
+                  application.instanceLabelKey: app.kubernetes.io/instance
+                  timeout.reconciliation: 10s
+            - dex:
+                enabled: false
+            - notifications:
+                enabled: false
+            - repoServer:
+                env:
+                  - name: HTTP_PROXY
+                    value: {{ ($.Values.proxy).http_proxy | quote }}
+                  - name: HTTPS_PROXY
+                    value: {{ ($.Values.proxy).https_proxy | quote }}
+                  - name: NO_PROXY
+                    value: {{ print ($.Values.proxy).no_proxy ",argocd-application-controller,argocd-dex-server,argocd-redis,argocd-repo-server" | quote }}
+            - server:
+                env:
+                  - name: HTTP_PROXY
+                    value: {{ ($.Values.proxy).http_proxy | quote }}
+                  - name: HTTPS_PROXY
+                    value: {{ ($.Values.proxy).https_proxy | quote }}
+                  - name: NO_PROXY
+                    value: {{ print ($.Values.proxy).no_proxy ",argocd-application-controller,argocd-dex-server,argocd-redis,argocd-repo-server" | quote }}
+                extraArgs:
+                  - --insecure
+                ingress:
+                  enabled: true
+                  ingressClassName: {{ $.Values.global.argocd.server.ingress.className | quote }}
+                  hosts:
+                    - {{ $.Values.global.argocd.server.ingress.host | quote }}
+                service:
+                  nodePortHttp: 30960
+                  type: NodePort
+
+        # See https://gitea.com/gitea/helm-chart/src/branch/main/values.yaml
+        - name: gitea
+          namespace: gitea
+          kubeContext: {{ $.Values.global.kubeContext }}
+          labels:
+            applicationName: gitea 
+            geographicScope: global
+            environmentName: {{ $.Values.global.environmentName }}
+            kubeContext: {{ $.Values.global.kubeContext }}
+          chart: gitea-charts/gitea
+          version: {{ $.Values.gitea.version | quote }}
+          values:
+            - image:
+                registry: {{ .Values.dockerIo.registry | quote }}
+                repository: "{{ .Values.dockerIo.repositoryPrefix }}gitea/gitea"
+            - gitea:
+                admin:
+                  email: "gitea@local.domain"
+                  password: {{ readFile (print $secretsDir "/gitea_admin_password") | quote }}
+                  username: "gitea_admin"
+                # See https://docs.gitea.com/administration/config-cheat-sheet
+                config:
+                  repository:
+                    ENABLE_PUSH_CREATE_USER: "true"
+            - ingress:
+                enabled: true
+                ingressClassName: {{ $.Values.global.gitea.ingress.className | quote }}
+                hosts:
+                  - host: {{ $.Values.global.gitea.ingress.host | quote }}
+                    paths:
+                      - path: /
+                        pathType: Prefix
+            - persistence:
+                enabled: false
+            - postgresql-ha:
+                enabled: false
+            - postgresql:
+                enabled: true
+                global:
+                  postgresql:
+                    auth:
+                      password: {{ readFile (print $secretsDir "/gitea_admin_password") | quote }}
+                      postgresPassword: {{ readFile (print $secretsDir "/gitea_admin_password") | quote }}
+                primary:
+                  persistence:
+                    enabled: false
+            - redis-cluster:
+                persistence:
+                  enabled: false
+            - service:
+                http:
+                  nodePort: 30965
+                  type: NodePort
+
+        - name: argo-cd-resources
+          namespace: argocd
+          kubeContext: {{ $.Values.global.kubeContext }}
+          labels:
+            applicationName: argocd
+            geographicScope: global
+            environmentName: {{ $.Values.global.environmentName }}
+            kubeContext: {{ $.Values.global.kubeContext }}
+          chart: idc/argo-cd-resources
+          version: {{ readFile (print $helmChartVersionsDir "/argo-cd-resources.version") | quote }}
+          values:
+            - gitRepo:
+                password: {{ readFile (print $secretsDir "/gitea_admin_password") | quote }}
+                url: http://gitea-http.gitea.svc.cluster.local:3000/gitea_admin/idc-argocd.git
+                username: "gitea_admin"
+            - localClusterName: {{ $.Values.global.kubeContext }}
+
+{{- end }}

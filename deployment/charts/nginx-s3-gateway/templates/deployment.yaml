@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $.Release.Name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ $.Release.Name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ $.Release.Name }}"
+      annotations:
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/auth-path: "{{ .Values.authPath }}"
+        vault.hashicorp.com/service: "{{ .Values.service }}"
+        vault.hashicorp.com/agent-inject-secret-s3-secret-key: "{{ .Values.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-secret-s3-access-key-id: "{{ .Values.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-s3-access-key-id: |-
+          {{`{{- with secret `}}"{{ .Values.vaultCredentialsPath }}"{{` -}}`}}
+          {{` export AWS_ACCESS_KEY_ID={{ index .Data.data "access_key_id" }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-s3-secret-key: "{{ .Values.vaultCredentialsPath }}"
+        vault.hashicorp.com/agent-inject-template-s3-secret-key: |-
+          {{`{{- with secret `}}"{{ .Values.vaultCredentialsPath }}"{{` -}}`}}
+          {{` export AWS_SECRET_ACCESS_KEY={{ index .Data.data "secret_key" }}`}}
+          {{`{{- end }}`}}
+    spec:
+      restartPolicy: Always
+      serviceAccount: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+        - name: nginx-s3-gateway
+          image: "{{ $.Values.nginx3sServerImage.repository }}:{{ .Values.nginx3sServerImage.tag}}"
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          command:
+            ['bash', '-c']
+          args:
+            ['source /vault/secrets/s3-access-key-id && source /vault/secrets/s3-secret-key && /docker-entrypoint.sh nginx -g "daemon off;"' ]
+          env:
+            - name: S3_BUCKET_NAME
+              value: {{ .Values.s3_bucket_name }}
+            - name: S3_SERVER
+              value: "s3-us-west-2.amazonaws.com"
+            - name: S3_SERVER_PORT
+              value: "443"
+            - name: S3_SERVER_PROTO
+              value: "https"
+            - name: S3_REGION
+              value: "us-west-2"
+            - name: S3_STYLE
+              value: "virtual"
+            - name: DEBUG
+              value: "true"
+            - name: AWS_SIGS_VERSION
+              value: "4"
+            - name: ALLOW_DIRECTORY_LIST
+              value: "false"
+            - name: PROXY_CACHE_VALID_OK
+              value: {{ .Values.proxy_cache_valid_ok }}
+            - name: PROXY_CACHE_MAX_SIZE
+              value: {{ .Values.proxy_cache_max_size }}
+            - name: PROXY_CACHE_INACTIVE
+              value: {{ .Values.proxy_cache_inactive }}
+            - name: PROXY_CACHE_SLICE_SIZE
+              value: {{ .Values.proxy_slice_size }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            # According to [1], Container won't work with read-only root FS
+            # [1] https://github.com/nginxinc/nginx-s3-gateway/blob/7e35275d04e6da0198958b2344da75e41c6940ed/docs/getting_started.md?plain=1#L185
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false

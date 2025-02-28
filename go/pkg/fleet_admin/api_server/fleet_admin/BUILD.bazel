@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "fleet_admin",
+    srcs = [
+        "fleet_admin.go",
+        "fleet_admin_util.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/fleet_admin/api_server/fleet_admin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/fleet_admin/api_server/config",
+        "//go/pkg/instance_operator/util",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@com_github_lib_pq//:pq",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

@@ -1,0 +1,40 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load", "oci_push")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+package(default_visibility = ["//visibility:public"])
+
+pkg_tar(
+    name = "tar",
+    srcs = ["//services/storage_controller/cmd/storage_controller"],
+    extension = "tar.gz",
+    package_dir = "app",
+)
+
+oci_image(
+    name = "image",
+    base = "@distroless_base",
+    entrypoint = ["/app/storage_controller"],
+    tars = [":tar"],
+)
+
+# GitHub does not support strture tests as for now
+# load("@container_structure_test//:defs.bzl", "container_structure_test")
+# container_structure_test(
+#    name = "image_test",
+#    configs = ["image_test.yaml"],
+#    image = ":image",
+# )
+
+oci_push(
+    name = "image_push",
+    image = ":image",
+    repository_file = ":repository.txt",
+)
+
+oci_load(
+    name = "image_load",
+    image = ":image",
+    repo_tags = ["localtest.localhost/storage_controller:latest"],
+)

@@ -1,0 +1,35 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1;
+
+option go_package = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/api/intel/storagecontroller/v1";
+
+// AuthenticationContext is required field in all namespace bound requests,
+// it contains credentials for the namespaced user who interacts with the cluster
+message AuthenticationContext {
+  // Authentication scheme, should be defined
+  oneof scheme {
+    // Basic scheme data
+    Basic basic = 1;
+
+    // Bearer scheme data
+    Bearer bearer = 2;
+  }
+
+  message Basic {
+    // Usualy equals to username
+    string principal = 1;
+
+    // Usualy equals to password
+    string credentials = 2;
+  }
+
+  // Bearer token auth, client should have way to obtain correct token
+  // from the external endpoint
+  message Bearer {
+    // Bearer token as string
+    string token = 2;
+  }
+}

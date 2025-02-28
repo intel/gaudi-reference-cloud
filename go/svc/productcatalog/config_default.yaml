@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Default config file used in container image.
+listenPort: 8080
+tls:
+  useTLS: false

@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "sdn_clab_deployer_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/sdn_clab_deployer",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/sdn-controller/tests/clab",
+        "//go/pkg/sdn-controller/tests/helper",
+        "//go/pkg/sdn-controller/tests/test_utils",
+    ],
+)
+
+go_binary(
+    name = "sdn_clab_deployer",
+    embed = [":sdn_clab_deployer_lib"],
+    visibility = ["//visibility:public"],
+)

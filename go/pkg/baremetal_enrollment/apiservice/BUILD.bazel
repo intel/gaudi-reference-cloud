@@ -1,0 +1,52 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "apiservice",
+    srcs = [
+        "disenrollment.go",
+        "enrollment.go",
+        "router.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/apiservice",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/apiservice/config",
+        "//go/pkg/baremetal_enrollment/dcim",
+        "//go/pkg/baremetal_enrollment/secrets",
+        "//go/pkg/log",
+        "@com_github_cenkalti_backoff_v4//:backoff",
+        "@com_github_gin_contrib_zap//:zap",
+        "@com_github_gin_gonic_gin//:gin",
+        "@io_k8s_api//batch/v1:batch",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//tools/clientcmd",
+        "@org_uber_go_zap//:zap",
+    ],
+)
+
+go_test(
+    name = "apiservice_test",
+    srcs = [
+        "disenrollment_test.go",
+        "enrollment_test.go",
+    ],
+    embed = [":apiservice"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/apiservice/config",
+        "//go/pkg/baremetal_enrollment/dcim",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_stretchr_testify//assert",
+        "@io_k8s_api//batch/v1:batch",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//kubernetes/fake",
+        "@io_k8s_client_go//testing",
+    ],
+)

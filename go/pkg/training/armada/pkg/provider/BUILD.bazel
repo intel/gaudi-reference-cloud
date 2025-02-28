@@ -1,0 +1,30 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "provider",
+    srcs = [
+        "cluster_provisioner.go",
+        "instance_create.go",
+        "slurm_instance.go",
+        "storage_create.go",
+        "util.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/training/armada/pkg/provider",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "//go/pkg/training/armada/pkg/ansible",
+        "//go/pkg/training/armada/pkg/cloud_init",
+        "//go/pkg/training/armada/pkg/config",
+        "//go/pkg/training/common",
+        "//go/pkg/training/config",
+        "//go/pkg/training/database/query",
+        "//go/pkg/training/idc_compute",
+        "//go/pkg/training/idc_storage",
+        "@com_github_flosch_pongo2//:pongo2",
+        "@org_golang_x_sync//errgroup",
+    ],
+)

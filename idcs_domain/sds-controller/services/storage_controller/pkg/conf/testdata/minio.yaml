@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+listenPort: 5000
+clusters:
+  - name: test
+    uuid: 00000000-0000-0000-0000-000000000000
+    type: MinIO
+    labels:
+      label: value
+    location: testing
+    api:
+      type: REST
+      url: http://testing.localhost
+    auth:
+      scheme: Basic
+      env: WEKA_CREDS
+    minioConfig:
+      kesKey: "key-name"

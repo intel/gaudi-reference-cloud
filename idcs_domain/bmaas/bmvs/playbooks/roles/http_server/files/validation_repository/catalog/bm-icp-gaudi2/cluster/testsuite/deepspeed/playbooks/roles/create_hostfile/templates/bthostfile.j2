@@ -1,0 +1,8 @@
+{% if MASTER_IP is defined %}
+{{ MASTER_IP.split(',')[0] }} slots=8
+{% endif %}
+{% if MEMBER_IPS is defined and MEMBER_IPS != "" %}
+{% for ip in MEMBER_IPS.split(',') %}
+{{ ip }} slots=8
+{% endfor %}
+{% endif %}

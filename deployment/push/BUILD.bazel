@@ -1,0 +1,41 @@
+# This file contains targets to push container images to a Docker registry and Helm charts to Harbor.
+# Containers will be pushed to the registry indicated by /build/dynamic/docker_registry.bzl.
+# Helm charts will be pushed to the registry indicated by /build/dynamic/helm_registry.bzl.
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("//build/helm:helm-push-oci.bzl", "helm_push")
+load("//build/dynamic:docker_registry.bzl", "DOCKER_REGISTRY", "DOCKER_IMAGE_PREFIX")
+load("//build/dynamic:helm_registry.bzl", "HELM_REGISTRY", "HELM_PROJECT")
+load("//deployment:deployment.bzl", "CONTAINERS", "CHARTS", "COMPONENT_TO_CHARTS_AND_CONTAINERS_DICT")
+load(":push.bzl", "idc_push_group")
+
+[container_push(
+    name = "%s_container_push" % name,
+    image = target,
+    format = "Docker",
+    registry = DOCKER_REGISTRY,
+    repository = "%s%s" % (DOCKER_IMAGE_PREFIX, name),
+    tag_file = "//build/dynamic:DOCKER_TAG",
+) for name, target in CONTAINERS.items()]
+
+[helm_push(
+    name = "%s_chart_push" % name,
+    chart = target,
+    repository_url = HELM_REGISTRY,
+    repository_name = HELM_PROJECT,
+) for name, target in CHARTS.items()]
+
+# Containers to push with `make container-push` and Helm charts to push with `make helm-push`.
+idc_push_group(
+  name = "all",
+  containers = CONTAINERS,
+  charts = CHARTS,
+  jobs = 4,
+)
+
+[idc_push_group(
+  name = "%s_component" % component,
+  containers = info["images"],
+  charts = info["charts"],
+  jobs = 4,
+) for component, info in COMPONENT_TO_CHARTS_AND_CONTAINERS_DICT.items()]

@@ -1,0 +1,99 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    nodegroup.devcloud.io/gateway: 10.64.112.1
+    nodegroup.devcloud.io/ip-addresses: 10.64.112.215,10.64.112.216,10.64.112.217,10.64.112.218
+    nodegroup.devcloud.io/nameserver: 10.248.2.17
+  name: cl-1234abcd-ej
+  namespace: default
+spec:
+  advancedConfig:
+    kubeApiServerArgs: ""
+    kubeControllerManagerArgs: ""
+    kubeProxyArgs: ""
+    kubeSchedulerArgs: ""
+    kubeletArgs: ""
+  backup: ""
+  instanceIMI: image-g4qf8
+  instanceType: small
+  kubernetesProvider: iks
+  kubernetesProviderConfig:
+    caCertAuthEndpoint: ""
+    enableAuthEndpoint: false
+    envVars:
+      HTTP_PROXY: http://internal-placeholder.com:912
+      HTTPS_PROXY: http://internal-placeholder.com:912
+      NO_PROXY: localhost,127.0.0.0/8,127.0.0.1/8,10.0.0.0/8,.intel.com,100.0.0.0/8
+    fqdnAuthEndpoint: ""
+  kubernetesVersion: v1.26.4
+  nodeProvider: Harvester 
+  runtime: runc
+  network:
+    serviceCIDR: "100.66.0.0/16"
+    podCIDR: "100.68.0.0/16"
+    clusterDNS: "100.66.0.10"
+  ilbs:
+    - name: etcd
+      description: "Etcd members loadbalancer"
+      port: 443
+      environment: 8
+      usergroup: 1545
+      owner: system
+      pool:
+        name: etcd
+        port: 2379
+    - name: apiserver
+      description: "Kube-apiserver members loadbalancer"
+      port: 443
+      environment: 8
+      usergroup: 1545
+      owner: system
+      pool:
+        name: apiserver
+        port: 6443
+    - name: konnectivity
+      description: "Konnectivity members loadbalancer"
+      port: 443
+      environment: 8
+      usergroup: 1545
+      owner: system
+      pool:
+        name: konnectivity
+        port: 8132
+  nodegroups:
+    - annotations:
+        nodegroup.devcloud.io/gateway: 10.64.112.1
+        nodegroup.devcloud.io/ip-addresses: 10.64.112.214,10.64.112.213,10.64.112.212
+        nodegroup.devcloud.io/nameserver: 10.248.2.17
+      count: 1
+      instanceIMI: image-dczmr
+      instanceType: small
+      name: ng-1234abcd-ej
+      sshKey: 
+        - mysshkey
+      kubernetesVersion: ""
+      labels: {}
+      taints: {}
+      upgradeStrategy:
+        drainBefore: false
+        maxUnavailablePercent: 0
+  addons:
+    - name: kube-proxy
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/kube-proxy-k1264-1.template
+    - name: coredns
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/coredns-171-k1271-1.template
+    - name: calico-operator
+      type: kubectl-replace
+      artifact: http://10.11.183.185:8081/calico-operator-3260-k1271-1.template
+    - name: calico-config
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/calico-config-3260-k1271-1.template
+    - name: konnectivity-agent
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/konnectivity-agent.template
+

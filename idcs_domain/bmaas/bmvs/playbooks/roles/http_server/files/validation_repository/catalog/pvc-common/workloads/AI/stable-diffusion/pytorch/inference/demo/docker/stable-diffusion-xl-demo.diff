@@ -1,0 +1,295 @@
+diff --git a/app.py b/app.py
+index 3e3ec84..88879a5 100644
+--- a/app.py
++++ b/app.py
+@@ -1,7 +1,9 @@
++
++import torch
+ import gradio as gr
+ 
+ from diffusers import DiffusionPipeline
+-import torch
++#import torch
+ 
+ import base64
+ from io import BytesIO
+@@ -12,7 +14,12 @@ import gc
+ from helper import UNetDataParallel
+ from share_btn import community_icon_html, loading_icon_html, share_js
+ 
++import intel_extension_for_pytorch as ipex
++import concurrent.futures
++
+ # SDXL code: https://github.com/huggingface/diffusers/pull/3859
++webui_host_ip = os.getenv("HOST_IP")
++webui_host_port = int(os.getenv("HOST_PORT"))
+ 
+ model_dir = os.getenv("SDXL_MODEL_DIR")
+ 
+@@ -35,6 +42,7 @@ offload_base = os.getenv("OFFLOAD_BASE", "true").lower() == "true"
+ offload_refiner = os.getenv("OFFLOAD_REFINER", "true").lower() == "true"
+ 
+ # Generate how many images by default
++MAX_NUM_IMAGES = 4
+ default_num_images = int(os.getenv("DEFAULT_NUM_IMAGES", "4"))
+ if default_num_images < 1:
+     default_num_images = 1
+@@ -43,37 +51,42 @@ if default_num_images < 1:
+ share = os.getenv("SHARE", "false").lower() == "true"
+ 
+ print("Loading model", model_key_base)
+-pipe = DiffusionPipeline.from_pretrained(model_key_base, torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
+-
++pipe = []
+ multi_gpu = os.getenv("MULTI_GPU", "false").lower() == "true"
++device_num = torch.xpu.device_count()
++num_instances = 1
+ 
+ if multi_gpu:
+-    pipe.unet = UNetDataParallel(pipe.unet)
+-    pipe.unet.config, pipe.unet.dtype, pipe.unet.add_embedding = pipe.unet.module.config, pipe.unet.module.dtype, pipe.unet.module.add_embedding
+-    pipe.to("cuda")
+-else:
+-    if offload_base:
+-        pipe.enable_model_cpu_offload()
+-    else:
+-        pipe.to("cuda")
++    if device_num < MAX_NUM_IMAGES:
++        print(f"XPU Device number less than {MAX_NUM_IMAGES}.")
++        exit()
++    print("multi GPU support")
++    num_instances = 4
+ 
+-# if using torch < 2.0
+-# pipe.enable_xformers_memory_efficient_attention()
++for i in range(num_instances):
++    pi = DiffusionPipeline.from_pretrained(model_key_base, torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
++    pipe.append(pi)
++
++for i in range(num_instances):    
++    pipe[i].to(f'xpu:{i}')
++    datatype = torch.float16
++    pipe[i].unet = torch.xpu.optimize(pipe[i].unet.eval(), dtype=datatype, inplace=True)
++    pipe[i].vae = torch.xpu.optimize(pipe[i].vae.eval(), dtype=datatype, inplace=True)
++    pipe[i].text_encoder = torch.xpu.optimize(pipe[i].text_encoder.eval(), dtype=datatype, inplace=True)
+ 
+-# pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
+ 
+ if enable_refiner:
+     print("Loading model", model_key_refiner)
+-    pipe_refiner = DiffusionPipeline.from_pretrained(model_key_refiner, torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
+-    if multi_gpu:
+-        pipe_refiner.unet = UNetDataParallel(pipe_refiner.unet)
+-        pipe_refiner.unet.config, pipe_refiner.unet.dtype, pipe_refiner.unet.add_embedding = pipe_refiner.unet.module.config, pipe_refiner.unet.module.dtype, pipe_refiner.unet.module.add_embedding
+-        pipe_refiner.to("cuda")
+-    else:
+-        if offload_refiner:
+-            pipe_refiner.enable_model_cpu_offload()
+-        else:
+-            pipe_refiner.to("cuda")
++    pipe_refiner = []
++    for i in range(num_instances):
++        ri = DiffusionPipeline.from_pretrained(model_key_refiner, torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
++        pipe_refiner.append(ri)
++
++    for i in range(num_instances):
++        pipe_refiner[i].to(f'xpu:{i}')
++        pipe_refiner[i].unet = torch.xpu.optimize(pipe_refiner[i].unet.eval(), dtype=datatype, inplace=True)
++        pipe_refiner[i].vae = torch.xpu.optimize(pipe_refiner[i].vae.eval(), dtype=datatype, inplace=True)
++        pipe_refiner[i].text_encoder_2 = torch.xpu.optimize(pipe_refiner[i].text_encoder_2.eval(), dtype=datatype, inplace=True)
+ 
+     # if using torch < 2.0
+     # pipe_refiner.enable_xformers_memory_efficient_attention()
+@@ -84,24 +97,48 @@ if enable_refiner:
+ 
+ is_gpu_busy = False
+ def infer(prompt, negative, scale, samples=4, steps=50, refiner_strength=0.3, seed=-1):
+-    prompt, negative = [prompt] * samples, [negative] * samples
++    print(f"prompt: {prompt}, negative: {negative}, scale: {scale}, samples: {samples}, steps: {steps}, refiner_strength: {refiner_strength}, seed: {seed}")
+ 
+-    g = torch.Generator(device="cuda")
+-    if seed != -1:
+-        g.manual_seed(seed)
+-    else:
+-        g.seed()
++    if num_instances == 1:
++        prompt, negative = [prompt] * samples, [negative] * samples
++
++    g = []
++    for i in range(num_instances):
++        g.append(torch.Generator(device=f"xpu:{i}"))
++
++    for i in range(num_instances):
++        if seed != -1:
++            g[i].manual_seed(seed+i)
++        else:
++            g[i].seed()
+ 
+     images_b64_list = []
+ 
+-    if not enable_refiner or output_images_before_refiner:
+-        images = pipe(prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, generator=g).images
++    if num_instances == 1:
++        if not enable_refiner or output_images_before_refiner:
++            images = pipe[0](prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, generator=g[0]).images
++        else:
++            # This skips the decoding and re-encoding for refinement.
++            images = pipe[0](prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, output_type="latent", generator=g[0]).images
+     else:
+-        # This skips the decoding and re-encoding for refinement.
+-        images = pipe(prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, output_type="latent", generator=g).images
+-
++        images = []
++        pipe_t = []
++        print(f"start base threads for {samples} samples")
++        with concurrent.futures.ThreadPoolExecutor() as executor:
++            for i in range(samples):
++                if not enable_refiner or output_images_before_refiner:
++                    pipei = executor.submit(pipe[i], prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, generator=g[i])
++                    pipe_t.append(pipei)
++                    #imagei = pipe[i](prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, generator=g[i]).images[0]
++                else:
++                    pipei = executor.submit(pipe[i], prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, output_type="latent", generator=g[i] )
++                    pipe_t.append(pipei)
++                    #imagei = pipe[i](prompt=prompt, negative_prompt=negative, guidance_scale=scale, num_inference_steps=steps, output_type="latent", generator=g[i]).images[0]
++        for i in range(samples):
++            imagei = pipe_t[i].result().images[0]
++            images.append(imagei)
+     gc.collect()
+-    torch.cuda.empty_cache()
++    torch.xpu.empty_cache()
+ 
+     if enable_refiner:
+         if output_images_before_refiner:
+@@ -109,16 +146,30 @@ def infer(prompt, negative, scale, samples=4, steps=50, refiner_strength=0.3, se
+                 buffered = BytesIO()
+                 image.save(buffered, format="JPEG")
+                 img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+-                
++                    
+                 image_b64 = (f"data:image/jpeg;base64,{img_str}")
+                 images_b64_list.append(image_b64)
+ 
+-        images = pipe_refiner(prompt=prompt, negative_prompt=negative, image=images, num_inference_steps=steps, strength=refiner_strength, generator=g).images
+-
+-        gc.collect()
+-        torch.cuda.empty_cache()
+-
+-    for image in images:
++    if enable_refiner:
++        pipe_refiner_t = []
++        if num_instances == 1:
++            images = pipe_refiner[0](prompt=prompt, negative_prompt=negative, image=images, num_inference_steps=steps, strength=refiner_strength, generator=g[0]).images
++        else:
++            print(f"start refiner threads for {samples} samples")
++            with concurrent.futures.ThreadPoolExecutor() as executor:
++                for i in range(samples):                    
++                    piperi = executor.submit(pipe_refiner[i], prompt=prompt, negative_prompt=negative, image=images[i], num_inference_steps=steps, strength=refiner_strength, generator=g[i])
++                    pipe_refiner_t.append(piperi)
++                    #imagei = pipe_refiner[i](prompt=prompt, negative_prompt=negative, image=images, num_inference_steps=steps, strength=refiner_strength, generator=g[i]).images[0]
++            images = []
++            for i in range(samples):
++                imagei = pipe_refiner_t[i].result().images[0]
++                imagei.save(f"test{i}.png")
++                images.append(imagei)
++    gc.collect()
++    torch.xpu.empty_cache()
++    
++    for image in images:        
+         buffered = BytesIO()
+         image.save(buffered, format="JPEG")
+         img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+@@ -127,8 +178,11 @@ def infer(prompt, negative, scale, samples=4, steps=50, refiner_strength=0.3, se
+         images_b64_list.append(image_b64)
+     
+     return images_b64_list
+-    
+-    
++
++print("warm up...")    
++infer("a nice cat", "low quality", 9, samples=4)
++
++
+ css = """
+         .gradio-container {
+             font-family: 'IBM Plex Sans', sans-serif;
+@@ -330,7 +384,7 @@ with block:
+                   <rect x="23" y="69" width="23" height="23" fill="black"></rect>
+                 </svg>
+                 <h1 style="font-weight: 900; margin-bottom: 7px;margin-top:5px">
+-                  Stable Diffusion XL 1.0 Demo
++                  Stable Diffusion XL 1.0 Demo on Intel GPU
+                 </h1>
+               </div>
+               <p style="margin-bottom: 10px; font-size: 94%; line-height: 23px;">
+@@ -384,12 +438,12 @@ with block:
+             label="Generated images", show_label=False, elem_id="gallery"
+         ).style(grid=[2], height="auto")
+ 
+-        with gr.Group(elem_id="container-advanced-btns"):
++        #with gr.Group(elem_id="container-advanced-btns"):
+             #advanced_button = gr.Button("Advanced options", elem_id="advanced-btn")
+-            with gr.Group(elem_id="share-btn-container"):
+-                community_icon = gr.HTML(community_icon_html)
+-                loading_icon = gr.HTML(loading_icon_html)
+-                share_button = gr.Button("Share to community", elem_id="share-btn")
++        #    with gr.Group(elem_id="share-btn-container"):
++        #        community_icon = gr.HTML(community_icon_html)
++        #        loading_icon = gr.HTML(loading_icon_html)
++        #        share_button = gr.Button("Share to community", elem_id="share-btn")
+ 
+         with gr.Accordion("Advanced settings", open=False):
+         #    gr.Markdown("Advanced settings are temporarily unavailable")
+@@ -411,7 +465,8 @@ with block:
+                 randomize=True,
+             )
+ 
+-        ex = gr.Examples(examples=examples, fn=infer, inputs=[text, negative, guidance_scale], outputs=[gallery, community_icon, loading_icon, share_button], cache_examples=False)
++        #ex = gr.Examples(examples=examples, fn=infer, inputs=[text, negative, guidance_scale], outputs=[gallery, community_icon, loading_icon, share_button], cache_examples=False)
++        ex = gr.Examples(examples=examples, fn=infer, inputs=[text, negative, guidance_scale], outputs=[gallery], cache_examples=False)
+         ex.dataset.headers = [""]
+         negative.submit(infer, inputs=[text, negative, guidance_scale, samples, steps, refiner_strength, seed], outputs=[gallery], postprocess=False)
+         text.submit(infer, inputs=[text, negative, guidance_scale, samples, steps, refiner_strength, seed], outputs=[gallery], postprocess=False)
+@@ -427,16 +482,16 @@ with block:
+         #        options.style.display = ["none", ""].includes(options.style.display) ? "flex" : "none";
+         #    }""",
+         #)
+-        share_button.click(
+-            None,
+-            [],
+-            [],
+-            _js=share_js,
+-        )
++        #share_button.click(
++        #    None,
++        #    [],
++        #    [],
++        #    _js=share_js,
++        #)
+         gr.HTML(
+             """
+                 <div class="footer">
+-                    <p>Model by <a href="https://huggingface.co/stabilityai" style="text-decoration: underline;" target="_blank">StabilityAI</a> - Gradio Demo by 🤗 Hugging Face and <a style="text-decoration: underline;" href="https://tonylian.com/">Long (Tony) Lian</a>
++                    <p>Model by <a href="https://huggingface.co/stabilityai" style="text-decoration: underline;" target="_blank">StabilityAI</a> - Gradio Demo by 🤗 Hugging Face and <a style="text-decoration: underline;" href="https://tonylian.com/">Long (Tony) Lian</a>, updated for Intel GPU
+                     </p>
+                 </div>
+            """
+@@ -452,4 +507,6 @@ Despite how impressive being able to turn text into image is, beware to the fact
+                 """
+             )
+ 
+-block.queue().launch(share=share)
+\ No newline at end of file
++#block.queue().launch(share=share)
++block.queue().launch(server_name=webui_host_ip, server_port=webui_host_port, share=share)
++
+diff --git a/requirements.txt b/requirements.txt
+index a57ae73..9f39633 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,5 +1,3 @@
+---extra-index-url https://download.pytorch.org/whl/cu113
+-torch==2.0.1
+ python-dotenv
+ accelerate
+ transformers

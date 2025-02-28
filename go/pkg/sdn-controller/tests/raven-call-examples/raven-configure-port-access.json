@@ -1,0 +1,5 @@
+thomasfl:~/workspace/sdn-controller (zj/support-reconciliation +%=) 0$ curl -X PUT "https://internal-placeholder.com/devcloud/v2/rnd/configure/port/access" -H  "accept: application/json" -H  "Authorization: Bearer TOKEN_HERE" -H  "Content-Type: application/json" -d "{\"description\":\"test\",\"fallback_vlan\":0,\"lacp_master_port\":0,\"switch_fqdn\":\"internal-placeholder.com\",\"switch_port\":\"27/1\",\"vlan_tag\":13}"
+{"error":"Unable to apply changes.","message":["Unable to apply changes."],"status":false}
+
+thomasfl:~/workspace/sdn-controller (zj/support-reconciliation +%=) 0$ curl -X PUT "https://internal-placeholder.com/devcloud/v2/rnd/configure/port/access" -H  "accept: application/json" -H  "Authorization: Bearer TOKEN_HERE" -H  "Content-Type: application/json" -d "{\"switch_fqdn\":\"internal-placeholder.com\",\"switch_port\":\"27/1\",\"vlan_tag\":13}"
+{"success":true}

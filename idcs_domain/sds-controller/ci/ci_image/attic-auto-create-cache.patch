@@ -1,0 +1,191 @@
+diff --git a/server/src/config.rs b/server/src/config.rs
+index 11e1f8d..5b51709 100644
+--- a/server/src/config.rs
++++ b/server/src/config.rs
+@@ -46,11 +46,39 @@ const ENV_TOKEN_RS256_PUBKEY_BASE64: &str = "ATTIC_SERVER_TOKEN_RS256_PUBKEY_BAS
+ /// Environment variable storing the database connection string.
+ const ENV_DATABASE_URL: &str = "ATTIC_SERVER_DATABASE_URL";
+ 
++/// Configuration of a default cache
++#[derive(Clone, Derivative, Deserialize)]
++#[derivative(Debug)]
++pub struct DefaultCacheConfig {
++    pub name: String,
++    #[serde(rename = "is-public")]
++    pub is_public: bool,
++    pub priority: i32,
++    #[serde(
++        rename = "upstream-cache-key-names",
++        default = "DefaultCacheConfig::default_upstream_cache_key_names",
++    )]
++    pub upstream_cache_key_names: Vec<String>,
++    /// private key from nix-store --generate-binary-cache-key
++    /// if prefixed with `$` then it will be interpreted as env variable
++    #[serde(rename = "private-key")]
++    pub private_key: Option<String>,
++}
++impl DefaultCacheConfig {
++    fn default_upstream_cache_key_names() -> Vec<String> {
++        return vec!["cache.nixos.org-1".to_string()];
++    }
++}
++
+ /// Configuration for the Attic Server.
+ #[derive(Clone, Derivative, Deserialize)]
+ #[derivative(Debug)]
+ #[serde(deny_unknown_fields)]
+ pub struct Config {
++    /// Contains a cache config for a default cache we create on start.
++    #[serde(rename = "default-cache")]
++    pub create_default_cache: Option<DefaultCacheConfig>,
++
+     /// Socket address to listen on.
+     #[serde(default = "default_listen_address")]
+     pub listen: SocketAddr,
+diff --git a/server/src/lib.rs b/server/src/lib.rs
+index 0314e69..e0799eb 100644
+--- a/server/src/lib.rs
++++ b/server/src/lib.rs
+@@ -30,14 +30,19 @@ use std::net::SocketAddr;
+ use std::sync::atomic::{AtomicBool, Ordering};
+ use std::sync::Arc;
+ use std::time::Duration;
++use std::path::PathBuf;
+ 
+-use anyhow::Result;
++use anyhow::{Context, Result};
+ use axum::{
+     extract::Extension,
+     http::{uri::Scheme, Uri},
+     Router,
+ };
+-use sea_orm::{query::Statement, ConnectionTrait, Database, DatabaseConnection};
++use sea_orm::{
++    query::Statement, sea_query::OnConflict, ActiveValue::Set, ConnectionTrait, Database,
++    DatabaseConnection, EntityTrait,
++};
++use tokio::fs::{self, OpenOptions};
+ use tokio::net::TcpListener;
+ use tokio::sync::OnceCell;
+ use tokio::time;
+@@ -46,10 +51,11 @@ use tower_http::trace::TraceLayer;
+ 
+ use access::http::{apply_auth, AuthState};
+ use attic::cache::CacheName;
+-use config::{Config, StorageConfig};
++use config::{Config, DefaultCacheConfig, StorageConfig};
+ use database::migration::{Migrator, MigratorTrait};
+ use error::{ErrorKind, ServerError, ServerResult};
+ use middleware::{init_request_state, restrict_host, set_visibility_header};
++use regex::Regex;
+ use storage::{LocalBackend, S3Backend, StorageBackend};
+ 
+ type State = Arc<StateInner>;
+@@ -215,12 +221,74 @@ async fn fallback(_: Uri) -> ServerResult<()> {
+     Err(ErrorKind::NotFound.into())
+ }
+ 
++async fn try_create_default_cache(
++    state: &StateInner,
++    config: Option<DefaultCacheConfig>,
++) -> Result<()> {
++    let Some(config) = config else {
++        eprintln!("No database config for the default cache.");
++        return Ok(());
++    };
++    let connection = state.database().await?;
++    let keypair = match config.private_key {
++        None => {
++            eprintln!("No predefined nix keypair, creating...");
++            attic::signing::NixKeypair::generate(&config.name)?
++        },
++        Some(key) => {
++            let key = if let Some(env_var) = key.strip_prefix("$") {
++                eprintln!("Using keypair from env variable...");
++                std::env::var(env_var).context(format!("No environment variable {}", env_var))?
++            } else {
++                eprintln!("Using keypair from config...");
++                key
++            };
++            attic::signing::NixKeypair::from_str(key.as_str())?
++        }
++    } ;
++    let cache_name = config.name.clone();
++
++    let num_inserted = crate::database::entity::cache::Entity::insert(
++        crate::database::entity::cache::ActiveModel {
++            name: Set(config.name),
++            keypair: Set(keypair.export_keypair()),
++            is_public: Set(config.is_public),
++            store_dir: Set("/nix/store".to_string()),
++            priority: Set(config.priority),
++            upstream_cache_key_names: Set(crate::database::entity::Json(
++                config.upstream_cache_key_names,
++            )),
++            created_at: Set(chrono::Utc::now()),
++            ..Default::default()
++        },
++    )
++    .on_conflict(
++        OnConflict::column(crate::database::entity::cache::Column::Name)
++            .do_nothing()
++            .to_owned(),
++    )
++    .exec_without_returning(connection)
++    .await
++    .map_err(ServerError::database_error)?;
++
++    if num_inserted == 0 {
++        // The cache already exists, do nothing
++        Ok(())
++    } else {
++        eprintln!("Successfully created cache '{}'", cache_name);
++        Ok(())
++    }
++}
++
+ /// Runs the API server.
+-pub async fn run_api_server(cli_listen: Option<SocketAddr>, config: Config) -> Result<()> {
++pub async fn run_api_server(cli_listen: Option<SocketAddr>, mut config: Config) -> Result<()> {
+     eprintln!("Starting API server...");
++    let default_cache_conf = std::mem::take(&mut config.create_default_cache);
+ 
+     let state = StateInner::new(config).await;
+ 
++    try_create_default_cache(&state, default_cache_conf).await?;
++
+     let listen = if let Some(cli_listen) = cli_listen {
+         cli_listen
+     } else {
+@@ -254,8 +322,31 @@ pub async fn run_api_server(cli_listen: Option<SocketAddr>, config: Config) -> R
+     Ok(())
+ }
+ 
++async fn try_create_sqlite_db(config: &Config) -> Result<()> {
++    // check if the DB is sqlite
++    let re = Regex::new(r"sqlite://(?<path>.*[.]db)").unwrap();
++    match re.captures(config.database.url.as_str()) {
++        None => (),
++        Some(caps) => {
++            // create the db file if it doesn't exist.
++            let path = PathBuf::from(&caps["path"]);
++            eprintln!("Creating empty sqlite db file at '{}'", path.display());
++            let dir = path.parent().context("Invalid sqlite path")?;
++            fs::create_dir_all(dir).await?;
++            OpenOptions::new()
++                .create(true)
++                .write(true)
++                .open(path)
++                .await?;
++        }
++    };
++    return Ok(());
++}
++
+ /// Runs database migrations.
+ pub async fn run_migrations(config: Config) -> Result<()> {
++    try_create_sqlite_db(&config).await?;
++
+     eprintln!("Running migrations...");
+ 
+     let state = StateInner::new(config).await;

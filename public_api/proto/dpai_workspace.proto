@@ -1,0 +1,139 @@
+syntax="proto3";
+ 
+package proto;
+ 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+import "annotations.proto";
+import "dpai_deployment.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).service = "dpai";
+option (idc.file).deploy = regional;
+
+message DpaiWorkspaceDeploymentMeta {
+    string deploymentId = 1;
+    string iksId = 2;
+    string managementNodeGroupId = 3;
+    DpaiDeploymentStatus deploymentStatus = 4;
+}
+
+message DpaiWorkspaceServices {
+    string id = 1;
+    string type = 2;
+    string name = 3;
+    string versionId = 4;
+    DpaiDeploymentStatus deploymentStatus = 5;
+    google.protobuf.Timestamp updatedAt = 6;
+}
+
+message DpaiWorkspace {
+    string cloudAccountId = 1;
+    string id = 2;
+    string name = 3;
+    string region = 4;
+    string description = 5;
+
+    map<string, string> tags = 6;
+    repeated DpaiWorkspaceServices services = 7;
+    DpaiMeta metadata = 8;
+    DpaiWorkspaceDeploymentMeta deploymentMetadata = 9;
+}
+
+message DpaiWorkspaceCreateRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string name = 2;
+    string region = 3;
+    string description = 4;
+
+    map<string, string> tags = 5;
+    string createdBy = 6;
+}
+
+message DpaiWorkspaceListRequest{
+    string cloudAccountId=1 [
+        (idc.field).cloudAccount = true
+      ];
+      string name=2;
+      string status=3;
+      int64 offset = 4;
+      int64 limit = 5;
+}
+
+message DpaiWorkspaceListResponse{
+    repeated DpaiWorkspace data = 1;
+    int64 prevOffset = 2;
+    int64 currOffset = 3;  
+    int64 nextOffset = 4;
+    int64 lastOffset = 5;
+    int64 limit = 6;
+    int64 totalRecords = 7;
+}
+
+message DpaiWorkspaceGetRequest{
+    string id=1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiWorkspaceDeleteRequest{
+    string id = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+ }
+ 
+message DpaiWorkspaceUpdateRequest{
+    string id = 1;
+    string description = 2;
+    map<string, string> tags = 3;
+    string cloudAccountId=4 [
+        (idc.field).cloudAccount = true
+      ];
+}
+ 
+service DpaiWorkspaceService {
+    // Create new DPAI Workspace
+    rpc DpaiWorkspaceCreate(DpaiWorkspaceCreateRequest) returns (DpaiWorkspace) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspaces"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // List all the DPAI workspaces in the given cloud account. Supports wildcard filter on name.
+    rpc DpaiWorkspaceList(DpaiWorkspaceListRequest) returns (DpaiWorkspaceListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspaces"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get a DPAI Workspace by ID 
+    rpc DpaiWorkspaceGet(DpaiWorkspaceGetRequest) returns (DpaiWorkspace) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspaces/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Update the DPAI workspace metadata.
+    rpc DpaiWorkspaceUpdate(DpaiWorkspaceUpdateRequest) returns (DpaiWorkspace) {
+        option (google.api.http) = {
+            patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspaces/{id}"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Delete the DPAI workspace.
+    rpc DpaiWorkspaceDelete(DpaiWorkspaceDeleteRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspaces/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+}

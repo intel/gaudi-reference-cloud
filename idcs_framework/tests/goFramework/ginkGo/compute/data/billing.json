@@ -1,0 +1,36 @@
+{        
+        
+    "ariaBaseUrl": "https://api.future.stage.ariasystems.net/v1/core",    
+    "ariaConfig":{
+        "client_no": "",
+        "auth_key": ""    
+    }, 
+    "startScheduler":{
+        "action":"<<action>>"
+    },
+    "createCoupon":{
+        "amount": 10,
+        "creator": "AutoUser",  
+        "numUses": 6
+    },
+    "redeemCoupon":{
+        "cloudAccountId": "<<cloudAccountId>>",
+        "code": "<<code>>"
+    },
+    "creditcardPayload1":{
+        "CardnumberInput" : "",
+        "MonthInput":"10",
+        "Year":"26",
+        "Cvc":"456",
+        "FirstName":"Test",
+        "LastName":"User",
+        "Email":"testuser@intel.com",
+        "Phone":"123456",
+        "Country":"IN",
+        "AddressLine":"Intel Technologies",
+        "City":"Bangalore",
+        "State":"KA",
+        "ZipCode":"56004"
+    }
+
+}

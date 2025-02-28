@@ -1,0 +1,139 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/vm-instance-operator@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+managerConfig:
+  controllerManagerConfigYaml:
+    vmProvisionConfig:
+      # Cloud-init data for instances. Some values will be overwritten with Instance-specific values.
+      cloudInitData:
+        networkData:
+          network:
+            config:
+            - name: enp1s0
+              subnets:
+              - address: ""
+                dns_nameservers: []
+                gateway: ""
+                type: static
+              type: physical
+            version: 1
+        userData:
+          fqdn: ""
+          hostname: ""
+          manageEtcHosts: localhost
+          packageUpdate: false
+          runcmd:
+          - - "true"
+          users:
+          - default
+      # Path to the KubeConfig file for the Harvester/Kubevirt cluster.
+      # If blank, use local Kubernetes cluster.
+      kubeConfigFilePath: /vault/secrets/harvester_kubeconfig
+      # VM instances will be connected to this Harvester ClusterNetwork.
+      vmClusterNetwork: mgmt
+      storageClusterNetwork: storage
+    health:
+      healthProbeBindAddress: :8081
+    instanceOperator:
+      # The address of the Compute API Server in format "host:port".
+      # This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+      computeApiServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+      # Configuration for DHCP, DNS, IP Address Management (DDI).
+      ddi:
+        mmws:
+          baseUrl: http://ddi-proxy:8080/mmws/api
+          passwordFilePath: /vault/secrets/mmws_password
+          userNameFilePath: /vault/secrets/mmws_username
+      # If true, this operator will add the Metering Monitor finalizer to all instances.
+      enableMeteringMonitorFinalizer: true
+      # Filter the Instance objects to be reconciled.
+      filter:
+        # Instances must have all specified labels. Leave blank to have no filter.
+        labels:
+          clusterGroupId: ""
+          # Must match the Harvester kubeconfig file name used by VM Instance Scheduler.
+          clusterId: harvester1
+          instanceCategory: VirtualMachine
+          # IDC region such as us-west-1.
+          region: us-dev-1
+      httpClient:
+        insecureSkipVerify: true
+        keepAlive: 25
+        timeoutInSecs: 20
+        tlsHandshakeTimeout: 10
+      # Details for connecting to the Kubernetes API Server of the cluster running SSH Proxy Operator.
+      sshProxyTunnelCluster:
+        # Use blank path to use the local Kubernetes cluster.
+        kubeConfigFilePath: ""
+      operatorFeatureFlags:
+        # If set true, uses quick connect client CA secret
+        enableQuickConnectClientCA: false
+        # Whether to create a VirtualMachine spec for a Harvester or KubeVirt cluster
+        # If set true VirtualMachine spec will be created for KubeVirt
+        useKubeVirtCluster: false
+      quickConnectHost: ""
+      storageClusterAddr: ""
+    leaderElection:
+      leaderElect: true
+      resourceName: 41890d98.cloud.intel.com
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    webhook:
+      port: 9443
+    storageServerSubnets: []
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+# Path for accessing the secrets inside the vault
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/us-dev-1a/group-1/vm-instance-operator
+        pathQuickConnectClientCA: us-dev-1a-quick-connect-client-ca/cert/ca_chain
+useRemoteSshProxyTunnelCluster: false
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https

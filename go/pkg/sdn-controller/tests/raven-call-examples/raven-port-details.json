@@ -1,0 +1,13 @@
+{
+    "port_information": {
+        "description": "Available",
+        "link_aggregation": false,
+        "link_status": "connected",
+        "mode": "access",
+        "native_vlan": "none",
+        "port": "21/1",
+        "trunk_groups": "none",
+        "untagged_vlan": 100
+    },
+    "status": true
+}

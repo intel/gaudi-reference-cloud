@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: registration-db-cluster
+  namespace: registration
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.2@sha256:bd862903f459f10db8f2ab59289693dd239c7f7b87012ea3476a19e6f5fb8ade
+  instances: 2
+  affinity:
+    nodeSelector:
+      training.cloud.intel.com/role: control-plane
+  storage:
+    size: 1Gi
+    storageClass: csi-wekafs-fs

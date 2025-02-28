@@ -1,0 +1,34 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SDNControllerConfig
+controllerConfig:
+  enableReadOnlyMode: false
+  switchBackendMode: "mock"
+  switchSecretsPath: tests/config/globalsdn/eapi
+  dataCenter: fxhb3p3r:fxhb3p3s:azs1201pe
+  portResyncPeriodInSec: 300
+  SwitchResyncPeriodInSec: 300
+  bmhResyncPeriodInSec: 300
+  networkNodeResyncPeriodInSec: 300
+  nodeGroupResyncPeriodInSec: 300
+  switchImportPeriodInSec: 300
+  maxConcurrentReconciles: 30
+  maxConcurrentSwitchReconciles: 10
+  maxConcurrentNetworkNodeReconciles: 10
+  maxConcurrentNodeGroupReconciles: 10
+  poolsConfigFilePath: tests/config/big_cluster_conf/pools.json
+  nodeGroupToPoolMappingConfigFilePath: tests/config/big_cluster_conf/mappings.json
+  switchImportSource: none
+  switchPortImportSource: none
+  statusReportPeriodInSec: 300
+  statusReportAcceleratedPeriodInSec: 10
+
+  # Netbox related flags
+  netboxServer: "https://netbox.cloud.intel.com"
+  netboxTokenPath: "../../../local/secrets/NETBOX_TOKEN"
+  netboxProviderServersFilterFilePath: tests/config/globalsdn/netbox_provider_servers_filter.json
+  netboxProviderInterfacesFilterFilePath: tests/config/globalsdn/netbox_provider_interfaces_filter.json
+  netboxSwitchesFilterFilePath: tests/config/globalsdn/switches_filter.json
+  netboxClientInsecureSkipVerify: false

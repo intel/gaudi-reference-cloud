@@ -1,0 +1,35 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "test",
+    srcs = ["testenvs.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/tools/k8s/test",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/tools/k8s",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1/unstructured",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_sigs_controller_runtime//pkg/envtest",
+    ],
+)
+
+go_test(
+    name = "test_test",
+    srcs = ["kubeconfig_test.go"],
+    embed = [":test"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/tools/k8s",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//tools/clientcmd",
+        "@io_k8s_sigs_controller_runtime//pkg/envtest",
+    ],
+)

@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sdn-pool-config
+data:
+  pool_config.json: |
+    {
+        "items" : [
+            {"name":"VVX",
+                "description":"front-end VLAN, accel VLAN",
+                "networkConfigStrategy": {
+                    "frontEndFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 4008
+                        }
+                    },
+                    "acceleratorFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 100
+                        }
+                    }
+                },
+                "schedulingConfig": {
+                    "minimumSchedulableUnit": "NetworkNode"
+                }
+            },
+            {"name":"VVX-standalone",
+                "description":"front-end VLAN, accel VLAN (no spine)",
+                "standaloneNodeGroupOnly": true,
+                "networkConfigStrategy": {
+                    "frontEndFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 4008
+                        }
+                    },
+                    "acceleratorFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 100
+                        }
+                    }
+                },
+                "schedulingConfig": {
+                    "minimumSchedulableUnit": "NetworkNode"
+                }
+            },
+            {"name":"VVV",
+                "description":"front-end VLAN, accel VLAN, storage VLAN",
+                "networkConfigStrategy": {
+                    "frontEndFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 4008
+                        }
+                    },
+                    "acceleratorFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 100
+                        }
+                    },
+                    "storageFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 4008
+                        }
+                    }             
+                },
+                "schedulingConfig": {
+                    "minimumSchedulableUnit": "NetworkNode"
+                }
+            },
+            {"name":"VXX",
+                "description":"front end VLAN only",
+                "standaloneNodeGroupOnly": true,
+                "networkConfigStrategy": {
+                    "frontEndFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 4008
+                        }
+                    }
+                },
+                "schedulingConfig": {
+                    "minimumSchedulableUnit": "NetworkNode"
+                }
+            },
+            {"name":"XBX",
+                "description":"acc BGP only",
+                "networkConfigStrategy": {
+                    "acceleratorFabricStrategy": {
+                        "isolationType": "BGP",
+                        "provisionConfig": {
+                            "defaultBGPCommunity": 1000
+                        }
+                    }           
+                },
+                "schedulingConfig": {
+                    "minimumSchedulableUnit": "NodeGroup"
+                }
+            },                
+            {"name":"XVX",
+                "description":"acc VLAN only",
+                "networkConfigStrategy": {
+                    "acceleratorFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 100
+                        }
+                    }         
+                },
+                "schedulingConfig": {
+                    "minimumSchedulableUnit": "NetworkNode"
+                }
+            },                
+            {"name":"VXV",
+                "description":"front end VLAN, storage VLAN",
+                "standaloneNodeGroupOnly": true,
+                "networkConfigStrategy": {
+                    "frontEndFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 4008
+                        }
+                    },
+                    "storageFabricStrategy": {
+                        "isolationType": "VLAN",
+                        "provisionConfig": {
+                            "defaultVlanID": 4008
+                        }
+                    }                     
+                },
+                "schedulingConfig": {
+                    "minimumSchedulableUnit": "NetworkNode"
+                }
+            }            
+        ]
+    }

@@ -1,0 +1,85 @@
+bases:
+  - environments.yaml
+
+---
+
+# Define a template that will be instantiated below for each cluster.
+{{- define "debugToolsRelease" }}
+  {{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+        - name: debug-tools
+          namespace: idcs-system
+          kubeContext: {{ .kubeContext | quote }}
+          labels:
+            component: debugTools
+            environmentName: {{ $.Values.global.environmentName }}
+            kubeContext: {{ .kubeContext | quote }}
+            geographicScope: {{ .geographicScope | quote }}
+            region: {{ .region | quote }}
+            availabilityZone: {{ .availabilityZone | quote }}
+          chart: idc/debug-tools
+          version: {{ readFile (print $helmChartVersionsDir "/debug-tools.version") | quote }}
+          values:
+            - collector:
+                enabled: {{ .Values.debugTools.collector.enabled }}
+                image:
+                  registry: {{ .Values.dockerIo.registry | quote }}
+                  repository: "{{ .Values.dockerIo.repositoryPrefix }}bitnami/kubectl@sha256"
+                  tag: {{ .Values.debugTools.collector.image.tag | quote }}
+            - image:
+                registry: {{ .Values.dockerIo.registry | quote }}
+                repository: "{{ .Values.dockerIo.repositoryPrefix }}nicolaka/netshoot@sha256"
+                tag: {{ .Values.debugTools.image.tag | quote }}
+{{- end }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+# Create a release for global cluster.
+
+{{- if $.Values.global.debugTools.enabled }}
+  {{- template "debugToolsRelease" (dict
+      "kubeContext" $.Values.global.kubeContext
+      "geographicScope" "global"
+      "region" ""
+      "availabilityZone" ""
+      "Values" $.Values
+      ) }}
+{{- end }}
+
+# Create a release for every regional and AZ cluster, if different from the global cluster.
+
+{{- range $region := .Values.regions }}
+  {{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+  {{- if (ne $region.kubeContext $.Values.global.kubeContext) }}
+    {{- if ($region.debugTools.enabled) }}      
+      {{- template "debugToolsRelease" (dict 
+        "kubeContext" $region.kubeContext
+        "geographicScope" "regional"
+        "region" $region.region
+        "availabilityZone" ""
+        "Values" $.Values
+        ) }}
+    {{- end }}
+  {{- end }}
+
+  {{- range $availabilityZone := $region.availabilityZones }}
+    {{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+    {{- if (ne $availabilityZone.kubeContext $.Values.global.kubeContext) }}
+      {{- if ($availabilityZone.debugTools.enabled) }}
+        {{- template "debugToolsRelease" (dict
+            "kubeContext" $availabilityZone.kubeContext
+            "geographicScope" "az"
+            "region" $region.region
+            "availabilityZone" $availabilityZone.availabilityZone
+            "Values" $.Values
+            ) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+{{- end }}

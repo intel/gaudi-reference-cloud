@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "kubevirt_io",
+    srcs = [
+        "doc.go",
+        "generated_expansion.go",
+        "kubevirt.go",
+        "kubevirt.io_client.go",
+        "virtualmachine.go",
+        "virtualmachineinstance.go",
+        "virtualmachineinstancemigration.go",
+        "virtualmachineinstancepreset.go",
+        "virtualmachineinstancereplicaset.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/clientset/versioned/typed/kubevirt.io/v1",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/generated/clientset/versioned/scheme",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/watch",
+        "@io_k8s_client_go//rest",
+        "@io_kubevirt_api//core/v1:core",
+    ],
+)

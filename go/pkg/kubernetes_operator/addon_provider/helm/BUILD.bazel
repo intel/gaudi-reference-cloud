@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "helm",
+    srcs = [
+        "provider.go",
+        "vast_provider.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/kubernetes_operator/addon_provider/helm",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/log/logkeys",
+        "@com_github_pkg_errors//:errors",
+        "@io_k8s_apimachinery//pkg/api/meta",
+        "@io_k8s_client_go//discovery",
+        "@io_k8s_client_go//discovery/cached/disk",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//restmapper",
+        "@io_k8s_client_go//tools/clientcmd",
+        "@io_k8s_client_go//tools/clientcmd/api",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+        "@io_k8s_sigs_yaml//:yaml",
+        "@sh_helm_helm_v3//pkg/action",
+        "@sh_helm_helm_v3//pkg/chart/loader",
+        "@sh_helm_helm_v3//pkg/cli",
+        "@sh_helm_helm_v3//pkg/downloader",
+        "@sh_helm_helm_v3//pkg/getter",
+        "@sh_helm_helm_v3//pkg/registry",
+        "@sh_helm_helm_v3//pkg/repo",
+        "@sh_helm_helm_v3//pkg/storage/driver",
+    ],
+)

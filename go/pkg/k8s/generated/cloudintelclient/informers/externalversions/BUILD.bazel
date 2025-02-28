@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "externalversions",
+    srcs = [
+        "factory.go",
+        "generic.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/cloudintelclient/informers/externalversions",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/k8s/generated/cloudintelclient/clientset/versioned",
+        "//go/pkg/k8s/generated/cloudintelclient/informers/externalversions/internalinterfaces",
+        "//go/pkg/k8s/generated/cloudintelclient/informers/externalversions/private.cloud:private_cloud",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_client_go//tools/cache",
+    ],
+)

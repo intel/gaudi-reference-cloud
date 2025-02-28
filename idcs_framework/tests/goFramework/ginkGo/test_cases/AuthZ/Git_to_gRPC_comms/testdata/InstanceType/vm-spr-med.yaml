@@ -1,0 +1,20 @@
+metadata:
+  name: vm-spr-med
+spec:
+  name: vm-spr-med
+  displayName: Medium VM - Intel® Xeon 4th Gen ® Scalable processor
+  description: 4th Generation Intel® Xeon® Scalable processor
+  instanceCategory: VirtualMachine
+  cpu:
+    cores: 16
+    id: "0x806F2"
+    modelName: 4th Generation Intel® Xeon® Scalable processor
+    sockets: 1
+    threads: 1
+  memory:
+    size: 32Gi
+    dimmSize: 32Gi
+    dimmCount: 1
+    speed: 3200
+  disks:
+    - size: 32Gi

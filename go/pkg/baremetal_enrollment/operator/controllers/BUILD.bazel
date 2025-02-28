@@ -1,0 +1,64 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "controllers",
+    srcs = [
+        "bmenrollment_controller.go",
+        "conditions.go",
+        "constants.go",
+        "helper.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/operator/controllers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/bmc",
+        "//go/pkg/baremetal_enrollment/dcim",
+        "//go/pkg/baremetal_enrollment/ddi",
+        "//go/pkg/baremetal_enrollment/ipacmd",
+        "//go/pkg/baremetal_enrollment/mygofish",
+        "//go/pkg/baremetal_enrollment/myssh",
+        "//go/pkg/baremetal_enrollment/secrets",
+        "//go/pkg/baremetal_enrollment/util",
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/pb",
+        "//go/pkg/units",
+        "@com_github_hashicorp_go_multierror//:go-multierror",
+        "@com_github_sethvargo_go_password//password",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/equality",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/labels",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_client_go//util/retry",
+        "@io_k8s_sigs_cluster_api//util/patch",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/builder",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/controller",
+        "@io_k8s_sigs_controller_runtime//pkg/controller/controllerutil",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+        "@io_k8s_sigs_controller_runtime//pkg/predicate",
+        "@io_k8s_sigs_controller_runtime//pkg/reconcile",
+    ],
+)
+
+go_test(
+    name = "controllers_test",
+    srcs = ["suite_test.go"],
+    embed = [":controllers"],
+    deps = [
+        "@com_github_onsi_ginkgo//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/envtest",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+        "@io_k8s_sigs_controller_runtime//pkg/log/zap",
+    ],
+)

@@ -1,0 +1,795 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "annotations.proto";
+import "iks.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "iks";
+
+
+message GetClusterAdmin{
+  string name = 1;
+  string account = 2;
+  string provider = 3;
+  string region = 4;
+  string k8sversion = 5;
+  repeated ClusterCerts certsexpiring = 6;
+  NetworkAdmin network = 7;
+  repeated Nodegroup nodegroups = 8;
+  repeated AddOnAdmin addons = 9;
+  repeated Snapshot snapshot = 10;
+  repeated Backup backup = 11;
+  bool k8supgradeavailable = 12;
+  repeated string k8supgradeversions = 13;
+  bool storageenabled = 14;
+  repeated ClusterStorageStatus storages = 15;
+  string clustertype = 16;
+}
+
+message GetClustersAdmin{
+  repeated ClustersResponseAdmin response = 1;
+}
+
+message ClustersResponseAdmin{
+  string uuid = 1;
+  string account = 2;
+  string name = 3;
+  string state = 4;
+  string k8sversion = 5;
+  string provider = 6;
+  bool cpupgradeavailable = 7;
+  repeated string cpupgradeversions = 8;
+  bool k8supgradeavailable = 9;
+  repeated string k8supgradeversions = 10;
+  string createddate = 11;
+  string clustertype = 12;
+  repeated Nodegroup nodegroups = 13;
+}
+
+message ClusterCerts {
+  string cpname = 1;
+  string certexpirydate = 2;
+}
+
+message NetworkAdmin{
+  string servicecidr = 1;
+  string clustercidr = 2;
+  repeated Loadbalancer loadbalancer = 3;
+ }
+
+message Loadbalancer{
+  string lbname = 1;
+  string vip = 2;
+  string status = 3;
+  repeated string backendports = 4;
+  repeated string frontendportd = 5;
+  string viptype = 6;
+  string nodegrouptype = 7;
+  string createddate = 8;
+}
+
+message PostLoadbalancerRequest {
+  string clusteruuid = 1;
+  Loadbalancer lb = 2;
+}
+message LoadbalancerResponse{
+  int32 lbid = 1;
+  Loadbalancer lb = 2;
+}
+
+message LoadBalancers {
+  repeated LoadbalancerResponse lbresponses = 1;
+}
+
+message PutLoadbalancerRequest {
+  string clusteruuid = 1;
+  int32 lbid = 2;
+  Loadbalancer lb = 3;
+}
+
+message GetLbRequest {
+  string clusteruuid = 1;
+  int32 lbid = 2;
+}
+message Node {
+  string name = 1;
+  string ipaddress = 2;
+  string dnsname = 3;
+  string imi = 4;
+  string state = 5;
+  string status= 6;
+  string createddate= 7;
+  WekaStorageStatusAdmin wekaStorage = 8;
+}
+
+message WekaStorageStatusAdmin {
+	string clientId = 1;
+	string status = 2;
+	string customStatus = 3;
+	string message = 4;
+}
+
+message Nodegroup {
+  string id = 1;
+  string name = 2;
+  int32 count = 3;
+  string releaseversion = 4;  
+  string status = 5;
+  bool imiupgradeavailable = 6;
+  repeated string imiupgradeversions = 7;
+  repeated Node nodes = 8;
+  string imi = 9;
+  string instancetype = 10;
+  repeated SshKey sshkey = 11;
+  optional NodegroupSummary nodegroupsummary = 12;
+  string nodegrouptype= 13;
+  string nodegrouptypename = 14;
+  string nodgroupuuid = 15;
+}
+
+message AddOnAdmin {
+  string name = 1;
+  string version = 2;
+  string state = 3;
+  repeated Keyvaluepair args = 4;
+  repeated Keyvaluepair tags = 5;
+  string artifact = 6;
+}
+
+message Snapshot {
+  string name = 1;
+  string type = 2;
+  string state = 3;
+  string created = 4;
+  string filename = 5;
+}
+
+message Backup {
+  string name = 1;
+  string key = 2;
+  string folder = 3;
+  string region = 4;
+  string endpoint = 5;
+}
+message AdminClusterID{
+  string clusteruuid = 1;
+}
+// IMI Request
+message IMIRequest{
+   string name = 1;
+   string upstreamreleasename = 2;
+   string provider = 3;
+   string type = 4;
+   string runtime = 5;
+   string os = 6;
+   repeated Component components = 7;
+   string bootstraprepo = 8;
+   string state = 9;
+   string artifact = 10;
+   string category = 11;
+   string family = 12;
+   string iksadminkey = 13;
+}
+
+// Component type
+message Component{
+    string name = 1;
+    string version = 2;
+    string artifact = 3;
+}
+
+// IMI Response
+message IMIResponse{
+  string name = 1;
+  string upstreamreleasename = 2;
+  string provider = 3;
+  string type = 4;
+  string runtime = 5;
+  string os = 6;
+  string state = 7;
+  repeated Component components = 8;
+  string bootstraprepo = 9;
+  string artifact = 10;
+  string category = 11;
+  string family = 12;
+  bool iscompatabilityactiveimi = 13;
+  repeated InstanceTypeResponse instanceTypeResponse = 14;
+  repeated InstanceTypeResponse instacetypeimik8scompatibilityresponse = 15;
+  repeated string cposimageinstances = 16;
+  bool isk8sActive = 17;
+}
+
+message GetIMIResponse{
+  repeated IMIResponse imiresponse = 1;
+}
+
+message Runtimes{
+  string runtime = 1;
+}
+
+message OSImages{
+  string osimage = 1;
+}
+
+message Providers{
+  string provider = 1;
+}
+
+message States{
+  string state = 1;
+}
+
+message GetIMIsInfoResponse{
+  repeated Runtimes runtime = 1;
+  repeated OSImages osimage = 2;
+  repeated Providers provider = 3;
+  repeated States state = 4;
+}
+
+message UpdateIMIRequest{
+  string name = 1;
+  string upstreamreleasename = 2;
+  string provider = 3;
+  string type = 4;
+  string runtime = 5;
+  string os = 6;
+  repeated Component components = 7;
+  string bootstraprepo = 8;
+  string state = 9;
+  string artifact = 10;
+  string category = 11;
+  string family = 12;
+  string iksadminkey = 13;
+}
+
+message GetIMIRequest{
+  string name = 1;
+}
+
+message DeleteIMIRequest{
+  string name = 1;
+  string iksadminkey = 2;
+}
+
+message IMIInstanceTypeK8sRequest{
+  string name = 1;
+  string runtime = 2;
+  string upstreamreleasename = 3;
+  string os = 4;
+  string type = 5;
+  string provider = 6;
+  repeated string instancetypes = 7;
+  string state = 8;
+  string category = 9;
+  string family = 10;
+  string iksadminkey = 11;
+}
+
+message IMIInstanceTypeK8sResponse{
+  string osimageinstance = 1;
+  string runtime = 2;
+  string upstreamreleasename = 3;
+  string os = 4;
+  string type = 5;
+  string provider = 6;
+  string state = 7;
+}
+
+message InstanceTypeIMIK8sRequest{
+  string name = 1;
+  string nodeprovidername = 2;
+  string category = 3;
+  string family = 4;
+  repeated InstacetypeIMIK8sCompatibility instacetypeimik8scompatibilityresponse = 5;
+  string iksadminkey = 6;
+}
+
+message InstanceTypeIMIK8sResponse{
+  string name = 1;
+  string nodeprovidername = 2;
+  string category = 3;
+  string family = 4;
+}
+
+message InstacetypeIMIK8sCompatibility{
+  string artifact = 1;
+  string category = 2;
+  string family = 3;
+  string name = 4;
+  string cposimageinstances = 5;
+  string upstreamreleasename = 6;
+  string runtime = 7;
+  string provider = 8;
+  string type = 9;
+  string os = 10;
+}
+
+message Createk8sversionRequest{
+  string name = 1;
+  string runtime = 2;
+  string provider = 3;
+  string cpimi = 4;
+  string workimi = 5;
+}
+
+message K8sversionResponse{
+  string name = 1;
+  string runtime = 2;
+  string releasename = 3;
+  string provider = 4;
+  string cpimi = 5;
+  string workimi = 6;
+  string state = 7;
+  string minor = 8;
+  string major = 9;
+}
+
+message GetK8sRequest{
+  string name = 1;
+}
+message GetK8sVersionResponse{
+  repeated K8sversionResponse k8sversions = 1;
+}
+
+message UpdateK8sRequest{
+  string name = 1;
+  string cpimi = 2;
+  string workimi = 3;
+  string state = 4;
+}
+
+message CreateAddonAdminRequest{
+  string name = 1;
+  string version = 2;
+  string k8sversion = 3;
+  repeated string artifacts = 4;
+  repeated Keyvaluepair args = 5;
+  repeated Keyvaluepair tags = 6;
+  bool adminonly = 7;
+  string state = 8;
+  string type = 9;
+  bool upgradeavailable = 10;
+  repeated string upgradeversions = 11;
+}
+
+message Keyvaluepair{
+  string key = 1;
+  string value = 2;
+}
+
+message AddonResponse{
+  string name = 1;
+  string version = 2;
+  string k8sversion = 3;
+  repeated string artifacts = 4;
+  repeated Keyvaluepair args = 5;
+  repeated Keyvaluepair tags = 6;
+  string state = 7;
+  bool adminonly = 8;
+  string type = 9;
+  bool upgradeavailable = 10;
+}
+message GetAddOnResponse{
+  repeated AddonResponse addonresponse = 1;
+}
+
+message GetAddOnAdminRequest{
+  string name = 1;
+}
+message UpdateAddOnAdminRequest{
+  string name = 1;
+  string version = 2;
+  string k8sversion = 3;
+  string artifact = 4;
+  repeated Keyvaluepair args = 5;
+  repeated Keyvaluepair tags = 6;
+  bool adminonly = 7;
+  string state = 8;
+  string type = 9;
+}
+
+message PutNodegroupRequest{
+  string clusteruuid = 1;
+  string nodegroupuuid  = 2 ;
+  string name = 3;
+  int32 count = 4;
+  string releaseversion = 5;
+  string status = 6;
+}
+
+// NodeGroupid
+message UpgradeControlPlaneRequest {
+  string clusteruuid = 1;
+  string nodegroupuuid = 2;
+  optional string k8sversionname = 3;
+}
+
+message GetNodegroupResponse {
+  repeated Nodegroup nodegroups = 1;
+}
+
+message GetEventResponse {
+   string id  = 1;
+   string name = 2;
+   string type = 3;
+   string details = 4;
+   string createdby = 5;
+   string createddate = 6;
+}
+
+message PostSnapshotRequest{
+  string clusteruuid = 1;
+  string name = 2;
+}
+
+message PostSnapshotResponse{
+  string clusteruuid = 1;
+  string name = 2;
+  string status = 3;
+}
+
+message ClusterSSHKeys{
+  int32 clusterid = 1;
+  string sshprivatekey = 2;
+  string sshpublickey = 3;
+}
+
+message CloudAccountApproveListResponse {
+  repeated CloudAccountApproveList approveListResponse = 1;
+  ResourceLimits existingresourcelimits = 2;
+}
+
+message CloudAccountApproveList{
+  string account = 1;
+  string providername = 2;
+  bool status = 3;
+  bool enableStorage = 4;
+  int32 maxclusters_override = 5;
+  int32 maxclusterng_override = 6;
+  int32 maxclusterilb_override = 7;
+  int32 maxnodegroupvm_override = 8;
+  int32 maxclustervm_override = 9;
+}
+message CloudAccountApproveListRequest{
+  string cloudaccountId = 1;
+  bool status = 2;
+  bool enableStorage = 3;
+  int32 maxclusters_override = 4 [(validate.rules).int32 ={gte: 0,  lte: 20}];
+  int32 maxclusterng_override = 5 [(validate.rules).int32 ={gte: 0,  lte: 50}];
+  int32 maxclusterilb_override = 6 [(validate.rules).int32 ={gte: 0,  lte: 20}];
+  int32 maxnodegroupvm_override = 7 [(validate.rules).int32 ={gte: 0,  lte: 512}];
+  int32 maxclustervm_override = 8 [(validate.rules).int32 ={gte: 0,  lte:512}];
+  string iksadminkey = 9;
+}
+message UserRequest{
+  string iksadminkey = 1;
+}
+message UserResponse{
+  bool isAuthenticatedUser = 1;
+}
+
+// InstanceType
+message CreateInstanceTypeRequest{
+  string instancetypename = 1;
+  int32 memory = 2;
+  int32 cpu = 3;
+  string nodeprovidername = 4;
+  int32 storage = 5;
+  string status = 6;
+  string displayname = 7;
+  bool imioverride = 8;
+  string description = 9;
+  string category = 10;
+  string family = 11;
+  bool allowManualInsert = 12;
+  string iksadminkey = 13;
+}
+message GetInstanceTypeRequest{
+  string name = 1;
+}
+message DeleteInstanceTypeRequest{
+  string name = 1;
+  string iksadminkey = 2;
+}
+message UpdateInstanceTypeRequest{
+  string name = 1;
+  int32 memory = 2;
+  int32 cpu = 3;
+  string nodeprovidername = 4;
+  int32 storage = 5;
+  string status = 6;
+  string displayname = 7;
+  bool imioverride = 8;
+  string description = 9;
+  string category = 10;
+  string family = 11;
+  string iksadminkey = 12;
+}
+message GetInstanceTypesResponse{
+  repeated InstanceTypeResponse instanceTypeResponse = 1;
+}
+message GetInstanceTypeInfoResponse {
+  repeated InstanceTypeResponse computeResponse = 1;
+  repeated string states = 2;
+  repeated string nodeprovidername = 3;
+}
+message GetInstanceTypeResponse{
+  InstanceTypeResponse iksInstanceType = 1;
+  InstanceTypeResponse computeInstanceType = 2;
+}
+message InstanceTypeResponse{
+  string instancetypename = 1;
+  int32 memory = 2;
+  int32 cpu = 3;
+  string nodeprovidername = 4;
+  int32 storage = 5;
+  string status = 6;
+  string displayname = 7;
+  bool imioverride = 8;
+  string description = 9;
+  string category = 10;
+  string family = 11;
+  bool iksDB = 12;
+  repeated IMIResponse imiResponse = 13;
+  repeated IMIResponse instacetypeimik8scompatibilityresponse = 14;
+  repeated string cposimageinstances = 15;
+  bool iscompatabilityactiveinstance = 16;
+}
+
+message AdminFirewallRuleResponse {
+  repeated string sourceip = 1;
+  string state = 2;
+  string destinationip = 3;
+  int32 port = 4;
+  int32 vipid = 5;
+  string vipname = 6;
+  string viptype = 7;
+  repeated string protocol = 8;
+  int32 internalport = 9;
+}
+
+message GetAdminFirewallRuleResponse {
+  repeated AdminFirewallRuleResponse getfirewallresponse = 1;
+}
+
+service IksAdmin{
+  //Authenticate IKS Admin User
+  rpc AuthenticateIKSAdminUser(UserRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      post: "/v1/iks/admin/authenticate"
+      body: "*"
+    };
+  }
+  // Create IMI
+  rpc CreateIMI(IMIRequest) returns (IMIResponse) {
+   option (google.api.http) = {
+      post: "/v1/iks/admin/imis"
+      body: "*"
+    };
+  }
+  rpc GetIMIs(google.protobuf.Empty) returns (GetIMIResponse) {
+   option (google.api.http) = {
+      get: "/v1/iks/admin/imis"
+    };
+  }  
+  rpc GetIMI(GetIMIRequest) returns (IMIResponse) {
+   option (google.api.http) = {
+      get: "/v1/iks/admin/imis/{name}"
+    };
+  }
+  rpc GetIMIsInfo(google.protobuf.Empty) returns (GetIMIsInfoResponse) {
+    option (google.api.http) = {
+       get: "/v1/iks/admin/imis/info"
+     };
+  } 
+  rpc PutIMI(UpdateIMIRequest) returns (IMIResponse) {
+   option (google.api.http) = {
+      put: "/v1/iks/admin/imis/{name}"
+      body: "*"
+    };
+  }
+  rpc UpdateIMIInstanceTypeToK8sCompatibility(IMIInstanceTypeK8sRequest) returns (IMIInstanceTypeK8sResponse) {
+    option (google.api.http) = {
+      put: "/v1/iks/admin/imis/{name}/k8s"
+      body: "*"
+    };
+  }
+  rpc DeleteIMI(DeleteIMIRequest) returns (google.protobuf.Empty) {
+   option (google.api.http) = {
+      delete: "/v1/iks/admin/imis/{name}"
+    };
+  }
+  // K8Sversions
+  rpc CreateK8SVersion(Createk8sversionRequest) returns (K8sversionResponse) {
+    option (google.api.http) = {
+      post: "/v1/iks/admin/k8sversions"
+      body: "*"
+    };
+  }
+  rpc GetK8SVersions(google.protobuf.Empty) returns (GetK8sVersionResponse) {
+    option (google.api.http) = {
+      get: "/v1/iks/admin/k8sversions"
+    };
+  }
+  rpc GetK8SVersion(GetK8sRequest) returns (K8sversionResponse) {
+   option (google.api.http) = {
+      get: "/v1/iks/admin/k8sversions/{name}"
+    };
+  }
+  rpc PutK8SVersion(UpdateK8sRequest) returns (K8sversionResponse) {
+   option (google.api.http) = {
+      put: "/v1/iks/admin/k8sversions/{name}"
+      body: "*"
+    };
+  }
+  rpc DeleteK8SVersion(GetK8sRequest) returns (google.protobuf.Empty) {
+   option (google.api.http) = {
+      delete: "/v1/iks/admin/k8sversions/{name}"
+    };
+  }
+  // addons
+  rpc CreateNewAddOn(CreateAddonAdminRequest) returns (AddonResponse) {
+   option (google.api.http) = {
+      post: "/v1/iks/admin/addons"
+      body: "*"
+    };
+  }
+  rpc GetAddOns(google.protobuf.Empty) returns (GetAddOnResponse) {
+   option (google.api.http) = {
+      get: "/v1/iks/admin/addons"
+    };
+  }  
+  rpc GetAddOn(GetAddOnAdminRequest) returns (AddonResponse) {
+   option (google.api.http) = {
+      get: "/v1/iks/admin/addons/{name}"
+    };
+  }
+  rpc PutAddOn(UpdateAddOnAdminRequest) returns (AddonResponse) {
+   option (google.api.http) = {
+      put: "/v1/iks/admin/addons/{name}"
+      body: "*"
+    };
+  }
+  rpc DeleteAddOn(GetAddOnAdminRequest) returns (google.protobuf.Empty) {
+   option (google.api.http) = {
+      delete: "/v1/iks/admin/addons/{name}"
+    };
+  }
+  // Cluster management
+  rpc GetClusters(google.protobuf.Empty) returns (GetClustersAdmin) {
+    option (google.api.http) = {
+      get: "/v1/iks/admin/clusters"
+    };
+  }
+  rpc GetCluster(AdminClusterID) returns (GetClusterAdmin) {
+    option (google.api.http) = {
+      get: "/v1/iks/admin/clusters/{clusteruuid}"
+    };
+  }
+  rpc PutCPNodegroup(PutNodegroupRequest) returns (Nodegroup) {
+    option (google.api.http) = {
+      put: "/v1/iks/admin/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}"
+    };
+  }
+  rpc UpgradeClusterControlPlane(UpgradeControlPlaneRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/iks/admin/clusters/{clusteruuid}/nodegroups/{nodegroupuuid}/upgrade"
+      body: "*"
+    };
+  }
+  rpc GetEvents(AdminClusterID) returns (GetEventResponse) {
+    option (google.api.http) = {
+      get: "/v1/iks/admin/clusters/{clusteruuid}/events"
+    };
+  }
+  rpc ClusterSnapshot(PostSnapshotRequest) returns (PostSnapshotResponse) {
+    option (google.api.http) = {
+      post: "/v1/iks/admin/clusters/{clusteruuid}/snapshot"
+      body: "*"
+    };
+  }
+  rpc ClusterRecreate(AdminClusterID) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/iks/admin/clusters/{clusteruuid}/lbrecreate"
+    };
+  }
+  rpc PostLoadBalancer(PostLoadbalancerRequest) returns (LoadbalancerResponse) {
+    option (google.api.http) = {
+      post: "/v1/iks/admin/clusters/{clusteruuid}/ilbs"
+      body: "*"
+    };
+  }
+  rpc PutLoadBalancer(PutLoadbalancerRequest) returns (LoadbalancerResponse) {
+    option (google.api.http) = {
+       put: "/v1/iks/admin/clusters/{clusteruuid}/ilbs/{lbid}"
+       body: "*"
+     };
+   }  
+   rpc GetLoadBalancers(AdminClusterID) returns (LoadBalancers) {
+    option (google.api.http) = {
+       get: "/v1/iks/admin/clusters/{clusteruuid}/ilbs"
+     };
+   }
+   rpc GetLoadBalancer(GetLbRequest) returns (LoadbalancerResponse) {
+    option (google.api.http) = {
+       get: "/v1/iks/admin/clusters/{clusteruuid}/ilbs/{lbid}"
+     };
+   }
+   rpc DeleteLoadBalancer(GetLbRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+       delete:  "/v1/iks/admin/clusters/{clusteruuid}/ilbs/{lbid}"
+     };
+   }
+   rpc GetControlPlaneSSHKeys(AdminClusterID) returns (ClusterSSHKeys) {
+    option (google.api.http) = {
+      get:  "/v1/iks/admin/clusters/{clusteruuid}/sshkeys"
+    };
+   }
+   rpc GetCloudAccountApproveList(google.protobuf.Empty) returns (CloudAccountApproveListResponse) {
+    option (google.api.http) = {
+      get:  "/v1/iks/admin/cloudaccounts/approvelist"
+    };
+   }
+   rpc PostCloudAccountApproveList(CloudAccountApproveListRequest) returns (CloudAccountApproveList) {
+    option (google.api.http) = {
+      post:  "/v1/iks/admin/cloudaccounts/{cloudaccountId}/approvelist"
+      body: "*"
+    };
+   }
+   rpc PutCloudAccountApproveList(CloudAccountApproveListRequest) returns (CloudAccountApproveList) {
+    option (google.api.http) = {
+      put:  "/v1/iks/admin/cloudaccounts/{cloudaccountId}/approvelist"
+      body: "*"
+    };
+   }
+   rpc CreateInstanceTypes(CreateInstanceTypeRequest) returns (InstanceTypeResponse) {
+    option (google.api.http) = {
+       post: "/v1/iks/admin/instancetypes"
+       body: "*"
+     };
+   }
+   rpc GetInstanceTypes(google.protobuf.Empty) returns (GetInstanceTypesResponse) {
+    option (google.api.http) = {
+       get: "/v1/iks/admin/instancetypes"
+     };
+   }
+   rpc GetInstanceType(GetInstanceTypeRequest) returns (GetInstanceTypeResponse) {
+    option (google.api.http) = {
+       get: "/v1/iks/admin/instancetypes/{name}"
+     };
+   }
+   rpc GetInstanceTypeInfo(google.protobuf.Empty) returns (GetInstanceTypeInfoResponse) {
+    option (google.api.http) = {
+       get: "/v1/iks/admin/instancetypes/info"
+     };
+   }
+   rpc PutInstanceType(UpdateInstanceTypeRequest) returns (InstanceTypeResponse) {
+    option (google.api.http) = {
+      put:  "/v1/iks/admin/instancetypes/{name}"
+      body: "*"
+    };
+   }
+   rpc UpdateInstanceTypeIMIToK8sCompatibility(InstanceTypeIMIK8sRequest) returns (InstanceTypeIMIK8sResponse) {
+    option (google.api.http) = {
+      put: "/v1/iks/admin/instancetypes/{name}/k8s"
+      body: "*"
+    };
+  }
+   rpc DeleteInstanceType(DeleteInstanceTypeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/iks/admin/instancetypes/{name}"
+     };
+   }
+   rpc GetFirewallRule(AdminClusterID) returns (GetAdminFirewallRuleResponse) {
+    option (google.api.http) = {
+        get: "/v1/iks/admin/clusters/{clusteruuid}/security"
+      };
+    }
+}

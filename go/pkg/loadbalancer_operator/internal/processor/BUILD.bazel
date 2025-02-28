@@ -1,0 +1,57 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "processor",
+    srcs = [
+        "firewall.go",
+        "instance.go",
+        "listener.go",
+        "processor.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/loadbalancer_operator/internal/processor",
+    visibility = ["//go/pkg/loadbalancer_operator:__subpackages__"],
+    deps = [
+        "//go/pkg/firewall_operator/api/v1alpha1",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/loadbalancer_operator/api/v1alpha1",
+        "//go/pkg/loadbalancer_operator/internal/provider",
+        "//go/pkg/loadbalancer_operator/pkg/constants",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/equality",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/api/meta",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_client_go//util/retry",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/controller/controllerutil",
+    ],
+)
+
+go_test(
+    name = "processor_test",
+    srcs = ["processor_test.go"],
+    embed = [":processor"],
+    deps = [
+        "//go/pkg/firewall_operator/api/v1alpha1",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/loadbalancer_operator/api/v1alpha1",
+        "//go/pkg/loadbalancer_operator/pkg/constants",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+        "@io_k8s_sigs_controller_runtime//pkg/client/fake",
+        "@io_k8s_sigs_controller_runtime//pkg/controller/controllerutil",
+    ],
+)

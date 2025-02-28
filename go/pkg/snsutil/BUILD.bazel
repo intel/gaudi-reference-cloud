@@ -1,0 +1,33 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "snsutil",
+    srcs = ["snsutil.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/snsutil",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_aws_aws_sdk_go_v2//aws",
+        "@com_github_aws_aws_sdk_go_v2_config//:config",
+        "@com_github_aws_aws_sdk_go_v2_credentials//:credentials",
+        "@com_github_aws_aws_sdk_go_v2_service_sns//:sns",
+        "@com_github_aws_aws_sdk_go_v2_service_sns//types",
+    ],
+)
+
+go_test(
+    name = "snsutil_test",
+    srcs = ["snsutil_test.go"],
+    embed = [":snsutil"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/sqsutil",
+        "@com_github_aws_aws_sdk_go_v2//aws",
+        "@com_github_aws_aws_sdk_go_v2_service_sns//:sns",
+        "@com_github_aws_aws_sdk_go_v2_service_sns//types",
+        "@com_github_aws_aws_sdk_go_v2_service_sqs//:sqs",
+        "@com_github_aws_aws_sdk_go_v2_service_sqs//types",
+    ],
+)

@@ -1,0 +1,29 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "db",
+    srcs = ["db.go"],
+    embedsrcs = [
+        "migrations/202412031700_workspace.down.sql",
+        "migrations/202412031700_workspace.up.sql",
+        "migrations/202411131500_initial_version.down.sql",
+        "migrations/202411131500_initial_version.up.sql",
+        "migrations/202412121500_dns.down.sql",
+        "migrations/202412121500_dns.up.sql",
+        "migrations/202502121630_secret.down.sql",
+        "migrations/202502121630_secret.up.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/dpai/db",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/dpai/config",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "@com_github_golang_migrate_migrate_v4//:migrate",
+        "@com_github_golang_migrate_migrate_v4//database/postgres",
+        "@com_github_golang_migrate_migrate_v4//source/iofs",
+        "@com_github_jackc_pgx_v5//pgxpool",
+    ],
+)

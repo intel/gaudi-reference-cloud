@@ -1,0 +1,2 @@
+# Do not show diffs of generated files.
+*.swagger.json -diff linguist-generated

@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "store_forward_logger",
+    srcs = ["store_forward_logger.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/log/store_forward_logger",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_go_logr_logr//:logr",
+        "@io_k8s_sigs_controller_runtime//pkg/log/zap",
+        "@org_golang_x_sync//errgroup",
+        "@org_uber_go_zap//zapcore",
+    ],
+)

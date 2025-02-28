@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- sudo mkdir -p -v -m 0775 /usr/local/share/ca-certificates
+- sudo chown root:root /usr/local/share/ca-certificates
+- sudo cp /share/ldap/etc/poc-cacert.crt /usr/local/share/ca-certificates/poc-cacert.crt
+- sudo chown root:root /usr/local/share/ca-certificates/poc-cacert.crt
+- sudo chmod 0644 /usr/local/share/ca-certificates/poc-cacert.crt
+- sudo update-ca-certificates
+- mkdir -p -v -m 0755 /etc/ldap
+- sudo chown root:root /etc/ldap
+- sudo systemctl start sssd
+- sudo systemctl enable sssd
+- sudo chown ubuntu:ubuntu /etc/pam.d/common-session && echo 'session required pam_mkhomedir.so' >> /etc/pam.d/common-session & sudo chown root:root /etc/pam.d/common-session
+- sudo sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+- sudo systemctl restart sshd

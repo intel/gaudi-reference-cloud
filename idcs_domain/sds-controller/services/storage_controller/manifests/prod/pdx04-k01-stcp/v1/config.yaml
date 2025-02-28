@@ -1,0 +1,96 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  - name: pdx07-1
+    uuid: e51650ff-6d40-4306-8576-912b34713bae
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: production
+      category: ai-storage
+      cluster: "1"
+      wekaBackend: pdx07-1.us-region-1.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: pdx07
+    api:
+      type: REST
+      url: https://pdx07-1.us-region-1.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx04.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx07-1.us-region-1.cloud.intel.com
+  - name: pdx07-2
+    uuid: e259a5f4-22b8-4f81-9292-aa5b508885f9
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: production
+      category: ai-storage
+      cluster: "2"
+      wekaBackend: pdx07-2.us-region-1.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: pdx07
+    api:
+      type: REST
+      url: https://pdx07-2.us-region-1.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx04.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx07-2.us-region-1.cloud.intel.com
+  - name: pdx07-3
+    uuid: 6bd60e9e-246d-43ea-99f3-0ba7ab720f29
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: production
+      category: ai-storage
+      cluster: "3"
+      wekaBackend: pdx07-3.us-region-1.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: pdx07
+    api:
+      type: REST
+      url: https://pdx07-3.us-region-1.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx04.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx07-3.us-region-1.cloud.intel.com
+  - name: pdx07-4
+    uuid: 7e30dadd-0930-46a5-ae99-705956abf599
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: production
+      category: tenant
+      s3Endpoints: https://s3-pdx07-4.tenantiglb.us-region-1.cloud.intel.com:9000
+    location: pdx07
+    api:
+      type: REST
+      url: pdx07-4.us-region-1.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx04.json
+    minioConfig:
+      kesKey: "minio-kes-key"

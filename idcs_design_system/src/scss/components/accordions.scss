@@ -1,0 +1,29 @@
+.accordion {
+    width: 100%;
+    border-radius: 0px;
+    border: 1px solid var(--accordion-border-color);
+}
+
+.accordion-item:active {    
+    .accordion-header .accordion-button {        
+        color: var(--accordion-item-active-color);
+    }
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--accordion-item-active-color);
+    background: var(--accordion-item-active-background);
+}
+
+.accordion-button:not(.collapsed)::after {
+    color: var(--body-color);
+    background-image: var(--bs-accordion-btn-icon);
+}
+
+.accordion-collapse {
+    transition: none;
+}
+
+.section:has(.d-flex-customInput) .accordion:not(.w-100) {
+     max-width: 48rem;
+}

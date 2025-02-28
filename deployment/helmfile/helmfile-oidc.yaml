@@ -1,0 +1,50 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.oidc.insecureEnabled }}
+  - name: oidc
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: oidc
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: oidc
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/oidc
+    version: {{ readFile (print $helmChartVersionsDir "/oidc.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}oidc@sha256"
+      - ingress:
+          enabled: {{ $.Values.global.oidc.ingress.enabled }}
+          className: {{ $.Values.global.oidc.ingress.className | quote }}
+          hosts:
+            - host: {{ $.Values.global.oidc.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

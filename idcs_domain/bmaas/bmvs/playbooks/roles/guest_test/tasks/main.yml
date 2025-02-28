@@ -1,0 +1,63 @@
+---
+
+# Create and configure the test hosts
+
+- name: Block for creating the Guest_Test servers
+  block:
+    - name: create temporary download directory
+      tempfile:
+        state: directory
+        suffix: download
+      register: download_dir
+    - name: provide read permissions
+      ansible.builtin.file:
+        path: "{{ download_dir.path }}"
+        recurse: true
+        mode: g+rx,o+rx
+    - name: Checking if Cloud image file is in the cache
+      ansible.builtin.include_role:
+        name: download_cache
+    - name: Copying the ubuntu server cloud image
+      ansible.builtin.copy:
+        src: "{{ cache.path }}/{{ ubuntu_server_cloudimg }}"
+        dest: "{{ download_dir.path }}/{{ ubuntu_server_cloudimg }}"
+        mode: '0664'
+    - include_tasks: create_guest_test.yml
+      loop: "{{ range(1, guest_test_host_deployments|int + 1, 1)|list }}"
+      loop_control:
+        loop_var: vmnum
+    - name: Create bastion-config file for use with Guest Test servers
+      ansible.builtin.template:
+        src: bastion-config.j2
+        dest: "{{ ssh_key_dir }}/bastion-config"
+        mode: '0600'
+        backup: true
+      become: false
+    - name: Create deployment-config file for use with Guest Test servers
+      ansible.builtin.template:
+        src: deployment-config.j2
+        dest: "{{ ssh_key_dir }}/deployment-config"
+        mode: '0600'
+        backup: true
+      become: false
+    - name: Copying SSH Key deployment script MANUALLY RUN {{ ssh_key_dir }}/deploy_guest_keys.sh
+      ansible.builtin.copy:
+        src: "deploy_guest_keys.sh"
+        dest: "{{ ssh_key_dir }}/"
+        mode: '0750'
+      become: false
+  always:
+    - name: Clean up the temporary directory
+      ansible.builtin.file:
+        path: "{{ download_dir.path }}"
+        state: absent
+      when: download_dir.path is defined
+  become: true
+  tags: setup
+
+# Destroy the test hosts
+- include_tasks: destroy_guest_test.yml
+  loop: "{{ range(1, guest_test_host_deployments|int + 1, 1)|list }}"
+  loop_control:
+    loop_var: vmnum
+  tags: [never, teardown]

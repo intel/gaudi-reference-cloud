@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "reconciler_query",
+    srcs = [
+        "delete.go",
+        "get.go",
+        "put.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/iks/db/reconciler_query",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/firewall_operator/api/v1alpha1",
+        "//go/pkg/iks/db/iks_utils",
+        "//go/pkg/iks/db/query",
+        "//go/pkg/ilb_operator/api/v1alpha1",
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/pb",
+        "@com_github_golang_protobuf//ptypes/empty",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+    ],
+)

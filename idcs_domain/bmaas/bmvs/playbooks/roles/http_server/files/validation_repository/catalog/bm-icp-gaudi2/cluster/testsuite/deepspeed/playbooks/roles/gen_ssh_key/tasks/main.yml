@@ -1,0 +1,19 @@
+---
+- name: Ensure directory exists for SSH keys
+  ansible.builtin.file:
+    path: "{{ ssh_key_dir }}/.ssh_keys/"
+    state: directory
+    mode: "u+rxw,g-rwx,o-rwx"
+
+- name: Generate SSH Key pair
+  shell:
+    cmd: >
+      ssh-keygen
+      -t "{{ ssh_key_type }}"
+      -b "{{ ssh_key_bits }}"
+      -f "{{ ssh_key_dir }}/.ssh_keys/id_rsa"
+      -N ""
+      -C ""
+      -P ""
+  args:
+    creates: "{{ ssh_key_dir }}/.ssh_keys/id_rsa"

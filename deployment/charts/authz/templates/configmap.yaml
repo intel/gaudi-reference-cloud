@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenConfig:
+      listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+
+    limits:
+      maxCloudAccountRoles: {{ .Values.limits.maxCloudAccountRoles }}
+      maxPermissions: {{ .Values.limits.maxPermissions }}
+
+    features:
+      policiesStartupSync: {{ .Values.features.policiesStartupSync }}
+      watcher: {{ .Values.features.watcher }}
+      auditLogging:
+        enabled: {{ .Values.features.auditLogging.enabled }}
+        cleanupSchedulerEnabled: {{ .Values.features.auditLogging.cleanupSchedulerEnabled }}
+        retentionPeriodInDays: {{ .Values.features.auditLogging.retentionPeriodInDays }}
+        schedulerTime: {{ .Values.features.auditLogging.schedulerTime }}
+
+    resourcesFilePath: {{ .Values.resourcesFilePath }}
+    modelFilePath: {{ .Values.modelFilePath }}
+    groupFilePath: {{ .Values.groupFilePath }}
+    policyFilePath: {{ .Values.policyFilePath }}
+
+{{- if hasKey .Values "policyFilesContent" }}
+  policy.csv: |
+{{- range $policy := ( .Values.policyFilesContent | fromYaml ).policies }}
+    {{ $policy.subject }};{{ $policy.object }};{{ $policy.action }};{{ $policy.expression }}
+{{- end }}
+{{- end }}
+
+{{- if hasKey .Values "groups" }}
+  groups.csv: |
+{{- range $group := ( .Values.groups | fromYaml ).groups }}
+    {{ $group.subject }};{{ $group.systemRole }};{{ $group.cloudAccountId }}
+{{- end }}
+{{- end }}
+
+{{- if hasKey .Values "modelConf" }}
+  model.conf: |
+{{ .Values.modelConf | indent 4 }}
+{{- end }}
+
+{{- if hasKey .Values "resourcesContent" }}
+  resources.yaml: |
+{{ .Values.resourcesContent | indent 4 }}
+{{- end }}

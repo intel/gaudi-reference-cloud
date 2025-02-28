@@ -1,0 +1,3 @@
+defaultVaultConnection:
+  enabled: false # !!!!!!!!!!
+  address: "http://idcvaultdev.eglb.intel.com"

@@ -1,0 +1,31 @@
+autoscaling:
+  enabled: false
+# The address of the Instance Scheduler in format "host:port".
+instanceSchedulerAddr: us-dev-1a-vm-instance-scheduler.idcs-system.svc.cluster.local:8443
+fleetAdminServerAddr: us-dev-1-fleet-admin-api-server.idcs-system.svc.cluster.local:8443
+schedulerStatisticsPollingInterval: 60s
+cognito:
+  enabled: false
+image:
+  pullPolicy: IfNotPresent
+  registry: amr-registry.caas.intel.com
+  repository: intelcloud/fleet-node-reporter
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+podAnnotations:
+replicaCount: 1
+resources:
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+  requests:
+    cpu: "250m"
+    memory: "500Mi"
+

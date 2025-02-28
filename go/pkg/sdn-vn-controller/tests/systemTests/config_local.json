@@ -1,0 +1,64 @@
+{
+    "sdnController": "localhost",
+    "cp_deploy": [{
+      "name" : "virtual",
+      "type": "docker-compose",
+      "file": "../../assets/docker/compose.yaml",
+      "profile": "sim"
+    }],
+
+    "chassis": [
+      {
+        "chassis_id": "n1",
+        "ip": "localhost",
+        "ssh_user": "NULL",
+        "ssh_key_path": "NULL",
+        "MAC" : "unknown"
+      }
+    ],
+    "vms": [
+      {
+        "name": "vm1",
+        "chassis": "n1",
+        "interface": "port1",
+        "device_id": 1,
+        "MAC" : "unknown"
+      },
+      {
+        "name": "vm2",
+        "chassis": "n1",
+        "interface": "port2",
+        "device_id": 2,
+        "MAC" : "unknown"
+      },
+      {
+        "name": "vm3",
+        "chassis": "n1",
+        "interface": "port3",
+        "device_id": 3,
+        "MAC" : "unknown"
+      },
+      {
+        "name": "vm4",
+        "chassis": "n1",
+        "interface": "port4",
+        "device_id": 4,
+        "MAC" : "unknown"
+      },
+      {
+        "name": "vm5",
+        "chassis": "n1",
+        "interface": "port5",
+        "device_id": 5,
+        "MAC" : "unknown"
+      },
+      {
+        "name": "vm6",
+        "chassis": "n1",
+        "interface": "port6",
+        "device_id": 6,
+        "MAC" : "unknown"
+      }
+    ]
+  }
+  

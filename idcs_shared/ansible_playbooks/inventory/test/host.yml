@@ -1,0 +1,5 @@
+[test]
+# TaaS01-126432 ansible_host=10.165.161.55
+# TaaS02-126433 ansible_host=10.165.160.180
+# TaaS03-126430 ansible_host=10.165.160.169
+# TaaS04-120784 ansible_host=10.165.58.37

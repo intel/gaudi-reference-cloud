@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    name: storage-controller
+    prometheus: infra
+  name: storage-controller
+  namespace: storage-controller
+spec:
+  groups:
+    - interval: 1m
+      name: storage-controller
+      rules:
+        - alert: StorageBackendUnhealthy
+          expr: 'max by (name, location, type, uuid) (backend_health_status{service="storage-controller-v1"} * on (uuid, pod) group_left(name, location, type) backend_info{service="storage-controller-v1"}) != 1'
+          for: 5m
+          labels:
+            location: "{{ $externalLabels.location }}"
+            k8s_cluster: "{{ $externalLabels.k8s_cluster }}"
+            service: storage-controller-v1
+          annotations:
+            summary: "[{{ $externalLabels.location }}] {{ $labels.type }} storage backend is not healthy."
+            description: "{{ $labels.type }} storage backend '{{ $labels.name }}' with uuid '{{ $labels.uuid }}' of storage-controller in {{ $externalLabels.location }} has been down for more than 5 minutes."
+        - alert: StorageBackendStatusFlaps
+          expr: 'changes( sum by (name, location, type, uuid) (backend_health_status{service="storage-controller-v1"} * on (uuid, pod) group_left(name, location, type) backend_info{service="storage-controller-v1"}) [10m:]) > 5'
+          labels:
+            location: "{{ $externalLabels.location }}"
+            k8s_cluster: "{{ $externalLabels.k8s_cluster }}"
+            service: storage-controller-v1
+          annotations:
+            summary: "[{{ $externalLabels.location }}] {{ $labels.type }} health flaps."
+            description: "Health of {{ $labels.type }} backend '{{ $labels.name }}' with uuid '{{ $labels.uuid }}' in {{ $externalLabels.location }} changed a few times in the last 10 minutes."
+

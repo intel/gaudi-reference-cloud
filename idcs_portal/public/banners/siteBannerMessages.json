@@ -1,0 +1,42 @@
+{
+    "REACT_APP_SITE_BANNERS": [
+        {
+            "id": 1726168351137,
+            "type": "info",
+            "title": "Test Link",
+            "status": "inactive",
+            "message": "This is a test Banner for Link functionality.",
+            "userTypes": [
+                "intel"
+            ],
+            "routes": [
+                "all"
+            ],
+            "regions": ["us-staging-1", "us-staging-4"],
+            "expirationDatetime": "",
+            "link": {
+                "label": "Search Google",
+                "href": "https://google.com",
+                "openInNewTab": true
+            }
+        },
+        {
+            "id": 1725573659126,
+            "type": "info",
+            "title": "Updates to our notebooks",
+            "message": "For a better service, notebook usage now needs a cloud coupon and re-authentication. Request a coupon at itdc_training_requests@intel.com",
+            "userTypes": [
+                "intel",
+                "enterprise",
+                "premium",
+                "standard"
+            ],
+            "routes": [
+                "/learning/notebooks"
+            ],
+            "regions": ["us-staging-1"],
+            "status": "inactive",
+            "expirationDatetime": "2024-10-08T00:00:00.000Z"
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+export default interface Product {
+  id: string
+  familyId: string
+  vendorId: string
+  name: string
+  description: string
+  category: string
+  recommendedUseCase: string
+  cpuCores: string
+  cpuSockets: string
+  diskSize: string
+  displayName: string
+  familyDisplayDescription: string
+  familyDisplayName: string
+  information: string
+  instanceType: string
+  instanceCategories: string
+  memorySize: string
+  processor: string
+  region: string
+  service: string
+  eccn: string
+  pcq: string
+  accountType: string
+  unit: string
+  rate: string
+  usageExpr: string
+  access: string
+  nodesCount: string
+}

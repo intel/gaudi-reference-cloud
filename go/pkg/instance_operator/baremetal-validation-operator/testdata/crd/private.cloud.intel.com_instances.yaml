@@ -1,0 +1,314 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.10.0
+  creationTimestamp: null
+  name: instances.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: Instance
+    listKind: InstanceList
+    plural: instances
+    singular: instance
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Instance is the Schema for the instances API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: InstanceSpec defines the desired state of Instance. JSON
+              representation should match InstanceSpecPrivate in /public_api/proto/compute.proto
+              unless there is special handling in go/pkg/instance_replicator/convert/convert.go.
+            properties:
+              availabilityZone:
+                type: string
+              clusterGroupId:
+                type: string
+              clusterId:
+                type: string
+              instanceGroup:
+                type: string
+              instanceName:
+                type: string
+              instanceType:
+                type: string
+              instanceTypeSpec:
+                properties:
+                  cpu:
+                    properties:
+                      cores:
+                        format: int32
+                        type: integer
+                      id:
+                        type: string
+                      modelName:
+                        type: string
+                      sockets:
+                        format: int32
+                        type: integer
+                      threads:
+                        format: int32
+                        type: integer
+                    required:
+                    - cores
+                    - id
+                    - modelName
+                    - sockets
+                    - threads
+                    type: object
+                  description:
+                    type: string
+                  disks:
+                    items:
+                      properties:
+                        size:
+                          type: string
+                      required:
+                      - size
+                      type: object
+                    type: array
+                  displayName:
+                    type: string
+                  gpu:
+                    properties:
+                      count:
+                        format: int32
+                        type: integer
+                      modelName:
+                        type: string
+                    required:
+                    - count
+                    - modelName
+                    type: object
+                  hbmMode:
+                    type: string
+                  instanceCategory:
+                    type: string
+                  memory:
+                    properties:
+                      dimmCount:
+                        format: int32
+                        type: integer
+                      dimmSize:
+                        type: string
+                      size:
+                        type: string
+                      speed:
+                        format: int32
+                        type: integer
+                    required:
+                    - dimmCount
+                    - dimmSize
+                    - size
+                    - speed
+                    type: object
+                  name:
+                    type: string
+                required:
+                - cpu
+                - description
+                - displayName
+                - gpu
+                - hbmMode
+                - memory
+                - name
+                type: object
+              interfaces:
+                items:
+                  properties:
+                    dnsName:
+                      type: string
+                    name:
+                      description: Interface name such as eth0.
+                      type: string
+                    nameservers:
+                      items:
+                        type: string
+                      type: array
+                    vNet:
+                      description: VNet name such as us-west-1a-default.
+                      type: string
+                  required:
+                  - dnsName
+                  - nameservers
+                  type: object
+                type: array
+              labels:
+                additionalProperties:
+                  type: string
+                type: object
+              machineImage:
+                type: string
+              machineImageSpec:
+                properties:
+                  name:
+                    type: string
+                  userName:
+                    type: string
+                required:
+                - name
+                - userName
+                type: object
+              nodeId:
+                type: string
+              partition:
+                type: string
+              region:
+                type: string
+              runStrategy:
+                description: RunStrategy is a label for the requested Instance Running
+                  State.
+                type: string
+              serviceType:
+                type: string
+              sshPublicKeyNames:
+                items:
+                  type: string
+                type: array
+              sshPublicKeySpecs:
+                items:
+                  properties:
+                    sshPublicKey:
+                      type: string
+                  required:
+                  - sshPublicKey
+                  type: object
+                type: array
+              topologySpreadConstraints:
+                items:
+                  properties:
+                    labelSelector:
+                      properties:
+                        matchLabels:
+                          additionalProperties:
+                            type: string
+                          type: object
+                      required:
+                      - matchLabels
+                      type: object
+                  required:
+                  - labelSelector
+                  type: object
+                type: array
+              userData:
+                type: string
+            required:
+            - availabilityZone
+            - clusterGroupId
+            - clusterId
+            - instanceTypeSpec
+            - machineImageSpec
+            - nodeId
+            - region
+            - sshPublicKeySpecs
+            type: object
+          status:
+            description: InstanceStatus defines the observed state of Instance
+            properties:
+              conditions:
+                items:
+                  properties:
+                    lastProbeTime:
+                      format: date-time
+                      nullable: true
+                      type: string
+                    lastTransitionTime:
+                      format: date-time
+                      nullable: true
+                      type: string
+                    message:
+                      type: string
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+              interfaces:
+                items:
+                  properties:
+                    addresses:
+                      description: List of IP addresses.
+                      items:
+                        type: string
+                      type: array
+                    dnsName:
+                      type: string
+                    gateway:
+                      type: string
+                    name:
+                      type: string
+                    prefixLength:
+                      type: integer
+                    subnet:
+                      type: string
+                    vNet:
+                      type: string
+                    vlanId:
+                      type: integer
+                  required:
+                  - dnsName
+                  - gateway
+                  - prefixLength
+                  - subnet
+                  - vlanId
+                  type: object
+                type: array
+              message:
+                type: string
+              phase:
+                default: Provisioning
+                description: A summary of the instance status for display to users.
+                  For automation, use conditions instead.
+                type: string
+              sshProxy:
+                description: SshProxyTunnelStatus defines the observed state of SshProxyTunnel
+                properties:
+                  proxyAddress:
+                    description: ProxyAddress specifies the proxy server where tenant
+                      ssh request will come to
+                    type: string
+                  proxyPort:
+                    description: ProxyPort specifies the port at which the proxy server
+                      will listen for incoming ssh connection from tenant
+                    type: integer
+                  proxyUser:
+                    description: ProxyUser specifies the user the tenant will use
+                      to access the proxy server
+                    type: string
+                required:
+                - proxyAddress
+                - proxyPort
+                - proxyUser
+                type: object
+              userName:
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+

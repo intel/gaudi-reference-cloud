@@ -1,0 +1,32 @@
+
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SDNControllerConfig
+controllerConfig:
+  enableReadOnlyMode: false
+  switchBackendMode: "eapi"
+  switchSecretsPath: tests/gaudi_clab/eapi
+  dataCenter: fxhb3p3r:fxhb3p3s
+  portResyncPeriodInSec: 300
+  switchResyncPeriodInSec: 300
+  bmhResyncPeriodInSec: 300
+  networkNodeResyncPeriodInSec: 300
+  nodeGroupResyncPeriodInSec: 300
+  switchImportPeriodInSec: 300
+  maxConcurrentReconciles: 30
+  maxConcurrentSwitchReconciles: 10
+  maxConcurrentNetworkNodeReconciles: 10
+  maxConcurrentNodeGroupReconciles: 10
+  bmhClusterKubeConfigFilePath: "../../../local/secrets/kubeconfig/kind-idc-us-dev-1a.yaml"
+  poolsConfigFilePath: tests/gaudi_clab/pools.json
+  nodeGroupToPoolMappingConfigFilePath: tests/gaudi_clab/mappings.json
+  nodeGroupToPoolMappingSource: local
+  useDefaultValueInPoolForMovingNodeGroup: false
+  switchImportSource: none
+  switchPortImportSource: bmh
+  statusReportPeriodInSec: 300
+  statusReportAcceleratedPeriodInSec: 10
+
+ravenConfig:
+  environment: mock
+  credentialsFilePath: /vault/secrets/raven
+  host: raven-devcloud.app.intel.com

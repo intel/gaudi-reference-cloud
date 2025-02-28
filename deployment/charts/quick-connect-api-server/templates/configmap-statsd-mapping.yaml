@@ -1,0 +1,1477 @@
+{{- if .Values.statsd.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}-statsd-mapping
+  namespace: {{ include "idc-common.namespace" . }}
+data:
+  statsd.mappingConf: |
+    mappings:
+      - match: envoy.cluster.*.assignment_stale
+        name: envoy_cluster_assignment_stale
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.assignment_timeout_received
+        name: envoy_cluster_assignment_timeout_received
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.bind_errors
+        name: envoy_cluster_bind_errors
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.default.cx_open
+        name: envoy_cluster_circuit_breakers_default_cx_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.default.cx_pool_open
+        name: envoy_cluster_circuit_breakers_default_cx_pool_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.default.rq_open
+        name: envoy_cluster_circuit_breakers_default_rq_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.default.rq_pending_open
+        name: envoy_cluster_circuit_breakers_default_rq_pending_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.default.rq_retry_open
+        name: envoy_cluster_circuit_breakers_default_rq_retry_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.high.cx_open
+        name: envoy_cluster_circuit_breakers_high_cx_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.high.cx_pool_open
+        name: envoy_cluster_circuit_breakers_high_cx_pool_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.high.rq_open
+        name: envoy_cluster_circuit_breakers_high_rq_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.high.rq_pending_open
+        name: envoy_cluster_circuit_breakers_high_rq_pending_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.circuit_breakers.high.rq_retry_open
+        name: envoy_cluster_circuit_breakers_high_rq_retry_open
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.client_ssl_socket_factory.downstream_context_secrets_not_ready
+        name: envoy_cluster_client_ssl_socket_factory_downstream_context_secrets_not_ready
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.client_ssl_socket_factory.ssl_context_update_by_sds
+        name: envoy_cluster_client_ssl_socket_factory_ssl_context_update_by_sds
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.client_ssl_socket_factory.upstream_context_secrets_not_ready
+        name: envoy_cluster_client_ssl_socket_factory_upstream_context_secrets_not_ready
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.default.total_match_count
+        name: envoy_cluster_default_total_match_count
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.external.upstream_rq_completed
+        name: envoy_cluster_external_upstream_rq_completed
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.http1.dropped_headers_with_underscores
+        name: envoy_cluster_http1_dropped_headers_with_underscores
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.http1.metadata_not_supported_error
+        name: envoy_cluster_http1_metadata_not_supported_error
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.http1.requests_rejected_with_underscores_in_headers
+        name: envoy_cluster_http1_requests_rejected_with_underscores_in_headers
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.http1.response_flood
+        name: envoy_cluster_http1_response_flood
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_healthy_panic
+        name: envoy_cluster_lb_healthy_panic
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_local_cluster_not_ok
+        name: envoy_cluster_lb_local_cluster_not_ok
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_recalculate_zone_structures
+        name: envoy_cluster_lb_recalculate_zone_structures
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_subsets_active
+        name: envoy_cluster_lb_subsets_active
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_subsets_created
+        name: envoy_cluster_lb_subsets_created
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_subsets_fallback
+        name: envoy_cluster_lb_subsets_fallback
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_subsets_fallback_panic
+        name: envoy_cluster_lb_subsets_fallback_panic
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_subsets_removed
+        name: envoy_cluster_lb_subsets_removed
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_subsets_selected
+        name: envoy_cluster_lb_subsets_selected
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_zone_cluster_too_small
+        name: envoy_cluster_lb_zone_cluster_too_small
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_zone_no_capacity_left
+        name: envoy_cluster_lb_zone_no_capacity_left
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_zone_number_differs
+        name: envoy_cluster_lb_zone_number_differs
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_zone_routing_all_directly
+        name: envoy_cluster_lb_zone_routing_all_directly
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_zone_routing_cross_zone
+        name: envoy_cluster_lb_zone_routing_cross_zone
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.lb_zone_routing_sampled
+        name: envoy_cluster_lb_zone_routing_sampled
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.max_host_weight
+        name: envoy_cluster_max_host_weight
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.membership_change
+        name: envoy_cluster_membership_change
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.membership_degraded
+        name: envoy_cluster_membership_degraded
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.membership_excluded
+        name: envoy_cluster_membership_excluded
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.membership_healthy
+        name: envoy_cluster_membership_healthy
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.membership_total
+        name: envoy_cluster_membership_total
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.original_dst_host_invalid
+        name: envoy_cluster_original_dst_host_invalid
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.retry_or_shadow_abandoned
+        name: envoy_cluster_retry_or_shadow_abandoned
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.connection_error
+        name: envoy_cluster_ssl_connection_error
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.curves.*
+        name: envoy_cluster_ssl_curves
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          cipher_suite: $2
+      - match: envoy.cluster.*.ssl.fail_verify_cert_hash
+        name: envoy_cluster_ssl_fail_verify_cert_hash
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.fail_verify_error
+        name: envoy_cluster_ssl_fail_verify_error
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.fail_verify_no_cert
+        name: envoy_cluster_ssl_fail_verify_no_cert
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.fail_verify_san
+        name: envoy_cluster_ssl_fail_verify_san
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.handshake
+        name: envoy_cluster_ssl_handshake
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.no_certificate
+        name: envoy_cluster_ssl_no_certificate
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.ocsp_staple_failed
+        name: envoy_cluster_ssl_ocsp_staple_failed
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.ocsp_staple_omitted
+        name: envoy_cluster_ssl_ocsp_staple_omitted
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.ocsp_staple_requests
+        name: envoy_cluster_ssl_ocsp_staple_requests
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.ocsp_staple_responses
+        name: envoy_cluster_ssl_ocsp_staple_responses
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.session_reused
+        name: envoy_cluster_ssl_session_reused
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy\.([0-9a-zA-Z_-]+)\.cluster\.([0-9a-zA-Z_-]+)\.ssl.versions\.([0-9a-zA-Z_-]+)
+        match_type: regex
+        name: envoy_cluster_ssl_versions
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          ssl_version: $3
+      - match: envoy.cluster.*.update_attempt
+        name: envoy_cluster_update_attempt
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.update_empty
+        name: envoy_cluster_update_empty
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.update_failure
+        name: envoy_cluster_update_failure
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.update_no_rebuild
+        name: envoy_cluster_update_no_rebuild
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.warming_state
+        name: envoy_cluster_warming_state
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.update_success
+        name: envoy_cluster_update_success
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_active
+        name: envoy_cluster_upstream_cx_active
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_close_notify
+        name: envoy_cluster_upstream_cx_close_notify
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_connect_attempts_exceeded
+        name: envoy_cluster_upstream_cx_connect_attempts_exceeded
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_connect_fail
+        name: envoy_cluster_upstream_cx_connect_fail
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_connect_timeout
+        name: envoy_cluster_upstream_cx_connect_timeout
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_connect_with_0_rtt
+        name: envoy_cluster_upstream_cx_connect_with_0_rtt
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_destroy
+        name: envoy_cluster_upstream_cx_destroy
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_destroy_local
+        name: envoy_cluster_upstream_cx_destroy_local
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_destroy_local_with_active_rq
+        name: envoy_cluster_upstream_cx_destroy_local_with_active_rq
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_destroy_remote
+        name: envoy_cluster_upstream_cx_destroy_remote
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_destroy_remote_with_active_rq
+        name: envoy_cluster_upstream_cx_destroy_remote_with_active_rq
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_destroy_with_active_rq
+        name: envoy_cluster_upstream_cx_destroy_with_active_rq
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_http1_total
+        name: envoy_cluster_upstream_cx_http1_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_http2_total
+        name: envoy_cluster_upstream_cx_http2_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_http3_total
+        name: envoy_cluster_upstream_cx_http3_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_idle_timeout
+        name: envoy_cluster_upstream_cx_idle_timeout
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_max_duration_reached
+        name: envoy_cluster_upstream_cx_max_duration_reached
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_max_requests
+        name: envoy_cluster_upstream_cx_max_requests
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_none_healthy
+        name: envoy_cluster_upstream_cx_none_healthy
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_overflow
+        name: envoy_cluster_upstream_cx_overflow
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_pool_overflow
+        name: envoy_cluster_upstream_cx_pool_overflow
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_protocol_error
+        name: envoy_cluster_upstream_cx_protocol_error
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_rx_bytes_buffered
+        name: envoy_cluster_upstream_cx_rx_bytes_buffered
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_rx_bytes_total
+        name: envoy_cluster_upstream_cx_rx_bytes_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_total
+        name: envoy_cluster_upstream_cx_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_tx_bytes_buffered
+        name: envoy_cluster_upstream_cx_tx_bytes_buffered
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_tx_bytes_total
+        name: envoy_cluster_upstream_cx_tx_bytes_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_flow_control_backed_up_total
+        name: envoy_cluster_upstream_flow_control_backed_up_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_flow_control_drained_total
+        name: envoy_cluster_upstream_flow_control_drained_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_flow_control_paused_reading_total
+        name: envoy_cluster_upstream_flow_control_paused_reading_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_flow_control_resumed_reading_total
+        name: envoy_cluster_upstream_flow_control_resumed_reading_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_http3_broken
+        name: envoy_cluster_upstream_http3_broken
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_internal_redirect_failed_total
+        name: envoy_cluster_upstream_internal_redirect_failed_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_internal_redirect_succeeded_total
+        name: envoy_cluster_upstream_internal_redirect_succeeded_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_0rtt
+        name: envoy_cluster_upstream_rq_0rtt
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_active
+        name: envoy_cluster_upstream_rq_active
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_cancelled
+        name: envoy_cluster_upstream_rq_cancelled
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_completed
+        name: envoy_cluster_upstream_rq_completed
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_maintenance_mode
+        name: envoy_cluster_upstream_rq_maintenance_mode
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_max_duration_reached
+        name: envoy_cluster_upstream_rq_max_duration_reached
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_pending_active
+        name: envoy_cluster_upstream_rq_pending_active
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_pending_failure_eject
+        name: envoy_cluster_upstream_rq_pending_failure_eject
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_pending_overflow
+        name: envoy_cluster_upstream_rq_pending_overflow
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_pending_total
+        name: envoy_cluster_upstream_rq_pending_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_per_try_idle_timeout
+        name: envoy_cluster_upstream_rq_per_try_idle_timeout
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_per_try_timeout
+        name: envoy_cluster_upstream_rq_per_try_timeout
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_retry
+        name: envoy_cluster_upstream_rq_retry
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_retry_backoff_exponential
+        name: envoy_cluster_upstream_rq_retry_backoff_exponential
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_retry_backoff_ratelimited
+        name: envoy_cluster_upstream_rq_retry_backoff_ratelimited
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_retry_limit_exceeded
+        name: envoy_cluster_upstream_rq_retry_limit_exceeded
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_retry_overflow
+        name: envoy_cluster_upstream_rq_retry_overflow
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_retry_success
+        name: envoy_cluster_upstream_rq_retry_success
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_rx_reset
+        name: envoy_cluster_upstream_rq_rx_reset
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_timeout
+        name: envoy_cluster_upstream_rq_timeout
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_total
+        name: envoy_cluster_upstream_rq_total
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_tx_reset
+        name: envoy_cluster_upstream_rq_tx_reset
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ext_authz.ok
+        name: envoy_cluster_ext_authz_ok
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ext_authz.error
+        name: envoy_cluster_ext_authz_error
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.health_check.success
+        name: envoy_cluster_health_check_success
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.health_check.attempt
+        name: envoy_cluster_health_check_attempt
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.health_check.failure
+        name: envoy_cluster_health_check_failure
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.health_check.network_failure
+        name: envoy_cluster_health_check_network_failure
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.http2.tx_reset
+        name: envoy_cluster_http2_tx_reset
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.version
+        name: envoy_cluster_version
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.http2.pending_send_bytes
+        name: envoy_cluster_http2_pending_send_bytes
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.http2.streams_active
+        name: envoy_cluster_http2_streams_active
+        match_metric_type: gauge
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.external.upstream_rq_time
+        name: envoy_cluster_external_upstream_rq_time
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_connect_ms
+        name: envoy_cluster_upstream_cx_connect_ms
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_cx_length_ms
+        name: envoy_cluster_upstream_cx_length_ms
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.upstream_rq_time
+        name: envoy_cluster_upstream_rq_time
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          cluster_name: $1
+      - match: envoy.cluster.*.ssl.sigalgs.*
+        name: envoy_cluster_ssl_sigalgs
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          cipher_suite: $2
+      - match: envoy.cluster.*.ssl.ciphers.*
+        name: envoy_cluster_ssl_ciphers
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          cipher_suite: $2
+      - match: envoy.cluster\.([0-9a-zA-Z_-]+)\.external.upstream_rq_([1-5])xx
+        match_type: regex
+        name: envoy_cluster_external_upstream_rq_xx
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          response_code_class: $2
+      - match: envoy.cluster\.([0-9a-zA-Z_-]+)\.upstream_rq_([1-5])xx
+        match_type: regex
+        name: envoy_cluster_upstream_rq_xx
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          response_code_class: $2
+      - match: envoy.cluster\.([0-9a-zA-Z_-]+)\.external.upstream_rq_([1-5][0-9][0-9])
+        match_type: regex
+        name: envoy_cluster_external_upstream_rq
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          response_code: $2
+      - match: envoy.cluster\.([0-9a-zA-Z_-]+)\.upstream_rq_([1-5][0-9][0-9])
+        match_type: regex
+        name: envoy_cluster_upstream_rq
+        match_metric_type: counter
+        labels:
+          cluster_name: $1
+          response_code: $2
+      - match: envoy.http.*.downstream_cx_active
+        name: envoy_http_downstream_cx_active
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_delayed_close_timeout
+        name: envoy_http_downstream_cx_delayed_close_timeout
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_destroy
+        name: envoy_http_downstream_cx_destroy
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_destroy_active_rq
+        name: envoy_http_downstream_cx_destroy_active_rq
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_destroy_local
+        name: envoy_http_downstream_cx_destroy_local
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_destroy_local_active_rq
+        name: envoy_http_downstream_cx_destroy_local_active_rq
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_destroy_remote
+        name: envoy_http_downstream_cx_destroy_remote
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_destroy_remote_active_rq
+        name: envoy_http_downstream_cx_destroy_remote_active_rq
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_drain_close
+        name: envoy_http_downstream_cx_drain_close
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_http1_active
+        name: envoy_http_downstream_cx_http1_active
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_http1_total
+        name: envoy_http_downstream_cx_http1_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_http2_active
+        name: envoy_http_downstream_cx_http2_active
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_http2_total
+        name: envoy_http_downstream_cx_http2_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_http3_active
+        name: envoy_http_downstream_cx_http3_active
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_http3_total
+        name: envoy_http_downstream_cx_http3_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_idle_timeout
+        name: envoy_http_downstream_cx_idle_timeout
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_max_duration_reached
+        name: envoy_http_downstream_cx_max_duration_reached
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_max_requests_reached
+        name: envoy_http_downstream_cx_max_requests_reached
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_overload_disable_keepalive
+        name: envoy_http_downstream_cx_overload_disable_keepalive
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_protocol_error
+        name: envoy_http_downstream_cx_protocol_error
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_rx_bytes_buffered
+        name: envoy_http_downstream_cx_rx_bytes_buffered
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_rx_bytes_total
+        name: envoy_http_downstream_cx_rx_bytes_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_ssl_active
+        name: envoy_http_downstream_cx_ssl_active
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_ssl_total
+        name: envoy_http_downstream_cx_ssl_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_total
+        name: envoy_http_downstream_cx_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_tx_bytes_buffered
+        name: envoy_http_downstream_cx_tx_bytes_buffered
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_tx_bytes_total
+        name: envoy_http_downstream_cx_tx_bytes_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_upgrades_active
+        name: envoy_http_downstream_cx_upgrades_active
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_upgrades_total
+        name: envoy_http_downstream_cx_upgrades_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_flow_control_paused_reading_total
+        name: envoy_http_downstream_flow_control_paused_reading_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_flow_control_resumed_reading_total
+        name: envoy_http_downstream_flow_control_resumed_reading_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_active
+        name: envoy_http_downstream_rq_active
+        match_metric_type: gauge
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_completed
+        name: envoy_http_downstream_rq_completed
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_failed_path_normalization
+        name: envoy_http_downstream_rq_failed_path_normalization
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_header_timeout
+        name: envoy_http_downstream_rq_header_timeout
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_http1_total
+        name: envoy_http_downstream_rq_http1_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_http2_total
+        name: envoy_http_downstream_rq_http2_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_http3_total
+        name: envoy_http_downstream_rq_http3_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_idle_timeout
+        name: envoy_http_downstream_rq_idle_timeout
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_max_duration_reached
+        name: envoy_http_downstream_rq_max_duration_reached
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_non_relative_path
+        name: envoy_http_downstream_rq_non_relative_path
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_overload_close
+        name: envoy_http_downstream_rq_overload_close
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_redirected_with_normalized_path
+        name: envoy_http_downstream_rq_redirected_with_normalized_path
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_rejected_via_ip_detection
+        name: envoy_http_downstream_rq_rejected_via_ip_detection
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_response_before_rq_complete
+        name: envoy_http_downstream_rq_response_before_rq_complete
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_rx_reset
+        name: envoy_http_downstream_rq_rx_reset
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_timeout
+        name: envoy_http_downstream_rq_timeout
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_too_large
+        name: envoy_http_downstream_rq_too_large
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_total
+        name: envoy_http_downstream_rq_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_tx_reset
+        name: envoy_http_downstream_rq_tx_reset
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_ws_on_non_ws_route
+        name: envoy_http_downstream_rq_ws_on_non_ws_route
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.no_cluster
+        name: envoy_http_no_cluster
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.no_route
+        name: envoy_http_no_route
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.passthrough_internal_redirect_bad_location
+        name: envoy_http_passthrough_internal_redirect_bad_location
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.passthrough_internal_redirect_no_route
+        name: envoy_http_passthrough_internal_redirect_no_route
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.passthrough_internal_redirect_predicate
+        name: envoy_http_passthrough_internal_redirect_predicate
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.passthrough_internal_redirect_too_many_redirects
+        name: envoy_http_passthrough_internal_redirect_too_many_redirects
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.passthrough_internal_redirect_unsafe_scheme
+        name: envoy_http_passthrough_internal_redirect_unsafe_scheme
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.rq_direct_response
+        name: envoy_http_rq_direct_response
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.rq_redirect
+        name: envoy_http_rq_redirect
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.rq_reset_after_downstream_response_started
+        name: envoy_http_rq_reset_after_downstream_response_started
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.rq_total
+        name: envoy_http_rq_total
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.rs_too_large
+        name: envoy_http_rs_too_large
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.tracing.client_enabled
+        name: envoy_http_tracing_client_enabled
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.tracing.health_check
+        name: envoy_http_tracing_health_check
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.tracing.not_traceable
+        name: envoy_http_tracing_not_traceable
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.tracing.random_sampling
+        name: envoy_http_tracing_random_sampling
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.tracing.service_forced
+        name: envoy_http_tracing_service_forced
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_cx_length_ms
+        name: envoy_http_downstream_cx_length_ms
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http.*.downstream_rq_time
+        name: envoy_http_downstream_rq_time
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http\.([0-9a-zA-Z_-]+)\.downstream_rq_([1-5])xx
+        match_type: regex
+        name: envoy_http_downstream_rq_xx
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+          response_code_class: $2
+      - match: envoy.server.worker_([0-9]+).server.worker_0.watchdog_mega_miss
+        match_type: regex
+        name: envoy_server_watchdog_mega_miss
+        match_metric_type: counter
+        labels:
+          worker_id: $1
+      - match: envoy.server.worker_([0-9]+).server.worker_0.watchdog_miss
+        match_type: regex
+        name: envoy_server_watchdog_miss
+        match_metric_type: counter
+        labels:
+          worker_id: $1
+      - match: envoy.*.server.concurrency
+        name: envoy_server_concurrency
+        match_metric_type: gauge
+      - match: envoy.server.days_until_first_cert_expiring
+        name: envoy_server_days_until_first_cert_expiring
+        match_metric_type: gauge
+      - match: envoy.server.dynamic_unknown_fields
+        name: envoy_server_dynamic_unknown_fields
+        match_metric_type: counter
+      - match: envoy.server.hot_restart_epoch
+        name: envoy_server_hot_restart_epoch
+        match_metric_type: gauge
+      - match: envoy.server.hot_restart_generation
+        name: envoy_server_hot_restart_generation
+        match_metric_type: gauge
+      - match: envoy.server.live
+        name: envoy_server_live
+        match_metric_type: gauge
+      - match: envoy.server.memory_allocated
+        name: envoy_server_memory_allocated
+        match_metric_type: gauge
+      - match: envoy.server.memory_heap_size
+        name: envoy_server_memory_heap_size
+        match_metric_type: gauge
+      - match: envoy.server.memory_physical_size
+        name: envoy_server_memory_physical_size
+        match_metric_type: gauge
+      - match: envoy.server.parent_connections
+        name: envoy_server_parent_connections
+        match_metric_type: gauge
+      - match: envoy.server.state
+        name: envoy_server_state
+        match_metric_type: gauge
+      - match: envoy.server.static_unknown_fields
+        name: envoy_server_static_unknown_fields
+        match_metric_type: counter
+      - match: envoy.server.stats_recent_lookups
+        name: envoy_server_stats_recent_lookups
+        match_metric_type: gauge
+      - match: envoy.server.total_connections
+        name: envoy_server_total_connections
+        match_metric_type: gauge
+      - match: envoy.server.uptime
+        name: envoy_server_uptime
+        match_metric_type: gauge
+      - match: envoy.server.version
+        name: envoy_server_version
+        match_metric_type: gauge
+      - match: envoy.server.wip_protos
+        name: envoy_server_wip_protos
+        match_metric_type: counter
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.http\.([0-9a-zA-Z_-]+)\.downstream_rq_completed
+        match_type: regex
+        name: envoy_listener_downstream_rq_completed
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+          http_conn_manager_prefix: $2
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.worker_([0-9]+).downstream_cx_active
+        match_type: regex
+        name: envoy_listener_downstream_cx_active
+        match_metric_type: gauge
+        labels:
+          envoy_listener_address: $1
+          worker_id: $2
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.worker_([0-9]+).downstream_cx_total
+        match_type: regex
+        name: envoy_listener_downstream_cx_total
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+          worker_id: $2
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.http\.([0-9a-zA-Z_-]+)\.downstream_rq_([1-5])xx
+        match_type: regex
+        name: envoy_listener_downstream_rq_xx
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+          http_conn_manager_prefix: $2
+          response_code_class: $4
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_cx_active
+        match_type: regex
+        name: envoy_listener_downstream_cx_active
+        match_metric_type: gauge
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.connections_accepted_per_socket_event
+        match_type: regex
+        name: envoy_listener_connections_accepted_per_socket_event
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_cx_destroy
+        match_type: regex
+        name: envoy_listener_downstream_cx_destroy
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_cx_overflow
+        match_type: regex
+        name: envoy_listener_downstream_cx_overflow
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_cx_overload_reject
+        match_type: regex
+        name: envoy_listener_downstream_cx_overload_reject
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_cx_total
+        match_type: regex
+        name: envoy_listener_downstream_cx_total
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_cx_transport_socket_connect_timeout
+        match_type: regex
+        name: envoy_listener_downstream_cx_transport_socket_connect_timeout
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_global_cx_overflow
+        match_type: regex
+        name: envoy_listener_downstream_global_cx_overflow
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_listener_filter_error
+        match_type: regex
+        name: envoy_listener_downstream_listener_filter_error
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_listener_filter_remote_close
+        match_type: regex
+        name: envoy_listener_downstream_listener_filter_remote_close
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_pre_cx_active
+        match_type: regex
+        name: envoy_listener_downstream_pre_cx_active
+        match_metric_type: gauge
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_pre_cx_timeout
+        match_type: regex
+        name: envoy_listener_downstream_pre_cx_timeout
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.extension_config_missing
+        match_type: regex
+        name: envoy_listener_extension_config_missing
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.no_filter_chain_match
+        match_type: regex
+        name: envoy_listener_no_filter_chain_match
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.server_ssl_socket_factory\.ssl_context_update_by_sds
+        match_type: regex
+        name: envoy_listener_server_ssl_socket_factory_ssl_context_update_by_sds
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.connection_error
+        match_type: regex
+        name: envoy_listener_ssl_connection_error
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.handshake
+        match_type: regex
+        name: envoy_listener_ssl_handshake
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.no_certificate
+        match_type: regex
+        name: envoy_listener_ssl_no_certificate
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.ocsp_staple_omitted
+        match_type: regex
+        name: envoy_listener_ssl_ocsp_staple_omitted
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.ocsp_staple_requests
+        match_type: regex
+        name: envoy_listener_ssl_ocsp_staple_requests
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.ciphers\.([0-9a-zA-Z_-]+)
+        match_type: regex
+        name: envoy_listener_ssl_ciphers
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+          cipher_suite: $2
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.curves\.([0-9a-zA-Z_-]+)
+        match_type: regex
+        name: envoy_listener_ssl_curves
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+          cipher_suite: $2
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.sigalgs\.([0-9a-zA-Z_-]+)
+        match_type: regex
+        name: envoy_listener_ssl_sigalgs
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+          cipher_suite: $2
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.ssl\.versions\.([0-9a-zA-Z_-]+)
+        match_type: regex
+        name: envoy_listener_ssl_versions
+        match_metric_type: counter
+        labels:
+          envoy_listener_address: $1
+          ssl_version: $2
+      - match: envoy.listener\.([0-9a-zA-Z_.-]+)\.downstream_cx_length_ms
+        match_type: regex
+        name: envoy_listener_downstream_cx_length_ms
+        match_metric_type: observer
+        observer_type: histogram
+        labels:
+          envoy_listener_address: $1
+      - match: envoy.cluster_manager.active_clusters
+        name: envoy_cluster_manager_active_clusters
+        match_metric_type: gauge
+      - match: envoy.cluster_manager.warming_clusters
+        name: envoy_cluster_manager_warming_clusters
+        match_metric_type: gauge
+      - match: envoy.cluster_manager.cluster_added
+        name: envoy_cluster_manager_cluster_added
+        match_metric_type: counter
+      - match: envoy.*.filesystem.flushed_by_timer
+        name: envoy_filesystem_flushed_by_timer
+        match_metric_type: counter
+      - match: envoy.*.filesystem.write_total_buffered
+        name: envoy_filesystem_write_total_buffered
+        match_metric_type: counter
+      - match: envoy.*.filesystem.write_buffered
+        name: envoy_filesystem_write_buffered
+        match_metric_type: counter
+      - match: envoy.*.filesystem.write_completed
+        name: envoy_filesystem_write_completed
+        match_metric_type: counter
+      - match: envoy.*.filesystem.write_failed
+        name: envoy_filesystem_write_failed
+        match_metric_type: counter
+      - match: envoy.http2.pending_send_bytes
+        name: envoy_http2_pending_send_bytes
+        match_metric_type: gauge
+      - match: envoy.http2.streams_active
+        name: envoy_http2_streams_active
+        match_metric_type: gauge
+      - match: envoy.http2.tx_reset
+        name: envoy_http2_tx_reset
+        match_metric_type: counter
+      - match: envoy.listener_manager.listener_added
+        name: envoy_listener_manager_listener_added
+        match_metric_type: counter
+      - match: envoy.listener_manager.listener_create_success
+        name: envoy_listener_manager_listener_create_success
+        match_metric_type: counter
+      - match: envoy.listener_manager.total_listeners_active
+        name: envoy_listener_manager_total_listeners_active
+        match_metric_type: gauge
+      - match: envoy.listener_manager.total_listeners_warming
+        name: envoy_listener_manager_total_listeners_warming
+        match_metric_type: gauge
+      - match: envoy.listener_manager.workers_started
+        name: envoy_listener_manager_workers_started
+        match_metric_type: gauge
+      - match: envoy.dns.cares.resolve_total
+        name: envoy_dns_cares_resolve_total
+        match_metric_type: counter
+      - match: envoy.dns.cares.get_addr_failure
+        name: envoy_dns_cares_get_addr_failure
+        match_metric_type: counter
+      - match: envoy.dns.cares.not_found
+        name: envoy_dns_cares_not_found
+        match_metric_type: counter
+      - match: envoy.dns.cares.timeout
+        name: envoy_dns_cares_timeout
+        match_metric_type: counter
+      - match: envoy.dns.cares.pending_resolutions
+        name: envoy_dns_cares_pending_resolutions
+        match_metric_type: gauge
+      - match: envoy.http\.([0-9a-zA-Z_-]+)\.oauth_failure
+        match_type: regex
+        name: envoy_http_oauth_failure
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http\.([0-9a-zA-Z_-]+)\.oauth_passthrough
+        match_type: regex
+        name: envoy_http_oauth_passthrough
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http\.([0-9a-zA-Z_-]+)\.oauth_success
+        match_type: regex
+        name: envoy_http_oauth_success
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http\.([0-9a-zA-Z_-]+)\.oauth_unauthorization_rq
+        match_type: regex
+        name: envoy_http_oauth_unauthorization_rq
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http\.([0-9a-zA-Z_-]+)\.oauth_refreshtoken_success
+        match_type: regex
+        name: envoy_http_oauth_refreshtoken_success
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.http\.([0-9a-zA-Z_-]+)\.oauth_refreshtoken_failure
+        match_type: regex
+        name: envoy_http_oauth_refreshtoken_failure
+        match_metric_type: counter
+        labels:
+          http_conn_manager_prefix: $1
+      - match: envoy.runtime.deprecated_feature_seen_since_process_start
+        name: envoy_runtime_deprecated_feature_seen_since_process_start
+        match_metric_type: counter
+      - match: envoy.runtime.deprecated_feature_use
+        name: envoy_runtime_deprecated_feature_use
+        match_metric_type: counter
+      - match: envoy.runtime.load_success
+        name: envoy_runtime_load_success
+        match_metric_type: counter
+      - match: envoy.runtime.num_keys
+        name: envoy_runtime_num_keys
+        match_metric_type: counter
+      - match: envoy.runtime.num_layers
+        name: envoy_runtime_num_layers
+        match_metric_type: counter
+      - match: envoy.runtime.override_dir_not_exists
+        name: envoy_runtime_override_dir_not_exists
+        match_metric_type: counter
+      - match: envoy.sds\.([0-9a-zA-Z_-]+)\.update_time
+        match_type: regex
+        name: envoy_sds_update_time
+        match_metric_type: gauge
+        labels:
+          secret_name: $1
+      - match: envoy.sds\.([0-9a-zA-Z_-]+)\.version
+        match_type: regex
+        name: envoy_sds_version
+        match_metric_type: gauge
+        labels:
+          secret_name: $1
+      - match: envoy.thread_local_cluster_manager.main_thread.clusters_inflated
+        name: envoy_thread_local_cluster_manager_main_thread_clusters_inflated
+        match_metric_type: gauge
+      - match: envoy.thread_local_cluster_manager.worker_([0-9]+).clusters_inflated
+        name: envoy_thread_local_cluster_manager_worker_thread_clusters_inflated
+        match_type: regex
+        match_metric_type: gauge
+        labels:
+          worker_id: $1
+{{- end }}

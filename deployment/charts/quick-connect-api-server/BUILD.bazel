@@ -1,0 +1,16 @@
+# This file contains targets to build Helm charts.
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml",
+    "templates/**",
+  ]),
+  image  = "//go/pkg/quick_connect/api_server:quick_connect_api_server_image",
+  package_name = "quick-connect-api-server",  # Must not have underscores.
+  values_tag_yaml_path = "image.tag",
+  visibility = ["//visibility:public"],
+  chart_deps = ["//deployment/charts/idc-common:chart"]
+)

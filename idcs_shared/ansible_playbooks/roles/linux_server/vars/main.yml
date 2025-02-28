@@ -1,0 +1,5 @@
+intel:
+  proxy:
+    http_proxy: http://internal-placeholder.com:912
+    https_proxy: http://internal-placeholder.com:912
+    noproxy: "127.0.0.1,localhost,intel.com"

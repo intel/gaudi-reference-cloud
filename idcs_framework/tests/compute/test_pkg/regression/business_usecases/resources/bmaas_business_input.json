@@ -1,0 +1,220 @@
+{
+    "intelCloudAccount": "<<intel-cloudaccount>>",
+    "standardCloudAccount": "<<standard-cloudaccount>>",
+    "premiumCloudAccount": "<<premium-cloudaccount>>",
+    "machineImage": "ubuntu-22.04-server-cloudimg-amd64-latest",
+    "instanceTypeToBeCreated": "bm-spr",
+    "instanceTypeToBeCreatedValidationOperator": "bm-icx-gaudi2",
+    "instanceTypeToBeCreatedCloudInit": "bm-spr-pvc-1550-8",
+    "instanceTypeToBeCreatedSSHTest": "bm-spr",
+    "instanceTypeToBeCreatedMeteringMonitor": "bm-spr",
+    "instanceTypeToBeCreatedMultiSSH": "bm-spr",
+    "instanceTypeToBeCreatedCRValidation": "bm-spr",
+    "instanceTypeToBeCreatedBGP": "bm-icp-gaudi2",
+    "gaudi3InstanceType": "bm-spr-gaudi3-dell",
+    "vnetName": "<<vnet-name>>",
+    "machineImagesMapping": [
+      {"instanceType": "bm-spr",              "machineImage": "ubuntu-22.04-spr-metal-cloudimg-amd64-v20240115"},
+      {"instanceType": "bm-icp-gaudi2",       "machineImage": "ubuntu-22.04-gaudi-v1.19.0-metal-cloudimg-amd64-v20241210"},
+      {"instanceType": "bm-spr-gaudi2",       "machineImage": "ubuntu-22.04-gaudi2-v1.15-metal-cloudimg-amd64-v20240327"},
+      {"instanceType": "bm-spr-pvc-1100-4",   "machineImage": "ubuntu-22.04-pvc-metal-cloudimg-amd64-v20240319"},
+      {"instanceType": "bm-spr-pvc-1100-8",   "machineImage": "ubuntu-22.04-pvc-metal-cloudimg-amd64-v20240319"},
+      {"instanceType": "bm-spr-pvc-1550-8",   "machineImage": "ubuntu-22.04-pvc-1550-metal-cloudimg-amd64-v20240129"},
+      {"instanceType": "bm-virtual",          "machineImage": "ubuntu-22.04-server-cloudimg-amd64-latest"},
+      {"instanceType": "bm-virtual-sc",       "machineImage": "ubuntu-22.04-server-cloudimg-amd64-latest"},
+      {"instanceType": "bm-spr-pl",           "machineImage": "ubuntu-22.04-spr-metal-cloudimg-amd64-v20231130"},
+      {"instanceType": "bm-icp-gaudi2-sc",    "machineImage": "ubuntu-22.04-gaudi2-v1.14-metal-cloudimg-amd64-20240130"},
+      {"instanceType": "bm-spr-gaudi3-dell",  "machineImage": "ubuntu-22.04-gaudi-metal-cloudimg-amd64-v20240906"}
+    ],
+    "AllImagesMapping": [
+      {"instanceType": "bm-spr",              "machineImage": ["ubuntu-22.04-spr-metal-cloudimg-amd64-v20240115", "ubuntu-22.04-spr-metal-cloudimg-amd64-v20231130"]},
+      {"instanceType": "bm-icp-gaudi2",       "machineImage": ["ubuntu-22.04-gaudi2-v1.14-metal-cloudimg-amd64-v20240212"]},
+      {"instanceType": "bm-spr-gaudi2",       "machineImage": [""]},
+      {"instanceType": "bm-spr-pvc-1100-4",   "machineImage": ["ubuntu-22.04-pvc-metal-cloudimg-amd64-v20240319", "ubuntu-22.04-pvc-1100-metal-cloudimg-amd64-v20240129", "oneapi_render_v20231002", "oneapi_hpc_v20231002", "oneapi_ai_v20231002"]},
+      {"instanceType": "bm-spr-pvc-1100-8",   "machineImage": ["ubuntu-22.04-pvc-metal-cloudimg-amd64-v20240319", "ubuntu-22.04-pvc-1100-metal-cloudimg-amd64-v20240129", "oneapi_render_v20231002", "oneapi_hpc_v20231002", "oneapi_ai_v20231002"]},
+      {"instanceType": "bm-spr-pvc-1550-8",   "machineImage": ["ubuntu-22.04-pvc-1550-metal-cloudimg-amd64-v20240129", "oneapi_render_v20231002", "oneapi_hpc_v20231002", "oneapi_ai_v20231002"]},
+      {"instanceType": "bm-virtual",          "machineImage": ["ubuntu-22.04-server-cloudimg-amd64-latest", "ubuntu-22.04-server-cloudimg-amd64-latest"]}
+    ],
+    "sshPublicKeyPayload":{
+        "metadata": {
+            "name": "<<ssh-key-name>>"
+        },
+        "spec": {
+            "sshPublicKey": "<<ssh-user-public-key>>"
+        }
+    },
+    "instancePayload":{
+        "metadata": {
+          "name": "<<instance-name>>"
+        },
+        "spec": {
+          "availabilityZone": "<<availability-zone>>",
+          "instanceType": "<<instance-type>>",
+          "machineImage": "<<machine-image>>",
+          "runStrategy": "RerunOnFailure",
+          "sshPublicKeyNames": [
+            "<<ssh-key-name>>"
+          ],
+          "interfaces": [
+            {
+              "name": "eth0",
+              "vNet": "<<vnet-name>>"
+            }
+          ]
+        }
+    },
+    "instancePutPayload": {
+      "spec": {
+        "sshPublicKeyNames": [
+          "<<ssh-public-key>>"
+        ]
+      }
+    },
+    "meteringMonitoringPayload":{
+      "cloudAccountId": "<<cloud-account-id>>",
+      "resourceId": "<<resource-id>>"
+    },
+    "instanceGroupPayload": {
+      "metadata": {
+          "name": "<<instance-group-name>>",
+          "reserved3": ""
+      },
+      "spec": {
+          "instanceCount": "<<instance-count>>",
+          "instanceSpec": {
+              "availabilityZone": "<<availability-zone>>",
+              "instanceGroup": "ig-vm-one",
+              "instanceType": "<<instance-type>>",
+              "interfaces": [
+                  {
+                      "name": "eth0",
+                      "vNet": "<<vnet-name>>"
+                  }
+              ],
+              "machineImage": "<<machine-image>>",
+              "runStrategy": "RerunOnFailure",
+              "sshPublicKeyNames": [
+                  "<<ssh-key-name>>"
+              ],
+              "userData": ""
+          }
+      }
+    },
+    "instanceGroupPatchPayload": {
+      "spec": {
+        "instanceCount": "<<instance-count>>",
+        "instanceSpec": {
+          "userData": ""
+        }
+      }
+    },
+    "harvester_details": {
+      "loginUrl": "https://<<harvester-ip>>/v3-public/localProviders/local?action=login",
+      "deleteEndpoint": "https://<<harvester-ip>>/apis/kubevirt.io/v1/namespaces",
+      "payload":{
+        "description": "UI session",
+        "responseType": "cookie",
+        "username": "<<username>>",
+        "password": "<<pwd>>"
+      }
+    },
+    "intelUser":{
+      "maxQuota": 1,
+      "username": "",
+      "instancePayload":{
+          "metadata": {
+            "name": "<<instance-name>>"
+          },
+          "spec": {
+            "availabilityZone": "<<availability-zone>>",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+              "<<ssh-key-name>>"
+            ],
+            "interfaces": [
+              {
+                "name": "eth0",
+                "vNet": "<<vnet-name>>"
+              }
+            ]
+          }
+      }
+  },
+  "standardUser":{
+      "maxQuota": 1,
+      "username": "",
+      "instancePayload":{
+          "metadata": {
+            "name": "<<instance-name>>"
+          },
+          "spec": {
+            "availabilityZone": "<<availability-zone>>",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+              "<<ssh-key-name>>"
+            ],
+            "interfaces": [
+              {
+                "name": "eth0",
+                "vNet": "<<vnet-name>>"
+              }
+            ]
+          }
+      }
+  },
+  "premiumUser":{
+      "maxQuota": 1,
+      "username": "",
+      "instancePayload":{
+          "metadata": {
+            "name": "<<instance-name>>"
+          },
+          "spec": {
+            "availabilityZone": "<<availability-zone>>",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+              "<<ssh-key-name>>"
+            ],
+            "interfaces": [
+              {
+                "name": "eth0",
+                "vNet": "<<vnet-name>>"
+              }
+            ]
+          }
+      }
+  },
+  "cloudInitPayload": {
+    "metadata": {
+        "name": "<<instance-name>>"
+    },
+    "spec": {
+        "availabilityZone": "<<availability-zone>>",
+        "instanceType": "<<instance-type>>",
+        "machineImage": "<<machine-image>>",
+        "runStrategy": "RerunOnFailure",
+        "sshPublicKeyNames": [
+            "<<ssh-key-name>>"
+      ],
+      "interfaces": [
+        {
+            "name": "eth0",
+            "vNet": "<<vnet-name>>"
+        }
+      ],
+      "userData": "#cloud-init\npackages:\n  - qemu-guest-agent\n  - socat\n  - conntrack\n  - ipset\nssh_authorized_keys:\n  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCcO4pgGXXz/IDOOk0QcK4n45bkwfhr8TgCLLN1e2Qm5Zpda6egvpeI+ZrYpYNnEvCeIrZHFjwCL0JvkqY2xvf0EF5BiOa1dWc/eDj9csgW0xihQUETcUbgEQDCy8Ph3t7DGqw+h5yh6CwT2oIe9jcNnQmd+097X8aYvxk3zVx8/E7QqBmUDUH23U1VDdHOiB4ie+QUsUrmsKVxI3zZhpDvToY7maRS2TfJe0wucGrGrpvqOx+YF82lFtZRWVxKG+LOBUUTA560+O3XVf6BRCPTK/uvs9KAJsLqGbAyg+NgmbgPvixM19jTaJ7mJstwsLdvvxtcYJ+uVjnxDiR2eEB4fBb5nD/4hIxjzwstYk3EPt2Z08iHA30N29XMbcsecwqZEJqYELLrOrwJOeBB3A6sYqQYv0jxm9GytC4TNB9u63RcJ/tQpzYYauVcRszppAjuE4F4oWGolALqEpcyIczHA+bhKUyAGvy1AXZr5psoC1Dzs6qJKiNmOdUb3YspP0CCHGasNU3hzF10Lja+RvtEUb4DEKnM4D9eAQ7Frky+f/LYYkmbEqs8RkaDQQ745R/9SZnbWfdyLj/vrdXnj7XXR7OzGucqHRZyq/U/3C/D9aADiReIf9Z0V4syTG4xlkpqgBdpOy6pauMQso448tYa+AyNKd3tttYGOKhDcJXHYQ== test1\nusers:\n  - groups: docker,render\n    lock_passwd: true\n    name: test\n    shell: /bin/bash\n    ssh_authorized_keys:\n      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCwNSnjr+G3PcwY6RmFSAtZ8D5U9P4jha50btd9gToviKauufgzd13MrvdXFhWAsBo12p8YFT/r9y213yZuyClEqi3Tq7iEJZqlq6aeYo5vRJXQxzc7TN2ON4TBYXbXg1rZb5qLz8rUknTGBU0JrzLAQTSmxWYPH+7snU9yi9kfgc1L3D1735NeOpwydt3itV/LaayV2qu9Xy7q5SyOo7qbhxhgzAMcKbAcMpcKZtdnLaSCb20HKxf7fzqJpOWws15Z4rc7PMD+xU19+PsuJAS9FV8K7rWxRmhA40AbrdIHPeI+bnCk0MLqQ1LAkPRmfmxX5EKQ6mwP/ykCnRnjyiFSE1g8ejEo/p7cfTi8g6kw8qVdJy1CgnhobZ23QqSBJGWC1OvVY3M8McDdztJ2vVLyiGFMKGvn8y9bYGayiH1fwwAl92YvqBLCWkV1iU0dDdvKWD+opYMOqR/Y+a3aZAmUZwO8M30IKA4WpalyE6lKfGa8RM4mgyMYy9k4s65Uw5PVa8Q1hOMWDlqjAcFKUZqeG210U1A8if21KVEt6SECZfljsLgIOOnTjBY2mx6oeFPIeEnN2dXu/WWtSb0POXHDra0ksh/Yg3eqyutk6wBPfdwlo70ARq2EfmqFYFDlbtgALQkJBn10KlZoiH0505tayH8zsBojyCVaQsqNmWgygw== test2\n    sudo: ALL=(ALL) NOPASSWD:ALL\nruncmd:\n  - ls -l /\n  - ls -l /root\n  - ls -l /tmp\nwrite_files:\n  - path: /etc/environment\n    append: true\n    content: |\n      HTTP_PROXY=http://internal-placeholder.com:912/\n      HTTPS_PROXY=http://internal-placeholder.com:912/\n      NO_PROXY=127.0.0.1,127.0.1.1,localhost,.intel.com\n  - path: /etc/helloworld\n    permissions: '0777'\n    content: |\n      #!/usr/bin/bash\n      echo 'helloworld'\n  - path: /etc/helloworld3\n    permissions: '0700'\n    content: |\n      #!/usr/bin/bash\n      echo 'helloworld3'"
+    }
+  },
+  "instanceSearchPayload": {
+    "metadata": {
+      "instanceGroup": "<<instance-group-name>>",
+      "instanceGroupFilter": "Default"
+    }
+  }
+}

@@ -1,0 +1,155 @@
+// Build flow
+IS_PROD =        true // this variable is used to enable/disable all stages. Thanks to that you can enable only stages are you working on (debugging, testing new features etc)
+MAIN_BRANCH =    'main'
+
+pipeline {
+  environment {
+    IS_MAIN_BRANCH =             "${env.BRANCH_NAME}".equals("${MAIN_BRANCH}")
+    ARTIFACTORY_RETENTION_DAYS = "${IS_MAIN_BRANCH ? 365 : 30}"
+    ARTIFACTORY_URL =            'https://internal-placeholder.com'
+    ARTIFACTORY_PATH =           "idc_evidence-igk-local/idcs-portal/${env.BRANCH_NAME}/${env.BUILD_NUMBER}"
+    REGISTRY =                   "internal-placeholder.com"
+    PROJECT =                    "intelcloud"
+    HTTP_PROXY =                 "http://internal-placeholder.com:912"
+    HTTPS_PROXY =                "http://internal-placeholder.com:912"
+    NO_PROXY =                   ".intel.com,intel.com,localhost,127.0.0.1"
+    APP_VERSION =                "0.1.0"
+  }
+  agent  {
+    label 'bmaas'
+  }
+  stages {
+    stage('Build IDCS portal Docker Image and push it to Harbor registry - Dev') {
+      agent {
+          label 'bmaas'
+        }
+      when {
+          not {
+              branch 'main'
+          }
+          beforeAgent true
+      }
+      steps{
+        dir("${env.WORKSPACE}/idcs_portal"){
+          script {
+            withDockerRegistry(credentialsId: 'sys_idccicd', url: "https://${REGISTRY}/${PROJECT}/") {
+                def tagVersion = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+                env.TAG_VERSION = "${tagVersion}"
+                def devImage = docker.build(
+                    "${REGISTRY}/${PROJECT}/idcs-portal:dev-${APP_VERSION}-${tagVersion}",
+                    "--build-arg http_proxy=${HTTP_PROXY} --build-arg https_proxy=${HTTPs_PROXY} --build-arg no_proxy=${NO_PROXY}  --force-rm --no-cache -f deployment/Dockerfile .."
+                    )
+                devImage.push()
+                sh "docker rmi ${REGISTRY}/${PROJECT}/idcs-portal:dev-${APP_VERSION}-${tagVersion}"
+            }
+          }
+        }
+      }
+    }
+    stage('Build IDCS portal Docker Image and push it to Harbor registry') {
+      agent {
+          label 'bmaas'
+        }
+      when {
+            beforeAgent true
+            branch 'main'
+      }
+      steps{
+        dir("${env.WORKSPACE}/idcs_portal"){
+          script {
+            withDockerRegistry(credentialsId: 'sys_idccicd', url: "https://${REGISTRY}/${PROJECT}/") {
+                def tagVersion = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+                env.TAG_VERSION = "${tagVersion}"
+                def devImage = docker.build(
+                    "${REGISTRY}/${PROJECT}/idcs-portal:dev-${APP_VERSION}-${tagVersion}",
+                    "--build-arg http_proxy=${HTTP_PROXY} --build-arg https_proxy=${HTTPs_PROXY} --build-arg no_proxy=${NO_PROXY}  --force-rm --no-cache -f deployment/Dockerfile .."
+                    )
+                devImage.push()
+                sh "docker rmi ${REGISTRY}/${PROJECT}/idcs-portal:dev-${APP_VERSION}-${tagVersion}"
+            }
+          }
+        }
+      }
+    }
+    stage('Package IDCS portal Helm chart and push it to Harbor registry') {
+      agent {
+        docker{
+          image "${REGISTRY}/${PROJECT}/ub22-04-helm:1.4"
+          registryUrl "https://${REGISTRY}"
+          registryCredentialsId 'sys_idccicd'
+          args '-u root --network host'
+          label 'bmaas'
+        }
+      }
+      steps {
+        dir("${env.WORKSPACE}/idcs_portal"){
+            withCredentials([usernamePassword(credentialsId: 'sys_idccicd', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]){
+                sh '''
+                chmod +x idcs_portal_helm.sh
+                ./idcs_portal_helm.sh ${TAG_VERSION} ${REGISTRY} ${PROJECT} ${HARBOR_USERNAME} ${HARBOR_PASSWORD}
+                '''
+
+          }
+        }
+      }
+    }
+    stage('Coverity') {
+      when {
+        beforeAgent true
+        expression { IS_PROD }
+        expression { "${env.IS_MAIN_BRANCH}".toBoolean() }
+      }
+      agent {
+        kubernetes {
+          cloud "pdx90-k01-bk8s"
+          inheritFrom "jenkins-agent"
+          yamlFile 'hack/CIpodTemplates/coverity_javascript_pod.yaml'
+        }
+      }
+      environment {
+        COVERITY_URL = "https://internal-placeholder.com/prod4"
+        COVERITY_PROJECT = "Idcs portal"
+        COVERITY_STREAM = "Idcs portal-main"
+        COVERITY_REPORT_CONFIG_FILE = "${WORKSPACE}/hack/coverity_report_config.yaml"
+        COMPONENT_MAP_NAME = ""
+        HTTP_PROXY = 'http://internal-placeholder.com:912'
+        HTTPS_PROXY = 'http://internal-placeholder.com:912'
+        NO_PROXY = 'localhost,intel.com'
+        JNLP_PYTHON = '/usr/libexec/platform-python3.6'
+        VERSION = "${env.GIT_COMMIT.take(8)}"
+      }
+      steps {
+        container('node') {
+          dir("idcs_portal") {
+            sh '''
+              npm install
+            '''
+          }
+        } // end of node container
+        container(name: 'coverity') {
+          dir('idcs_portal') {
+            withCredentials([usernamePassword(credentialsId: 'sys_idccicd', usernameVariable: 'COVERITY_CREDENTIALS_USR', passwordVariable: 'COVERITY_CREDENTIALS_PSW')]){
+              sh '''#!/bin/bash
+                ../hack/coverity_javascript_scan.sh
+              '''
+            }
+          }
+        } // end of coverity container
+        container('jnlp') {
+          dir('idcs_portal') {
+            withCredentials([usernamePassword(credentialsId: 'sys-idccicd-artifactory-token', usernameVariable: 'ARTIFACTORY_CREDS_USR', passwordVariable: 'ARTIFACTORY_CREDS_PSW')]){
+              sh '''
+                PYTHON_PATH=$JNLP_PYTHON ARTIFACTORY_TOKEN=$ARTIFACTORY_CREDS_PSW ${WORKSPACE}/hack/uploadArtifacts.sh Coverity
+              '''
+            }
+          }
+        } // end of jnlp container
+      } // end of Coverity steps
+    } // end of Coverity stage
+  }
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}

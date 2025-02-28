@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+
+# This is an example config file that the Fiewall Operator consumes to configure itself. 
+# This is typically configured and stored in ./local/secrets/firewall-operator
+
+# IDC FW API Endpoint to reference
+baseURL: "https://idc-fw-api-dev.apps1-or-int.icloud.intel.com"
+
+# Prod or Stag
+environment: ""
+
+# IM or Flex
+region: ""
+
+# Username / Password to auth to api
+userName: ""
+password: ""
+
+# Number of goroutines to create for concurrently reconcile custom resources.
+# This setting is per controller. If value <= 0 defaults to 1.
+maxConcurrentReconciles: 1

@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    name: storage-controller
+  name: storage-controller
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: storage-controller

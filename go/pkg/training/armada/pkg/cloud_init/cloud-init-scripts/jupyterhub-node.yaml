@@ -1,0 +1,40 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+#cloud-init
+packages:
+  - nginx
+  - nfs-common
+  - nfs4-acl-tools
+  - slurm-client
+  - slurm-wlm
+  - slurm-wlm-doc
+  - mariadb-server
+write_files:
+  {{ Values.Common.MungeFiles | indent:2 }}
+  {{ Values.Common.LdapFiles | indent:2 }}
+runcmd:
+  {{ Values.Common.WekaStorage | indent:2 }}
+  {{ Values.Common.MungeRunCmd | indent:2 }}
+  {{ Values.Common.LdapRunCmd | indent:2 }}
+  # - sudo ln -s /srv/jupyter/python-3.11.5/bin/python3.11 /srv/jupyter/python-3.11.5/bin/python3
+  # - sudo ln -s /srv/jupyter/python-3.11.5/bin/pip3.11 /srv/jupyter/python-3.11.5/bin/pip3
+  # - export PYTHONPATH=/srv/jupyter/python-3.11.5
+  # - export PATH=/srv/jupyter/python-3.11.5/bin:${PATH}
+  # - export NODE=/srv/jupyter/n/bin/node-v18.17.1-linux-x64
+  # - export PATH=${NODE}/bin:${PATH}
+  # - python3 -m venv /srv/jupyter/python-venv
+  # - source /srv/jupyter/python-venv/bin/activate
+  # - export http_proxy=http://internal-placeholder.com:912
+  # - export https_proxy=http://internal-placeholder.com:912
+  # - python3 -m pip install jupyterhub
+  # - npm install -g configurable-http-proxy
+  # - python3 -m pip install jupyterlab notebook
+  # - pip3 install batchspawner
+  # - pip3 install "oauthenticator[azuread]"
+  # - pip3 install ipywidgets
+  # - pip3 install jupyterhub_moss
+  # - sudo patch /srv/jupyter/python-venv/lib/python3.11/site-packages/batchspawner/singleuser.py /srv/jupyter/patch.txt"
+  # - sudo systemctl start nginx
+  # - sudo systemctl daemon-reload
+  # - sudo systemctl enable jupyterhub
+  # - sudo systemctl start jupyterhub

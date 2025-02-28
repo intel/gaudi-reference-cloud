@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    baseURL: {{ .Values.highwireAPI.baseURL | quote }}
+    providerType: {{ .Values.highwireAPI.providerType | quote }}
+    domain:  {{ .Values.highwireAPI.domain | quote }}
+    userNameFile: /vault/secrets/api_username
+    passwordFile: /vault/secrets/api_password
+    environment: {{ .Values.highwireAPI.environment | quote }}
+    userGroup: {{ .Values.highwireAPI.userGroup | quote }}
+    loadbalancerMaxConcurrentReconciles: {{ .Values.controllerManager.maxConcurrentReconciles }}
+    azClusterKubeconfigFile: /vault/secrets/azclusterkubeconfig
+    regionId: {{ .Values.regionId | quote }}
+    availabilityZoneId: {{ .Values.availabilityZoneId | quote }}

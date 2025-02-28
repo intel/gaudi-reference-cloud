@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "infaas-dispatcher.fullname" . }}
+  namespace: "idcs-system" # TODO should be injected
+data:
+  config.yaml: |
+    ListenPort: {{ .Values.service.port }}
+    SupportedModels:
+      - meta-llama/Meta-Llama-3.1-8B-Instruct
+      - meta-llama/Meta-Llama-3.1-70B-Instruct
+      - mistralai/Mistral-7B-Instruct-v0.1
+      - Qwen/Qwen2.5-32B-Instruct
+      - Qwen/Qwen2.5-Coder-32B-Instruct
+    BacklogSize: 10
+    DefaultGenerateStreamTimeout: 30s
+    MetricsPort: {{ .Values.metrics.port }}

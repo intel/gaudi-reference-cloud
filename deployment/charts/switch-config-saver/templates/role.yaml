@@ -1,0 +1,43 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: switch-config-saver-role
+rules:
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switches
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switches/status
+  verbs:
+  - get
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switchports
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switchports/status
+  verbs:
+  - get
+- apiGroups:
+  - metal3.io
+  resources:
+  - baremetalhosts
+  verbs:
+  - get
+  - list
+  - watch

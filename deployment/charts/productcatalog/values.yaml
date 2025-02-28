@@ -1,0 +1,52 @@
+# Default values for productcatalog.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/productcatalog
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+whitelist:
+   enabled: false
+
+database:
+  service: cloudaccount-db-postgresql
+  vaultCredentialsPath: database/static-creds/us-dev-1-cloudaccount-db-client
+  
+addDatabase:
+  enabled: false
+  service: productcatalog-db-postgresql
+  vaultCredentialsPath: database/static-creds/us-dev-1-productcatalog-db-client
+
+fargateAnnotations:
+  CapacityProvisioned: "1vCPU 2GB"
+
+regions:
+  - name: us-dev-1
+    type: open
+    subnet: us-dev-1a-default
+    availabilityZone: us-dev-1a
+    prefix: 22
+    default: true
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
+
+otel:
+  otelAnnotations: false
+gts:
+  # For production environment use url as https://apis.intel.com. This is accessible outside of intel network aswell.
+  # Development environment use url as https://apis-sandbox.intel.com.
+  usernameFile: /vault/secrets/gts_username
+  passwordFile: /vault/secrets/gts_password
+  vaultCredentialsPath: controlplane/data/gts-trade-compliance/apigee

@@ -1,0 +1,56 @@
+{
+	"urls": {
+		"base_url": "https://<rest end point>",
+		"oidc_url": "https://<oidc end point>"
+	},
+	"loadDetails": {
+		"numAccounts": 60
+	},
+	"token": {
+		"method": "azure"
+	},
+	"cloudAccounts": {
+		"create": {
+			"ValidPayload1": {
+				"payload": {
+					"name": "hello123"
+				}
+			},
+			"ValidPayload2": {
+				"payload": {
+					"owner": "owner12324"
+				}
+			},
+			"ValidPayload3": {
+				"payload": {
+					"terminateMessageQueued": false
+				}
+			},
+			"ValidPayload4": {
+				"payload": {
+					"terminatePaidServices": false
+				}
+			},
+			"ValidPayload5": {
+				"payload": {
+					"lowCredits": false
+				}
+			},
+			"ValidPayload6": {
+				"payload": {
+					"parentId": "parentijoia"
+				}
+			},
+			"ValidPayload7": {
+				"payload": {
+					"oid": "dadkjadoi"
+				}
+			},
+			"ValidPayload8": {
+				"payload": {
+					"id": "123232412434"
+				}
+			}
+		}
+	}
+}

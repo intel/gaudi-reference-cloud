@@ -1,0 +1,27 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ansible",
+    srcs = ["executor.go"],
+    embedsrcs = glob(["templates/*"]),
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/training/armada/pkg/ansible",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_apenella_go_ansible//pkg/options",
+        "@com_github_apenella_go_ansible//pkg/playbook",
+    ],
+)
+
+filegroup(
+    name = "ansibleplaybookfilegroups",
+    srcs = glob([
+        "slurm-static/**/*",
+    ]) + [
+        "templates/hosts.tpl",
+    ],
+    visibility = ["//visibility:public"],
+)

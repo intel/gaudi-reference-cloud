@@ -1,0 +1,115 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2024 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1.weka;
+
+import "go/pkg/storage/storagecontroller/api/cluster.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api/weka";
+
+// Admin level service, used to manage `StatefulClients`, each `StatefulClient` acts as a
+// client reside in each client servers, and used to access the filesystem.
+// `StatefulClients` are `Cluster` bound.
+service StatefulClientService {
+  // Queries all available StatefulClients for the cluster
+  rpc ListStatefulClients(ListStatefulClientsRequest) returns (ListStatefulClientsResponse) {}
+
+  // Get specific StatefulClient in the cluster
+  rpc GetStatefulClient(GetStatefulClientRequest) returns (GetStatefulClientResponse) {}
+
+  // Creates new StatefulClient in the cluster
+  rpc CreateStatefulClient(CreateStatefulClientRequest) returns (CreateStatefulClientResponse) {}
+
+  // Delete StatefulClient from the cluster
+  // This method will delete all data associated with `StatefulClient` including data.
+  rpc DeleteStatefulClient(DeleteStatefulClientRequest) returns (DeleteStatefulClientResponse) {}
+}
+
+message ListStatefulClientsRequest {
+  // ID of the cluster
+  ClusterIdentifier cluster_id = 1 ;
+
+  // Used to filter StatefulClients by specific params
+  Filter filter = 2;
+
+  message Filter {
+    // List of names to include in the response
+    repeated string names = 3;
+  }
+}
+
+message ListStatefulClientsResponse {
+  // Found StatefulClients
+  repeated StatefulClient stateful_clients = 1;
+}
+
+message GetStatefulClientRequest {
+  // ID of the StatefulClient
+  StatefulClientIdentifier stateful_client_id = 1 ;
+}
+
+message GetStatefulClientResponse {
+  // If StatefulClient was found, contains `StatefulClient` object
+  StatefulClient stateful_client = 1;
+}
+
+message CreateStatefulClientRequest {
+  // ID of the `Cluster` used in which StatefulClient should be created
+  ClusterIdentifier cluster_id = 1 ;
+
+  // StatefulClient name
+  string name = 2;
+
+  // StatefulClient host Management IP
+  string ip = 3;
+}
+
+message CreateStatefulClientResponse {
+  // Contains created StatefulClient
+  StatefulClient stateful_client = 1;
+}
+
+message DeleteStatefulClientRequest {
+  // ID of the StatefulClient to be deleted
+  StatefulClientIdentifier stateful_client_id = 1 ;
+}
+
+message DeleteStatefulClientResponse {}
+
+// ID of the StatefulClient, composite object which is cluster bound
+message StatefulClientIdentifier {
+  // ID of the cluster in which this StatefulClient is resides in
+  ClusterIdentifier cluster_id = 1;
+
+  // ID of the StatefulClient, arbitraty string, usualy a uuid/uid
+  string id = 2 ;
+}
+
+// StatefulClient object represents clients configuration
+message StatefulClient {
+  // ID of the StatefulClient
+  StatefulClientIdentifier id = 1 ;
+
+  // StatefulClient name, arbitrary string
+  string name = 2;
+
+  // StatefulClient Status
+  oneof status {
+    string custom_status = 3;
+    Status predefined_status = 4;
+  }
+
+  // Enum definition for StatefulClient Status
+  enum Status {
+    // The Stateful Client container may have one or multiple processes 
+    // that are being fenced. We need to wait for the container processes
+    // to become operational.
+    // If the container remains in this state after the timeout, it indicates an error.
+    STATUS_DEGRADED_UNSPECIFIED = 0;
+    // The management and frontend processes within the Stateful Client containers are operational.
+    STATUS_UP = 1;
+    // Client container is down
+    STATUS_DOWN = 2;
+  }
+}

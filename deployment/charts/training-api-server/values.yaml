@@ -1,0 +1,36 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/oneapisvc
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+batchServiceConfig:
+  idc:
+    computeGrpcAPIEndpoint: ""
+    storageGrpcAPIEndpoint: ""
+    availabilityZone: ""
+    region: ""
+  slurmBatchService: ""
+  slurmJupyterhubService: ""
+  slurmSSHService: ""
+
+database:
+  database:
+  service: training-db-postgresql
+  #url: postgres://postgres5808-lb-fm-in.dbaas.intel.com:5432/oneapiint?sslmode=require
+  vaultCredentialsPath: controlplane/data/training/database
+  #vaultCredentialsPath: database/static-creds/us-dev-1-training-api-server
+service:
+  type: ClusterIP
+
+cognito:
+  enabled: false
+  endpoint: ""
+
+armada:
+  enabled: false

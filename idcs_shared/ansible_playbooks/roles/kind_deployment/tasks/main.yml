@@ -1,0 +1,39 @@
+- include_tasks: ../common/tasks/install_apt_packages.yml
+- include_tasks: ../common/tasks/check_if_need_reboot.yml
+- include_tasks: ../common/tasks/make_sudo_without_password.yml
+
+- name: Download Golang
+  get_url:
+    url: https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz
+    dest: /tmp/
+    mode: "+x"
+
+- name: Install Golang
+  become: true
+  shell: rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go{{ go_version }}.linux-amd64.tar.gz
+
+- name: Update /etc/environment with Golang path
+  become: true
+  lineinfile:
+    backup: true
+    dest: /etc/environment
+    state: present
+    backrefs: yes
+    regexp: '^(PATH="((?!\/usr\/local\/go\/bin).)*)(")$'
+    line: '\1:/usr/local/go/bin\3'
+
+- name: Reset SSH connection to allow PATH update
+  become: true
+  meta:
+    reset_connection
+
+- name: Verify Golang installation by checking its version
+  command: go version
+
+- name: Generate SSH key id_rsa
+  openssh_keypair:
+    path: "~/.ssh/id_rsa"
+    type: rsa
+    size: 4096
+    state: present
+    force: no

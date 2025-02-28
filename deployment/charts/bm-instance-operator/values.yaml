@@ -1,0 +1,122 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/bm-instance-operator@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 10m
+        memory: 128Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+managerConfig:
+  controllerManagerConfigYaml:
+    health:
+      healthProbeBindAddress: :8081
+    instanceOperator:
+      # The address of the Compute API Server in format "host:port".
+      # This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+      computeApiServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+      # Configuration for DHCP, DNS, IP Address Management (DDI).
+      ddi:
+        mmws:
+          baseUrl: http://ddi-proxy:8080/mmws/api
+          passwordFilePath: /var/run/secrets/kubernetes.io/mmws/password
+          userNameFilePath: /var/run/secrets/kubernetes.io/mmws/username
+      # If true, this operator will add the Metering Monitor finalizer to all instances.
+      enableMeteringMonitorFinalizer: true
+      # Instances must have all specified labels. Leave blank to have no filter.
+      filter:
+        labels:
+          instanceCategory: BareMetalHost
+      httpClient:
+        insecureSkipVerify: true
+        keepAlive: 25
+        timeoutInSecs: 20
+        tlsHandshakeTimeout: 10
+      # Details for connecting to the Kubernetes API Server of the cluster running SSH Proxy Operator.
+      sshProxyTunnelCluster:
+        # Use blank path to use the local Kubernetes cluster.
+        kubeConfigFilePath: ""
+      operatorFeatureFlags:
+        # If set true, uses quick connect client CA secret
+        enableQuickConnectClientCA: false
+      quickConnectHost: ""
+      storageClusterAddr: ""
+    leaderElection:
+      leaderElect: true
+      resourceName: 761e26fd.cloud.intel.com
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    # OS http server url for BM machine images.
+    osHttpServerUrl: http://172.16.0.1:50001
+    networkConfig:
+      # networkBackEndType specify if using raven or SDN-Controller for Vlan update. 
+      # Options: "raven", "sdn", "none" or "transition". The default value is "sdn".
+      # When "none" is set, BMaaS will not call any network backend to update Vlan, mainly for testing purpose.
+      networkBackEndType: "sdn"
+      networkKubeConfig: "/vault/secrets/sdnkubeconfig"
+      provisioningVlan: 4008
+      acceleratorNetworkDefaultVlan: 100
+      accBGPNetworkDefaultCommunityID: 1000
+      storageDefaultVlan: 2100
+    sshConfig:
+      waitForSSHAccess: true
+      privateKeyFilePath: /vault/secrets/privatekey
+      hostPublicKeyFilePath: /vault/secrets/host_public_key
+      sshProxyUser: "bmo"
+      sshProxyAddress: "1.1.1.1"
+      sshProxyPort: 22
+    webhook:
+      port: 9443
+    maxConcurrentReconciles: 1
+    acceleratorNetworkSdnEnabled: false
+    storageServerSubnets: []
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+# Path for accessing the secrets inside the vault
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/us-dev-1a/bm-instance-operator
+        pathQuickConnectClientCA: us-dev-1a-quick-connect-client-ca/cert/ca_chain
+useRemoteSshProxyTunnelCluster: false
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https

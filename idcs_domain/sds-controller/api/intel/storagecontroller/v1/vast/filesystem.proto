@@ -1,0 +1,148 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2024 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1.vast;
+
+import "buf/validate/validate.proto";
+import "intel/storagecontroller/v1/namespace.proto";
+
+option go_package = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/api/intel/storagecontroller/v1/vast";
+
+// Service for working with Vast type filesystem, used to manage filesystems in storage.
+// This service will only work with Vast cluster and will error out in all other cases.
+service FilesystemService {
+  // Query all Vast filesystems in Vast cluster, can be used with filters
+  rpc ListFilesystems(ListFilesystemsRequest) returns (ListFilesystemsResponse) {}
+
+  // Get filesystem in Vast cluster by it ID
+  rpc GetFilesystem(GetFilesystemRequest) returns (GetFilesystemResponse) {}
+
+  // Attempts to create new Vast Filesystem in the cluster
+  rpc CreateFilesystem(CreateFilesystemRequest) returns (CreateFilesystemResponse) {}
+
+  // Updates Vast Filesystem parameters in the cluster
+  rpc UpdateFilesystem(UpdateFilesystemRequest) returns (UpdateFilesystemResponse) {}
+
+  // Deletes Vast Filesystem from the cluster
+  rpc DeleteFilesystem(DeleteFilesystemRequest) returns (DeleteFilesystemResponse) {}
+}
+
+message ListFilesystemsRequest {
+  // ID of the namespace to list filesystems in
+  NamespaceIdentifier namespace_id = 1 [(buf.validate.field).required = true];
+
+  // Filter can be used to select filesystems by properties
+  Filter filter = 2;
+
+  message Filter {
+    // List of names filter filesystems by
+    repeated string names = 1;
+  }
+}
+
+message ListFilesystemsResponse {
+  // Lists all found filesystems
+  repeated Filesystem filesystems = 1;
+}
+
+message GetFilesystemRequest {
+  // ID of the filesystem
+  FilesystemIdentifier filesystem_id = 1 [(buf.validate.field).required = true];
+}
+
+message GetFilesystemResponse {
+  // If filesystem is found, returns `Filesystem` object
+  Filesystem filesystem = 1;
+}
+
+message CreateFilesystemRequest {
+  // ID of the namespace in which `Filesystem` should be created
+  NamespaceIdentifier namespace_id = 1 [(buf.validate.field).required = true];
+
+  // Name of the filesystem, used to mount it to the machine
+  string name = 2 [(buf.validate.field).string.min_len = 1];
+
+  // Path of the vast filesystem
+  string path = 3 [(buf.validate.field).string.min_len = 1];
+
+  // Total amount of bytes allocated for the filesystem
+  uint64 total_bytes = 4;
+
+  // Supported protocols
+  repeated Filesystem.Protocol protocols = 5;
+}
+
+message CreateFilesystemResponse {
+  // Created filesystem
+  Filesystem filesystem = 1;
+}
+
+// Update request contains optinal fields for all of them starts with `new_`, prefix
+// if field is not specified this param will not be updated/touched.
+message UpdateFilesystemRequest {
+  // ID of the filesystem to update
+  FilesystemIdentifier filesystem_id = 1 [(buf.validate.field).required = true];
+
+  // New name of the filesystem
+  optional string new_name = 2;
+
+  // New allocated bytes fot the filesystem
+  optional uint64 new_total_bytes = 3;
+}
+
+message UpdateFilesystemResponse {
+  // Updated filesystem
+  Filesystem filesystem = 1;
+}
+
+message DeleteFilesystemRequest {
+  // ID of the filesytem to delete
+  FilesystemIdentifier filesystem_id = 1 [(buf.validate.field).required = true];
+}
+
+message DeleteFilesystemResponse {}
+
+// ID of the filesystem, composite type, namespace bound
+message FilesystemIdentifier {
+  // ID of the namespace filesystem part of
+  NamespaceIdentifier namespace_id = 1 [(buf.validate.field).required = true];
+
+  // ID of the filesystem, usualy are uuid/id value, but can be any arbitrary string
+  string id = 2 [(buf.validate.field).string.min_len = 1];
+}
+
+message Filesystem {
+  // ID of the filesystem
+  FilesystemIdentifier id = 1 [(buf.validate.field).required = true];
+
+  // Name of the filesystem, used to mount
+  string name = 2 [(buf.validate.field).required = true];
+
+  // Capacity metrics of the filesystem
+  Capacity capacity = 3;
+
+  // Filesystem path, required to mount
+  string path = 4 [(buf.validate.field).required = true];
+
+  repeated Protocol protocols = 5;
+
+  message Capacity {
+    // Total amount of allocated bytes for the filesystem
+    uint64 total_bytes = 1;
+
+    // Bytes available in the filesystem to be used
+    uint64 available_bytes = 2;
+  }
+
+  // Type of the filesystem
+  enum Protocol {
+      PROTOCOL_UNSPECIFIED = 0;
+
+      PROTOCOL_NFS_V3 = 1;
+
+      PROTOCOL_NFS_V4 = 2;
+
+      PROTOCOL_SMB = 3;
+  }
+}

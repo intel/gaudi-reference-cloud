@@ -1,0 +1,473 @@
+syntax="proto3";
+ 
+package proto;
+ 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+import "annotations.proto";
+import "dpai_deployment.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).service = "dpai";
+option (idc.file).deploy = regional;
+
+message DpaiPostgresDeploymentMeta {
+    string deploymentId = 1;
+    DpaiDeploymentStatus deploymentStatus = 2;
+    string cloudAccountId = 3;
+}
+
+message DpaiPostgresAdminProperties {
+    string adminUsername = 1;
+    string adminPassword = 2;
+    DpaiSecretReference adminPasswordSecretReference = 3;
+}
+
+message DpaiPostgresSizePgPoolProperties {
+    int32 numberOfInstancesDefault = 1;
+    int32 numberOfInstancesMin = 2;
+    int32 numberOfInstancesMax = 3;
+    string resourceCpuLimit = 4;
+    string resourceCpuRequest = 5;
+    string resourceMemoryLimit = 6;
+    string resourceMemoryRequest = 7;
+}
+
+message DpaiPostgresSizeDiskProperties {
+    int32 diskSizeInGbDefault = 1;
+    int32 diskSizeInGbMin = 2;
+    int32 diskSizeInGbMax = 3;
+    string storageClassName = 4;
+}
+
+// Postgres Size -- Admin
+
+message DpaiPostgresSize {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    int32 numberOfInstancesDefault = 4;
+    int32 numberOfInstancesMin = 5;
+    int32 numberOfInstancesMax = 6;
+    string resourceCpuLimit = 8;
+    string resourceCpuRequest = 9;
+    string resourceMemoryLimit = 10;
+    string resourceMemoryRequest = 11;
+    DpaiPostgresSizePgPoolProperties pgPoolProperties = 12;
+    DpaiPostgresSizeDiskProperties diskProperties = 13;
+    DpaiMeta metadata = 14;
+}
+
+message DpaiPostgresSizeCreateRequest {
+    string name = 1;
+    string description = 2;
+    int32 numberOfInstancesDefault = 3;
+    int32 numberOfInstancesMin = 4;
+    int32 numberOfInstancesMax = 5;
+    string resourceCpuLimit = 6;
+    string resourceCpuRequest = 7;
+    string resourceMemoryLimit = 8;
+    string resourceMemoryRequest = 9;
+    DpaiPostgresSizePgPoolProperties pgPoolProperties = 10;
+    DpaiPostgresSizeDiskProperties diskProperties = 11;
+    string cloudAccountId=12 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresSizeListRequest {
+    string cloudAccountId=1 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresSizeListResponse{
+    repeated DpaiPostgresSize data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiPostgresSizeGetByIdRequest {
+    string id = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresSizeGetByNameRequest {
+    string name = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresSizeUpdateRequest {
+    string id = 1;
+    string description = 2;
+    int32 numberOfInstancesDefault = 3;
+    int32 numberOfInstancesMin = 4;
+    int32 numberOfInstancesMax = 5;
+    string resourceCpuLimit = 6;
+    string resourceCpuRequest = 7;
+    string resourceMemoryLimit = 8;
+    string resourceMemoryRequest = 9;
+    DpaiPostgresSizePgPoolProperties pgPoolProperties = 10;
+    DpaiPostgresSizeDiskProperties diskProperties = 11;
+    string cloudAccountId=12 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresSizeDeleteRequest{
+    string id = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+ }
+
+message DpaiPostgresSizeDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+service DpaiPostgresSizeService {
+    rpc DpaiPostgresSizeCreate(DpaiPostgresSizeCreateRequest) returns (DpaiPostgresSize) {}
+    // List all the DPAI Postgres Sizes
+    rpc DpaiPostgresSizeList(DpaiPostgresSizeListRequest) returns (DpaiPostgresSizeListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/data/postgresSizes"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get the DPAI Postgres Size by ID
+    rpc DpaiPostgresSizeGetById(DpaiPostgresSizeGetByIdRequest) returns (DpaiPostgresSize) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/data/postgresSizes/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get the DPAI Postgres Size by name
+    rpc DpaiPostgresSizeGetByName(DpaiPostgresSizeGetByNameRequest) returns (DpaiPostgresSize) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/data/postgresSizes/name/{name}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    rpc DpaiPostgresSizeUpdate(DpaiPostgresSizeUpdateRequest) returns (DpaiPostgresSize) {}
+    rpc DpaiPostgresSizeDelete(DpaiPostgresSizeDeleteRequest) returns (DpaiPostgresSizeDeleteResponse) {}
+}
+
+
+// Postgres Version -- Admin
+
+message DpaiPostgresVersion {
+    string id = 1;
+    string name = 2;
+    string description=3;
+    string version = 4;
+    string postgresVersion = 5;
+    string imageReference = 6;
+    DpaiChartReference chartReference = 7;
+    string backwardCompatibleFrom = 8;
+    DpaiMeta metadata = 9;
+}
+
+message DpaiPostgresVersionCreateRequest {
+    string name = 1;
+    string description=2;
+    string version = 3;
+    string postgresVersion = 4;
+    string imageReference = 5;
+    DpaiChartReference chartReference = 6;
+    string backwardCompatibleFrom = 7;
+    string cloudAccountId=8 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresVersionListRequest {
+    string cloudAccountId=1 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresVersionListResponse{
+    repeated DpaiPostgresVersion data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiPostgresVersionGetByIdRequest {
+    string id = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresVersionGetByNameRequest {
+    string name = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresVersionUpdateRequest {
+    string id = 1;
+    string description = 2;
+    string imageReference = 3;
+    DpaiChartReference chartReference = 4;
+    string backwardCompatibleFrom = 5;
+    string cloudAccountId=6 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresVersionDeleteRequest{
+    string id = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+ }
+
+message DpaiPostgresVersionDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+service DpaiPostgresVersionService {
+    rpc DpaiPostgresVersionCreate(DpaiPostgresVersionCreateRequest) returns (DpaiPostgresVersion) {}
+    // list all the DPAI Postgres Versions
+    rpc DpaiPostgresVersionList(DpaiPostgresVersionListRequest) returns (DpaiPostgresVersionListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/data/postgresVersions"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get the DPAI Postgres Version by ID
+    rpc DpaiPostgresVersionGetById(DpaiPostgresVersionGetByIdRequest) returns (DpaiPostgresVersion) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/data/postgresVersions/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get a DPAI Postgres Version by Name
+    rpc DpaiPostgresVersionGetByName(DpaiPostgresVersionGetByNameRequest) returns (DpaiPostgresVersion) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/data/postgresVersions/name/{name}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    rpc DpaiPostgresVersionUpdate(DpaiPostgresVersionUpdateRequest) returns (DpaiPostgresVersion) {}
+    rpc DpaiPostgresVersionDelete(DpaiPostgresVersionDeleteRequest) returns (DpaiPostgresVersionDeleteResponse) {}
+}
+
+// Service - Postgres
+
+message DpaiPostgresSizeProperties{
+    string sizeId = 1;
+    int32 numberOfInstances = 2;
+    int32 numberOfPgPoolInstances = 3;
+    int32 diskSizeInGb = 4;
+}
+
+message DpaiPostgresOptionalProperties{
+    string initialDatabaseName = 1;
+}
+
+message DpaiPostgres {
+    string workspaceId = 1;
+    string id = 2;
+    string name = 3;
+    string description = 4;
+    string versionId = 5;
+    DpaiPostgresSizeProperties sizeProperties = 6;
+    DpaiPostgresOptionalProperties optionalProperties = 7;
+    DpaiPostgresAdminProperties adminProperties = 10;
+    map<string, string> advanceConfiguration = 11;
+    map<string, string> tags = 12;
+    string serverUrl = 13;
+    DpaiMeta metadata = 14;
+    DpaiPostgresDeploymentMeta deploymentMetadata = 15;
+}
+
+message DpaiPostgresCreateRequest{
+    string workspaceId = 1;
+    string name = 2;
+    string description = 3;
+    string versionId = 4;
+    DpaiPostgresSizeProperties sizeProperties = 5;
+    DpaiPostgresOptionalProperties optionalProperties = 6;
+    DpaiPostgresAdminProperties adminProperties = 9;
+    map<string, string> advanceConfiguration = 10;
+    map<string, string> tags = 11;
+    string createdBy = 12;
+    string cloudAccountId=13 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresListRequest{
+    string workspaceId=1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresListResponse{
+    repeated DpaiPostgres data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiPostgresGetByIdRequest{
+    string id=1;
+    string workspaceId=2;
+    string cloudAccountId=3 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresGetByNameRequest{
+    string name=1;
+    string workspaceId=2;
+    string cloudAccountId=3 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresDeleteRequest{
+    string id = 1;
+    string workspaceId=2;
+    string cloudAccountId=3 [
+        (idc.field).cloudAccount = true
+      ];
+ }
+ 
+message DpaiPostgresUpdateRequest{
+    string id = 1;
+    string description = 2;
+    map<string, string> tags = 3;
+    string workspaceId=4;
+    string cloudAccountId=5 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresRestartRequest{
+    string id = 1;
+    string workspaceId=2;
+    string cloudAccountId=3 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresResizeRequest{
+    string id = 1;
+    DpaiPostgresSizeProperties sizeProperties = 2; 
+    string workspaceId=3;
+    string cloudAccountId=4 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresListUpgradeRequest{
+    string id = 1;
+    string workspaceId=2;
+    string cloudAccountId=3 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiPostgresUpgradeRequest{
+    string id = 1;
+    string versionId = 2;
+    string workspaceId=3;
+    string cloudAccountId=4 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+service DpaiPostgresService {
+    // Create a new DPAI Postgres Database.
+    rpc DpaiPostgresCreate(DpaiPostgresCreateRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // List the DPAI Postgres Databases in the given workspace.
+    rpc DpaiPostgresList(DpaiPostgresListRequest) returns (DpaiPostgresListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get the DPAI Postgres Database by its ID.
+    rpc DpaiPostgresGetById(DpaiPostgresGetByIdRequest) returns (DpaiPostgres) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get the DPAI Postgres Database by its name.
+    rpc DpaiPostgresGetByName(DpaiPostgresGetByNameRequest) returns (DpaiPostgres) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/name/{name}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Update the DPAI Postgres Database metadata information.
+    rpc DpaiPostgresUpdate(DpaiPostgresUpdateRequest) returns (DpaiPostgres) {
+        option (google.api.http) = {
+            patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/{id}"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Delete the DPAI Postgres Database.
+    rpc DpaiPostgresDelete(DpaiPostgresDeleteRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // List all the possible upgradable versions for the given DPAI Postgres Database.
+    rpc DpaiPostgresListUpgrade(DpaiPostgresListUpgradeRequest) returns (DpaiPostgresVersionListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/{id}/upgrades"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Upgrade the DPAI Postgres Database.
+    rpc DpaiPostgresUpgrade(DpaiPostgresUpgradeRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/{id}/upgrade"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Restart the DPAI Postgres Database.
+    rpc DpaiPostgresRestart(DpaiPostgresRestartRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/{id}/restart"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Resize the DPAI Postgres Database.
+    rpc DpaiPostgresResize(DpaiPostgresResizeRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/postgres/{id}/resize"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+
+}

@@ -1,0 +1,117 @@
+# CoreDNS is used to provide FQDN resolution to pods for .kind.local addresses for testing.
+# This helm chart of CoreDNS should be used instead of the CoreDNS that is included as part of kind or RKE2.
+# See https://github.com/coredns/helm and https://github.com/coredns/helm/blob/master/charts/coredns/values.yaml
+
+bases:
+  - environments.yaml
+
+---
+
+# Define a template that will be instantiated below for each cluster.
+{{- define "corednsRelease" }}
+        - name: coredns
+          namespace: kube-system
+          kubeContext: {{ .kubeContext | quote }}
+          chart: coredns/coredns
+          version: "1.23.0"
+          labels:
+            cluster: {{ .cluster }}
+            component: coredns
+          values:
+            - service:
+                clusterIP: {{ .config.service.clusterIP | quote }}
+            - servers:
+              - zones:
+                - zone: .
+                port: 53
+                plugins:
+                - name: errors
+                - name: health
+                  configBlock: |-
+                    lameduck 5s
+                - name: ready
+                - name: kubernetes
+                  parameters: cluster.local in-addr.arpa ip6.arpa
+                  configBlock: |-
+                    pods insecure
+                    fallthrough in-addr.arpa ip6.arpa
+                    ttl 30
+                - name: file
+                  parameters: /etc/coredns/kind.local.db kind.local
+                - name: prometheus
+                  parameters: 0.0.0.0:9153
+                - name: forward
+                  parameters: . /etc/resolv.conf
+                - name: cache
+                  parameters: 30
+                - name: loop
+                - name: reload
+                - name: loadbalance
+            - zoneFiles:
+              - filename: kind.local.db
+                domain: kind.local
+                # Custom zone file to allow IDC testing without external DNS records.
+                # CoreDNS is only used for DNS resolution within pods.
+                # For DNS resolution outside of Kubernetes in a development workstation, see deployment/common/etc-hosts/hosts.
+                contents: |
+                  kind.local.                                                            IN SOA ns.kind.local. admin.kind.local. 1 60 60 60 60
+                  dev.argocd.cloud.intel.com.kind.local.                                 {{ .config.localZoneTargets.global }}
+                  dev.gitea.cloud.intel.com.kind.local.                                  {{ .config.localZoneTargets.global }}
+                  dev.vault.cloud.intel.com.kind.local.                                  {{ .config.localZoneTargets.global }}
+                  dev.oidc.cloud.intel.com.kind.local.                                   {{ .config.localZoneTargets.global }}
+                  dev.api.cloud.intel.com.kind.local.                                    {{ .config.localZoneTargets.global }}
+                  dev-sdk.api.cloud.intel.com.kind.local.                                {{ .config.localZoneTargets.global }}
+                  dev.grpcapi.cloud.intel.com.kind.local.                                {{ .config.localZoneTargets.global }}
+                  dev.compute.us-dev-1.api.cloud.intel.com.kind.local.                   {{ .config.localZoneTargets.usDev1 }}
+                  dev.compute.us-dev-2.api.cloud.intel.com.kind.local.                   {{ .config.localZoneTargets.usDev2 }}
+                  dev.compute.us-dev-1.grpcapi.cloud.intel.com.kind.local.               {{ .config.localZoneTargets.usDev1 }}
+                  dev.compute.us-dev-2.grpcapi.cloud.intel.com.kind.local.               {{ .config.localZoneTargets.usDev2 }}
+                  dev.compute.us-dev-1.dev.sdk.api.cloud.intel.com.kind.local.           {{ .config.localZoneTargets.usDev1 }}
+                  dev.compute.us-dev-2.dev.sdk.api.cloud.intel.com.kind.local.           {{ .config.localZoneTargets.usDev1 }}
+                  dev.compute-api-server.us-dev-1.grpcapi.cloud.intel.com.kind.local.    {{ .config.localZoneTargets.usDev1 }}
+                  dev.compute-api-server.us-dev-2.grpcapi.cloud.intel.com.kind.local.    {{ .config.localZoneTargets.usDev2 }}
+                  dev.netbox.us-dev-1.api.cloud.intel.com.kind.local.                    {{ .config.localZoneTargets.usDev1 }}
+                  dev.netbox.us-dev-2.api.cloud.intel.com.kind.local.                    {{ .config.localZoneTargets.usDev2 }}
+                  dev.baremetal-enrollment-api.us-dev-1.api.cloud.intel.com.kind.local.  {{ .config.localZoneTargets.usDev1 }}
+                  dev.baremetal-enrollment-api.us-dev-2.api.cloud.intel.com.kind.local.  {{ .config.localZoneTargets.usDev2 }}
+                  dev.compute.us-dev-1a.grpcapi.cloud.intel.com.kind.local.              {{ .config.localZoneTargets.usDev1a }}
+                  dev.compute.us-dev-2a.grpcapi.cloud.intel.com.kind.local.              {{ .config.localZoneTargets.usDev2a }}
+                  dev.dhcp.us-dev-1a.infra.cloud.intel.com.kind.local.                   {{ .config.localZoneTargets.usDev1a }}
+                  dev.dhcp.us-dev-2a.infra.cloud.intel.com.kind.local.                   {{ .config.localZoneTargets.usDev2a }}
+{{- end }}
+
+repositories:
+  - name: coredns
+    url: https://coredns.github.io/helm
+
+releases:
+
+{{- if $.Values.coredns.enabled }}
+
+  # Create a coredns release for global cluster.
+  {{- template "corednsRelease" (dict "config" $.Values.coredns "kubeContext" $.Values.global.kubeContext "cluster" "global") }}
+
+  # Create a coredns release for every regional and AZ cluster, if different from the global cluster.
+  {{- range $region := .Values.regions }}
+
+    {{- if (ne $region.kubeContext $.Values.global.kubeContext) }}
+      {{- template "corednsRelease" (dict "config" $.Values.coredns "kubeContext" $region.kubeContext "cluster" "regional") }}
+    {{- end }}
+
+    {{- range $availabilityZone := $region.availabilityZones }}
+      {{- if and (ne $availabilityZone.kubeContext $.Values.global.kubeContext) ($availabilityZone.coredns.enabled) }}
+        {{- template "corednsRelease" (dict "config" $.Values.coredns "kubeContext" $availabilityZone.kubeContext "cluster" "az") }}
+      {{- end }}
+
+      {{- if $.Values.components.networkCluster.enabled }}
+      {{- if and (ne $availabilityZone.networkCluster.kubeContext $.Values.global.kubeContext) (ne $availabilityZone.networkCluster.kubeContext $availabilityZone.kubeContext) }}
+      {{- if (ne ($availabilityZone | get "networkCluster.coredns.enabled" true) false) }}{{/* Don't deploy coredns if it's specifically set to false for networkCluster in this env. */}}
+        {{- template "corednsRelease" (dict "config" $.Values.coredns "kubeContext" $availabilityZone.networkCluster.kubeContext "cluster" "network") }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+
+  {{- end }}
+
+{{- end }}

@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "auth",
+    srcs = ["azureauth.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/iks_commons/auth",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/iks_commons/logger",
+        "//go/pkg/log/logkeys",
+        "@com_github_golang_jwt_jwt//:jwt",
+        "@com_github_nirasan_go_oauth_pkce_code_verifier//:go-oauth-pkce-code-verifier",
+        "@com_github_playwright_community_playwright_go//:playwright-go",
+        "@com_github_tidwall_gjson//:gjson",
+    ],
+)

@@ -1,0 +1,17 @@
+# This file contains targets to build Helm charts.
+# See https://github.com/masmovil/bazel-rules
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml", 
+    "templates/**",
+  ]),
+  image  = "//go/pkg/compute_metering_monitor:compute_metering_monitor_image",
+  package_name = "compute-metering-monitor",  # Must not have underscores.
+  values_tag_yaml_path = "controllerManager.manager.image.tag",
+  visibility = ["//visibility:public"],
+  chart_deps = ["//deployment/charts/idc-common:chart"],
+)

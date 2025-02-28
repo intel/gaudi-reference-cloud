@@ -1,0 +1,2 @@
+# Do not show diffs of generated files.
+grpc-reflect.go -diff linguist-generated

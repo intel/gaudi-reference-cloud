@@ -1,0 +1,12 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# How often the controller will poll from cluster changes from the API.
+pollPeriodicity: 15s
+
+# The address of the IKS API.
+iksAPIAddress: dev.compute.us-dev-1.grpcapi.cloud.intel.com.kind.local:443
+
+# Number of goroutines to create for concurrently reconcile custom resources.
+# This setting is per controller. If value <= 0 defaults to 1.
+clusterMaxConcurrentReconciles: 1
+clusterSecretMaxConcurrentReconciles: 1

@@ -1,0 +1,49 @@
+image:
+  registry: amr-registry.caas.intel.com
+  repository: intelcloud/network-operator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+vaultCredentialsPath: controlplane/data/us-dev-1-network-operator
+
+region: us-dev-1
+
+# The address of the Network API Server in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+networkApiServerAddr: us-dev-1-network-api-server.idcs-system.svc.cluster.local:8443
+
+autoscaling:
+  enabled: false
+
+controllerManager:
+  manager:
+    args:
+    - --health-probe-bind-address=:8081
+    - --metrics-bind-address=:8078
+    - --leader-elect
+    - --operator-config=/config
+    containerSecurityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2048Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  maxConcurrentReconciles: 4
+  replicas: 1
+  serviceAccount:
+    annotations: {}
+metricsService:
+  ports:
+  - name: metrics
+    port: 8078
+    protocol: TCP
+    targetPort: metrics
+  type: ClusterIP

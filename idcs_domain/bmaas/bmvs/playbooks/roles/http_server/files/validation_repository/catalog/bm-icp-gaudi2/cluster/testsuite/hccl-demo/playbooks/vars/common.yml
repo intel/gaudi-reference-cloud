@@ -1,0 +1,7 @@
+---
+ansible_inventory_path: "{{ playbook_dir }}/inventory/"
+ssh_key_dir: "{{ playbook_dir }}/roles/gen_ssh_key/files"
+ssh_key_type: "rsa"
+ssh_key_bits: "4096"
+ighs_files_dir: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo"
+hostfile_templates_dir: "{{ playbook_dir }}/roles/gen_hostfile/templates"

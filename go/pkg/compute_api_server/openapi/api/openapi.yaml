@@ -1,0 +1,4454 @@
+openapi: 3.0.1
+info:
+  title: compute.proto
+  version: version not set
+servers:
+- url: /
+tags:
+- name: SshPublicKeyService
+- name: InstanceService
+- name: InstanceGroupService
+- name: InstanceTypeService
+- name: MachineImageService
+- name: VNetService
+- name: LoadBalancerService
+paths:
+  /proto.InstanceGroupService/Ping:
+    post:
+      operationId: InstanceGroupService_Ping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Ping always returns a successful response by the service implementation.
+        It can be used for testing connectivity to the service.
+      tags:
+      - InstanceGroupService
+      x-codegen-request-body-name: body
+  /proto.InstanceService/Ping:
+    post:
+      operationId: InstanceService_Ping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Ping always returns a successful response by the service implementation.
+        It can be used for testing connectivity to the service.
+      tags:
+      - InstanceService
+      x-codegen-request-body-name: body
+  /proto.InstanceTypeService/Delete:
+    post:
+      operationId: InstanceTypeService_Delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoInstanceTypeDeleteRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete an instance typ.
+      tags:
+      - InstanceTypeService
+      x-codegen-request-body-name: body
+  /proto.InstanceTypeService/Put:
+    post:
+      operationId: InstanceTypeService_Put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoInstanceType'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Create or update an instance type.
+      tags:
+      - InstanceTypeService
+      x-codegen-request-body-name: body
+  /proto.InstanceTypeService/SearchStream:
+    post:
+      operationId: InstanceTypeService_SearchStream
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoInstanceTypeSearchRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stream_result_of_protoInstanceType'
+          description: A successful response.(streaming responses)
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List instance types as a stream.
+      tags:
+      - InstanceTypeService
+      x-codegen-request-body-name: body
+  /proto.LoadBalancerService/Ping:
+    post:
+      operationId: LoadBalancerService_Ping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Ping always returns a successful response by the service implementation.
+        It can be used for testing connectivity to the service.
+      tags:
+      - LoadBalancerService
+      x-codegen-request-body-name: body
+  /proto.MachineImageService/Delete:
+    post:
+      operationId: MachineImageService_Delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoMachineImageDeleteRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete a machine image.
+      tags:
+      - MachineImageService
+      x-codegen-request-body-name: body
+  /proto.MachineImageService/Put:
+    post:
+      operationId: MachineImageService_Put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoMachineImage'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Create or update a machine image.
+      tags:
+      - MachineImageService
+      x-codegen-request-body-name: body
+  /proto.MachineImageService/SearchStream:
+    post:
+      operationId: MachineImageService_SearchStream
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoMachineImageSearchRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stream_result_of_protoMachineImage'
+          description: A successful response.(streaming responses)
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List machine images as a stream.
+      tags:
+      - MachineImageService
+      x-codegen-request-body-name: body
+  /proto.SshPublicKeyService/SearchStream:
+    post:
+      operationId: SshPublicKeyService_SearchStream
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoSshPublicKeySearchRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stream_result_of_protoSshPublicKey'
+          description: A successful response.(streaming responses)
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        List stored SSH public keys as a stream.
+        Warning: This does not work with OpenAPI client.
+        Internal-use only.
+      tags:
+      - SshPublicKeyService
+      x-codegen-request-body-name: body
+  /proto.VNetService/Ping:
+    post:
+      operationId: VNetService_Ping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Ping always returns a successful response by the service implementation.
+        It can be used for testing connectivity to the service.
+      tags:
+      - VNetService
+      x-codegen-request-body-name: body
+  /proto.VNetService/SearchStream:
+    post:
+      operationId: VNetService_SearchStream
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/protoVNetSearchRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stream_result_of_protoVNet'
+          description: A successful response.(streaming responses)
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List stored VNets as a stream.
+      tags:
+      - VNetService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups:
+    get:
+      operationId: InstanceGroupService_Search
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstanceGroupSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List instance groups.
+      tags:
+      - InstanceGroupService
+    post:
+      operationId: InstanceGroupService_Create
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceGroupService_Create_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstanceGroup'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Launch a new group of instances.
+      tags:
+      - InstanceGroupService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}:
+    delete:
+      operationId: InstanceGroupService_Delete
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Request deletion (termination) of an instance group.
+      tags:
+      - InstanceGroupService
+    put:
+      operationId: InstanceGroupService_Update
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceGroupService_Update_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update the specification of an instanceGroup
+      tags:
+      - InstanceGroupService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/instance/id/{instanceResourceId}:
+    delete:
+      operationId: InstanceGroupService_DeleteMember
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: instanceResourceId
+        required: true
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved2
+        schema:
+          type: string
+      - in: query
+        name: instanceName
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Request deletion (termination) of an instance in a group.
+        It always retains at least one instance in the group to use a template. To delete the entire group, use Delete API instead.
+      tags:
+      - InstanceGroupService
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/instance/name/{instanceName}:
+    delete:
+      operationId: InstanceGroupService_DeleteMember2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: instanceName
+        required: true
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved2
+        schema:
+          type: string
+      - in: query
+        name: instanceResourceId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Request deletion (termination) of an instance in a group.
+        It always retains at least one instance in the group to use a template. To delete the entire group, use Delete API instead.
+      tags:
+      - InstanceGroupService
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/scale-up:
+    patch:
+      operationId: InstanceGroupService_ScaleUp
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceGroupService_ScaleUp_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstanceGroupScaleResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Create new instances for the group to reach to the desired count.
+        This returns an error if the desired count is less than the current count.
+      tags:
+      - InstanceGroupService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instances:
+    get:
+      operationId: InstanceService_Search
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      - description: |-
+          If instanceGroupFilter is ExactValue, return instances in this instance group.
+          Otherwise, this field is ignored
+        in: query
+        name: metadata.instanceGroup
+        schema:
+          type: string
+      - description: |-
+          Filter instances by instance group.
+          If Default, this behaves like Empty and returns instances that are not in any instance group.
+
+           - Default: Use the default behavior, which is described in the specific SearchFilterCriteria field.
+           - Any: Return records with any value in this field (including empty).
+           - Empty: Return records with an empty value in this field
+           - NonEmpty: Return records with a non-empty value in this field
+           - ExactValue: Return records with an exact value in this field
+        in: query
+        name: metadata.instanceGroupFilter
+        schema:
+          default: Default
+          enum:
+          - Default
+          - Any
+          - Empty
+          - NonEmpty
+          - ExactValue
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstanceSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List instances.
+      tags:
+      - InstanceService
+    post:
+      operationId: InstanceService_Create
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceService_Create_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstance'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Launch a new baremetal or virtual machine instance.
+      tags:
+      - InstanceService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instances/id/{metadata.resourceId}:
+    delete:
+      operationId: InstanceService_Delete
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Request deletion (termination) of an instance.
+      tags:
+      - InstanceService
+    get:
+      operationId: InstanceService_Get
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstance'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get the status of an instance.
+      tags:
+      - InstanceService
+    put:
+      operationId: InstanceService_Update
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceService_Update_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update the specification of an instance.
+      tags:
+      - InstanceService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instances/name/{metadata.name}:
+    delete:
+      operationId: InstanceService_Delete2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Request deletion (termination) of an instance.
+      tags:
+      - InstanceService
+    get:
+      operationId: InstanceService_Get2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstance'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get the status of an instance.
+      tags:
+      - InstanceService
+    put:
+      operationId: InstanceService_Update2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceService_Update2_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update the specification of an instance.
+      tags:
+      - InstanceService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/instances/search:
+    post:
+      operationId: InstanceService_Search2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceService_Search2_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstanceSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List instances.
+      tags:
+      - InstanceService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers:
+    get:
+      operationId: LoadBalancerService_Search
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoLoadBalancerSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List load balancers.
+      tags:
+      - LoadBalancerService
+    post:
+      operationId: LoadBalancerService_Create
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadBalancerService_Create_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoLoadBalancer'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Create a new load balancer.
+      tags:
+      - LoadBalancerService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/id/{metadata.resourceId}:
+    delete:
+      operationId: LoadBalancerService_Delete
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Request deletion of a load balancer.
+      tags:
+      - LoadBalancerService
+    get:
+      operationId: LoadBalancerService_Get
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoLoadBalancer'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get the status of a load balancer.
+      tags:
+      - LoadBalancerService
+    put:
+      operationId: LoadBalancerService_Update
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadBalancerService_Update_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update the specification of an load balancer.
+      tags:
+      - LoadBalancerService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/name/{metadata.name}:
+    delete:
+      operationId: LoadBalancerService_Delete2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Request deletion of a load balancer.
+      tags:
+      - LoadBalancerService
+    get:
+      operationId: LoadBalancerService_Get2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      - description: "If provided, the existing record must have this resourceVersion\
+          \ for the request to succeed."
+        in: query
+        name: metadata.resourceVersion
+        schema:
+          type: string
+      - description: Reserved. Added this field to overcome openAPi-same-struct issue.
+        in: query
+        name: metadata.reserved1
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoLoadBalancer'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get the status of a load balancer.
+      tags:
+      - LoadBalancerService
+    put:
+      operationId: LoadBalancerService_Update2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadBalancerService_Update2_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update the specification of an load balancer.
+      tags:
+      - LoadBalancerService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/search:
+    post:
+      operationId: LoadBalancerService_Search2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadBalancerService_Search2_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoLoadBalancerSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List load balancers.
+      tags:
+      - LoadBalancerService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys:
+    get:
+      operationId: SshPublicKeyService_Search
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoSshPublicKeySearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get a list of stored SSH public keys.
+      tags:
+      - SshPublicKeyService
+    post:
+      operationId: SshPublicKeyService_Create
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SshPublicKeyService_Create_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoSshPublicKey'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Store an SSH public key.
+      tags:
+      - SshPublicKeyService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/id/{metadata.resourceId}:
+    delete:
+      operationId: SshPublicKeyService_Delete
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete an SSH public key.
+      tags:
+      - SshPublicKeyService
+    get:
+      operationId: SshPublicKeyService_Get
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoSshPublicKey'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Retrieve a stored SSH public key.
+      tags:
+      - SshPublicKeyService
+  /v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/name/{metadata.name}:
+    delete:
+      operationId: SshPublicKeyService_Delete2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete an SSH public key.
+      tags:
+      - SshPublicKeyService
+    get:
+      operationId: SshPublicKeyService_Get2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoSshPublicKey'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Retrieve a stored SSH public key.
+      tags:
+      - SshPublicKeyService
+  /v1/cloudaccounts/{metadata.cloudAccountId}/vnets:
+    get:
+      operationId: VNetService_Search
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoVNetSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get a list of stored VNets.
+      tags:
+      - VNetService
+    post:
+      operationId: VNetService_Put
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VNetService_Put_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoVNet'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Create or update a VNet.
+      tags:
+      - VNetService
+      x-codegen-request-body-name: body
+  /v1/cloudaccounts/{metadata.cloudAccountId}/vnets/id/{metadata.resourceId}:
+    delete:
+      operationId: VNetService_Delete
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Delete an VNet from the DB.
+        Returns FailedPrecondition if VNet has running instances or other consumed IP addresses.
+      tags:
+      - VNetService
+    get:
+      operationId: VNetService_Get
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.resourceId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.name
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoVNet'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Retrieve a VNet record from DB
+      tags:
+      - VNetService
+  /v1/cloudaccounts/{metadata.cloudAccountId}/vnets/name/{metadata.name}:
+    delete:
+      operationId: VNetService_Delete2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Delete an VNet from the DB.
+        Returns FailedPrecondition if VNet has running instances or other consumed IP addresses.
+      tags:
+      - VNetService
+    get:
+      operationId: VNetService_Get2
+      parameters:
+      - in: path
+        name: metadata.cloudAccountId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: metadata.resourceId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoVNet'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Retrieve a VNet record from DB
+      tags:
+      - VNetService
+  /v1/instancetypes:
+    get:
+      operationId: InstanceTypeService_Search
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstanceTypeSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List instance types.
+      tags:
+      - InstanceTypeService
+  /v1/instancetypes/{metadata.name}:
+    get:
+      operationId: InstanceTypeService_Get
+      parameters:
+      - description: Unique name of the instance type.
+        in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoInstanceType'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get an instance type.
+      tags:
+      - InstanceTypeService
+  /v1/machineimages:
+    get:
+      operationId: MachineImageService_Search
+      parameters:
+      - in: query
+        name: metadata.instanceType
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoMachineImageSearchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List machine images.
+      tags:
+      - MachineImageService
+  /v1/machineimages/{metadata.name}:
+    get:
+      operationId: MachineImageService_Get
+      parameters:
+      - description: Unique name of the machine image.
+        in: path
+        name: metadata.name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/protoMachineImage'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get a machine image.
+      tags:
+      - MachineImageService
+  /v1/ping:
+    get:
+      operationId: SshPublicKeyService_Ping
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Ping always returns a successful response by the service implementation.
+        It can be used for testing connectivity to the service.
+      tags:
+      - SshPublicKeyService
+components:
+  schemas:
+    protoCpuSpec:
+      example:
+        modelName: modelName
+        cores: 0
+        threads: 1
+        id: id
+        sockets: 6
+      properties:
+        cores:
+          format: int32
+          type: integer
+        id:
+          type: string
+        modelName:
+          type: string
+        sockets:
+          format: int32
+          type: integer
+        threads:
+          format: int32
+          type: integer
+      type: object
+    protoDiskSpec:
+      example:
+        size: size
+      properties:
+        size:
+          type: string
+      type: object
+    protoGpuSpec:
+      example:
+        modelName: modelName
+        count: 2
+      properties:
+        modelName:
+          type: string
+        count:
+          format: int32
+          type: integer
+      type: object
+    protoInstance:
+      example:
+        metadata:
+          resourceId: resourceId
+          cloudAccountId: cloudAccountId
+          resourceVersion: resourceVersion
+          name: name
+          creationTimestamp: 2000-01-23T04:56:07.000+00:00
+          labels:
+            key: labels
+          deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+        spec:
+          interfaces:
+          - vNet: vNet
+            name: name
+          - vNet: vNet
+            name: name
+          userData: userData
+          runStrategy: null
+          quickConnectEnabled: null
+          instanceType: instanceType
+          sshPublicKeyNames:
+          - sshPublicKeyNames
+          - sshPublicKeyNames
+          topologySpreadConstraints:
+          - labelSelector:
+              matchLabels:
+                key: matchLabels
+          - labelSelector:
+              matchLabels:
+                key: matchLabels
+          instanceGroup: instanceGroup
+          availabilityZone: availabilityZone
+          machineImage: machineImage
+        status:
+          phase: null
+          interfaces:
+          - prefixLength: 0
+            vNet: vNet
+            subnet: subnet
+            addresses:
+            - addresses
+            - addresses
+            name: name
+            dnsName: dnsName
+            gateway: gateway
+          - prefixLength: 0
+            vNet: vNet
+            subnet: subnet
+            addresses:
+            - addresses
+            - addresses
+            name: name
+            dnsName: dnsName
+            gateway: gateway
+          message: message
+          userName: userName
+          sshProxy:
+            proxyPort: 6
+            proxyUser: proxyUser
+            proxyAddress: proxyAddress
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoInstanceMetadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceSpec'
+        status:
+          $ref: '#/components/schemas/protoInstanceStatus'
+      type: object
+    protoInstanceCategory:
+      default: VirtualMachine
+      enum:
+      - VirtualMachine
+      - BareMetalHost
+      type: string
+    protoInstanceGroup:
+      example:
+        metadata:
+          cloudAccountId: cloudAccountId
+          name: name
+          reserved2: reserved2
+        spec:
+          instanceCount: 0
+          instanceSpec:
+            interfaces:
+            - vNet: vNet
+              name: name
+            - vNet: vNet
+              name: name
+            userData: userData
+            runStrategy: null
+            quickConnectEnabled: null
+            instanceType: instanceType
+            sshPublicKeyNames:
+            - sshPublicKeyNames
+            - sshPublicKeyNames
+            topologySpreadConstraints:
+            - labelSelector:
+                matchLabels:
+                  key: matchLabels
+            - labelSelector:
+                matchLabels:
+                  key: matchLabels
+            instanceGroup: instanceGroup
+            availabilityZone: availabilityZone
+            machineImage: machineImage
+        status:
+          readyCount: 6
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoInstanceGroupMetadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceGroupSpec'
+        status:
+          $ref: '#/components/schemas/protoInstanceGroupStatus'
+      type: object
+    protoInstanceGroupMetadata:
+      example:
+        cloudAccountId: cloudAccountId
+        name: name
+        reserved2: reserved2
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        reserved2:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoInstanceGroupMetadataCreate:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        productId:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+        reserved3:
+          type: string
+      type: object
+    protoInstanceGroupMetadataReference:
+      description: A reference to a single instance group.
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+      type: object
+    protoInstanceGroupMetadataSearch:
+      properties:
+        cloudAccountId:
+          type: string
+      type: object
+    protoInstanceGroupMetadataUpdate:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        reserved3:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoInstanceGroupScaleResponse:
+      example:
+        metadata:
+          cloudAccountId: cloudAccountId
+          name: name
+          reserved2: reserved2
+        status:
+          currentCount: 0
+          desiredCount: 6
+          readyCount: 1
+          newMembers:
+          - newMembers
+          - newMembers
+          currentMembers:
+          - currentMembers
+          - currentMembers
+          readyMembers:
+          - readyMembers
+          - readyMembers
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoInstanceGroupMetadata'
+        status:
+          $ref: '#/components/schemas/protoInstanceGroupScaleStatus'
+      type: object
+    protoInstanceGroupScaleStatus:
+      example:
+        currentCount: 0
+        desiredCount: 6
+        readyCount: 1
+        newMembers:
+        - newMembers
+        - newMembers
+        currentMembers:
+        - currentMembers
+        - currentMembers
+        readyMembers:
+        - readyMembers
+        - readyMembers
+      properties:
+        currentCount:
+          format: int32
+          title: the number of instances created in the instanceGroup
+          type: integer
+        desiredCount:
+          format: int32
+          title: the number of instances expected in the instanceGroup
+          type: integer
+        readyCount:
+          description: The number of instances with a phase of Ready.
+          format: int32
+          type: integer
+        currentMembers:
+          description: The names of existing and non-deleting instances in the instanceGroup.
+          items:
+            type: string
+          type: array
+        newMembers:
+          description: The names of newly created instances in the instanceGroup.
+          items:
+            type: string
+          type: array
+        readyMembers:
+          description: The names of instances with a phase of Ready.
+          items:
+            type: string
+          type: array
+      type: object
+    protoInstanceGroupSearchResponse:
+      example:
+        items:
+        - metadata:
+            cloudAccountId: cloudAccountId
+            name: name
+            reserved2: reserved2
+          spec:
+            instanceCount: 0
+            instanceSpec:
+              interfaces:
+              - vNet: vNet
+                name: name
+              - vNet: vNet
+                name: name
+              userData: userData
+              runStrategy: null
+              quickConnectEnabled: null
+              instanceType: instanceType
+              sshPublicKeyNames:
+              - sshPublicKeyNames
+              - sshPublicKeyNames
+              topologySpreadConstraints:
+              - labelSelector:
+                  matchLabels:
+                    key: matchLabels
+              - labelSelector:
+                  matchLabels:
+                    key: matchLabels
+              instanceGroup: instanceGroup
+              availabilityZone: availabilityZone
+              machineImage: machineImage
+          status:
+            readyCount: 6
+        - metadata:
+            cloudAccountId: cloudAccountId
+            name: name
+            reserved2: reserved2
+          spec:
+            instanceCount: 0
+            instanceSpec:
+              interfaces:
+              - vNet: vNet
+                name: name
+              - vNet: vNet
+                name: name
+              userData: userData
+              runStrategy: null
+              quickConnectEnabled: null
+              instanceType: instanceType
+              sshPublicKeyNames:
+              - sshPublicKeyNames
+              - sshPublicKeyNames
+              topologySpreadConstraints:
+              - labelSelector:
+                  matchLabels:
+                    key: matchLabels
+              - labelSelector:
+                  matchLabels:
+                    key: matchLabels
+              instanceGroup: instanceGroup
+              availabilityZone: availabilityZone
+              machineImage: machineImage
+          status:
+            readyCount: 6
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/protoInstanceGroup'
+          type: array
+      type: object
+    protoInstanceGroupSpec:
+      example:
+        instanceCount: 0
+        instanceSpec:
+          interfaces:
+          - vNet: vNet
+            name: name
+          - vNet: vNet
+            name: name
+          userData: userData
+          runStrategy: null
+          quickConnectEnabled: null
+          instanceType: instanceType
+          sshPublicKeyNames:
+          - sshPublicKeyNames
+          - sshPublicKeyNames
+          topologySpreadConstraints:
+          - labelSelector:
+              matchLabels:
+                key: matchLabels
+          - labelSelector:
+              matchLabels:
+                key: matchLabels
+          instanceGroup: instanceGroup
+          availabilityZone: availabilityZone
+          machineImage: machineImage
+      properties:
+        instanceSpec:
+          $ref: '#/components/schemas/protoInstanceSpec'
+        instanceCount:
+          format: int32
+          type: integer
+      type: object
+    protoInstanceGroupStatus:
+      example:
+        readyCount: 6
+      properties:
+        readyCount:
+          description: |-
+            The number of instances with a phase of Ready.
+            The instance group is Ready when this equals InstanceGroupSpec.instanceCount.
+          format: int32
+          type: integer
+      type: object
+    protoInstanceInterfaceStatus:
+      example:
+        prefixLength: 0
+        vNet: vNet
+        subnet: subnet
+        addresses:
+        - addresses
+        - addresses
+        name: name
+        dnsName: dnsName
+        gateway: gateway
+      properties:
+        name:
+          description: Not implemented.
+          type: string
+        vNet:
+          description: Not implemented.
+          type: string
+        dnsName:
+          description: Fully qualified domain name (FQDN) of interface.
+          type: string
+        prefixLength:
+          description: Subnet prefix length.
+          format: int32
+          type: integer
+        addresses:
+          description: List of IP addresses.
+          items:
+            type: string
+          type: array
+        subnet:
+          description: Subnet IP address in format "1.2.3.4".
+          type: string
+        gateway:
+          description: Gateway IP address.
+          type: string
+      type: object
+    protoInstanceMetadata:
+      example:
+        resourceId: resourceId
+        cloudAccountId: cloudAccountId
+        resourceVersion: resourceVersion
+        name: name
+        creationTimestamp: 2000-01-23T04:56:07.000+00:00
+        labels:
+          key: labels
+        deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+        resourceVersion:
+          description: resourceVersion can be provided with Update and Delete for
+            concurrency control.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            Map of string keys and values that can be used to organize and categorize instances.
+            This is also used by TopologySpreadConstraints.
+          type: object
+        creationTimestamp:
+          description: Not implemented.
+          format: date-time
+          type: string
+        deletionTimestamp:
+          description: Timestamp when resource was requested to be deleted.
+          format: date-time
+          type: string
+      type: object
+    protoInstanceMetadataCreate:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          description: Name will be generated if empty.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            Map of string keys and values that can be used to organize and categorize instances.
+            This is also used by TopologySpreadConstraints.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+        productId:
+          type: string
+      type: object
+    protoInstanceMetadataReference:
+      description: A reference to a single instance.
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoInstanceMetadataSearch:
+      properties:
+        cloudAccountId:
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: "If not empty, only return instances that have these key/value\
+            \ pairs."
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+        instanceGroup:
+          title: |-
+            If instanceGroupFilter is ExactValue, return instances in this instance group.
+            Otherwise, this field is ignored
+          type: string
+        instanceGroupFilter:
+          $ref: '#/components/schemas/protoSearchFilterCriteria'
+      type: object
+    protoInstanceMetadataUpdate:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            The entire set of labels will be replaced with these labels.
+            Not implemented.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoInstancePhase:
+      default: Provisioning
+      description: |2-
+         - Provisioning: The system is creating and starting the instance.
+        Default.
+         - Ready: The instance is running and has completed the running startup process.
+         - Stopping: The instance is in the process of being stopped.
+         - Stopped: The instance is stopped.
+         - Terminating: The instance and its associated resources are in the process of being deleted.
+         - Failed: The instance crashed, failed, or is otherwise unavailable.
+         - Starting: The instance is in the process of startup.
+         - Started: The instance has completed startup and is available to use.
+      enum:
+      - Provisioning
+      - Ready
+      - Stopping
+      - Stopped
+      - Terminating
+      - Failed
+      - Starting
+      - Started
+      type: string
+    protoInstanceSearchResponse:
+      example:
+        items:
+        - metadata:
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            resourceVersion: resourceVersion
+            name: name
+            creationTimestamp: 2000-01-23T04:56:07.000+00:00
+            labels:
+              key: labels
+            deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+          spec:
+            interfaces:
+            - vNet: vNet
+              name: name
+            - vNet: vNet
+              name: name
+            userData: userData
+            runStrategy: null
+            quickConnectEnabled: null
+            instanceType: instanceType
+            sshPublicKeyNames:
+            - sshPublicKeyNames
+            - sshPublicKeyNames
+            topologySpreadConstraints:
+            - labelSelector:
+                matchLabels:
+                  key: matchLabels
+            - labelSelector:
+                matchLabels:
+                  key: matchLabels
+            instanceGroup: instanceGroup
+            availabilityZone: availabilityZone
+            machineImage: machineImage
+          status:
+            phase: null
+            interfaces:
+            - prefixLength: 0
+              vNet: vNet
+              subnet: subnet
+              addresses:
+              - addresses
+              - addresses
+              name: name
+              dnsName: dnsName
+              gateway: gateway
+            - prefixLength: 0
+              vNet: vNet
+              subnet: subnet
+              addresses:
+              - addresses
+              - addresses
+              name: name
+              dnsName: dnsName
+              gateway: gateway
+            message: message
+            userName: userName
+            sshProxy:
+              proxyPort: 6
+              proxyUser: proxyUser
+              proxyAddress: proxyAddress
+        - metadata:
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            resourceVersion: resourceVersion
+            name: name
+            creationTimestamp: 2000-01-23T04:56:07.000+00:00
+            labels:
+              key: labels
+            deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+          spec:
+            interfaces:
+            - vNet: vNet
+              name: name
+            - vNet: vNet
+              name: name
+            userData: userData
+            runStrategy: null
+            quickConnectEnabled: null
+            instanceType: instanceType
+            sshPublicKeyNames:
+            - sshPublicKeyNames
+            - sshPublicKeyNames
+            topologySpreadConstraints:
+            - labelSelector:
+                matchLabels:
+                  key: matchLabels
+            - labelSelector:
+                matchLabels:
+                  key: matchLabels
+            instanceGroup: instanceGroup
+            availabilityZone: availabilityZone
+            machineImage: machineImage
+          status:
+            phase: null
+            interfaces:
+            - prefixLength: 0
+              vNet: vNet
+              subnet: subnet
+              addresses:
+              - addresses
+              - addresses
+              name: name
+              dnsName: dnsName
+              gateway: gateway
+            - prefixLength: 0
+              vNet: vNet
+              subnet: subnet
+              addresses:
+              - addresses
+              - addresses
+              name: name
+              dnsName: dnsName
+              gateway: gateway
+            message: message
+            userName: userName
+            sshProxy:
+              proxyPort: 6
+              proxyUser: proxyUser
+              proxyAddress: proxyAddress
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/protoInstance'
+          type: array
+      type: object
+    protoInstanceSpec:
+      example:
+        interfaces:
+        - vNet: vNet
+          name: name
+        - vNet: vNet
+          name: name
+        userData: userData
+        runStrategy: null
+        quickConnectEnabled: null
+        instanceType: instanceType
+        sshPublicKeyNames:
+        - sshPublicKeyNames
+        - sshPublicKeyNames
+        topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              key: matchLabels
+        - labelSelector:
+            matchLabels:
+              key: matchLabels
+        instanceGroup: instanceGroup
+        availabilityZone: availabilityZone
+        machineImage: machineImage
+      properties:
+        availabilityZone:
+          description: Not implemented.
+          type: string
+        instanceType:
+          description: The name of an InstanceType.
+          type: string
+        machineImage:
+          description: |-
+            The name of a MachineImage.
+            Not implemented.
+          type: string
+        runStrategy:
+          $ref: '#/components/schemas/protoRunStrategy'
+        sshPublicKeyNames:
+          description: |-
+            The name of a previously stored SSH public key.
+            Users can use the corresponding SSH private key to SSH to this instance.
+          items:
+            type: string
+          type: array
+        interfaces:
+          description: Not implemented.
+          items:
+            $ref: '#/components/schemas/protoNetworkInterface'
+          type: array
+        topologySpreadConstraints:
+          description: |-
+            This controls how instances are spread across the failure domains within the availability zone.
+            This can help to achieve high availability.
+            If this contains at least one key/value pair in matchLabels, then instances that have all of these key/value pairs
+            will be placed evenly across failure domains.
+          items:
+            $ref: '#/components/schemas/protoTopologySpreadConstraints'
+          type: array
+        userData:
+          title: The cloud-config for this instance
+          type: string
+        instanceGroup:
+          description: "If not empty, this instance is part of the named instance\
+            \ group."
+          type: string
+        quickConnectEnabled:
+          $ref: '#/components/schemas/protoTriState'
+      type: object
+    protoInstanceStatus:
+      example:
+        phase: null
+        interfaces:
+        - prefixLength: 0
+          vNet: vNet
+          subnet: subnet
+          addresses:
+          - addresses
+          - addresses
+          name: name
+          dnsName: dnsName
+          gateway: gateway
+        - prefixLength: 0
+          vNet: vNet
+          subnet: subnet
+          addresses:
+          - addresses
+          - addresses
+          name: name
+          dnsName: dnsName
+          gateway: gateway
+        message: message
+        userName: userName
+        sshProxy:
+          proxyPort: 6
+          proxyUser: proxyUser
+          proxyAddress: proxyAddress
+      properties:
+        phase:
+          $ref: '#/components/schemas/protoInstancePhase'
+        message:
+          description: Additional details about the state or any error conditions.
+          type: string
+        interfaces:
+          description: "A list of network interfaces, along with the private IP address\
+            \ assigned to the interface."
+          items:
+            $ref: '#/components/schemas/protoInstanceInterfaceStatus'
+          type: array
+        sshProxy:
+          $ref: '#/components/schemas/protoSshProxyTunnelStatus'
+        userName:
+          description: The user name that should be used to SSH into the instance.
+          type: string
+      type: object
+    protoInstanceType:
+      example:
+        metadata:
+          name: name
+        spec:
+          hbmMode: hbmMode
+          memory:
+            size: size
+            dimmCount: 5
+            dimmSize: dimmSize
+            speed: 5
+          disks:
+          - size: size
+          - size: size
+          displayName: displayName
+          instanceCategory: null
+          name: name
+          description: description
+          cpu:
+            modelName: modelName
+            cores: 0
+            threads: 1
+            id: id
+            sockets: 6
+          gpu:
+            modelName: modelName
+            count: 2
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoInstanceTypeMetadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceTypeSpec'
+      type: object
+    protoInstanceTypeDeleteRequest:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoInstanceTypeDeleteRequestMetadata'
+      type: object
+    protoInstanceTypeDeleteRequestMetadata:
+      properties:
+        name:
+          description: Unique name of the instance type.
+          type: string
+      type: object
+    protoInstanceTypeGetRequestMetadata:
+      properties:
+        name:
+          description: Unique name of the instance type.
+          type: string
+      type: object
+    protoInstanceTypeMetadata:
+      example:
+        name: name
+      properties:
+        name:
+          description: Unique name of the instance type.
+          type: string
+      type: object
+    protoInstanceTypeSearchRequest:
+      type: object
+    protoInstanceTypeSearchResponse:
+      example:
+        items:
+        - metadata:
+            name: name
+          spec:
+            hbmMode: hbmMode
+            memory:
+              size: size
+              dimmCount: 5
+              dimmSize: dimmSize
+              speed: 5
+            disks:
+            - size: size
+            - size: size
+            displayName: displayName
+            instanceCategory: null
+            name: name
+            description: description
+            cpu:
+              modelName: modelName
+              cores: 0
+              threads: 1
+              id: id
+              sockets: 6
+            gpu:
+              modelName: modelName
+              count: 2
+        - metadata:
+            name: name
+          spec:
+            hbmMode: hbmMode
+            memory:
+              size: size
+              dimmCount: 5
+              dimmSize: dimmSize
+              speed: 5
+            disks:
+            - size: size
+            - size: size
+            displayName: displayName
+            instanceCategory: null
+            name: name
+            description: description
+            cpu:
+              modelName: modelName
+              cores: 0
+              threads: 1
+              id: id
+              sockets: 6
+            gpu:
+              modelName: modelName
+              count: 2
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/protoInstanceType'
+          type: array
+      type: object
+    protoInstanceTypeSpec:
+      example:
+        hbmMode: hbmMode
+        memory:
+          size: size
+          dimmCount: 5
+          dimmSize: dimmSize
+          speed: 5
+        disks:
+        - size: size
+        - size: size
+        displayName: displayName
+        instanceCategory: null
+        name: name
+        description: description
+        cpu:
+          modelName: modelName
+          cores: 0
+          threads: 1
+          id: id
+          sockets: 6
+        gpu:
+          modelName: modelName
+          count: 2
+      properties:
+        name:
+          type: string
+        displayName:
+          type: string
+        description:
+          type: string
+        instanceCategory:
+          $ref: '#/components/schemas/protoInstanceCategory'
+        cpu:
+          $ref: '#/components/schemas/protoCpuSpec'
+        memory:
+          $ref: '#/components/schemas/protoMemorySpec'
+        disks:
+          items:
+            $ref: '#/components/schemas/protoDiskSpec'
+          type: array
+        gpu:
+          $ref: '#/components/schemas/protoGpuSpec'
+        hbmMode:
+          type: string
+      type: object
+    protoLabelSelector:
+      example:
+        matchLabels:
+          key: matchLabels
+      properties:
+        matchLabels:
+          additionalProperties:
+            type: string
+          type: object
+      type: object
+    protoLoadBalancer:
+      example:
+        metadata:
+          resourceId: resourceId
+          cloudAccountId: cloudAccountId
+          resourceVersion: resourceVersion
+          name: name
+          creationTimestamp: 2000-01-23T04:56:07.000+00:00
+          reserved1: reserved1
+          labels:
+            key: labels
+          deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+        spec:
+          security:
+            sourceips:
+            - sourceips
+            - sourceips
+          listeners:
+          - port: 0
+            pool:
+              loadBalancingMode: null
+              port: 6
+              instanceSelectors:
+                key: instanceSelectors
+              monitor: null
+              instanceResourceIds:
+              - instanceResourceIds
+              - instanceResourceIds
+          - port: 0
+            pool:
+              loadBalancingMode: null
+              port: 6
+              instanceSelectors:
+                key: instanceSelectors
+              monitor: null
+              instanceResourceIds:
+              - instanceResourceIds
+              - instanceResourceIds
+        status:
+          listeners:
+          - poolMembers:
+            - ip: ip
+              instanceRef: instanceRef
+            - ip: ip
+              instanceRef: instanceRef
+            port: 2
+            name: name
+            vipID: 5
+            poolID: 5
+            state: state
+            message: message
+          - poolMembers:
+            - ip: ip
+              instanceRef: instanceRef
+            - ip: ip
+              instanceRef: instanceRef
+            port: 2
+            name: name
+            vipID: 5
+            poolID: 5
+            state: state
+            message: message
+          state: state
+          conditions:
+            listeners:
+            - poolCreated: true
+              port: 1
+              vipPoolLinked: true
+              vipCreated: true
+            - poolCreated: true
+              port: 1
+              vipPoolLinked: true
+              vipCreated: true
+            firewallRuleCreated: true
+          vip: vip
+          message: message
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoLoadBalancerMetadata'
+        spec:
+          $ref: '#/components/schemas/protoLoadBalancerSpec'
+        status:
+          $ref: '#/components/schemas/protoLoadBalancerStatus'
+      type: object
+    protoLoadBalancerConditionsListenerStatus:
+      example:
+        poolCreated: true
+        port: 1
+        vipPoolLinked: true
+        vipCreated: true
+      properties:
+        port:
+          format: int32
+          type: integer
+        poolCreated:
+          type: boolean
+        vipCreated:
+          type: boolean
+        vipPoolLinked:
+          type: boolean
+      type: object
+    protoLoadBalancerConditionsStatus:
+      example:
+        listeners:
+        - poolCreated: true
+          port: 1
+          vipPoolLinked: true
+          vipCreated: true
+        - poolCreated: true
+          port: 1
+          vipPoolLinked: true
+          vipCreated: true
+        firewallRuleCreated: true
+      properties:
+        listeners:
+          items:
+            $ref: '#/components/schemas/protoLoadBalancerConditionsListenerStatus'
+          type: array
+        firewallRuleCreated:
+          type: boolean
+      type: object
+    protoLoadBalancerListener:
+      example:
+        port: 0
+        pool:
+          loadBalancingMode: null
+          port: 6
+          instanceSelectors:
+            key: instanceSelectors
+          monitor: null
+          instanceResourceIds:
+          - instanceResourceIds
+          - instanceResourceIds
+      properties:
+        port:
+          description: The public port of the load balancer.
+          format: int32
+          type: integer
+        pool:
+          $ref: '#/components/schemas/protoLoadBalancerPool'
+      type: object
+    protoLoadBalancerListenerStatus:
+      example:
+        poolMembers:
+        - ip: ip
+          instanceRef: instanceRef
+        - ip: ip
+          instanceRef: instanceRef
+        port: 2
+        name: name
+        vipID: 5
+        poolID: 5
+        state: state
+        message: message
+      properties:
+        name:
+          type: string
+        vipID:
+          format: int32
+          type: integer
+        message:
+          type: string
+        poolMembers:
+          items:
+            $ref: '#/components/schemas/protoLoadBalancerPoolStatusMember'
+          type: array
+        poolID:
+          format: int32
+          type: integer
+        state:
+          type: string
+        port:
+          format: int32
+          type: integer
+      type: object
+    protoLoadBalancerMetadata:
+      example:
+        resourceId: resourceId
+        cloudAccountId: cloudAccountId
+        resourceVersion: resourceVersion
+        name: name
+        creationTimestamp: 2000-01-23T04:56:07.000+00:00
+        reserved1: reserved1
+        labels:
+          key: labels
+        deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+        resourceVersion:
+          description: resourceVersion can be provided with Update and Delete for
+            concurrency control.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Map of string keys and values that can be used to organize
+            and categorize load balancers.
+          type: object
+        creationTimestamp:
+          description: Not implemented.
+          format: date-time
+          type: string
+        deletionTimestamp:
+          description: Timestamp when resource was requested to be deleted.
+          format: date-time
+          type: string
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoLoadBalancerMetadataCreate:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          description: Name will be generated if empty.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Map of string keys and values that can be used to organize
+            and categorize load balancers.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoLoadBalancerMetadataReference:
+      description: A reference to a single load balancer.
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoLoadBalancerMetadataSearch:
+      properties:
+        cloudAccountId:
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: "If not empty, only return load balancers that have these key/value\
+            \ pairs."
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoLoadBalancerMetadataUpdate:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Map of string keys and values that can be used to organize
+            and categorize load balancers.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    protoLoadBalancerMonitorType:
+      default: tcp
+      description: |2-
+         - tcp: Healthcheck monitoring type utilizing TCP checks.
+        Default.
+         - http: HTTP monitoring type expecting a "200 OK" HTTP Response.
+         - https: HTTPS monitoring type expecting a "200 OK" HTTP Response.
+      enum:
+      - tcp
+      - http
+      - https
+      type: string
+    protoLoadBalancerPool:
+      example:
+        loadBalancingMode: null
+        port: 6
+        instanceSelectors:
+          key: instanceSelectors
+        monitor: null
+        instanceResourceIds:
+        - instanceResourceIds
+        - instanceResourceIds
+      properties:
+        port:
+          description: The port to route traffic to each instance.
+          format: int32
+          type: integer
+        monitor:
+          $ref: '#/components/schemas/protoLoadBalancerMonitorType'
+        loadBalancingMode:
+          $ref: '#/components/schemas/protoLoadBalancingMode'
+        instanceSelectors:
+          additionalProperties:
+            type: string
+          description: |-
+            (Optional) Map of string keys and values that controls how the lb pool members are selected.
+             One of instances or instanceSelectors is valid.
+          type: object
+        instanceResourceIds:
+          description: |-
+            (Optional) Set of Instances to make up the members of the pool.
+            One of instances or instanceSelectors is valid.
+          items:
+            type: string
+          type: array
+      type: object
+    protoLoadBalancerPoolStatusMember:
+      example:
+        ip: ip
+        instanceRef: instanceRef
+      properties:
+        instanceRef:
+          type: string
+        ip:
+          type: string
+      type: object
+    protoLoadBalancerSearchResponse:
+      example:
+        items:
+        - metadata:
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            resourceVersion: resourceVersion
+            name: name
+            creationTimestamp: 2000-01-23T04:56:07.000+00:00
+            reserved1: reserved1
+            labels:
+              key: labels
+            deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+          spec:
+            security:
+              sourceips:
+              - sourceips
+              - sourceips
+            listeners:
+            - port: 0
+              pool:
+                loadBalancingMode: null
+                port: 6
+                instanceSelectors:
+                  key: instanceSelectors
+                monitor: null
+                instanceResourceIds:
+                - instanceResourceIds
+                - instanceResourceIds
+            - port: 0
+              pool:
+                loadBalancingMode: null
+                port: 6
+                instanceSelectors:
+                  key: instanceSelectors
+                monitor: null
+                instanceResourceIds:
+                - instanceResourceIds
+                - instanceResourceIds
+          status:
+            listeners:
+            - poolMembers:
+              - ip: ip
+                instanceRef: instanceRef
+              - ip: ip
+                instanceRef: instanceRef
+              port: 2
+              name: name
+              vipID: 5
+              poolID: 5
+              state: state
+              message: message
+            - poolMembers:
+              - ip: ip
+                instanceRef: instanceRef
+              - ip: ip
+                instanceRef: instanceRef
+              port: 2
+              name: name
+              vipID: 5
+              poolID: 5
+              state: state
+              message: message
+            state: state
+            conditions:
+              listeners:
+              - poolCreated: true
+                port: 1
+                vipPoolLinked: true
+                vipCreated: true
+              - poolCreated: true
+                port: 1
+                vipPoolLinked: true
+                vipCreated: true
+              firewallRuleCreated: true
+            vip: vip
+            message: message
+        - metadata:
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            resourceVersion: resourceVersion
+            name: name
+            creationTimestamp: 2000-01-23T04:56:07.000+00:00
+            reserved1: reserved1
+            labels:
+              key: labels
+            deletionTimestamp: 2000-01-23T04:56:07.000+00:00
+          spec:
+            security:
+              sourceips:
+              - sourceips
+              - sourceips
+            listeners:
+            - port: 0
+              pool:
+                loadBalancingMode: null
+                port: 6
+                instanceSelectors:
+                  key: instanceSelectors
+                monitor: null
+                instanceResourceIds:
+                - instanceResourceIds
+                - instanceResourceIds
+            - port: 0
+              pool:
+                loadBalancingMode: null
+                port: 6
+                instanceSelectors:
+                  key: instanceSelectors
+                monitor: null
+                instanceResourceIds:
+                - instanceResourceIds
+                - instanceResourceIds
+          status:
+            listeners:
+            - poolMembers:
+              - ip: ip
+                instanceRef: instanceRef
+              - ip: ip
+                instanceRef: instanceRef
+              port: 2
+              name: name
+              vipID: 5
+              poolID: 5
+              state: state
+              message: message
+            - poolMembers:
+              - ip: ip
+                instanceRef: instanceRef
+              - ip: ip
+                instanceRef: instanceRef
+              port: 2
+              name: name
+              vipID: 5
+              poolID: 5
+              state: state
+              message: message
+            state: state
+            conditions:
+              listeners:
+              - poolCreated: true
+                port: 1
+                vipPoolLinked: true
+                vipCreated: true
+              - poolCreated: true
+                port: 1
+                vipPoolLinked: true
+                vipCreated: true
+              firewallRuleCreated: true
+            vip: vip
+            message: message
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/protoLoadBalancer'
+          type: array
+      type: object
+    protoLoadBalancerSecurity:
+      example:
+        sourceips:
+        - sourceips
+        - sourceips
+      properties:
+        sourceips:
+          items:
+            type: string
+          type: array
+      type: object
+    protoLoadBalancerSpec:
+      example:
+        security:
+          sourceips:
+          - sourceips
+          - sourceips
+        listeners:
+        - port: 0
+          pool:
+            loadBalancingMode: null
+            port: 6
+            instanceSelectors:
+              key: instanceSelectors
+            monitor: null
+            instanceResourceIds:
+            - instanceResourceIds
+            - instanceResourceIds
+        - port: 0
+          pool:
+            loadBalancingMode: null
+            port: 6
+            instanceSelectors:
+              key: instanceSelectors
+            monitor: null
+            instanceResourceIds:
+            - instanceResourceIds
+            - instanceResourceIds
+      properties:
+        listeners:
+          items:
+            $ref: '#/components/schemas/protoLoadBalancerListener'
+          type: array
+        security:
+          $ref: '#/components/schemas/protoLoadBalancerSecurity'
+      type: object
+    protoLoadBalancerSpecUpdate:
+      properties:
+        listeners:
+          items:
+            $ref: '#/components/schemas/protoLoadBalancerListener'
+          type: array
+        security:
+          $ref: '#/components/schemas/protoLoadBalancerSecurity'
+      type: object
+    protoLoadBalancerStatus:
+      example:
+        listeners:
+        - poolMembers:
+          - ip: ip
+            instanceRef: instanceRef
+          - ip: ip
+            instanceRef: instanceRef
+          port: 2
+          name: name
+          vipID: 5
+          poolID: 5
+          state: state
+          message: message
+        - poolMembers:
+          - ip: ip
+            instanceRef: instanceRef
+          - ip: ip
+            instanceRef: instanceRef
+          port: 2
+          name: name
+          vipID: 5
+          poolID: 5
+          state: state
+          message: message
+        state: state
+        conditions:
+          listeners:
+          - poolCreated: true
+            port: 1
+            vipPoolLinked: true
+            vipCreated: true
+          - poolCreated: true
+            port: 1
+            vipPoolLinked: true
+            vipCreated: true
+          firewallRuleCreated: true
+        vip: vip
+        message: message
+      properties:
+        conditions:
+          $ref: '#/components/schemas/protoLoadBalancerConditionsStatus'
+        listeners:
+          items:
+            $ref: '#/components/schemas/protoLoadBalancerListenerStatus'
+          type: array
+        state:
+          type: string
+        vip:
+          type: string
+        message:
+          type: string
+      type: object
+    protoLoadBalancingMode:
+      default: roundRobin
+      description: " - roundRobin: Default."
+      enum:
+      - roundRobin
+      - leastConnectionsMember
+      type: string
+    protoMachineImage:
+      example:
+        metadata:
+          name: name
+        spec:
+          components:
+          - infoUrl: infoUrl
+            imageUrl: imageUrl
+            name: name
+            description: description
+            type: type
+            version: version
+          - infoUrl: infoUrl
+            imageUrl: imageUrl
+            name: name
+            description: description
+            type: type
+            version: version
+          instanceTypes:
+          - instanceTypes
+          - instanceTypes
+          hidden: true
+          displayName: displayName
+          icon: icon
+          sha256sum: sha256sum
+          description: description
+          userName: userName
+          labels:
+            key: labels
+          sha512sum: sha512sum
+          instanceCategories:
+          - null
+          - null
+          md5sum: md5sum
+          virtualSizeBytes: virtualSizeBytes
+          imageCategories:
+          - imageCategories
+          - imageCategories
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoMachineImageMetadata'
+        spec:
+          $ref: '#/components/schemas/protoMachineImageSpec'
+      type: object
+    protoMachineImageComponent:
+      example:
+        infoUrl: infoUrl
+        imageUrl: imageUrl
+        name: name
+        description: description
+        type: type
+        version: version
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        infoUrl:
+          type: string
+        imageUrl:
+          type: string
+      type: object
+    protoMachineImageDeleteRequest:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoMachineImageDeleteRequestMetadata'
+      type: object
+    protoMachineImageDeleteRequestMetadata:
+      properties:
+        name:
+          description: Unique name of the machine image.
+          type: string
+      type: object
+    protoMachineImageGetRequestMetadata:
+      properties:
+        name:
+          description: Unique name of the machine image.
+          type: string
+      type: object
+    protoMachineImageMetadata:
+      example:
+        name: name
+      properties:
+        name:
+          description: Unique name of the machine image.
+          type: string
+      type: object
+    protoMachineImageSearchRequest:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoMachineImageSearchRequestMetadata'
+      type: object
+    protoMachineImageSearchRequestMetadata:
+      properties:
+        instanceType:
+          type: string
+      type: object
+    protoMachineImageSearchResponse:
+      example:
+        items:
+        - metadata:
+            name: name
+          spec:
+            components:
+            - infoUrl: infoUrl
+              imageUrl: imageUrl
+              name: name
+              description: description
+              type: type
+              version: version
+            - infoUrl: infoUrl
+              imageUrl: imageUrl
+              name: name
+              description: description
+              type: type
+              version: version
+            instanceTypes:
+            - instanceTypes
+            - instanceTypes
+            hidden: true
+            displayName: displayName
+            icon: icon
+            sha256sum: sha256sum
+            description: description
+            userName: userName
+            labels:
+              key: labels
+            sha512sum: sha512sum
+            instanceCategories:
+            - null
+            - null
+            md5sum: md5sum
+            virtualSizeBytes: virtualSizeBytes
+            imageCategories:
+            - imageCategories
+            - imageCategories
+        - metadata:
+            name: name
+          spec:
+            components:
+            - infoUrl: infoUrl
+              imageUrl: imageUrl
+              name: name
+              description: description
+              type: type
+              version: version
+            - infoUrl: infoUrl
+              imageUrl: imageUrl
+              name: name
+              description: description
+              type: type
+              version: version
+            instanceTypes:
+            - instanceTypes
+            - instanceTypes
+            hidden: true
+            displayName: displayName
+            icon: icon
+            sha256sum: sha256sum
+            description: description
+            userName: userName
+            labels:
+              key: labels
+            sha512sum: sha512sum
+            instanceCategories:
+            - null
+            - null
+            md5sum: md5sum
+            virtualSizeBytes: virtualSizeBytes
+            imageCategories:
+            - imageCategories
+            - imageCategories
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/protoMachineImage'
+          type: array
+      type: object
+    protoMachineImageSpec:
+      example:
+        components:
+        - infoUrl: infoUrl
+          imageUrl: imageUrl
+          name: name
+          description: description
+          type: type
+          version: version
+        - infoUrl: infoUrl
+          imageUrl: imageUrl
+          name: name
+          description: description
+          type: type
+          version: version
+        instanceTypes:
+        - instanceTypes
+        - instanceTypes
+        hidden: true
+        displayName: displayName
+        icon: icon
+        sha256sum: sha256sum
+        description: description
+        userName: userName
+        labels:
+          key: labels
+        sha512sum: sha512sum
+        instanceCategories:
+        - null
+        - null
+        md5sum: md5sum
+        virtualSizeBytes: virtualSizeBytes
+        imageCategories:
+        - imageCategories
+        - imageCategories
+      properties:
+        displayName:
+          type: string
+        description:
+          type: string
+        userName:
+          type: string
+        icon:
+          type: string
+        instanceCategories:
+          description: "If not empty, this machine image is only compatible with the\
+            \ specified instance categories."
+          items:
+            $ref: '#/components/schemas/protoInstanceCategory'
+          type: array
+        instanceTypes:
+          description: "If not empty, this machine image is only compatible with the\
+            \ specified instance types."
+          items:
+            type: string
+          type: array
+        md5sum:
+          type: string
+        sha256sum:
+          type: string
+        sha512sum:
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+        imageCategories:
+          items:
+            type: string
+          type: array
+        components:
+          items:
+            $ref: '#/components/schemas/protoMachineImageComponent'
+          type: array
+        hidden:
+          description: "If true, this machine image will not be returned by the MachineImageService.Search\
+            \ method but it can still be used to launch instances."
+          type: boolean
+        virtualSizeBytes:
+          format: uint64
+          title: |-
+            The virtual image size (size of the disk in the guest). This can be determined with qemu-img info:
+              $ qemu-img info ubuntu-2204-jammy-v20250107.qcow2
+              virtual size: 10 GiB (10737418240 bytes)
+          type: string
+      type: object
+    protoMemorySpec:
+      example:
+        size: size
+        dimmCount: 5
+        dimmSize: dimmSize
+        speed: 5
+      properties:
+        size:
+          type: string
+        dimmSize:
+          type: string
+        dimmCount:
+          format: int32
+          type: integer
+        speed:
+          format: int32
+          type: integer
+      type: object
+    protoNetworkInterface:
+      example:
+        vNet: vNet
+        name: name
+      properties:
+        name:
+          description: |-
+            Name of the network interface as known by the operating system.
+            Not implemented.
+          type: string
+        vNet:
+          description: Name of the VNet that the network interface connects to.
+          type: string
+      type: object
+    protoResourceMetadata:
+      example:
+        allowDelete: true
+        resourceId: resourceId
+        cloudAccountId: cloudAccountId
+        name: name
+        creationTimestamp: 2000-01-23T04:56:07.000+00:00
+        labels:
+          key: labels
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          description: A globally unique UUID.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+        creationTimestamp:
+          format: date-time
+          type: string
+        allowDelete:
+          type: boolean
+      type: object
+    protoResourceMetadataCreate:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          description: |-
+            If Name is not empty, it must be unique within the cloudAccountId.
+            It will be generated if empty.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Not implemented.
+          type: object
+      type: object
+    protoResourceMetadataReference:
+      description: A reference to a single resource.
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+      type: object
+    protoResourceMetadataSearch:
+      properties:
+        cloudAccountId:
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+      type: object
+    protoRunStrategy:
+      default: RerunOnFailure
+      description: |2-
+         - RerunOnFailure: Instance will initially be running. It will be restarted if a failure occurs.
+        If the instance powers itself off, it will not be restarted.
+        Default.
+         - Halted: Instance should never be running.
+         - Always: Instance should always be running.
+      enum:
+      - RerunOnFailure
+      - Halted
+      - Always
+      type: string
+    protoSearchFilterCriteria:
+      default: Default
+      enum:
+      - Default
+      - Any
+      - Empty
+      - NonEmpty
+      - ExactValue
+      title: |-
+        - Default: Use the default behavior, which is described in the specific SearchFilterCriteria field.
+         - Any: Return records with any value in this field (including empty).
+         - Empty: Return records with an empty value in this field
+         - NonEmpty: Return records with a non-empty value in this field
+         - ExactValue: Return records with an exact value in this field
+      type: string
+    protoSshProxyTunnelStatus:
+      example:
+        proxyPort: 6
+        proxyUser: proxyUser
+        proxyAddress: proxyAddress
+      properties:
+        proxyUser:
+          description: The username required to connect to the SSH proxy.
+          type: string
+        proxyAddress:
+          description: The IP address or FQDN of the SSH proxy.
+          type: string
+        proxyPort:
+          description: The TCP port for the SSH proxy.
+          format: int32
+          type: integer
+      type: object
+    protoSshPublicKey:
+      example:
+        metadata:
+          allowDelete: true
+          resourceId: resourceId
+          cloudAccountId: cloudAccountId
+          name: name
+          creationTimestamp: 2000-01-23T04:56:07.000+00:00
+          labels:
+            key: labels
+        spec:
+          sshPublicKey: sshPublicKey
+          ownerEmail: ownerEmail
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoResourceMetadata'
+        spec:
+          $ref: '#/components/schemas/protoSshPublicKeySpec'
+      type: object
+    protoSshPublicKeySearchRequest:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoResourceMetadataSearch'
+      type: object
+    protoSshPublicKeySearchResponse:
+      example:
+        items:
+        - metadata:
+            allowDelete: true
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            name: name
+            creationTimestamp: 2000-01-23T04:56:07.000+00:00
+            labels:
+              key: labels
+          spec:
+            sshPublicKey: sshPublicKey
+            ownerEmail: ownerEmail
+        - metadata:
+            allowDelete: true
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            name: name
+            creationTimestamp: 2000-01-23T04:56:07.000+00:00
+            labels:
+              key: labels
+          spec:
+            sshPublicKey: sshPublicKey
+            ownerEmail: ownerEmail
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/protoSshPublicKey'
+          type: array
+      type: object
+    protoSshPublicKeySpec:
+      example:
+        sshPublicKey: sshPublicKey
+        ownerEmail: ownerEmail
+      properties:
+        sshPublicKey:
+          description: SSH public key in authorized_keys format "ssh-rsa ... comment".
+          type: string
+        ownerEmail:
+          type: string
+      type: object
+    protoTopologySpreadConstraints:
+      example:
+        labelSelector:
+          matchLabels:
+            key: matchLabels
+      properties:
+        labelSelector:
+          $ref: '#/components/schemas/protoLabelSelector'
+      type: object
+    protoTriState:
+      default: Undefined
+      enum:
+      - Undefined
+      - "True"
+      - "False"
+      type: string
+    protoVNet:
+      example:
+        metadata:
+          resourceId: resourceId
+          cloudAccountId: cloudAccountId
+          name: name
+        spec:
+          prefixLength: 0
+          region: region
+          availabilityZone: availabilityZone
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoVNetMetadata'
+        spec:
+          $ref: '#/components/schemas/protoVNetSpec'
+      type: object
+    protoVNetDeleteRequestMetadata:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+      type: object
+    protoVNetGetRequestMetadata:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+      type: object
+    protoVNetMetadata:
+      example:
+        resourceId: resourceId
+        cloudAccountId: cloudAccountId
+        name: name
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+        resourceId:
+          type: string
+      type: object
+    protoVNetPutRequestMetadata:
+      properties:
+        cloudAccountId:
+          type: string
+        name:
+          type: string
+      type: object
+    protoVNetSearchRequest:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/protoVNetSearchRequestMetadata'
+      type: object
+    protoVNetSearchRequestMetadata:
+      properties:
+        cloudAccountId:
+          type: string
+      type: object
+    protoVNetSearchResponse:
+      example:
+        items:
+        - metadata:
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            name: name
+          spec:
+            prefixLength: 0
+            region: region
+            availabilityZone: availabilityZone
+        - metadata:
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            name: name
+          spec:
+            prefixLength: 0
+            region: region
+            availabilityZone: availabilityZone
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/protoVNet'
+          type: array
+      type: object
+    protoVNetSpec:
+      example:
+        prefixLength: 0
+        region: region
+        availabilityZone: availabilityZone
+      properties:
+        region:
+          type: string
+        availabilityZone:
+          type: string
+        prefixLength:
+          description: The reserved subnet will have a prefix length with this value
+            or less.
+          format: int32
+          type: integer
+      type: object
+    protobufAny:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    rpcStatus:
+      example:
+        code: 7
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/protobufAny'
+          type: array
+      type: object
+    Stream_result_of_protoInstanceType:
+      example:
+        result:
+          metadata:
+            name: name
+          spec:
+            hbmMode: hbmMode
+            memory:
+              size: size
+              dimmCount: 5
+              dimmSize: dimmSize
+              speed: 5
+            disks:
+            - size: size
+            - size: size
+            displayName: displayName
+            instanceCategory: null
+            name: name
+            description: description
+            cpu:
+              modelName: modelName
+              cores: 0
+              threads: 1
+              id: id
+              sockets: 6
+            gpu:
+              modelName: modelName
+              count: 2
+        error:
+          code: 7
+          details:
+          - '@type': '@type'
+          - '@type': '@type'
+          message: message
+      properties:
+        result:
+          $ref: '#/components/schemas/protoInstanceType'
+        error:
+          $ref: '#/components/schemas/rpcStatus'
+      title: Stream result of protoInstanceType
+      type: object
+    Stream_result_of_protoMachineImage:
+      example:
+        result:
+          metadata:
+            name: name
+          spec:
+            components:
+            - infoUrl: infoUrl
+              imageUrl: imageUrl
+              name: name
+              description: description
+              type: type
+              version: version
+            - infoUrl: infoUrl
+              imageUrl: imageUrl
+              name: name
+              description: description
+              type: type
+              version: version
+            instanceTypes:
+            - instanceTypes
+            - instanceTypes
+            hidden: true
+            displayName: displayName
+            icon: icon
+            sha256sum: sha256sum
+            description: description
+            userName: userName
+            labels:
+              key: labels
+            sha512sum: sha512sum
+            instanceCategories:
+            - null
+            - null
+            md5sum: md5sum
+            virtualSizeBytes: virtualSizeBytes
+            imageCategories:
+            - imageCategories
+            - imageCategories
+        error:
+          code: 7
+          details:
+          - '@type': '@type'
+          - '@type': '@type'
+          message: message
+      properties:
+        result:
+          $ref: '#/components/schemas/protoMachineImage'
+        error:
+          $ref: '#/components/schemas/rpcStatus'
+      title: Stream result of protoMachineImage
+      type: object
+    Stream_result_of_protoSshPublicKey:
+      example:
+        result:
+          metadata:
+            allowDelete: true
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            name: name
+            creationTimestamp: 2000-01-23T04:56:07.000+00:00
+            labels:
+              key: labels
+          spec:
+            sshPublicKey: sshPublicKey
+            ownerEmail: ownerEmail
+        error:
+          code: 7
+          details:
+          - '@type': '@type'
+          - '@type': '@type'
+          message: message
+      properties:
+        result:
+          $ref: '#/components/schemas/protoSshPublicKey'
+        error:
+          $ref: '#/components/schemas/rpcStatus'
+      title: Stream result of protoSshPublicKey
+      type: object
+    Stream_result_of_protoVNet:
+      example:
+        result:
+          metadata:
+            resourceId: resourceId
+            cloudAccountId: cloudAccountId
+            name: name
+          spec:
+            prefixLength: 0
+            region: region
+            availabilityZone: availabilityZone
+        error:
+          code: 7
+          details:
+          - '@type': '@type'
+          - '@type': '@type'
+          message: message
+      properties:
+        result:
+          $ref: '#/components/schemas/protoVNet'
+        error:
+          $ref: '#/components/schemas/rpcStatus'
+      title: Stream result of protoVNet
+      type: object
+    InstanceGroupService_Create_request_metadata:
+      properties:
+        name:
+          type: string
+        productId:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+        reserved3:
+          type: string
+      type: object
+    InstanceGroupService_Create_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/InstanceGroupService_Create_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceGroupSpec'
+      type: object
+    InstanceGroupService_Update_request_metadata:
+      properties:
+        reserved3:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    InstanceGroupService_Update_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/InstanceGroupService_Update_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceGroupSpec'
+      type: object
+    InstanceGroupService_ScaleUp_request_metadata:
+      properties:
+        reserved2:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    InstanceGroupService_ScaleUp_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/InstanceGroupService_ScaleUp_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceGroupSpec'
+      type: object
+    InstanceService_Create_request_metadata:
+      properties:
+        name:
+          description: Name will be generated if empty.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            Map of string keys and values that can be used to organize and categorize instances.
+            This is also used by TopologySpreadConstraints.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+        productId:
+          type: string
+      type: object
+    InstanceService_Create_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/InstanceService_Create_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceSpec'
+      type: object
+    InstanceService_Update_request_metadata:
+      properties:
+        name:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            The entire set of labels will be replaced with these labels.
+            Not implemented.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    InstanceService_Update_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/InstanceService_Update_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceSpec'
+      type: object
+    InstanceService_Update2_request_metadata:
+      properties:
+        resourceId:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            The entire set of labels will be replaced with these labels.
+            Not implemented.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    InstanceService_Update2_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/InstanceService_Update2_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoInstanceSpec'
+      type: object
+    InstanceService_Search2_request_metadata:
+      properties:
+        labels:
+          additionalProperties:
+            type: string
+          description: "If not empty, only return instances that have these key/value\
+            \ pairs."
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+        instanceGroup:
+          title: |-
+            If instanceGroupFilter is ExactValue, return instances in this instance group.
+            Otherwise, this field is ignored
+          type: string
+        instanceGroupFilter:
+          $ref: '#/components/schemas/protoSearchFilterCriteria'
+      type: object
+    InstanceService_Search2_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/InstanceService_Search2_request_metadata'
+      type: object
+    LoadBalancerService_Create_request_metadata:
+      properties:
+        name:
+          description: Name will be generated if empty.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Map of string keys and values that can be used to organize
+            and categorize load balancers.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    LoadBalancerService_Create_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/LoadBalancerService_Create_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoLoadBalancerSpec'
+      type: object
+    LoadBalancerService_Update_request_metadata:
+      properties:
+        name:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Map of string keys and values that can be used to organize
+            and categorize load balancers.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    LoadBalancerService_Update_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/LoadBalancerService_Update_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoLoadBalancerSpecUpdate'
+      type: object
+    LoadBalancerService_Update2_request_metadata:
+      properties:
+        resourceId:
+          type: string
+        resourceVersion:
+          description: "If provided, the existing record must have this resourceVersion\
+            \ for the request to succeed."
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Map of string keys and values that can be used to organize
+            and categorize load balancers.
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    LoadBalancerService_Update2_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/LoadBalancerService_Update2_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoLoadBalancerSpecUpdate'
+      type: object
+    LoadBalancerService_Search2_request_metadata:
+      properties:
+        labels:
+          additionalProperties:
+            type: string
+          description: "If not empty, only return load balancers that have these key/value\
+            \ pairs."
+          type: object
+        reserved1:
+          description: Reserved. Added this field to overcome openAPi-same-struct
+            issue.
+          type: string
+      type: object
+    LoadBalancerService_Search2_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/LoadBalancerService_Search2_request_metadata'
+      type: object
+    SshPublicKeyService_Create_request_metadata:
+      properties:
+        name:
+          description: |-
+            If Name is not empty, it must be unique within the cloudAccountId.
+            It will be generated if empty.
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Not implemented.
+          type: object
+      type: object
+    SshPublicKeyService_Create_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/SshPublicKeyService_Create_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoSshPublicKeySpec'
+      type: object
+    VNetService_Put_request_metadata:
+      properties:
+        name:
+          type: string
+      type: object
+    VNetService_Put_request:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/VNetService_Put_request_metadata'
+        spec:
+          $ref: '#/components/schemas/protoVNetSpec'
+      type: object
+x-original-swagger-version: "2.0"

@@ -1,0 +1,87 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_buf//buf:defs.bzl", "buf_lint_test")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("//:bazel/rules/write_go_generated.bzl", "write_go_generated_source_files")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "filesystem.proto",
+    "statefulclient.proto",
+])
+
+# gazelle:exclude filesystem.pb.go
+# gazelle:exclude filesystem_grpc.pb.go
+# gazelle:exclude filesystem.pb.gw.go
+# gazelle:exclude statefulclient.pb.go
+# gazelle:exclude statefulclient.pb.go
+# gazelle:exclude statefulclient.pb.gw.go
+# gazelle:exclude statefulclient_grpc.pb.go
+
+# gazelle:proto disable
+
+proto_library(
+    name = "filesystem_proto",
+    srcs = ["filesystem.proto"],
+    strip_import_prefix = "/api",
+    deps = [
+        "//api/intel/storagecontroller/v1:common_proto",
+        "//api/intel/storagecontroller/v1:namespace_proto",
+        "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+        "@googleapis//google/api:annotations_proto",
+    ],
+)
+
+proto_library(
+    name = "statefulclient_proto",
+    srcs = ["statefulclient.proto"],
+    strip_import_prefix = "/api",
+    deps = [
+        "//api/intel/storagecontroller/v1:cluster_proto",
+        "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+        "@googleapis//google/api:annotations_proto",
+    ],
+)
+
+go_proto_library(
+    name = "go_proto",
+    compilers = [
+        "@io_bazel_rules_go//proto:go_proto",
+        "@io_bazel_rules_go//proto:go_grpc_v2",
+        #"@grpc_ecosystem_grpc_gateway//protoc-gen-grpc-gateway:go_gen_grpc_gateway",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/api/intel/storagecontroller/v1/weka",
+    protos = [
+        ":filesystem_proto",
+        ":statefulclient_proto",
+    ],
+    deps = [
+        "//api/intel/storagecontroller/v1:go_proto",
+        "@build_buf_gen_go_bufbuild_protovalidate_protocolbuffers_go//buf/validate:go_default_library",
+        "@org_golang_google_genproto_googleapis_api//annotations",
+    ],
+)
+
+write_go_generated_source_files(
+    name = "write_gen",
+    output_files = [
+        "filesystem.pb.go",
+        "filesystem_grpc.pb.go",
+        #"filesystem.pb.gw.go",
+        "statefulclient.pb.go",
+        "statefulclient_grpc.pb.go",
+        #"statefulclient.pb.gw.go",
+    ],
+    target = ":go_proto",
+)
+
+buf_lint_test(
+    name = "proto_lint",
+    config = "//api:buf.yaml",
+    targets = [
+        ":filesystem_proto",
+        ":statefulclient_proto",
+    ],
+)

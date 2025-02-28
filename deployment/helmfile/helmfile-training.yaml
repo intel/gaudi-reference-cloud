@@ -1,0 +1,138 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.components.training.enabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $cloudAccountAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $productCatalogAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $storageApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- if ($region.trainingDb.enabled) }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-training-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: training
+      service: training
+      database: training
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: training-db
+      clusterName: {{ $clusterName | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-training_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-training_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region.trainingDb.primary.persistence.enabled }}
+
+{{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-training-api-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: training
+      service: training
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: training-api-server
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/training-api-server
+    version: {{ readFile (print $helmChartVersionsDir "/training-api-server.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - cloudAccountAddr: {{ $cloudAccountAddr | quote }}
+      - productCatalogAddr: {{ $productCatalogAddr | quote }}
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}training-api-server@sha256"
+      - nodePort: {{ $region.trainingApiServer.service.nodePort }}
+      - service:
+          type: {{ $region.trainingApiServer.service.type | quote }}
+      - ingress:
+          enabled: {{ $region.computeApiServer.ingress.enabled }}
+          className: {{ $region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if $region.computeApiServer.ingress.enableNginxServerSnippet }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if $region.computeApiServer.ingress.host }}
+          tls:
+            - secretName: {{ $region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}
+      - database:
+          service: {{ $region | get "trainingApiServer.database.service" (print $region.region "-training-db-postgresql") | quote }}
+          arg: {{ $region.trainingApiServer.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-training-api-server/database"
+      - apiCredentialsPath: "controlplane/data/{{ $region.region }}-training-api-server/api"
+      - domainSuffix: {{ $region.trainingApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - cognito: # used by training-api-server for global:productcatalog access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-training-api-server/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+      - computeGrpcAPIEndpoint: {{ $computeApiServerAddr | quote }}
+      - storageGrpcAPIEndpoint: {{ $storageApiServerAddr | quote }}
+      - slurmBatchService: {{ $region.trainingApiServer.slurmBatchService.endpoint | quote }}
+      - slurmJupyterhubService: {{ $region.trainingApiServer.slurmJupyterhubService.endpoint | quote }}
+      - slurmSSHService: {{ $region.trainingApiServer.slurmSSHService.endpoint | quote }}
+      - armada:
+          enabled: {{ $.Values.components.training.armada.enabled }}
+
+{{- end }}
+{{- end }}

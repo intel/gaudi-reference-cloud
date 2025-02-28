@@ -1,0 +1,53 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: netbox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: netbox
+subjects:
+  - kind: ServiceAccount
+    name: netbox
+    namespace: idcs-enrollment
+  - kind: ServiceAccount
+    name: redis-netbox
+    namespace: idcs-enrollment
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: netbox
+rules:
+  - apiGroups:
+      - policy/v1beta1
+    resourceNames:
+      - netbox
+    resources:
+      - podsecuritypolicies
+    verbs:
+      - use
+
+---
+
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: netbox
+spec:
+  allowPrivilegeEscalation: true
+  fsGroup:
+    rule: RunAsAny
+  hostPorts:
+    - max: 65535
+      min: 0
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+    - '*'

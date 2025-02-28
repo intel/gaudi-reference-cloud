@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+host: ""
+global_host: ""
+default_account: ""
+environment: ""
+bearer_token: ""
+admin_token: ""
+bearer_token_expiry: 0
+admin_token_expiry: 0
+create_cluster: false
+create_node_group: false
+create_vip: false
+download_kubeconfig: false
+delete_cluster: false
+add_node_to_node_group: false
+delete_node_from_node_group: false
+delete_specific_node_group: false
+delete_specific_vip: false
+create_cluster_timeout_in_min: 10
+create_node_group_timeout_in_min: 20
+create_vip_timeout_in_min: 5
+run_storage_tests: false
+run_security_rules_tests: false

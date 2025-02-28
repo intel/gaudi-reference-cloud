@@ -1,0 +1,683 @@
+{
+    "apiVersion": "metal3.io/v1alpha1",
+    "kind": "BareMetalHost",
+    "metadata": {
+      "annotations": {
+        "cloud.intel.com/host-cpu-model": "Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz",
+        "gpu.mac.cloud.intel.com/gpu-eth0-0": "b0:fd:0b:d9:09:5d",
+        "gpu.mac.cloud.intel.com/gpu-eth0-1": "b0:fd:0b:d9:09:6b",
+        "gpu.mac.cloud.intel.com/gpu-eth0-2": "b0:fd:0b:d9:09:6c",
+        "gpu.mac.cloud.intel.com/gpu-eth1-0": "b0:fd:0b:d9:0a:ad",
+        "gpu.mac.cloud.intel.com/gpu-eth1-1": "b0:fd:0b:d9:0a:bb",
+        "gpu.mac.cloud.intel.com/gpu-eth1-2": "b0:fd:0b:d9:0a:bc",
+        "gpu.mac.cloud.intel.com/gpu-eth2-0": "b0:fd:0b:d9:06:bd",
+        "gpu.mac.cloud.intel.com/gpu-eth2-1": "b0:fd:0b:d9:06:cb",
+        "gpu.mac.cloud.intel.com/gpu-eth2-2": "b0:fd:0b:d9:06:cc",
+        "gpu.mac.cloud.intel.com/gpu-eth3-0": "b0:fd:0b:d8:f9:6d",
+        "gpu.mac.cloud.intel.com/gpu-eth3-1": "b0:fd:0b:d8:f9:7b",
+        "gpu.mac.cloud.intel.com/gpu-eth3-2": "b0:fd:0b:d8:f9:7c",
+        "gpu.mac.cloud.intel.com/gpu-eth4-0": "b0:fd:0b:d8:fb:7d",
+        "gpu.mac.cloud.intel.com/gpu-eth4-1": "b0:fd:0b:d8:fb:8b",
+        "gpu.mac.cloud.intel.com/gpu-eth4-2": "b0:fd:0b:d8:fb:8c",
+        "gpu.mac.cloud.intel.com/gpu-eth5-0": "b0:fd:0b:d8:f7:ed",
+        "gpu.mac.cloud.intel.com/gpu-eth5-1": "b0:fd:0b:d8:f7:fb",
+        "gpu.mac.cloud.intel.com/gpu-eth5-2": "b0:fd:0b:d8:f7:fc",
+        "gpu.mac.cloud.intel.com/gpu-eth6-0": "b0:fd:0b:d9:02:fd",
+        "gpu.mac.cloud.intel.com/gpu-eth6-1": "b0:fd:0b:d9:03:0b",
+        "gpu.mac.cloud.intel.com/gpu-eth6-2": "b0:fd:0b:d9:03:0c",
+        "gpu.mac.cloud.intel.com/gpu-eth7-0": "b0:fd:0b:d9:04:1d",
+        "gpu.mac.cloud.intel.com/gpu-eth7-1": "b0:fd:0b:d9:04:2b",
+        "gpu.mac.cloud.intel.com/gpu-eth7-2": "b0:fd:0b:d9:04:2c"
+      },
+      "labels": {
+        "cloud.intel.com/hbm-mode": "",
+        "cloud.intel.com/host-cpu-cores": "80",
+        "cloud.intel.com/host-cpu-count": "160",
+        "cloud.intel.com/host-cpu-id": "0x08380",
+        "cloud.intel.com/host-cpu-manufacturer": "Intel_corporation",
+        "cloud.intel.com/host-cpu-sockets": "2",
+        "cloud.intel.com/host-cpu-threads": "160",
+        "cloud.intel.com/host-gpu-count": "8",
+        "cloud.intel.com/host-gpu-model": "hl-225"
+      },
+      "name": "pdx05-c01-bgan004-fake",
+      "namespace": "metal3-1"
+    },
+    "spec": {
+      "automatedCleaningMode": "metadata",
+      "bmc": {
+        "address": "ipmi://192.168.1.1",
+        "credentialsName": "pdx05-c01-bgan004-fake-bmc-secretfake",
+        "disableCertificateVerification": true
+      },
+      "bootMACAddress": "10:70:fd:26:4e:32",
+      "bootMode": "UEFI",
+      "online": true,
+      "rootDeviceHints": {}
+    },
+    "status": {
+      "errorCount": 0,
+      "errorMessage": "",
+      "goodCredentials": {
+        "credentials": {
+          "name": "pdx05-c01-bgan004-fake-bmc-secret",
+          "namespace": "metal3-1"
+        },
+        "credentialsVersion": "22520623"
+      },
+      "hardware": {
+        "cpu": {
+          "arch": "x86_64",
+          "clockMegahertz": 3400,
+          "count": 160,
+          "flags": [
+            "3dnowprefetch",
+            "abm",
+            "acpi",
+            "adx",
+            "aes",
+            "aperfmperf",
+            "apic",
+            "arat",
+            "arch_capabilities",
+            "arch_perfmon",
+            "art",
+            "avx",
+            "avx2",
+            "avx512_bitalg",
+            "avx512_vbmi2",
+            "avx512_vnni",
+            "avx512_vpopcntdq",
+            "avx512bw",
+            "avx512cd",
+            "avx512dq",
+            "avx512f",
+            "avx512ifma",
+            "avx512vbmi",
+            "avx512vl",
+            "bmi1",
+            "bmi2",
+            "bts",
+            "cat_l3",
+            "clflush",
+            "clflushopt",
+            "clwb",
+            "cmov",
+            "constant_tsc",
+            "cpuid",
+            "cpuid_fault",
+            "cqm",
+            "cqm_llc",
+            "cqm_mbm_local",
+            "cqm_mbm_total",
+            "cqm_occup_llc",
+            "cx16",
+            "cx8",
+            "dca",
+            "de",
+            "ds_cpl",
+            "dtes64",
+            "dtherm",
+            "dts",
+            "epb",
+            "ept",
+            "ept_ad",
+            "erms",
+            "est",
+            "f16c",
+            "flexpriority",
+            "flush_l1d",
+            "fma",
+            "fpu",
+            "fsgsbase",
+            "fsrm",
+            "fxsr",
+            "gfni",
+            "ht",
+            "hwp",
+            "hwp_act_window",
+            "hwp_epp",
+            "hwp_pkg_req",
+            "ibpb",
+            "ibrs",
+            "ibrs_enhanced",
+            "ida",
+            "intel_ppin",
+            "intel_pt",
+            "invpcid",
+            "invpcid_single",
+            "la57",
+            "lahf_lm",
+            "lm",
+            "mba",
+            "mca",
+            "mce",
+            "md_clear",
+            "mmx",
+            "monitor",
+            "movbe",
+            "msr",
+            "mtrr",
+            "nonstop_tsc",
+            "nopl",
+            "nx",
+            "ospke",
+            "pae",
+            "pat",
+            "pbe",
+            "pcid",
+            "pclmulqdq",
+            "pconfig",
+            "pdcm",
+            "pdpe1gb",
+            "pebs",
+            "pge",
+            "pku",
+            "pln",
+            "pni",
+            "popcnt",
+            "pse",
+            "pse36",
+            "pts",
+            "rdpid",
+            "rdrand",
+            "rdseed",
+            "rdt_a",
+            "rdtscp",
+            "rep_good",
+            "sdbg",
+            "sep",
+            "sha_ni",
+            "smap",
+            "smep",
+            "smx",
+            "split_lock_detect",
+            "ss",
+            "ssbd",
+            "sse",
+            "sse2",
+            "sse4_1",
+            "sse4_2",
+            "ssse3",
+            "stibp",
+            "syscall",
+            "tm",
+            "tm2",
+            "tme",
+            "tpr_shadow",
+            "tsc",
+            "tsc_adjust",
+            "tsc_deadline_timer",
+            "umip",
+            "vaes",
+            "vme",
+            "vmx",
+            "vnmi",
+            "vpclmulqdq",
+            "vpid",
+            "wbnoinvd",
+            "x2apic",
+            "xgetbv1",
+            "xsave",
+            "xsavec",
+            "xsaveopt",
+            "xsaves",
+            "xtopology",
+            "xtpr"
+          ],
+          "model": "Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz"
+        },
+        "firmware": {
+          "bios": {
+            "date": "05/12/2023",
+            "vendor": "American Megatrends International, LLC.",
+            "version": "ETM02"
+          }
+        },
+        "hostname": "ubuntu",
+        "nics": [
+          {
+            "ip": "fe80::b2fd:bff:fed9:30b%enp154s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet43/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:03:0b",
+            "model": "0x1da3 0x1020",
+            "name": "enp154s0d22"
+          },
+          {
+            "lldp": {},
+            "mac": "10:70:fd:26:4d:ba",
+            "model": "0x15b3 0x1019",
+            "name": "ens14f0np0"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:f97c%enp52s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet36/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:f9:7c",
+            "model": "0x1da3 0x1020",
+            "name": "enp52s0d23"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:41d%enp155s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet40/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:04:1d",
+            "model": "0x1da3 0x1020",
+            "name": "enp155s0d8"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:aad%enp78s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet26/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:0a:ad",
+            "model": "0x1da3 0x1020",
+            "name": "enp78s0d8"
+          },
+          {
+            "lldp": {},
+            "mac": "10:70:fd:26:4d:bb",
+            "model": "0x15b3 0x1019",
+            "name": "ens14f1np1"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:6cc%enp51s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet35/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:06:cc",
+            "model": "0x1da3 0x1020",
+            "name": "enp51s0d23"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:abb%enp78s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet30/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:0a:bb",
+            "model": "0x1da3 0x1020",
+            "name": "enp78s0d22"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:fb8c%enp179s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet45/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:fb:8c",
+            "model": "0x1da3 0x1020",
+            "name": "enp179s0d23"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:42c%enp155s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet48/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:04:2c",
+            "model": "0x1da3 0x1020",
+            "name": "enp155s0d23"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:f7ed%enp180s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet38/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:f7:ed",
+            "model": "0x1da3 0x1020",
+            "name": "enp180s0d8"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:96b%enp77s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet29/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:09:6b",
+            "model": "0x1da3 0x1020",
+            "name": "enp77s0d22"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:30c%enp154s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet47/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:03:0c",
+            "model": "0x1da3 0x1020",
+            "name": "enp154s0d23"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:f7fb%enp180s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet42/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:f7:fb",
+            "model": "0x1da3 0x1020",
+            "name": "enp180s0d22"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:f97b%enp52s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet32/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:f9:7b",
+            "model": "0x1da3 0x1020",
+            "name": "enp52s0d22"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:6bd%enp51s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet27/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:06:bd",
+            "model": "0x1da3 0x1020",
+            "name": "enp51s0d8"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:abc%enp78s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet34/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:0a:bc",
+            "model": "0x1da3 0x1020",
+            "name": "enp78s0d23"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:6cb%enp51s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet31/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:06:cb",
+            "model": "0x1da3 0x1020",
+            "name": "enp51s0d22"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:fb8b%enp179s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet41/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:fb:8b",
+            "model": "0x1da3 0x1020",
+            "name": "enp179s0d22"
+          },
+          {
+            "ip": "1.2.3.4",
+            "lldp": {
+              "switch_chassis_id": "c4:ca:2b:9b:42:95",
+              "switch_port_description": "bmaas bmh name pdx05-c01-bgan004-fake, namespace metal3-1",
+              "switch_port_id": "Ethernet3/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7050CX3-32S",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "10:70:fd:26:4e:32",
+            "model": "0x15b3 0x1019",
+            "name": "ens7f0np0",
+            "pxe": true
+          },
+          {
+            "ip": "fe80::1270:fdff:fe26:4e32%ens7f0np0",
+            "lldp": {
+              "switch_chassis_id": "c4:ca:2b:9b:42:95",
+              "switch_port_description": "bmaas bmh name pdx05-c01-bgan004-fake, namespace metal3-1",
+              "switch_port_id": "Ethernet3/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7050CX3-32S",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "10:70:fd:26:4e:32",
+            "model": "0x15b3 0x1019",
+            "name": "ens7f0np0",
+            "pxe": true
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:96c%enp77s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet33/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:09:6c",
+            "model": "0x1da3 0x1020",
+            "name": "enp77s0d23"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:fb7d%enp179s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet37/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:fb:7d",
+            "model": "0x1da3 0x1020",
+            "name": "enp179s0d8"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:2fd%enp154s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet39/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:02:fd",
+            "model": "0x1da3 0x1020",
+            "name": "enp154s0d8"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:95d%enp77s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet25/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:09:5d",
+            "model": "0x1da3 0x1020",
+            "name": "enp77s0d8"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed9:42b%enp155s0d22",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet44/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d9:04:2b",
+            "model": "0x1da3 0x1020",
+            "name": "enp155s0d22"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:f96d%enp52s0d8",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet28/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:f9:6d",
+            "model": "0x1da3 0x1020",
+            "name": "enp52s0d8"
+          },
+          {
+            "ip": "fe80::1270:fdff:fe26:4e33%ens7f1np1",
+            "lldp": {
+              "switch_chassis_id": "cc:1a:a3:7d:57:11",
+              "switch_port_description": "BM Provisioning",
+              "switch_port_id": "Ethernet3/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7050CX3-32S",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "10:70:fd:26:4e:33",
+            "model": "0x15b3 0x1019",
+            "name": "ens7f1np1"
+          },
+          {
+            "ip": "fe80::b2fd:bff:fed8:f7fc%enp180s0d23",
+            "lldp": {
+              "switch_chassis_id": "ac:3d:94:a2:2d:50",
+              "switch_port_description": "Gaudi-Test-Host2",
+              "switch_port_id": "Ethernet46/1",
+              "switch_port_link_aggregation_support": true,
+              "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+              "switch_system_name": "internal-placeholder.com"
+            },
+            "mac": "b0:fd:0b:d8:f7:fc",
+            "model": "0x1da3 0x1020",
+            "name": "enp180s0d23"
+          }
+        ],
+        "ramMebibytes": 1048576,
+        "storage": [],
+        "systemVendor": {
+          "manufacturer": "WIWYNN",
+          "productName": "HLS-2H B81.04B01.0018 (Default string)",
+          "serialNumber": "W-N-26-M000FY"
+        }
+      },
+      "hardwareProfile": "unknown",
+      "lastUpdated": "2023-09-06T21:48:01Z",
+      "operationHistory": {
+        "deprovision": {
+          "end": null,
+          "start": "2023-09-06T21:48:01Z"
+        },
+        "inspect": {
+          "end": "2023-09-06T20:14:00Z",
+          "start": "2023-09-06T20:02:13Z"
+        },
+        "provision": {
+          "end": "2023-09-06T21:48:01Z",
+          "start": "2023-09-06T21:46:05Z"
+        },
+        "register": {
+          "end": "2023-09-06T20:02:13Z",
+          "start": "2023-09-06T20:02:00Z"
+        }
+      },
+      "operationalStatus": "OK",
+      "poweredOn": true,
+      "provisioning": {
+        "ID": "3e9706ba-77c4-4833-a46c-19fc2fd739b3",
+        "bootMode": "UEFI",
+        "image": {
+          "url": ""
+        },
+        "raid": {
+          "hardwareRAIDVolumes": null,
+          "softwareRAIDVolumes": []
+        },
+        "rootDeviceHints": {},
+        "state": "deprovisioning"
+      },
+      "triedCredentials": {
+        "credentials": {
+          "name": "pdx05-c01-bgan004-fake-bmc-secret",
+          "namespace": "metal3-1"
+        },
+        "credentialsVersion": "22520623"
+      }
+    }
+  }

@@ -1,0 +1,31 @@
+- name: Get local host time as reference
+  local_action: shell date
+  register: host_date
+  run_once: True
+
+- name: Print date
+  debug:
+    msg: local date {{ host_date.stdout }}
+
+- name: Get remote host OS time for reference
+  shell:  date
+  register: remote_OS_date
+  run_once: True
+
+- name: Get remote host time for reference
+  become: true
+  shell:  hwclock
+  register: remote_HW_date
+  run_once: True
+
+- name: Remote time (date and hwclock commands ) prior to apply
+  debug:
+    msg: remote OS date {{ remote_OS_date.stdout }} and HW Date {{ remote_HW_date.stdout }}
+
+- name: Set Date in remote host
+  become: true
+  shell: "date -s '{{ host_date.stdout  }}'"
+
+- name: Sync HW clock with system time on remote host
+  become: true
+  shell: hwclock -r

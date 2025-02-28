@@ -1,0 +1,33 @@
+# Default values for bm-dnsmasq.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/ironic-image
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "10-84928c8"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+useHostNetwork: true
+
+dnsmasqConfig:
+  httpPort: 6180
+  dhcpRangeStartingIP: "172.22.0.10"
+  dhcpRangeFinalIP: "172.22.0.100"
+  gatewayIP: "172.22.0.1"
+  dnsIP: "172.22.0.1"
+  ironicIP: ""
+  exceptInterface: lo
+  dhcpHosts: ""
+  dhcpIgnore: ""
+  provisioningInterface: eth0

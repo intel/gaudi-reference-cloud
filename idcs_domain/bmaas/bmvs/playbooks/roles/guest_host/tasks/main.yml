@@ -1,0 +1,16 @@
+---
+
+# Create and configure the guest hosts
+
+- include_tasks: create_vm.yml
+  loop: "{{ range(1, guest_host_deployments|int + 1, 1)|list }}"
+  loop_control:
+    loop_var: vmnum
+  tags: setup
+
+# Destroy the guest hosts
+- include_tasks: destroy_vm.yml
+  loop: "{{ range(1, guest_host_deployments|int + 1, 1)|list }}"
+  loop_control:
+    loop_var: vmnum
+  tags: [never, teardown]

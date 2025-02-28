@@ -1,0 +1,31 @@
+- include_tasks: ../common/tasks/apt_proxies_debian.yml
+- include_tasks: ../common/tasks/set_time.yml
+
+- name: Add user "{{ item }}" to /etc/environemnt
+  become: true
+  lineinfile:
+    path: /etc/environment
+    line: "{{ item }}"
+    state: present
+  loop:
+    - 'https_proxy="http://internal-placeholder.com:912"'
+    - 'http_proxy="http://internal-placeholder.com:912"'
+    - 'no_proxy="intel.com,.intel.com,10.0.0.0/8,192.168.0.0/16,localhost,127.0.0.0/8,134.134.0.0/16,172.16.0.0/16,192.168.150.0/24,{{ ansible_host }}"'
+
+- name: Download intel certificate script from artifactory
+  get_url:
+    url: https://internal-placeholder.com/artifactory/it-btrm-local/intel_cacerts/install_intel_cacerts_linux.sh
+    dest: /tmp/
+    mode: "+x"
+    use_proxy: false
+
+- name: Install certificate
+  become: true
+  shell: bash /tmp/install_intel_cacerts_linux.sh
+
+- name: Remove cerificate script
+  file:
+    path: /tmp/install_intel_cacerts_linux.sh
+    state: absent
+
+

@@ -1,0 +1,164 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.meteringDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: metering-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: metering
+      database: metering
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: metering-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.metering.database.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/metering_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/metering_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.meteringDb.primary.persistence.enabled }}
+  {{- end }}
+
+  {{- if $.Values.global.usageDb.enabled }}
+  - name: usage-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: metering
+      database: usage
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: usage-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.usage.database.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/usage_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/usage_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.usageDb.primary.persistence.enabled }}
+  {{- end }}
+
+  - name: usage
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: metering
+      database: usage 
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: usage
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/usage
+    version: {{ readFile (print $helmChartVersionsDir "/usage.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}usage@sha256"
+      - database:
+          arg: {{ $.Values.global.usage.database.arg | quote }}
+          name: {{ $.Values.global.usage.database.name | quote }}
+          service: {{ $.Values.global.usage.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.usage.database.vaultCredentialsPath | quote }}
+      - usageSchedulerInterval: {{ $.Values.global.usage.usageSchedulerInterval }}
+      - productUsageSchedulerInterval: {{ $.Values.global.usage.productUsageSchedulerInterval }}
+      - migrationResourcePaginationSize: {{ $.Values.global.usage.migrationResourcePaginationSize }}
+      - storageMetricUnitType: {{ $.Values.global.usage.storageMetricUnitType }}
+      - storageTimeMetricUnitType: {{ $.Values.global.usage.storageTimeMetricUnitType }}
+      - storageServiceTypes: 
+        {{- range $type := $.Values.global.usage.storageServiceTypes }}
+          - {{ $type | quote }}
+        {{- end }}
+      - features:
+          usageScheduler: {{ $.Values.global.usage.features.usageScheduler }}
+          productUsageScheduler: {{ $.Values.global.usage.features.productUsageScheduler }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+      - resources:
+          limits:
+            cpu: {{ $.Values.global.usage.resources.limits.cpu | quote }}
+            memory: {{ $.Values.global.usage.resources.limits.memory | quote }}
+          requests:
+            cpu: {{ $.Values.global.usage.resources.requests.cpu | quote }}
+            memory: {{ $.Values.global.usage.resources.requests.memory | quote }}
+
+  - name: metering
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: metering
+      database: metering
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: metering
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/metering
+    version: {{ readFile (print $helmChartVersionsDir "/metering.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.metering.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}metering@sha256"
+      - database:
+          arg: {{ $.Values.global.metering.database.arg | quote }}
+          name: {{ $.Values.global.metering.database.name | quote }}
+          service: {{ $.Values.global.metering.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.metering.database.vaultCredentialsPath | quote }}
+      - nodePort: {{ $.Values.global.metering.service.nodePort }}
+      - service:
+          type: {{ $.Values.global.metering.service.type }}
+      - validServiceTypes:
+        {{- range $type := $.Values.global.metering.validServiceTypes }}
+          - {{ $type | quote }}
+        {{- end }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+
+{{- end }}
+{{- end }}

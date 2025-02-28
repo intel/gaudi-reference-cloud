@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "db",
+    srcs = ["migrations.go"],
+    embedsrcs = [
+        "migrations/20240502143700_initial.down.sql",
+        "migrations/20240502143700_initial.up.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudmonitor_logs/db",
+    visibility = ["//visibility:public"],
+)

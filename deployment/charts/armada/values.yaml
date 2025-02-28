@@ -1,0 +1,37 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/oneapisvc
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  service: oneapi-db-postgresql
+  #url: postgres://postgres5808-lb-fm-in.dbaas.intel.com:5432/oneapiint?sslmode=require
+  vaultCredentialsPath: controlplane/data/oneapi/database
+
+service:
+  type: ClusterIP
+
+globalConfig: 
+  interval: 30
+  maxClustersPerAccount: 0
+  maxNodesPerAccount: 0
+  maxVnetsPerAccount: 0
+  maxStorageSizePerAccount: 0
+
+cloudConfig:
+  idc:
+    authAPIEndpoint: ""
+    computeAPIEndpoint: ""
+    computeGrpcAPIEndpoint: ""
+    storageGrpcAPIEndpoint: ""
+    foundationGrpcAPIEndpoint: ""
+    foundationAPIEndpoint: ""
+    availabilityZone: ""
+    region: ""
+

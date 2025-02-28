@@ -1,0 +1,47 @@
+// After updating this file, run "make generate-go".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+import "network_vpc.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "network-api-server";
+
+// -------------------------------------------------------------------------------------------
+// GlobalOperationsService Service
+// -------------------------------------------------------------------------------------------
+
+service GlobalOperationsService {
+
+    // Create a 'default' VPC.
+    rpc CreateDefault(CreateDefaultRequest) returns (VPC) {
+      option (google.api.http) = {
+        post: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/default"
+        body: "*"
+      };
+      option (idc.method).authz.cloudAccount = true;
+    };
+
+    // Ping always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  }
+
+
+  message CreateDefaultRequest {
+    VPCMetadataCreate metadata = 1;
+  }
+
+  

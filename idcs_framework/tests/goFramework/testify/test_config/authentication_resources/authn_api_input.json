@@ -1,0 +1,20 @@
+{
+    "baseUrl": "https://internal-placeholder.com/v1/",
+    "compute_api": {
+        "endpoint": "instancetypes"
+    },
+    "metering_api": {
+        "endpoint": "meteringrecords/previous",
+        "id": "125",
+        "resourceId": "3bc52389-da79-4947-a562-ab7a88c38e34"
+    },
+    "cloudaccount_api": {
+        "endpoint": "cloudaccounts"
+    },
+    "productcatalog_api": {
+        "endpoint": "vendors"
+    },
+    "billing_api": {
+        "endpoint": "billing/coupons"
+    }
+}

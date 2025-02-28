@@ -1,0 +1,104 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1;
+
+import "go/pkg/storage/storagecontroller/api/common.proto";
+import "go/pkg/storage/storagecontroller/api/namespace.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api";
+
+service UserService {
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {}
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+  rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (UpdateUserPasswordResponse) {}
+}
+
+message ListUsersRequest {
+  NamespaceIdentifier namespace_id = 1;
+  Filter filter = 2;
+
+  AuthenticationContext auth_ctx = 100;
+
+  message Filter {
+    repeated string names = 1;
+  }
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message GetUserRequest {
+  UserIdentifier user_id = 1;
+
+  AuthenticationContext auth_ctx = 100;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message CreateUserRequest {
+  NamespaceIdentifier namespace_id = 1;
+  string user_name = 2; 
+  string user_password = 3;
+  User.Role role = 4;
+
+  AuthenticationContext auth_ctx = 100;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  UserIdentifier user_id = 1;
+  User.Role role = 2;
+
+  AuthenticationContext auth_ctx = 100;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
+message DeleteUserRequest {
+  UserIdentifier user_id = 1;
+
+  AuthenticationContext auth_ctx = 100;
+}
+
+message DeleteUserResponse {
+}
+
+message UpdateUserPasswordRequest {
+  UserIdentifier user_id = 1;
+  string new_password = 2;
+
+  AuthenticationContext auth_ctx = 100;
+}
+
+message UpdateUserPasswordResponse {
+}
+
+message UserIdentifier {
+  NamespaceIdentifier namespace_id = 1;
+  string id = 2;
+}
+
+message User {
+  UserIdentifier id = 1;
+  string name = 2; 
+  Role role = 3;
+
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    ROLE_ADMIN = 1;
+    ROLE_REGULAR = 2;
+  }
+}

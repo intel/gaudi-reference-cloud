@@ -1,0 +1,56 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# This file contains the configuration settings when running tests.
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: VmInstanceOperatorConfig
+metadata:
+  name: vminstanceoperatorconfig
+health:
+  healthProbeBindAddress: :8081
+metrics:
+  bindAddress: 127.0.0.1:8082
+vmProvisionConfig:
+  vmClusterNetwork: "mgmt"
+  storageClusterNetwork: "storage"
+  cloudInitData:
+    userData:
+      manage_etc_hosts: "localhost"
+      hostname: "vmaas-vm-hostname"
+      fqdn: "vmaas-vm-fqdn"
+      write_files:
+        - owner: root
+          path: "/etc/apt/apt.conf.d/00-proxy"
+          permissions: "644"
+          content: |
+            Acquire::http::Proxy "http://internal-placeholder.com:912";
+            Acquire::https::Proxy "http://internal-placeholder.com:912";
+      package_update: false
+      runcmd:
+        - - "true"
+      ssh_authorized_keys:
+      users:
+        - default
+    networkData:
+      network:
+        version: 1
+        config:
+          - type: physical
+            name: enp1s0
+            subnets:
+              - type: static
+                address: "172.16.1.190/16"
+                gateway: "172.16.0.1"
+                dns_nameservers:
+                  - "10.248.2.1"
+                  - "10.22.224.196"
+instanceOperator:
+  httpClient:
+    timeoutInSecs: 20
+    keepAlive: 25
+    tlsHandshakeTimeout: 10
+    insecureSkipVerify: true
+  filter:
+    labels:
+      instance-category: VirtualMachine
+      cluster-id: cluster0
+  enableMeteringMonitorFinalizer: false # Disabling setting of Metering Monitor flag for unit tests

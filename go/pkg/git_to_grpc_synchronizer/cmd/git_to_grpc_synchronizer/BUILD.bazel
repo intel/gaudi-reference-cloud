@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "git_to_grpc_synchronizer_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/git_to_grpc_synchronizer/cmd/git_to_grpc_synchronizer",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/compute_api_server/instance_type",
+        "//go/pkg/compute_api_server/ip_resource_manager",
+        "//go/pkg/compute_api_server/machine_image",
+        "//go/pkg/git_to_grpc_synchronizer",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/productcatalog/sync",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "git_to_grpc_synchronizer",
+    embed = [":git_to_grpc_synchronizer_lib"],
+    visibility = ["//visibility:public"],
+)

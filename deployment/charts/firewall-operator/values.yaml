@@ -1,0 +1,55 @@
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/firewall-operator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+replicaCount: 1
+maxConcurrentReconciles: 1
+
+serviceMonitor:
+  enabled: false
+
+autoscaling:
+  enabled: false
+
+regionId: us-dev-1
+availabilityZoneId: us-dev-1a
+
+firewallAPI:
+  environment: "stag"
+  region: "flex"
+  baseURL: "https://idc-fw-api-stag.apps1-or-int.icloud.intel.com/"
+  vaultCredentialsPath: controlplane/data/us-dev-1-firewall-operator/api
+
+controllerManager:
+  manager:
+    args:
+    - --health-probe-bind-address=:8081
+    - --metrics-bind-address=:8078
+    - --leader-elect
+    - --operator-config=/config
+    containerSecurityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2048Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  replicas: 1
+  serviceAccount:
+    annotations: {}
+metricsService:
+  ports:
+  - name: metrics
+    port: 8078
+    protocol: TCP
+    targetPort: metrics
+  type: ClusterIP

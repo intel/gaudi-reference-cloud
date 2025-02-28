@@ -1,0 +1,6 @@
+---
+
+# Build docker image and save it with checksum verification
+
+- include_tasks: build_docker_image.yml
+- include_tasks: save_docker_image.yml

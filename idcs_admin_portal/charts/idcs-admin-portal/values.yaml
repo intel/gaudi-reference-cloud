@@ -1,0 +1,114 @@
+global:
+  imageRegistry: ""
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/idcs-admin-portal
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+
+replicaCount: 1
+
+nameOverride: ""
+
+namespaceOverride: ""
+
+fullnameOverride: ""
+
+nodeEnv: "production"
+
+apiBaseURL: "https://idcs-admin-portal.local/gateway"
+
+redirectURI: "https://www.intel.com/content/www/us/en/my-intel/developer-sign-in.html?redirect=https://www.intel.com/content/www/us/en/developer/overview.html"
+
+# Additional environment variables
+extraEnv: []
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: idcs-admin-portal.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256M
+  limits:
+    cpu: 500m
+    memory: 512M
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+configMap:
+  REACT_APP_API_GLOBAL_SERVICE: ''
+  REACT_APP_API_REGIONAL_SERVICES: ['']
+  REACT_APP_DEFAULT_REGIONS: ["us-dev-1"]
+  REACT_APP_SELECTED_REGION: "us-dev-1"
+  REACT_APP_AGS_GLOBAL_ADMIN: "IDC Administrator - Test"
+  REACT_APP_AGS_SRE_ADMIN: "IDC Admin SRE - Test"
+  REACT_APP_AGS_IKS_ADMIN: "IDC Admin IKS - Test"
+  REACT_APP_AGS_COMPUTE_ADMIN: "IDC Admin Compute - Test"
+  REACT_APP_AGS_SLURM_ADMIN: "IDC Admin Slurm  - Test"
+  REACT_APP_AGS_PRODUCT_ADMIN: "IDC Admin Product  - Test"
+  REACT_APP_AGS_STORAGE_ADMIN: "IDC Admin Storage Quota- Test"
+  REACT_APP_AGS_QUOTA_ADMIN: "IDC Admin Quota - Test"
+  REACT_APP_AXIOS_TIMEOUT: 60000
+  REACT_APP_TOAST_DELAY: 3000
+  REACT_APP_TOAST_ERROR_DELAY: 10000
+  REACT_APP_GUI_DOMAIN: ""
+  REACT_APP_AZURE_CLIENT_API_SCOPE: "api://5cf0ff86-a5ea-47ab-a3fc-29934041d044/Read"
+  REACT_APP_AZURE_CLIENT_AUTHORITY: "https://login.microsoftonline.com/46c98d88-e344-4ed4-8496-4ed7712e255d"
+  REACT_APP_AZURE_CLIENT_ID: "5cf0ff86-a5ea-47ab-a3fc-29934041d044"
+  REACT_APP_KNOWLEDGE_BASE: "https://www.intel.com/content/www/us/en/support/products/231482/software/software-services/intel-developer-cloud.html"
+  REACT_APP_SUBMIT_TICKET: "https://supporttickets.intel.com/s/supportrequest?language=en_US"
+  REACT_APP_SUPPORT_PAGE: "https://www.intel.com/content/www/us/en/developer/get-help/overview.html#gs.7ugbur" 
+  REACT_APP_FEATURE_BANNER_MANAGEMENT: 1
+  REACT_APP_FEATURE_NODE_POOL_MANAGEMENT: 1
+  REACT_APP_FEATURE_STORAGE_MANAGEMENT: 1
+  REACT_APP_FEATURE_PRODUCT_CATALOG: 1
+  REACT_APP_FEATURE_REGION_MANAGEMENT: 1
+  REACT_APP_BANNER_AWS_ROLE_ARN: "arn:aws:iam::390677890188:role/s3_banner_access"
+  REACT_APP_AWS_REGION: "us-west-2"
+  REACT_APP_COMPANY_LONG_NAME: "© Intel Corporation"
+  REACT_APP_AWS_S3_BUCKET_NAME: "s3-idc-console-dev-spa"

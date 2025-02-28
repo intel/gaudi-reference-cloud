@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+PYENV_SHELL=bash
+no_proxy=intel.com,.intel.com,10.0.0.0/8,192.168.0.0/16,localhost,127.0.0.0/8,134.134.0.0/16,172.16.0.0/16,192.168.150.0/24,.kind.local,.kind.local,.kind.local,.kind.local,.kind.local,.kind.local
+TERM_PROGRAM_VERSION=
+MACHINE_IMAGE=ubuntu-22.04-server-cloudimg-amd64-latest

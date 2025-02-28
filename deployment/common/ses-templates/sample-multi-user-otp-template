@@ -1,0 +1,8 @@
+{
+  "TemplateName": "Multi-User-OTP-Template",
+  "TemplateContent": {
+      "Subject": "Your OTP to Grant Invitation Access on Intel Cloud Services #{{OTP}}",
+      "Text": "Dear Intel Developer Cloud Customer,\n\nPlease enter the below mentioned One Time Password (OTP) for granting invitation access in to your account.\n\n{{OTP}}\n\nDon't share this OTP with anyone.\n\nSincerely,\nIntel Cloud Services",
+      "Html": "Dear Intel Developer Cloud Customer,<br><br>Please enter the below mentioned One Time Password (OTP) for granting invite access in to your account.<br><br><b>{{OTP}}</b><br><br>Don't share this OTP with anyone.<br><br>Sincerely,<br>Intel Cloud Services</p>"
+  }
+}

@@ -1,0 +1,158 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_buf//buf:defs.bzl", "buf_lint_test")
+load("@rules_proto//proto:defs.bzl", "proto_descriptor_set", "proto_library")
+load("//:bazel/rules/sabledocs_generate.bzl", "sabledocs_generate")
+load("//:bazel/rules/write_go_generated.bzl", "write_go_generated_source_files")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "cluster.proto",
+    "common.proto",
+    "namespace.proto",
+    "s3.proto",
+    "user.proto",
+])
+
+# gazelle:exclude cluster.pb.go
+# gazelle:exclude cluster_grpc.pb.go
+# gazelle:exclude cluster.pb.gw.go
+# gazelle:exclude common.pb.go
+# gazelle:exclude namespace.pb.go
+# gazelle:exclude namespace_grpc.pb.go
+# gazelle:exclude namespace.pb.gw.go
+# gazelle:exclude s3.pb.go
+# gazelle:exclude s3_grpc.pb.go
+# gazelle:exclude s3.pb.gw.go
+# gazelle:exclude user.pb.go
+# gazelle:exclude user_grpc.pb.go
+# gazelle:exclude user.pb.gw.go
+
+# gazelle:proto disable
+
+proto_library(
+    name = "common_proto",
+    srcs = ["common.proto"],
+    strip_import_prefix = "/api",
+    deps = [
+        "@googleapis//google/api:annotations_proto",
+    ],
+)
+
+proto_library(
+    name = "cluster_proto",
+    srcs = ["cluster.proto"],
+    strip_import_prefix = "/api",
+    deps = [
+        "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+        "@googleapis//google/api:annotations_proto",
+    ],
+)
+
+proto_library(
+    name = "namespace_proto",
+    srcs = ["namespace.proto"],
+    strip_import_prefix = "/api",
+    deps = [
+        ":cluster_proto",
+        "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+        "@googleapis//google/api:annotations_proto",
+    ],
+)
+
+proto_library(
+    name = "s3_proto",
+    srcs = ["s3.proto"],
+    strip_import_prefix = "/api",
+    deps = [
+        ":cluster_proto",
+        "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+        "@googleapis//google/api:annotations_proto",
+    ],
+)
+
+proto_library(
+    name = "user_proto",
+    srcs = ["user.proto"],
+    strip_import_prefix = "/api",
+    deps = [
+        ":common_proto",
+        ":namespace_proto",
+        "@com_github_bufbuild_protovalidate//proto/protovalidate/buf/validate:validate_proto",
+        "@googleapis//google/api:annotations_proto",
+    ],
+)
+
+go_proto_library(
+    name = "go_proto",
+    compilers = [
+        "@io_bazel_rules_go//proto:go_proto",
+        "@io_bazel_rules_go//proto:go_grpc_v2",
+        #"@grpc_ecosystem_grpc_gateway//protoc-gen-grpc-gateway:go_gen_grpc_gateway",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/api/intel/storagecontroller/v1",
+    protos = [
+        ":cluster_proto",
+        ":common_proto",
+        ":namespace_proto",
+        ":s3_proto",
+        ":user_proto",
+    ],
+    deps = [
+        "@build_buf_gen_go_bufbuild_protovalidate_protocolbuffers_go//buf/validate:go_default_library",
+        "@org_golang_google_genproto_googleapis_api//annotations",
+    ],
+)
+
+write_go_generated_source_files(
+    name = "write_gen",
+    output_files = [
+        "cluster.pb.go",
+        "cluster_grpc.pb.go",
+        #"cluster.pb.gw.go",
+        "common.pb.go",
+        "namespace.pb.go",
+        "namespace_grpc.pb.go",
+        #"namespace.pb.gw.go",
+        "s3.pb.go",
+        "s3_grpc.pb.go",
+        #"s3.pb.gw.go",
+        "user.pb.go",
+        "user_grpc.pb.go",
+        #"user.pb.gw.go",
+    ],
+    target = ":go_proto",
+)
+
+buf_lint_test(
+    name = "proto_lint",
+    config = "//api:buf.yaml",
+    targets = [
+        ":cluster_proto",
+        ":common_proto",
+        ":namespace_proto",
+        ":s3_proto",
+        ":user_proto",
+    ],
+)
+
+proto_descriptor_set(
+    name = "docs_descriptor",
+    deps = [
+        ":cluster_proto",
+        ":common_proto",
+        ":namespace_proto",
+        ":s3_proto",
+        ":user_proto",
+        "//api/intel/storagecontroller/v1/vast:filesystem_proto",
+        "//api/intel/storagecontroller/v1/weka:filesystem_proto",
+        "//api/intel/storagecontroller/v1/weka:statefulclient_proto",
+    ],
+)
+
+sabledocs_generate(
+    name = "docs",
+    descriptor = ":docs_descriptor",
+)

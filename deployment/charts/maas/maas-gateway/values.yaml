@@ -1,0 +1,77 @@
+# Default values for maasgateway.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+region: us-dev-1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/oneapisvc
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+service:
+  type: ClusterIP
+
+serviceMonitor:
+  # Set to true to enable serviceMonitor CRD creation
+  enabled: false
+  # Scrape interval
+  interval: 15s
+  # Scrape timeout
+  scrapeTimeout: 15s
+
+metrics:
+  port: 2112
+  promCredentialsPath: /k8s_secrets/prometheus
+
+modelsProductIds:
+  meta-llama/Meta-Llama-3.1-8B-Instruct: ba5d2874-dc83-425e-af98-c810f11dad79
+  meta-llama/Meta-Llama-3.1-70B-Instruct: 8d728109-0fb2-46c7-a406-1113634d72ab
+  mistralai/Mistral-7B-Instruct-v0.1: 269c3034-e6c7-4359-9e77-c3efedfaa778
+  Qwen/Qwen2.5-32B-Instruct: 0a0bffe9-2f62-4ebb-8aee-118ede22b816
+  Qwen/Qwen2.5-Coder-32B-Instruct: 97a75a6d-7eb4-40c9-894b-8e9f5924b555
+
+retryAttempts: 3
+
+familyId: 4004b07c-14b8-446a-8e63-ed7f1508ee1b
+
+health:
+  grpcHealthCheckExecutionPeriod: 30s
+  grpcHealthCheckExecutionTimeout: 10s
+  livenessPort: 8443
+  k8sProbe:
+    probeBinary: /opt/external_binaries/grpc_health_probe
+    service: proto.MaasGateway
+    tlsServerName: us-dev-1-maas-gateway.idcs-system.svc.cluster.local
+    tlsCaCert: /vault/secrets/ca.pem
+    tlsClientCert: /vault/secrets/cert.pem
+    tlsClientKey: /vault/secrets/cert.key
+    addr: localhost:8443
+
+product:
+  productId: 12345-12345-12345
+  productCatalogServerAddr: localhost:8443
+
+metering:
+  # The address of the global usage service in format "host:port".
+  # This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+  usageServerAddr: usage.idcs-system.svc.cluster.local:8443
+  usageServerTimeout: 1s
+
+dispatcher:
+  dispatcherServerAddr: internal-placeholder.com:443
+
+cognito:
+  enabled: false
+  endpoint: ""
+  vaultCredentialsPath: ""
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "console"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"

@@ -1,0 +1,68 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+{{- $billingServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $cloudaccountServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $cloudAccountAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $productCatalogAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $meteringAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $objectStoreEnabled := and $.Values.components.storageObject.enabled $region.storageConfig.objectStore.enabled }}
+{{- $objectStoragePrivateServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+{{- $availabilityZone0 := ($region.availabilityZones | get (keys $region.availabilityZones | sortAlpha | first)) }}
+{{- $availabilityZone0 := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone0 }}
+
+{{- $fleetAdminServerAddr := "" }}
+{{- if $region.fleetAdmin.enabled }}
+  {{- $fleetAdminServerAddr = print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- end }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if $availabilityZone.intelDevicePlugin.enabled }}
+  {{- range $clusterIndex, $cluster := $availabilityZone.harvesterClusters }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-intel-device-plugin-" $cluster.clusterId) }}
+    namespace: kube-system
+    kubeContext: {{ $cluster.clusterId }}
+    labels:
+      component: intelDevicePlugin
+      service: device-plugin
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $cluster.clusterId }}
+      applicationName: intel-device-plugin
+    chart: idc/intel-device-plugin
+    version: {{ readFile (print $helmChartVersionsDir "/intel-device-plugin.version") | quote }}
+    values:
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}intel-device-plugin@sha256"
+  {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

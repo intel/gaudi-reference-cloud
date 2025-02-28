@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "private_cloud",
+    srcs = ["interface.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/k8s/generated/cloudintelclient/informers/externalversions/private.cloud",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/generated/cloudintelclient/informers/externalversions/internalinterfaces",
+        "//go/pkg/k8s/generated/cloudintelclient/informers/externalversions/private.cloud/v1alpha1",
+    ],
+)

@@ -1,0 +1,150 @@
+{
+  "apiVersion": "metal3.io/v1alpha1",
+  "kind": "BareMetalHost",
+  "metadata": {
+    "annotations": {
+      "cloud.intel.com/host-cpu-model": "Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz",
+      "gpu.mac.cloud.intel.com/gpu-eth0-0": "b0:fd:0b:d9:09:5d",
+      "gpu.mac.cloud.intel.com/gpu-eth0-1": "b0:fd:0b:db:c8:eb"
+    },
+    "labels": {
+      "cloud.intel.com/hbm-mode": "",
+      "cloud.intel.com/host-cpu-cores": "80",
+      "cloud.intel.com/host-cpu-count": "160",
+      "cloud.intel.com/host-cpu-id": "0x08380",
+      "cloud.intel.com/host-cpu-manufacturer": "Intel_corporation",
+      "cloud.intel.com/host-cpu-sockets": "2",
+      "cloud.intel.com/host-cpu-threads": "160",
+      "cloud.intel.com/host-gpu-count": "8",
+      "cloud.intel.com/host-gpu-model": "hl-225",
+      "instance-group-id": "group-1"
+    },
+    "name": "server1-2",
+    "namespace": "metal3-1"
+  },
+  "spec": {
+    "automatedCleaningMode": "metadata",
+    "bmc": {
+      "address": "ipmi://x.x.x.x",
+      "credentialsName": "server1-2-bmc-secret",
+      "disableCertificateVerification": true
+    },
+    "bootMACAddress": "10:70:fd:26:4e:32",
+    "bootMode": "UEFI",
+    "online": true,
+    "rootDeviceHints": {}
+  },
+  "status": {
+    "hardware": {
+      "cpu": {
+        "arch": "x86_64",
+        "clockMegahertz": 3400,
+        "count": 160,
+        "flags": [],
+        "model": "Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz"
+      },
+      "firmware": {
+        "bios": {
+          "date": "05/12/2023",
+          "vendor": "American Megatrends International, LLC.",
+          "version": "ETM02"
+        }
+      },
+      "hostname": "ubuntu",
+      "nics": [
+        {
+          "ip": "x.x.x.x",
+          "lldp": {
+            "switch_chassis_id": "c4:ca:2b:9b:42:95",
+            "switch_port_description": "bmaas bmh name server1-2, namespace metal3-1",
+            "switch_port_id": "Ethernet6",
+            "switch_port_link_aggregation_support": true,
+            "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7050CX3-32S",
+            "switch_system_name": "internal-placeholder.com"
+          },
+          "mac": "10:70:fd:26:4e:32",
+          "model": "0x15b3 0x1019",
+          "name": "ens7f0np0",
+          "pxe": true
+        },
+        {
+          "ip": "fe80::b2fd:bff:fed9:95d%enp77s0d8",
+          "lldp": {
+            "switch_chassis_id": "ac:3d:94:a2:2d:50",
+            "switch_port_description": "Gaudi-Test-Host2",
+            "switch_port_id": "Ethernet6",
+            "switch_port_link_aggregation_support": true,
+            "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7260CX3-64",
+            "switch_system_name": "internal-placeholder.com"
+          },
+          "mac": "b0:fd:0b:d9:09:5d",
+          "model": "0x1da3 0x1020",
+          "name": "enp77s0d8"
+        },
+        {
+          "ip": "fe80::b2fd:bff:fedb:c8eb%enp77s0d22",
+          "lldp": {
+            "switch_chassis_id": "ec:8a:48:c1:48:d9",
+            "switch_port_description": "none",
+            "switch_port_id": "Ethernet6",
+            "switch_port_link_aggregation_support": true,
+            "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7060DX4-32",
+            "switch_system_name": "internal-placeholder.com"
+          },
+          "mac": "b0:fd:0b:db:c8:eb",
+          "model": "0x1da3 0x1020",
+          "name": "enp77s0d22"
+        }
+        
+      ],
+      "ramMebibytes": 1048576,
+      "systemVendor": {
+        "manufacturer": "WIWYNN",
+        "productName": "HLS-2H B81.04B01.0018 (Default string)",
+        "serialNumber": "W-N-26-M000FY"
+      }
+    },
+    "hardwareProfile": "unknown",
+    "lastUpdated": "2023-09-06T21:48:01Z",
+    "operationHistory": {
+      "deprovision": {
+        "end": null,
+        "start": "2023-09-06T21:48:01Z"
+      },
+      "inspect": {
+        "end": "2023-09-06T20:14:00Z",
+        "start": "2023-09-06T20:02:13Z"
+      },
+      "provision": {
+        "end": "2023-09-06T21:48:01Z",
+        "start": "2023-09-06T21:46:05Z"
+      },
+      "register": {
+        "end": "2023-09-06T20:02:13Z",
+        "start": "2023-09-06T20:02:00Z"
+      }
+    },
+    "operationalStatus": "OK",
+    "poweredOn": true,
+    "provisioning": {
+      "ID": "3e9706ba-77c4-4833-a46c-19fc2fd739b3",
+      "bootMode": "UEFI",
+      "image": {
+        "url": ""
+      },
+      "raid": {
+        "hardwareRAIDVolumes": null,
+        "softwareRAIDVolumes": []
+      },
+      "rootDeviceHints": {},
+      "state": "available"
+    },
+    "triedCredentials": {
+      "credentials": {
+        "name": "server1-2-bmc-secret",
+        "namespace": "metal3-1"
+      },
+      "credentialsVersion": "22520623"
+    }
+  }
+}

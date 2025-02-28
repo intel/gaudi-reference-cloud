@@ -1,0 +1,37 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "productcatalog",
+    srcs = ["productcatalog.go"],
+    embedsrcs = glob(["sql/*.sql"]),
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/productcatalog",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/pb",
+        "//go/pkg/productcatalog/config",
+        "//go/pkg/productcatalog/handlers",
+        "//go/pkg/productcatalog/sync",
+        "//go/pkg/productcatalog_operator/apis/private.cloud/v1alpha1",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_apimachinery//pkg/runtime/serializer",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//rest",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//keepalive",
+        "@org_golang_google_grpc//reflection",
+    ],
+)
+
+filegroup(
+    name = "default_data",
+    srcs = glob([
+        "default_data/**",
+    ]),
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,51 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-22.04-spr-6.1-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 22.04 LTS v20250210 with 6.1 kernel
+  description: Ubuntu Server is a version of the Ubuntu operating system designed
+    and engineered as a backbone for the internet.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-spr
+  - bm-spr-pl
+  - bm-spr-pl-sc
+  md5sum: dd2fd0715374a865bfc5f4c073a93873
+  sha256sum: d28e5e883b97174df402da5a9a1dc2478c0883a82242e850a46e490f15a6be21
+  sha512sum: 54ec19621c0aab0c7cf1ab72ed73f0921d9a98927e22e63c09fffc79c4c997906dedb6717f39d8862472dc284eb9997522a1d5484fcfd87cfe53a6b84a1d695c
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    kernelVersion: 6.1 (OEM)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: Intel® QuickAssist Technology Library (QATlib)
+    type: Software kit
+    version: 24.02.0
+    description: Intel® QuickAssist Technology (Intel® QAT) provides hardware acceleration
+      for offloading security, authentication and compression services from the CPU,
+      thus significantly increasing the performance and efficiency of standard platform
+      solutions. This package provides user space libraries that allow access to Intel®
+      QuickAssist devices and expose the Intel® QuickAssist APIs and sample codes.
+    infoUrl: https://www.intel.com/content/www/us/en/architecture-and-technology/intel-quick-assist-technology-overview.html
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/xeon-scalable-processors-family-framed-badge.jpg.rendition.intel.web.368.207.jpg
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

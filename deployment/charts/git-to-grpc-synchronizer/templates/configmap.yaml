@@ -1,0 +1,31 @@
+{{- $sourceMap := .Values.sourceMap }}
+{{- $chunkSize := int (.Values.chunkSize) }}
+{{- $counter := 0 }}
+{{- $currentMap := dict }}
+{{- $listOfMaps := list }}
+{{- range $filename, $contents := $sourceMap }}
+  {{- if eq $counter $chunkSize }}
+    {{- $listOfMaps = append $listOfMaps $currentMap }}
+    {{- $currentMap = dict }}
+    {{- $counter = 0 }}
+  {{- end }}
+  {{- $currentMap = set $currentMap $filename $contents }}
+  {{- $counter = add $counter 1}}
+{{- end }}
+
+{{- if gt $counter 0 }}
+  {{- $listOfMaps = append $listOfMaps $currentMap }}
+{{- end }}
+
+{{- range $index, $maps := $listOfMaps }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" $ }}-{{ $index }}
+  namespace: {{ include "idc-common.namespace" $ }}
+data:
+  {{- range $filename, $contents := $maps }}
+  {{ $filename }}: {{ $contents | quote }}
+  {{- end }}
+---
+{{- end }}

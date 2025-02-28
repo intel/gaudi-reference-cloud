@@ -1,0 +1,43 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- type: cloudaccount
+  allowedactions: 
+  - name: create
+    type: collection
+    description: create a cloud account
+- type: instance
+  description: a compute resource
+  allowedactions:
+  - name: read
+    type: resource
+    description: read a specific instance
+  - name: update
+    type: resource
+    description: Update an instance description
+  - name: delete
+    type: resource
+    description: Delete an instance
+  - name: create
+    type: collection
+    description: Create an instance for a cloud account
+  - name: list
+    type: collection
+    description: list instances for a cloud account
+- type: storage
+  description: a storage resource
+  allowedactions:
+  - name: read
+    type: resource
+    description: read a specific storage
+  - name: update
+    type: resource
+    description: Update an storage description
+  - name: delete
+    type: resource
+    description: Delete an storage
+  - name: create
+    type: collection
+    description: Create an storage for a cloud account
+  - name: list
+    type: collection
+    description: list storage for a cloud account

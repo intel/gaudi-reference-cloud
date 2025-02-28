@@ -1,0 +1,168 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: switchports.idcnetwork.intel.com
+spec:
+  group: idcnetwork.intel.com
+  names:
+    kind: SwitchPort
+    listKind: SwitchPortList
+    plural: switchports
+    shortNames:
+    - sp
+    singular: switchport
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.name
+      name: Interface
+      type: string
+    - jsonPath: .spec.mode
+      name: Desired_Mode
+      type: string
+    - jsonPath: .status.mode
+      name: Observed_Mode
+      type: string
+    - jsonPath: .spec.vlanId
+      name: Desired_VlanID
+      type: string
+    - jsonPath: .status.vlanId
+      name: Observed_VlanID
+      type: string
+    - jsonPath: .spec.trunkGroups
+      name: Desired_TG
+      type: string
+    - jsonPath: .status.trunkGroups
+      name: Observed_TG
+      type: string
+    - jsonPath: .spec.portChannel
+      name: Desired_PortChannel
+      type: string
+    - jsonPath: .status.portChannel
+      name: Observed_PortChannel
+      type: string
+    - jsonPath: .metadata.labels.network_node
+      name: Network_Node
+      type: string
+    - jsonPath: .status.linkStatus
+      name: Link_Status
+      type: string
+    - jsonPath: .status.lineProtocolStatus
+      name: Line_Protocol_Status
+      type: string
+    - jsonPath: .metadata.labels.fabric_type
+      name: Fabric_Type
+      type: string
+    - jsonPath: .status.lastStatusChangeTime
+      name: Last_Status_Change_Time
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: SwitchPort is the Schema for the switchports API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: SwitchPortSpec defines the desired state of SwitchPort
+            properties:
+              description:
+                type: string
+              mode:
+                type: string
+              name:
+                type: string
+              nativeVlan:
+                default: -1
+                format: int64
+                type: integer
+              portChannel:
+                default: -1
+                description: Default this to -1 so that when we upgrade CRDs the existing
+                  CRs will get -1 set.
+                format: int64
+                type: integer
+              trunkGroups:
+                items:
+                  type: string
+                type: array
+              vlanId:
+                default: -1
+                format: int64
+                type: integer
+            required:
+            - mode
+            - name
+            - portChannel
+            type: object
+          status:
+            description: SwitchPortStatus defines the observed state of SwitchPort
+            properties:
+              bandwidth:
+                type: integer
+              description:
+                type: string
+              duplex:
+                type: string
+              interfaceType:
+                type: string
+              lastStatusChangeTime:
+                format: date-time
+                type: string
+              lineProtocolStatus:
+                type: string
+              linkStatus:
+                type: string
+              mode:
+                type: string
+              name:
+                type: string
+              nativeVlan:
+                format: int64
+                type: integer
+              portChannel:
+                format: int64
+                type: integer
+              ravenDBVlanId:
+                format: int64
+                type: integer
+              switchSideLastStatusChangeTimestamp:
+                format: int64
+                type: integer
+              trunkGroups:
+                items:
+                  type: string
+                type: array
+              untaggedVlan:
+                format: int64
+                type: integer
+              vlanId:
+                format: int64
+                type: integer
+            required:
+            - mode
+            - name
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

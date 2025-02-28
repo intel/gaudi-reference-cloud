@@ -1,0 +1,5 @@
+<network>
+  <name>vlan{{ vlan_num }}</name>
+  <bridge name="vlanbr{{ vlan_num }}" stp='off' macTableManager="libvirt"/>
+  <mtu size="9216"/>
+</network>

@@ -1,0 +1,55 @@
+apiVersion: v1
+data:
+  {{- if .Values.ironicEnvConfigMap.ironicIP }}
+  CACHEURL: "http://{{ .Values.ironicEnvConfigMap.ironicIP }}/images"
+  DEPLOY_KERNEL_URL: "http://{{ .Values.ironicEnvConfigMap.ironicIP}}:6180/images/ironic-python-agent.kernel"
+  DEPLOY_RAMDISK_URL: "http://{{ .Values.ironicEnvConfigMap.ironicIP }}:6180/images/ironic-python-agent.initramfs"
+  {{- if .Values.enableTLSandAuth }}
+  IRONIC_ENDPOINT: "https://{{ .Values.ironicEnvConfigMap.ironicIP }}:6385/v1/"
+  IRONIC_INSPECTOR_ENDPOINT: "https://{{ .Values.ironicEnvConfigMap.ironicIP }}:5050/v1/"
+  {{- else }}
+  IRONIC_ENDPOINT: "http://{{ .Values.ironicEnvConfigMap.ironicIP }}:6385/v1/"
+  IRONIC_INSPECTOR_ENDPOINT: "http://{{ .Values.ironicEnvConfigMap.ironicIP }}:5050/v1/"
+  {{- end }}
+  {{- else }}
+  CACHEURL: {{ .Values.ironicEnvConfigMap.cacheURL }}
+  DEPLOY_KERNEL_URL: {{ .Values.ironicEnvConfigMap.deployKernelURL }}
+  DEPLOY_RAMDISK_URL: {{ .Values.ironicEnvConfigMap.deployRamdiskURL }}
+  IRONIC_ENDPOINT: {{ .Values.ironicEnvConfigMap.ironicEndpoint }}
+  IRONIC_INSPECTOR_ENDPOINT: {{ .Values.ironicEnvConfigMap.ironicInspectorEndpoint }}
+  {{- end }}
+  ANSIBLE_DEPLOY_INTERFACE: {{ .Values.ironicEnvConfigMap.enableAnsibleDeployInterface | quote }}
+  BOOT_RETRY_TIMEOUT: {{ .Values.ironicEnvConfigMap.bootRetryTimeout | quote }}
+  CLEAN_CALLBACK_TIMEOUT: {{ .Values.ironicEnvConfigMap.automatedCleaningTimeout | quote }}
+  DEPLOY_CALLBACK_TIMEOUT: {{ .Values.ironicEnvConfigMap.deployCallbackTimeout | quote }}
+  DHCP_RANGE: {{ .Values.ironicEnvConfigMap.dhcpRangeStartingIP}},{{ .Values.ironicEnvConfigMap.dhcpRangeFinalIP }}
+  DISABLE_DHCP: {{ .Values.ironicEnvConfigMap.disableIronicDHCP | quote }}
+  ENABLE_IRONIC_ERASE_DEVICES: {{ .Values.ironicEnvConfigMap.enableEraseDevices | quote }}
+  INSPECT_WAIT_TIMEOUT: {{ .Values.ironicEnvConfigMap.ironicInspectionTimeout | quote }}
+  IRONIC_CACERT_FILE: {{ .Values.ironicEnvConfigMap.ironicCACert | quote }}
+  IRONIC_CERT_FILE: {{ .Values.ironicEnvConfigMap.ironicCert | quote }}
+  IRONIC_KEY_FILE: {{ .Values.ironicEnvConfigMap.ironicKey | quote }}
+  IRONIC_FAST_TRACK: {{ .Values.ironicEnvConfigMap.ironicFastTrack | quote }}
+  IRONIC_INSPECTOR_ADD_PORTS: {{ .Values.ironicEnvConfigMap.inspectorAddPorts }}
+  IRONIC_INSPECTOR_CACERT_FILE: {{ .Values.ironicEnvConfigMap.inspectorCACert | quote }}
+  IRONIC_INSPECTOR_CERT_FILE: {{ .Values.ironicEnvConfigMap.inspectorCert | quote }}
+  IRONIC_INSPECTOR_KEY_FILE: {{ .Values.ironicEnvConfigMap.inspectorKey | quote }}
+  IRONIC_INSPECTOR_VLAN_INTERFACES: all
+  {{- if .Values.ironicEnvConfigMap.ironicIP }}
+  IRONIC_IP: {{ .Values.ironicEnvConfigMap.ironicIP }}
+  {{- end }}
+  IRONIC_KERNEL_PARAMS: "config_remote_url=http://{{ .Values.ironicEnvConfigMap.ironicIP }}:6180/config contractor_ip={{ .Values.ironicEnvConfigMap.ironicIP }} resource_root=http://{{ .Values.ironicEnvConfigMap.ironicIP }}:6180/resources/"
+  IRONIC_USE_MARIADB: {{ .Values.ironicEnvConfigMap.ironicUseMariaDB | quote }}
+  HTTP_PORT: {{ .Values.ironicEnvConfigMap.httpPort | quote }}
+  MARIADB_CACERT_FILE: {{ .Values.ironicEnvConfigMap.mariaDBCACert | quote }}
+  MARIADB_CERT_FILE: {{ .Values.ironicEnvConfigMap.mariaDBCert | quote }}
+  MARIADB_KEY_FILE: {{ .Values.ironicEnvConfigMap.mariaDBKey | quote }}
+  PROVISIONING_INTERFACE: {{ .Values.ironicEnvConfigMap.provisioningInterface }}
+  PROVISIONING_LIMIT: {{ .Values.ironicEnvConfigMap.provisioningLimit | quote }}
+  RESTART_CONTAINER_CERTIFICATE_UPDATED: {{ .Values.ironicEnvConfigMap.restartContainer | quote }}
+kind: ConfigMap
+metadata:
+  name: ironic-bmo-configmap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}

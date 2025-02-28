@@ -1,0 +1,6 @@
+# Add Absolute path of tests directory to PYTHONPATH
+# Go to test_suites and test type folder (Functional, Integration etc) and run the following command
+# Test cases which are marked with a particular tag (Ex:BMasS_login) will be executed if the tag is specified in tests_tag.txt file
+# If the tests_tag file is empty or not present all tests will be executed
+
+pytest -c ../../test_config/config.ini  ../../test_config/ --pyargs ../../test_cases --tags="BMaaS/test_tags.txt"

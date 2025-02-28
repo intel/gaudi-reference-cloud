@@ -1,0 +1,183 @@
+
+bases:
+  - environments.yaml
+
+---
+
+# Define a template that will be instantiated below for each cluster.
+{{- define "telemetryRelease" }}
+
+  {{- $resourceAttributes := (dict
+        "deployment.environment" .config.otel.deployment.environment) }}
+  {{- $resourceAttributes = mustMergeOverwrite $resourceAttributes (deepCopy .config.otel.extraResourceAttributes) }}
+
+  {{- $otelResourceAttributesValue := "" }}
+  {{- range $key, $value := $resourceAttributes }}
+    {{- if $otelResourceAttributesValue }}
+      {{- $otelResourceAttributesValue = print $otelResourceAttributesValue "," }}
+    {{- end }}
+    {{- $otelResourceAttributesValue = print $otelResourceAttributesValue $key "=" $value }}
+  {{- end }}
+
+        - name: {{ .namePrefix }}opentelemetry-collector
+          namespace: idcs-observability
+          kubeContext: {{ .kubeContext | quote }}
+          labels:
+            component: telemetry
+            geographicScope: {{ .geographicScope | quote }}
+            environmentName: {{ .environmentName | quote }}
+            region: {{ .region | quote }}
+            availabilityZone: {{ .availabilityZone | quote }}
+            kubeContext: {{ .kubeContext | quote }}
+            service: telemetry
+            applicationName: opentelemetry-collector
+          chart: idc-observability/opentelemetry-collector-agent
+          version: 0.96.0-vaultannotation
+          # See https://github.com/open-telemetry/opentelemetry-helm-charts/blob/main/charts/opentelemetry-collector/values.yaml
+          values:
+            - mode: daemonset
+            - presets:
+                logsCollection:
+                  enabled: true
+                kubernetesAttributes:
+                  enabled: true
+            - config:
+                exporters:
+                  otlphttp:
+                    endpoint: https://{{ .otlpEndpoint }}
+                    tls:
+                      ca_file: /vault/secrets/otel_ca_pem
+                processors:
+                  resourcedetection/system:
+                    detectors: [env, system]
+                    system:
+                      hostname_sources: ["lookup"]
+                    timeout: 2s
+                    override: false
+                  k8sattributes:
+                    extract:
+                      metadata:
+                      - k8s.namespace.name
+                      - k8s.deployment.name
+                      - k8s.pod.name
+                      - k8s.node.name
+                      - k8s.pod.start_time
+                      - k8s.statefulset.name
+                      - k8s.daemonset.name
+                      - k8s.cronjob.name
+                      - k8s.job.name
+                    passthrough: false
+                    pod_association:
+                    - sources:
+                      - from: resource_attribute
+                        name: k8s.pod.ip
+                    - sources:
+                      - from: resource_attribute
+                        name: k8s.pod.uid
+                    - sources:
+                      - from: connection
+                receivers:
+                  filelog:
+                    start_at: {{ .config.telemetry.config.receivers.filelog.start_at | quote }}
+                service:
+                  pipelines:
+                    logs:
+                      exporters:
+                        - otlphttp
+                      processors:
+                        - memory_limiter
+                        - batch
+                        - resourcedetection/system 
+                      receivers:
+                        - otlp
+            - image:
+                repository: amr-idc-registry-pre.infra-host.com/idc-observability/opentelemetry-collector-contrib
+                tag: "0.103.0"
+            - command:
+                name: otelcol-contrib
+            - serviceAccount:
+                name: {{ .namePrefix }}opentelemetry-collector
+            - securityContext:
+                readOnlyRootFilesystem: true
+            - extraEnvs:
+                - name: OTEL_RESOURCE_ATTRIBUTES
+                  value: {{ $otelResourceAttributesValue | quote }}
+            - podAnnotations:
+                vault.hashicorp.com/agent-init-first: "true"
+                vault.hashicorp.com/agent-inject: "true"
+                vault.hashicorp.com/agent-inject-secret-otel_ca_pem: public/data/otel
+                vault.hashicorp.com/agent-inject-template-otel_ca_pem: |
+                  {{`{{- with secret "public/data/otel" }}`}}
+                  {{`{{- .Data.data.otel_ca_pem }}`}}
+                  {{`{{- end }}`}}
+                vault.hashicorp.com/auth-path: {{ .authPath }}
+                vault.hashicorp.com/role: {{ .namePrefix }}opentelemetry-collector-role
+                vault.hashicorp.com/service: {{ .config.vault.service | quote }}
+            - fullnameOverride: {{ .namePrefix }}opentelemetry-collector
+{{- end }}
+
+repositories:
+  - name: idc-observability
+    url: amr-idc-registry.infra-host.com/idc-observability
+    oci: true
+
+releases:
+
+{{- if $.Values.telemetry.enabled }}
+
+  # Create a release for global cluster
+  {{- if $.Values.global.telemetry.enabled }}
+  {{- template "telemetryRelease" (dict
+    "config" $.Values
+    "geographicScope" "global"
+    "environmentName" $.Values.global.environmentName
+    "region" ""
+    "availabilityZone" ""
+    "kubeContext" $.Values.global.kubeContext
+    "namePrefix" ""
+    "authPath" ($.Values.global | get "vault.authPath" $.Values.global.vault.authPath)
+    "otlpEndpoint" $.Values.global.otel.exporter.otlp.endpoint
+    ) }}
+  {{- end }}
+
+  # Create a release for every regional and AZ cluster, if different from the global cluster.
+  {{- range $region := .Values.regions }}
+    {{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+    {{- if $region.components.telemetry.enabled }}
+    {{- if (ne $region.kubeContext $.Values.global.kubeContext) }}
+      {{- template "telemetryRelease" (dict
+        "config" $.Values
+        "geographicScope" "regional"
+        "environmentName" $.Values.global.environmentName
+        "region" $region.region
+        "availabilityZone" ""
+        "kubeContext" $region.kubeContext
+        "namePrefix" (print $region.region "-")
+        "authPath" ($region.vault.authPath)
+        "otlpEndpoint" ($region.otel.exporter.otlp.endpoint)
+        ) }}
+    {{- end }}
+    {{- end }}
+
+    {{- range $availabilityZone := $region.availabilityZones }}
+      {{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+      {{- if $availabilityZone.components.telemetry.enabled }}
+      {{- if (ne $availabilityZone.kubeContext $.Values.global.kubeContext) }}
+        {{- template "telemetryRelease" (dict
+          "config" $.Values
+          "geographicScope" "az"
+          "environmentName" $.Values.global.environmentName
+          "region" $region.region
+          "availabilityZone" $availabilityZone.availabilityZone
+          "kubeContext" $availabilityZone.kubeContext
+          "namePrefix" (print $availabilityZone.availabilityZone "-")
+          "authPath" ($availabilityZone.vault.authPath)
+          "otlpEndpoint" ($availabilityZone.otel.exporter.otlp.endpoint)
+          ) }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+
+  {{- end }}
+
+{{- end }}

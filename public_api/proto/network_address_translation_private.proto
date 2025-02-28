@@ -1,0 +1,144 @@
+// After updating this file, run "make generate-go".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "annotations.proto";
+import "compute_private.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "network-api-server";
+
+// Private Address Translation Service
+service AddressTranslationPrivateService {
+  // Create an Address Translation record.
+  rpc CreatePrivate(AddressTranslationCreatePrivateRequest) returns (AddressTranslationPrivate) {};
+  // Retrieve an Address Translation record from DB
+  rpc GetPrivate(AddressTranslationGetPrivateRequest) returns (AddressTranslationPrivate) {};
+  // List Address Translation records from DB. Optionally filter by column.
+  rpc ListPrivate(AddressTranslationListPrivateRequest) returns (AddressTranslationPrivateList) {};
+  // Delete an Address Translation record.
+  rpc DeletePrivate(AddressTranslationGetPrivateRequest) returns (google.protobuf.Empty) {};
+  // Update the resource status
+  rpc UpdateStatusPrivate(AddressTranslationUpdateStatusPrivateRequest) returns (google.protobuf.Empty) {};
+  // PingPrivate always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  // List Address Translations as a stream.
+  // This returns all non-deleted address translations as messages with WatchDeltaType=Updated,
+  // followed by a single WatchDeltaType=Bookmark with the last-seen resourceVersion.
+  rpc SearchStreamPrivate(AddressTranslationSearchStreamPrivateRequest) returns (stream AddressTranslationWatchResponse) {};
+  // Return a stream of changes to Address Translations using messages with WatchDeltaType=Updated or Deleted.
+  // Messages with WatchDeltaType=Bookmark and the last-seen resourceVersion will be sent periodically.
+  rpc Watch(AddressTranslationWatchRequest) returns (stream AddressTranslationWatchResponse) {
+    option (idc.method).streamForever = true;
+  };
+}
+
+message AddressTranslationCreatePrivateRequest {
+  AddressTranslationMetadataCreatePrivate metadata = 1;
+  AddressTranslationSpecPrivate spec = 2;
+}
+
+message AddressTranslationGetPrivateRequest {
+   AddressTranslationIdReference metadata = 1;
+}
+
+message AddressTranslationPrivate {
+  AddressTranslationMetadataPrivate metadata = 1;
+  AddressTranslationSpecPrivate spec = 2;
+  AddressTranslationStatus status = 3;
+}
+
+message AddressTranslationIdReference {
+  string cloudAccountId = 1 [ (idc.field).cloudAccount = true ];
+  string resourceId = 2;
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 3;
+  // Timestamp when resource was deleted.
+  google.protobuf.Timestamp deletedTimestamp = 4;
+}
+
+message AddressTranslationMetadataCreatePrivate {
+  string cloudAccountId = 1 [ (idc.field).cloudAccount = true ];
+}
+
+message AddressTranslationMetadataPrivate {
+  string cloudAccountId = 1 [ (idc.field).cloudAccount = true ];
+  string resourceId = 2;
+  // resourceVersion can be provided with Update and Delete for concurrency control.
+  string resourceVersion = 3;
+  // Timestamp when resource was created.
+  google.protobuf.Timestamp creationTimestamp = 4;
+  // Timestamp when resource was requested to be deleted.
+  google.protobuf.Timestamp deletionTimestamp = 5;
+  // Timestamp when resource was deleted.
+  google.protobuf.Timestamp deletedTimestamp = 6;
+}
+
+message AddressTranslationSpecPrivate {
+  string portId = 1;
+  string translationType = 2;
+  string profileId = 3;
+  string ipAddress = 4;
+  string macAddress = 5;
+}
+
+message AddressTranslationListPrivateRequest {
+  AddressTranslationListMetadataPrivate metadata = 1;
+  AddressTranslationSpecPrivate spec = 2;
+}
+
+message AddressTranslationListMetadataPrivate {
+  string cloudAccountId = 1 [ (idc.field).cloudAccount = true ];
+}
+
+message AddressTranslationPrivateList {
+  repeated AddressTranslationPrivate items = 1;
+}
+
+message AddressTranslationUpdateStatusPrivateRequest {
+  AddressTranslationIdReference metadata = 1;
+  AddressTranslationStatus status = 2;
+}
+
+message AddressTranslationStatus {
+  AddressTranslationPhase phase = 1;
+  string message = 2;
+}
+
+message AddressTranslationSearchStreamPrivateRequest {
+}
+
+message AddressTranslationWatchResponse {
+  WatchDeltaType type = 1;
+  AddressTranslationPrivateWatchResponse object = 2;
+}
+
+message AddressTranslationPrivateWatchResponse {
+  AddressTranslationMetadataPrivate metadata = 1;
+  string spec = 2;
+  string status = 3;
+}
+
+message AddressTranslationWatchRequest {
+  string resourceVersion = 1;
+}
+
+enum AddressTranslationPhase {
+  AddressTranslationPhase_Provisioning = 0;
+  AddressTranslationPhase_Ready = 1;
+  AddressTranslationPhase_Deleting = 2;
+  AddressTranslationPhase_Deleted = 3;
+  AddressTranslationPhase_Failed = 4;
+}

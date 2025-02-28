@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "query_test.go",
+        "suite_test.go",
+    ],
+    deps = [
+        "//go/pkg/manageddb",
+        "//go/pkg/quota_management/database/query",
+        "//go/pkg/storage/database",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

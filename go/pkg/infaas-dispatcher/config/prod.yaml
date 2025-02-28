@@ -1,0 +1,10 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+ListenPort:      8443
+SupportedModels:
+  - model1
+  - model2
+
+BacklogSize: 100
+
+MetricsPort: 2112

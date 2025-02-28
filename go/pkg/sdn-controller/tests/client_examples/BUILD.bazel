@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "client_examples_lib",
+    srcs = ["sdn_client_example.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/client_examples",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/sdn-controller/api/v1alpha1",
+        "//go/pkg/sdn-controller/pkg/client",
+    ],
+)
+
+go_binary(
+    name = "client_examples",
+    embed = [":client_examples_lib"],
+    visibility = ["//visibility:public"],
+)

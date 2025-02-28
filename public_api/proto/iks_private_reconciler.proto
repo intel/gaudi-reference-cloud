@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "annotations.proto";
+
+import "iks.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "iks";
+
+message ClusterDeletionRequest {
+  string uuid = 1;
+}
+
+message ClusterReconcilerRequest {
+  string state = 1;
+}
+
+message ClusterReconcilerResponseCluster {
+  string state = 1;
+  int32 clusterRevId = 2;
+  string desiredJson = 3;
+}
+
+message ClusterReconcilerResponse {
+  repeated ClusterReconcilerResponseCluster clusters = 1;
+}
+
+message UpdateClusterStateRequest {
+  string uuid = 1;
+  string state = 2;
+}
+
+message UpdateClusterChangeAppliedRequest {
+  int32 clusterrevId = 1;
+  bool changeApplied = 2;
+}
+
+message NodeStatusRequest {
+  string name = 1;
+  string ipAddress =2;
+  string instanceIMI =3;
+  string kubeletVersion=4;
+  string kubeProxyVersion=5;
+  string creationTime=6;
+  string state=7;
+  string lastUpdate=8;
+  string reason=9;
+  string message=10;
+  string dnsName=11;
+  WekaStorageStatus wekaStorage = 12;
+}
+
+message NodeGroupStatusRequest{
+  string name =1;
+  int32 count =2;
+  string type=3;
+  string state=4;
+  repeated NodeStatusRequest nodes=5;
+  string reason=6;
+  string message=7;
+}
+
+message AddonStatusRequest{
+  string name=1;
+  string state=2;
+  string reason=3;
+  string message=4;
+  string lastUpdate=5;
+  string artifact=6;
+}
+
+message IlbStatusRequest{
+  string name=1;
+  string vip=2;
+  string state=3;
+  int32 poolID=4;
+  int32 vipID=5;
+  ilbConditionsStatusRequest conditions=6;
+  string message=7;
+}
+
+message ilbConditionsStatusRequest{
+  bool poolCreated=1;
+  bool vipCreated=2;
+  bool vipPoolLinked=3;
+}
+
+message StorageStatusRequest {
+  string namespaceName=1;
+  bool namespaceCreated=2;
+  string namespaceState=3;
+  string provider=4;
+  string size=5;
+  bool secretCreated=6;
+  string storageState=7;
+  string message=8;
+  string reason=9;
+  }
+ 
+message FirewallStatusRequest {
+  string firewallstate = 1;
+  string destinationip = 2;
+  int32 port = 3;
+  string protocol = 4;
+  repeated string sourceips = 5;
+}
+
+message ClusterStatusRequest{
+  string state=1;
+  string lastUpdate=2;
+  string reason=3;
+  string message=4;
+  repeated NodeGroupStatusRequest nodegroups =5;
+  repeated AddonStatusRequest addons=6;
+  repeated IlbStatusRequest ilbs=7;
+  repeated StorageStatusRequest storages=8;
+  repeated FirewallStatusRequest firewall = 9;
+}
+
+message UpdateClusterStatusRequest{
+  string uuid =1;
+  ClusterStatusRequest clusterStatus=4;
+}
+
+message UpdateClusterCertsRequest{
+  string uuid = 1;
+  string caCert = 2;
+  string caKey = 3;
+  string etcdCaCert = 4;
+  string etcdCaKey = 5;
+  string etcdCaRotationKey = 6;
+  string saPub = 7;
+  string saKey= 8;
+  string cpRegistrationCmd= 9;
+  string wrkRegistrationCmd= 10;
+}
+
+service IksPrivateReconciler{
+  rpc GetClustersReconciler (ClusterReconcilerRequest) returns (ClusterReconcilerResponse) {};
+  rpc PutClusterStateReconciler(UpdateClusterStateRequest) returns (google.protobuf.Empty) {};
+  rpc PutClusterChangeAppliedReconciler(UpdateClusterChangeAppliedRequest) returns (google.protobuf.Empty) {};
+  rpc PutClusterStatusReconciler(UpdateClusterStatusRequest) returns (google.protobuf.Empty) {};
+  rpc PutClusterCertsReconciler(UpdateClusterCertsRequest) returns (google.protobuf.Empty) {};
+  rpc DeleteClusterReconciler(ClusterDeletionRequest) returns (google.protobuf.Empty) {};
+}

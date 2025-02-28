@@ -1,0 +1,37 @@
+{
+    "items": [
+      {
+        "id": 2564899,
+        "period": "July 2022",
+        "startDate": "2022-07-03",
+        "endDate": "2022-08-03",
+        "dueDate": "2022-08-10",
+        "status": "Due",
+        "total": 298.45,
+        "totalPaid": 0,
+        "totalDue": 298.45
+      },
+      {
+        "id": 2148596,
+        "period": "June 2022",
+        "startDate": "2022-06-03",
+        "endDate": "2022-07-03",
+        "dueDate": "2022-07-10",
+        "status": "Paid",
+        "total": 200,
+        "totalPaid": 200,
+        "totalDue": 0
+      },
+      {
+        "id": 208965,
+        "period": "May 2022",
+        "startDate": "2022-05-02",
+        "endDate": "2022-06-02",
+        "dueDate": "2022-06-09",
+        "status": "Paid",
+        "total": 126.32,
+        "totalPaid": 126.32,
+        "totalDue": 0
+      }
+    ]
+  }

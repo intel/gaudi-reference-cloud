@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+jupyterhub:
+  domain: pvc-workshop.us-staging-3.learning-catalog-pre.cloudworkspace.io
+  azuread:
+    client_id: "ADD AZURE CLIENT ID HERE"
+    client_secret: "ADD AZURE CLIENT SECRET HERE"
+    tenant_id: "ADD AZURE TENANT ID HERE"
+    scope: "ADD AZURE SCOPE HERE"
+image:
+  name: icir.cps.intel.com/idc-training/trainings/pvc-base
+  tag: 0.1.0@sha256:0cda79d49ecf44aacdf925284d36eca4b20e10f312b40fa8541f85c453853c7c
+  pullPolicy: Never    # image is pulled by prePuller hooks
+userResources:
+  guarantees:
+    gpu.intel.com/i915: "1"
+  limits:
+    gpu.intel.com/i915: "1"
+weka:
+  ipsToBlock:
+    - 100.65.0.18
+    - 100.65.0.7
+kubeApiServer:
+  ip: 100.66.0.1

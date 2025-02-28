@@ -1,0 +1,47 @@
+---
+
+- name: Deploy HTTP content server
+  block:
+    - name: Check if the HTTP server is running
+      command: pgrep --full "{{ http_content_dir }} {{ http_port }}"
+      register: pid_result
+      failed_when: "pid_result.rc == 0"
+      changed_when: "pid_result.rc != 0"
+    - name: Make sure log dir exists
+      file:
+        path: "{{ http_log_dir | dirname }}"
+        state: directory
+        mode: '0755'
+    - name: Start the HTTP Server in the backound
+      ansible.builtin.shell:
+        cmd: >
+          cd {{ http_log_dir }};
+          nohup python3 -m http.server
+          --directory {{ http_content_dir }} {{ http_port }}
+          </dev/null >>{{ http_log_file }} 2>&1 &
+      register: http_result
+      changed_when: "http_result.rc != 0"
+  become: true
+  tags: setup
+
+- name: Destroy HTTP content server
+  block:
+    - name: Get the pid for HTTP server
+      command: pgrep -u root --full "http.server.*{{ http_port }}"
+      register: pid_result
+      changed_when: "pid_result.rc == 0"
+      failed_when: "pid_result.rc > 1 or pid_result.stdout_lines|length > 1"
+    - name: Stop the HTTP server process
+      ansible.builtin.command: kill {{ pid_result.stdout }}
+      when: pid_result.stdout | length > 0
+  become: true
+  tags: [never, teardown]
+
+- name: Clean up HTTP server log file
+  block:
+    - name: Remove the HTTP server log
+      become: true
+      ansible.builtin.file:
+        path: "{{ http_log_file }}"
+        state: absent
+  tags: [never, teardown, clean]

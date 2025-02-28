@@ -1,0 +1,31 @@
+# Sets IGHS to screen for K8s or Bare Metal Environment (k8s, bare-metal). k8s does not require any system info
+system-info:
+  type: "bare-metal"
+  hostfile: "./hostfile"
+
+  # Bare Metal Configurations
+  ssh-path: "./ssh"
+  tcp-interface: "{{ tcp_interface }}"
+
+# Image to run Intel Gaudi Health Screen
+image: vault.habana.ai/gaudi-docker/{{ docker_image }}/{{ os_name_version }}/habanalabs/pytorch-installer-{{ pytorch_version }}:{{ docker_image_version }}
+
+# Node Label used to identify an Intel Gaudi Node
+gaudi-node-label: "brightcomputing.com/node-category=gaudi"
+
+# Controls granularity of Logs (INFO, DEBUG, WARN, ERROR, CRITICAL)
+log-level: "DEBUG"
+
+# Level 1 - Checks Individual Node Health (Ports status, Device Busy, Device Acquire failure, Device Temperature)
+level-1:
+  run: {{ level_1_run | default(true) }}
+  timeout_s: {{ level_1_timeout_s | default(150) }}
+  # Number of times to check Port Status
+  num-checks-link-state: {{ level_1_num_checks_link_state | default(12) }}
+
+# Level 2 - Checks All Reduce between node pairs in the cluster.
+level-2:
+  run: {{ level_2_run | default(true) }}
+  timeout_s: {{ level_2_timeout_s | default(130) }}
+  # Number of times to check Network connections between nodes
+  num-rounds: {{ level_2_num_rounds | default(5) }}

@@ -1,0 +1,48 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "force_import_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/force_import",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_chzyer_logex//:logex",
+        "@com_github_chzyer_test//:test",
+        "@com_github_decred_dcrd_dcrec_secp256k1_v4//:secp256k1",
+        "@com_github_edsrzf_mmap_go//:mmap-go",
+        "@com_github_elazarl_goproxy//:goproxy",
+        "@com_github_go_kit_kit//log",
+        "@com_github_gobuffalo_logger//:logger",
+        "@com_github_gobuffalo_packd//:packd",
+        "@com_github_gobuffalo_packr_v2//:packr",
+        "@com_github_gofrs_uuid//:uuid",
+        "@com_github_google_renameio//:renameio",
+        "@com_github_google_s2a_go//:s2a-go",
+        "@com_github_googleapis_gax_go_v2//:gax-go",
+        "@com_github_karrick_godirwalk//:godirwalk",
+        "@com_github_lestrrat_go_blackmagic//:blackmagic",
+        "@com_github_lestrrat_go_iter//arrayiter",
+        "@com_github_lestrrat_go_option//:option",
+        "@com_github_markbates_oncer//:oncer",
+        "@com_github_miekg_dns//:dns",
+        "@com_github_minio_sha256_simd//:sha256-simd",
+        "@com_github_pkg_sftp//:sftp",
+        "@com_github_sony_gobreaker//:gobreaker",
+        "@com_github_vishvananda_netns//:netns",
+        "@com_github_xdg_go_stringprep//:stringprep",
+        "@com_google_cloud_go//:go",
+        "@com_google_cloud_go_gaming//apiv1/gamingpb",
+        "@in_gopkg_gcfg_v1//:gcfg_v1",
+        "@in_gopkg_warnings_v0//:warnings_v0",
+        "@land_oras_oras_go//pkg/auth",
+        "@org_golang_google_api//:api",
+    ],
+)
+
+go_binary(
+    name = "force_import",
+    embed = [":force_import_lib"],
+    visibility = ["//visibility:public"],
+)

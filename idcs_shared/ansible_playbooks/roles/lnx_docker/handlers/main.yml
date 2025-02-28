@@ -1,0 +1,28 @@
+---
+- name: Start Docker daemon
+  service:
+    state: started
+    name: docker
+    daemon_reload: yes
+  listen: "start docker"
+
+- name: Stop Docker daemon
+  service:
+    state: stopped
+    name: docker
+    daemon_reload: yes
+  listen: "stop docker"
+
+- name: Reload Docker daemon
+  service:
+    state: reloaded
+    name: docker
+    daemon_reload: yes
+  listen: "reload docker"
+
+- name: Restart Docker daemon
+  service:
+    state: restarted
+    name: docker
+    daemon_reload: yes
+  listen: "restart docker"

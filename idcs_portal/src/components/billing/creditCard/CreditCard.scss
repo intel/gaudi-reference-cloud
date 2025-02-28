@@ -1,0 +1,39 @@
+.creditCard-all-span {
+  min-height: 22px;
+  min-width: 50px;
+}
+
+.creditCard-all-images,
+.form-control.is-valid.creditCard-all-images {
+  background: url(../../../assets/images/all-cards.png) no-repeat;
+  background-position: calc(100% - 12px) center;
+  background-size: auto 22px;
+}
+
+.creditCard-visa,
+.form-control.is-valid.creditCard-visa {
+  background: url(../../../assets/images/visa.png) no-repeat;
+  background-position: calc(100% - 12px) center;
+  background-size: auto 22px;
+}
+
+.creditCard-mastercard,
+.form-control.is-valid.creditCard-mastercard {
+  background: url(../../../assets/images/mastercard.png) no-repeat;
+  background-position: calc(100% - 12px) center;
+  background-size: auto 22px;
+}
+
+.creditCard-amex,
+.form-control.is-valid.creditCard-amex {
+  background: url(../../../assets/images/amex.png) no-repeat;
+  background-position: calc(100% - 12px) center;
+  background-size: auto 22px;
+}
+
+.creditCard-discover,
+.form-control.is-valid.creditCard-discover {
+  background: url(../../../assets/images/discover.png) no-repeat;
+  background-position: calc(100% - 12px) center;
+  background-size: auto 22px;
+}

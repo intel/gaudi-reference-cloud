@@ -1,0 +1,344 @@
+/***
+This file is used to override variables used by bootstrap and dlux for light theme
+For reference of which variables can be modified inspect the src/scss/dlux/scss/_custom.scss file
+Although you can add another bootstrap variables if needed
+Remember to add !default at the end of line so them does not get overritten
+Please do not add any class here, this file is just for customizing the bootstrap and dlux variables,
+if something else is added the PR won't be accepted
+*/
+
+@import "../../dlux/scss/colors";
+
+[data-bs-theme=dark], // Just added to get defaults
+[data-bs-theme=light] {
+    // Local Variables
+    $primary: #{$cobalt-shade3};
+    $secondary: #{$aqua-tint1};
+    $body-color: #212529;
+
+    // Theme Global
+    --primary: #{$primary};
+    --primary-rgb: 4,14,53;
+    --cta-primary: #005252;
+    --secondary: #{$secondary};
+    --secondary-rgb: 48,233,203;
+    --body-color: #{$body-color};
+
+    --surface-background-color: #ffffff;
+    --surface-background-gradient-color: linear-gradient(180deg, rgba(8, 116, 110, 0.00) 50%, rgba(4, 14, 53, 0.05) 100%), var(--surface-background-color);
+    --surface-background-color-sprite: #F4F5F5;
+    --surface-hover-background-color: #E8FBF8;
+    --surface-active-background-color: #{$gray-100};
+    --surface-selected-background-color: #C5F0E9; 
+    --surface-border-color: #{$gray-300};
+
+    --surface-background-third-party-product-color: #F8FAFC;
+
+    --effect-lighten: rgba(255, 255, 255, 0.10);
+    --effect-darken: rgba(0, 0, 0, 0.10);
+    
+    --hit-box: #{$hit-box};
+
+    --gray-50: #{$gray-50};
+    --gray-75: #{$gray-75};
+    --gray-100: #{$gray-100};
+    --gray-200: #{$gray-200};
+    --gray-300: #{$gray-300};
+    --gray-400: #{$gray-400};
+    --gray-500: #{$gray-500};
+    --gray-600: #{$gray-600};
+    --gray-700: #{$gray-700};
+    --gray-800: #{$gray-800};
+    --gray-900: #{$gray-900};
+
+    --success: #{$status-success};
+    --warning:  #{$status-warning};
+    --danger: #{$status-error};
+
+    --focus-shadow-box-color: rgba(106, 109, 117, .5);
+    --focus-shadow-box: 0 0 0 0.25rem var(--focus-shadow-box-color), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
+
+    // Landing variables
+
+    --light-blue: rgba(194, 223, 240, 0.25);
+    --Linear: linear-gradient(0deg, #000 0%, #01274E 100%);
+    --hero-default-background: #{$primary};
+
+    // Theme Components
+
+    // Footer
+    --footer-color: #{$body-color};
+    --footer-border-color: #{var(--gray-400)};
+    --footer-bg: var(--surface-background-color);
+
+    // Accordions
+    --accordion-border-color: rgba(0, 0, 0, 0.13);
+    --accordion-item-active-background: var(--surface-active-background-color);
+    --accordion-item-active-color: var(--body-color);
+
+    // Alerts
+    --alert-primary-bg: #{$cobalt-shade2};
+    --alert-primary-border-color: #{$cobalt-tint1};
+
+    --alert-secondary-color: var(--body-color);
+    --alert-secondary-background: var(--gray-75);
+    --alert-secondary-border-color: var(--gray-300);
+
+    --alert-success-color: var(--gray-50);
+    --alert-success-bg: var(--success);
+    --alert-success-border-color: #007500;
+
+    --alert-danger-color: var(--gray-50);
+    --alert-danger-bg: var(--danger);
+    --alert-danger-border-color: #AF0000;
+
+    --alert-warning-color: #664D03;
+    --alert-warning-bg: #{$status-warning-soft};
+    --alert-warning-border-color: #FFECB5;
+
+    --alert-info-color: #{$white};
+    --alert-info-bg: #{$tiber-cobalt-aqua-gradient};
+    --alert-info-border-color: var(--cta-primary);
+
+    --alert-light-color: #{$carbon-shade1};
+    --alert-light-bg: var(--hit-box);
+    --alert-light-border-color: var(--gray-300);
+
+    --alert-dark-color: #{$black};
+    --alert-dark-bg: #{$carbon-tint2};
+    --alert-dark-border-color: #{$carbon-tint1-tint};
+
+    // Badges
+
+    --badge-primary-color: var(--gray-50);
+
+    // Buttons
+    --button-primary-bg: var(--primary);
+    --button-primary-border-color: var(--primary);
+    --button-primary-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.10);
+    --button-primary-hover-background-color: linear-gradient(0deg, var(--effect-lighten) 0%, var(--effect-lighten) 100%), var(--primary);
+    --button-primary-hover-color: var(--secondary);
+    --button-primary-active-background-color: linear-gradient(0deg, var(--effect-darken) 0%, var(--effect-darken) 100%), var(--primary);
+    --button-primary-active-color: var(--gray-50);
+    --button-primary-active-border-color: var(--primary);
+    --button-primary-disabled-color: var(--gray-50);
+
+    --button-tag-bg: var(--gray-100);
+    --button-tag-border-color: var(--gray-400);
+    --button-tag-hover-background-color: var(--surface-hover-background-color);
+    --button-tag-hover-border-color: var(--primary);
+    --button-tag-hover-color: var(--body-color);
+    --button-tag-active-background-color: var(--primary);
+    --button-tag-active-color: var(--gray-50);
+    --button-tag-active-border-color: var(--surface-border-color);
+
+    --button-outline-primary-hover-color: var(--gray-50);
+    --button-outline-primary-hover-background-color: linear-gradient(0deg, var(--effect-lighten) 0%, var(--effect-lighten) 100%), var(--primary);
+    --button-outline-primary-hover-border-color: var(--primary);
+    --button-outline-primary-active-color: var(--gray-50);
+    --button-outline-primary-active-background-color: linear-gradient(0deg, var(--effect-darken) 0%, var(--effect-darken) 100%), var(--primary);
+    --button-outline-primary-active-border-color: var(--primary);
+
+    --button-secondary-bg: var(--secondary);
+    --button-secondary-color: var(--primary);
+    --button-secondary-border-color: var(--secondary);
+    --button-secondary-hover-color: var(--primary);
+    --button-secondary-hover-background-color: linear-gradient(0deg, var(--effect-lighten) 0%, var(--effect-lighten) 100%), var(--secondary);
+    --button-secondary-hover-border-color: var(--primary);
+    --button-secondary-active-color: var(--primary);
+    --button-secondary-active-background-color: linear-gradient(0deg, var(--effect-darken) 0%, var(--effect-darken) 100%), var(--secondary);
+    --button-secondary-active-border-color: var(--secondary);
+
+    --button-outline-secondary-hover-color: var(--primary);
+    --button-outline-secondary-hover-background-color: linear-gradient(0deg, var(--effect-lighten) 0%, var(--effect-lighten) 100%), var(--secondary);
+    --button-outline-secondary-hover-border-color: var(--primary);
+    --button-outline-secondary-active-color: var(--primary);
+    --button-outline-secondary-active-background-color: linear-gradient(0deg, var(--effect-darken) 0%, var(--effect-darken) 100%), var(--secondary);
+    --button-outline-secondary-active-border-color: var(--secondary);
+
+    --button-link-color: var(--cta-primary);
+    --button-link-hover-background-color: var(--effect-lighten);
+    --button-link-active-background-color: var(--effect-darken);
+
+    --button-link-inline-color: var(--cta-primary);
+    --button-link-inline-active-color: var(--gray-900);
+
+    --button-success-hover-background-color: #157347;
+    --button-success-hover-border-color: #146C43;
+    --button-success-active-background-color: #006A00;
+    --button-success-disabled-background-color: var(--success);
+    --button-success-disabled-border-color: var(--success);
+    --button-success-disabled-color: #{$white};
+
+    --button-danger-hover-background-color: #BB2D3B;
+    --button-danger-hover-border-color: #B02A37;
+    --button-danger-active-background-color: #B02A37;
+    --button-danger-active-border-color: #A52834;
+    --button-danger-disabled-background-color: var(--danger);
+    --button-danger-disabled-border-color: var(--danger);
+    --button-danger-disabled-color: #{$white};
+
+    --button-warning-hover-background-color: #FFCA2C;
+    --button-warning-hover-border-color: #FFC720;
+    --button-warning-active-background-color: #FFCD39;
+    --button-warning-active-border-color: #FFC720;
+    --button-warning-disabled-background-color: var(--warning);
+    --button-warning-disabled-border-color: var(--warning);
+    --button-warning-disabled-color: #{$black};
+
+    --button-info-hover-background-color: #31D2F2;
+    --button-info-hover-border-color: #25CFF2;
+    --button-info-active-background-color: #3DD5F3;
+    --button-info-active-border-color: #25CFF2;
+    --button-info-disabled-background-color: #{$energy-blue};
+    --button-info-disabled-border-color: #{$energy-blue};
+    --button-info-disabled-color: #{$black};
+
+    --button-light-background-color: #{$white};
+    --button-light-border-color: #{$white};
+    --button-light-hover-background-color: #F9FAFB;
+    --button-light-hover-border-color: #F9FAFB;
+    --button-light-active-background-color: #F9FAFB;
+    --button-light-active-border-color: #F9FAFB;
+    --button-light-disabled-background-color: #{$white};
+    --button-light-disabled-border-color: #{$white};
+    --button-light-disabled-color: #{$black};
+
+    --button-dark-background-color: #{$theme-dark};
+    --button-dark-border-color: #{$theme-dark};
+    --button-dark-hover-background-color: #1C1F23;
+    --button-dark-hover-border-color: #1A1E21;
+    --button-dark-active-background-color: #1A1E21;
+    --button-dark-active-border-color: #191C1F;
+    --button-dark-disabled-background-color: #{$theme-dark};
+    --button-dark-disabled-border-color: #{$theme-dark};
+    --button-dark-disabled-color: #{$white};
+
+    --button-outline-success-disabled-border-color: var(--success);
+    --button-outline-success-disabled-color: var(--success);
+
+    --button-outline-danger-border-color: var(--danger);
+    --button-outline-danger-hover-background-color: linear-gradient(0deg, var(--effect-lighten) 0%, var(--effect-lighten) 100%), var(--danger);
+    --button-outline-danger-active-background-color: linear-gradient(0deg, var(--effect-darken) 0%, var(--effect-darken) 100%), var(--danger);
+    --button-outline-danger-hover-color: var(--gray-50);
+    --button-outline-danger-disabled-border-color: var(--danger);
+    --button-outline-danger-disabled-color: var(--danger);
+
+    --button-outline-warning-disabled-border-color: var(--warning);
+    --button-outline-warning-disabled-color: var(--warning);
+
+    --button-outline-info-disabled-border-color: #{$energy-blue};
+    --button-outline-info-disabled-color: #{$energy-blue};
+
+    --button-outline-light-color: #{$white};
+    --button-outline-light-border-color: #{$white};
+    --button-outline-light-hover-background-color: #{$white};
+    --button-outline-light-hover-border-color: #{$white};
+    --button-outline-light-active-background-color: #{$white};
+    --button-outline-light-active-border-color: #{$white};
+    --button-outline-light-disabled-border-color: #{$white};
+    --button-outline-light-disabled-color: #{$white};
+
+    --button-outline-dark-color: #{$theme-dark};
+    --button-outline-dark-border-color: #{$theme-dark};
+    --button-outline-dark-hover-background-color: #{$theme-dark};
+    --button-outline-dark-hover-border-color: #{$theme-dark};
+    --button-outline-dark-active-background-color: #{$theme-dark};
+    --button-outline-dark-active-border-color: #{$theme-dark};
+    --button-outline-dark-disabled-border-color: #{$theme-dark};
+    --button-outline-dark-disabled-color: #{$theme-dark};
+
+    --button-simple-color: var(--cta-primary);
+    --button-simple-hover-color:  var(--cta-primary);
+    --button-simple-hover-background: var(--effect-darken);
+    --button-simple-active-color: v var(--cta-primary);
+    --button-simple-active-border-color: var(--gray-400);
+    --button-simple-active-background: var(--hit-box);
+    --button-simple-disabled-color: var(--cta-primary);
+
+    //Cards
+    --card-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
+    --card-border: 1px solid rgba(0, 0, 0, 0.13);
+    --card-border-top: .25rem solid #{$aqua-shade1};
+
+    // Checkboxes
+    --checkbox-background-color: var(--primary);
+    --checkbox-border-color: var(--primary);
+
+    // Dropdowns
+    --dropdown-simple-color: #{$black};
+    --dropdown-item-background: var(--hit-box);
+    --dropdown-item-color: var(--body-color);
+    --dropdown-item-hover-background: var(--gray-200);
+    --dropdown-item-hover-color: #1E2125;
+    --dropdown-item-active-background: var(--primary);
+    --dropdown-item-active-color: #{$gray-white};
+    --dropdown-item-disabled-color: var(--gray-600);    
+
+    --dropdown-item-simple-hover-background: var(--surface-hover-background-color);
+    --dropdown-item-simple-active-background: var(--surface-selected-background-color);
+    --dropdown-item-simple-active-color: var(--body-color);
+
+    --dropdown-select-caret:  url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23005252%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
+    --dropdown-select-caret-disabled:  url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%236A6D75%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
+
+    // Forms
+
+    --form-control-border-color: var(--gray-700);
+    --form-control-place-holder-color: var(--gray-600);
+    --form-control-hover-border-color: var(--cta-primary);
+    --form-control-hover-background-color: var(--gray-75);
+    --form-control-disabled-background-color: var(--gray-200);
+    --form-control-disabled-border-color: var(--gray-500);
+    --form-control-error-color: #{$status-error};
+    --form-control-error-border-color: #{$status-error};
+
+    // Navs
+    --nav-item-disabled-color: var(--gray-600);
+    --nav-item-svg-color: var(--cta-primary);
+    --nav-item-hover-background-color: var(--surface-hover-background-color);
+    --nav-item-active-background-color: var(--surface-active-background-color);
+
+    --nav-item-second-level-background: var(--hit-box);
+    --nav-item-second-level-hover-background: var(--surface-hover-background-color);
+    --nav-item-second-level-active-background: var(--surface-selected-background-color);
+
+    // Navbar
+    --navbar-border-bottom-color: #{var(--gray-400)};
+    --nav-bar-svg-color: var(--cta-primary);
+    --nav-bar-nav-item-hover-background-color: var(--surface-hover-background-color);
+    --nav-bar-nav-item-active-background-color: var(--surface-active-background-color);
+
+    --nav-bar-site-toolbar-background-color: var(--surface-background-gradient-color);
+    --nav-bar-site-toolbar-border-bottom-color: #{var(--gray-400)};
+
+    // Range
+
+    --range-slider-thumb-background-color: var(--primary);
+    --range-slider-thumb-border-color: var(--primary);
+
+   // Tabs
+    --nav-tab-nav-item-background: var(--surface-background-color);
+    --nav-tab-nav-item-border-color: var(--nav-bar-site-toolbar-border-bottom-color);
+    --nav-tab-nav-item-inactive-color: var(--cta-primary);
+    --nav-tab-nav-item-hover-background-color: var(--surface-hover-background-color);
+
+    --nav-tab-secondary-active-shadow-color: #{$aqua-shade3};
+
+    // Toast
+
+    --toast-color: var(--gray-50);
+
+    --toast-success-bg: var(--success);
+
+    --toast-danger-bg: var(--danger);
+
+    // Typography
+    --link-color: var(--cta-primary);
+    --link-hover-color: #{$aqua-shade3};
+    --text-primary: var(--cta-primary);
+    --code-block-color: var(--gray-50);
+    --code-block-background-color: var(--gray-800);
+}
+
+

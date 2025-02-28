@@ -1,0 +1,37 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "universe_config",
+    srcs = [
+        "git.go",
+        "universe_config.go",
+        "universe_config_files.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/universe_deployer/universe_config",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/universe_deployer/env_config/types",
+        "//go/pkg/universe_deployer/util",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_jedib0t_go_pretty_v6//table",
+    ],
+)
+
+go_test(
+    name = "universe_config_test",
+    srcs = [
+        "suite_test.go",
+        "universe_config_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":universe_config"],
+    rundir = ".",
+    deps = [
+        "//go/pkg/log",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

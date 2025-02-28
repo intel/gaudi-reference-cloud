@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>    
+  <title>$$CONSOLENAME$$</title>
+  <link rel="icon" href="$$CDN$$/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="locale" content="en-US">
+    <meta name="ROBOTS" content="NONE, NOARCHIVE">
+    <meta name="GOOGLEBOT" content="NOARCHIVE">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+    href="$$CDN$$/static/css/main.css"
+    rel="stylesheet"
+    data-preload="true"
+    />
+    <script type="text/javascript" src="$$CDN$$/analytics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        var captcha_passed = false;
+        
+        function on_captcha_filled() {
+            captcha_passed = true;
+            var response = grecaptcha.getResponse();
+            document.getElementById("g-recaptcha-response-toms").value = response;
+        }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+  <div id="root" data-bs-theme="light" class="custom-captcha-template">
+    <div id="overlay"></div>
+      <div id="ajax-loader">
+        <div class="loader"></div>
+     </div>
+    <div class="container registration-container" role="main">
+      <div class="registration-section">
+        <div
+          class="siteNavBrand d-flex text-center align-items-center gap-s6"
+        >
+          <a class="btn btn-link" href="$$SIGNUPURL$$" aria-label="Back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+            </svg>
+             Back
+            </a>
+        </div>
+        <div id="api" role="main"></div>
+        <div class="g-recaptcha align-self-center" data-callback="on_captcha_filled" data-sitekey="6LcjGlEqAAAAAKl6YT4RHItyRq9A4VYzrrcRY_Ui"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</body>
+<script>
+  $(document).ready(function () {
+
+    var countries = [
+    {"name": "Afghanistan", "code": "AF", "dialCode": "+93"},
+    {"name": "Åland Islands", "code": "AX", "dialCode": "+358"},
+    {"name": "Albania", "code": "AL", "dialCode": "+355"},
+    {"name": "Algeria", "code": "DZ", "dialCode": "+213"},
+    {"name": "American Samoa", "code": "AS", "dialCode": "+1-684"},
+    {"name": "Andorra", "code": "AD", "dialCode": "+376"},
+    {"name": "Angola", "code": "AO", "dialCode": "+244"},
+    {"name": "Anguilla", "code": "AI", "dialCode": "+1-264"},
+    {"name": "Antarctica", "code": "AQ", "dialCode": "+672"},
+    {"name": "Antigua and Barbuda", "code": "AG", "dialCode": "+1-268"},
+    {"name": "Argentina", "code": "AR", "dialCode": "+54"},
+    {"name": "Armenia", "code": "AM", "dialCode": "+374"},
+    {"name": "Aruba", "code": "AW", "dialCode": "+297"},
+    {"name": "Australia", "code": "AU", "dialCode": "+61"},
+    {"name": "Austria", "code": "AT", "dialCode": "+43"},
+    {"name": "Azerbaijan", "code": "AZ", "dialCode": "+994"},
+    {"name": "Bahamas", "code": "BS", "dialCode": "+1-242"},
+    {"name": "Bahrain", "code": "BH", "dialCode": "+973"},
+    {"name": "Bangladesh", "code": "BD", "dialCode": "+880"},
+    {"name": "Barbados", "code": "BB", "dialCode": "+1-246"},
+    {"name": "Belarus", "code": "BY", "dialCode": "+375"},
+    {"name": "Belgium", "code": "BE", "dialCode": "+32"},
+    {"name": "Belize", "code": "BZ", "dialCode": "+501"},
+    {"name": "Benin", "code": "BJ", "dialCode": "+229"},
+    {"name": "Bermuda", "code": "BM", "dialCode": "+1-441"},
+    {"name": "Bhutan", "code": "BT", "dialCode": "+975"},
+    {"name": "Bolivia", "code": "BO", "dialCode": "+591"},
+    {"name": "Bosnia and Herzegovina", "code": "BA", "dialCode": "+387"},
+    {"name": "Botswana", "code": "BW", "dialCode": "+267"},
+    {"name": "Bouvet Island", "code": "BV", "dialCode": "+47"},
+    {"name": "Brazil", "code": "BR", "dialCode": "+55"},
+    {"name": "British Indian Ocean Territory", "code": "IO", "dialCode": "+246"},
+    {"name": "Brunei Darussalam", "code": "BN", "dialCode": "+673"},
+    {"name": "Bulgaria", "code": "BG", "dialCode": "+359"},
+    {"name": "Burkina Faso", "code": "BF", "dialCode": "+226"},
+    {"name": "Burundi", "code": "BI", "dialCode": "+257"},
+    {"name": "Cambodia", "code": "KH", "dialCode": "+855"},
+    {"name": "Cameroon", "code": "CM", "dialCode": "+237"},
+    {"name": "Canada", "code": "CA", "dialCode": "+1"},
+    {"name": "Cape Verde", "code": "CV", "dialCode": "+238"},
+    {"name": "Cayman Islands", "code": "KY", "dialCode": "+1-345"},
+    {"name": "Central African Republic", "code": "CF", "dialCode": "+236"},
+    {"name": "Chad", "code": "TD", "dialCode": "+235"},
+    {"name": "Chile", "code": "CL", "dialCode": "+56"},
+    {"name": "China", "code": "CN", "dialCode": "+86"},
+    {"name": "Christmas Island", "code": "CX", "dialCode": "+61"},
+    {"name": "Cocos (Keeling) Islands", "code": "CC", "dialCode": "+61"},
+    {"name": "Colombia", "code": "CO", "dialCode": "+57"},
+    {"name": "Comoros", "code": "KM", "dialCode": "+269"},
+    {"name": "Congo", "code": "CG", "dialCode": "+242"},
+    {"name": "Congo, The Democratic Republic of the", "code": "CD", "dialCode": "+243"},
+    {"name": "Cook Islands", "code": "CK", "dialCode": "+682"},
+    {"name": "Costa Rica", "code": "CR", "dialCode": "+506"},
+    {"name": "Cote D'Ivoire", "code": "CI", "dialCode": "+225"},
+    {"name": "Croatia", "code": "HR", "dialCode": "+385"},
+    {"name": "Cuba", "code": "CU", "dialCode": "+53"},
+    {"name": "Cyprus", "code": "CY", "dialCode": "+357"},
+    {"name": "Czech Republic", "code": "CZ", "dialCode": "+420"},
+    {"name": "Denmark", "code": "DK", "dialCode": "+45"},
+    {"name": "Djibouti", "code": "DJ", "dialCode": "+253"},
+    {"name": "Dominica", "code": "DM", "dialCode": "+1-767"},
+    {"name": "Dominican Republic", "code": "DO", "dialCode": "+1-809, +1-829, +1-849"},
+    {"name": "Ecuador", "code": "EC", "dialCode": "+593"},
+    {"name": "Egypt", "code": "EG", "dialCode": "+20"},
+    {"name": "El Salvador", "code": "SV", "dialCode": "+503"},
+    {"name": "Equatorial Guinea", "code": "GQ", "dialCode": "+240"},
+    {"name": "Eritrea", "code": "ER", "dialCode": "+291"},
+    {"name": "Estonia", "code": "EE", "dialCode": "+372"},
+    {"name": "Ethiopia", "code": "ET", "dialCode": "+251"},
+    {"name": "Falkland Islands (Malvinas)", "code": "FK", "dialCode": "+500"},
+    {"name": "Faroe Islands", "code": "FO", "dialCode": "+298"},
+    {"name": "Fiji", "code": "FJ", "dialCode": "+679"},
+    {"name": "Finland", "code": "FI", "dialCode": "+358"},
+    {"name": "France", "code": "FR", "dialCode": "+33"},
+    {"name": "French Guiana", "code": "GF", "dialCode": "+594"},
+    {"name": "French Polynesia", "code": "PF", "dialCode": "+689"},
+    {"name": "Gabon", "code": "GA", "dialCode": "+241"},
+    {"name": "Gambia", "code": "GM", "dialCode": "+220"},
+    {"name": "Georgia", "code": "GE", "dialCode": "+995"},
+    {"name": "Germany", "code": "DE", "dialCode": "+49"},
+    {"name": "Ghana", "code": "GH", "dialCode": "+233"},
+    {"name": "Gibraltar", "code": "GI", "dialCode": "+350"},
+    {"name": "Greece", "code": "GR", "dialCode": "+30"},
+    {"name": "Greenland", "code": "GL", "dialCode": "+299"},
+    {"name": "Grenada", "code": "GD", "dialCode": "+1-473"},
+    {"name": "Guadeloupe", "code": "GP", "dialCode": "+590"},
+    {"name": "Guam", "code": "GU", "dialCode": "+1-671"},
+    {"name": "Guatemala", "code": "GT", "dialCode": "+502"},
+    {"name": "Guernsey", "code": "GG", "dialCode": "+44"},
+    {"name": "Guinea", "code": "GN", "dialCode": "+224"},
+    {"name": "Guinea-Bissau", "code": "GW", "dialCode": "+245"},
+    {"name": "Guyana", "code": "GY", "dialCode": "+592"},
+    {"name": "Haiti", "code": "HT", "dialCode": "+509"},
+    {"name": "Heard Island and McDonald Islands", "code": "HM", "dialCode": "+672"},
+    {"name": "Holy See (Vatican City State)", "code": "VA", "dialCode": "+379"},
+    {"name": "Honduras", "code": "HN", "dialCode": "+504"},
+    {"name": "Hong Kong", "code": "HK", "dialCode": "+852"},
+    {"name": "Hungary", "code": "HU", "dialCode": "+36"},
+    {"name": "Iceland", "code": "IS", "dialCode": "+354"},
+    {"name": "India", "code": "IN", "dialCode": "+91"},
+    {"name": "Indonesia", "code": "ID", "dialCode": "+62"},
+    {"name": "Iran, Islamic Republic of", "code": "IR", "dialCode": "+98"},
+    {"name": "Iraq", "code": "IQ", "dialCode": "+964"},
+    {"name": "Ireland", "code": "IE", "dialCode": "+353"},
+    {"name": "Isle of Man", "code": "IM", "dialCode": "+44"},
+    {"name": "Israel", "code": "IL", "dialCode": "+972"},
+    {"name": "Italy", "code": "IT", "dialCode": "+39"},
+    {"name": "Jamaica", "code": "JM", "dialCode": "+1-876"},
+    {"name": "Japan", "code": "JP", "dialCode": "+81"},
+    {"name": "Jersey", "code": "JE", "dialCode": "+44"},
+    {"name": "Jordan", "code": "JO", "dialCode": "+962"},
+    {"name": "Kazakhstan", "code": "KZ", "dialCode": "+7"},
+    {"name": "Kenya", "code": "KE", "dialCode": "+254"},
+    {"name": "Kiribati", "code": "KI", "dialCode": "+686"},
+    {"name": "Korea, Democratic People's Republic of", "code": "KP", "dialCode": "+850"},
+    {"name": "Korea, Republic of", "code": "KR", "dialCode": "+82"},
+    {"name": "Kuwait", "code": "KW", "dialCode": "+965"},
+    {"name": "Kyrgyzstan", "code": "KG", "dialCode": "+996"},
+    {"name": "Lao People's Democratic Republic", "code": "LA", "dialCode": "+856"},
+    {"name": "Latvia", "code": "LV", "dialCode": "+371"},
+    {"name": "Lebanon", "code": "LB", "dialCode": "+961"},
+    {"name": "Lesotho", "code": "LS", "dialCode": "+266"},
+    {"name": "Liberia", "code": "LR", "dialCode": "+231"},
+    {"name": "Libya", "code": "LY", "dialCode": "+218"},
+    {"name": "Liechtenstein", "code": "LI", "dialCode": "+423"},
+    {"name": "Lithuania", "code": "LT", "dialCode": "+370"},
+    {"name": "Luxembourg", "code": "LU", "dialCode": "+352"},
+    {"name": "Macao", "code": "MO", "dialCode": "+853"},
+    {"name": "Macedonia, The Former Yugoslav Republic of", "code": "MK", "dialCode": "+389"},
+    {"name": "Madagascar", "code": "MG", "dialCode": "+261"},
+    {"name": "Malawi", "code": "MW", "dialCode": "+265"},
+    {"name": "Malaysia", "code": "MY", "dialCode": "+60"},
+    {"name": "Maldives", "code": "MV", "dialCode": "+960"},
+    {"name": "Mali", "code": "ML", "dialCode": "+223"},
+    {"name": "Malta", "code": "MT", "dialCode": "+356"},
+    {"name": "Marshall Islands", "code": "MH", "dialCode": "+692"},
+    {"name": "Martinique", "code": "MQ", "dialCode": "+596"},
+    {"name": "Mauritania", "code": "MR", "dialCode": "+222"},
+    {"name": "Mauritius", "code": "MU", "dialCode": "+230"},
+    {"name": "Mayotte", "code": "YT", "dialCode": "+262"},
+    {"name": "Mexico", "code": "MX", "dialCode": "+52"},
+    {"name": "Micronesia, Federated States of", "code": "FM", "dialCode": "+691"},
+    {"name": "Moldova, Republic of", "code": "MD", "dialCode": "+373"},
+    {"name": "Monaco", "code": "MC", "dialCode": "+377"},
+    {"name": "Mongolia", "code": "MN", "dialCode": "+976"},
+    {"name": "Montenegro", "code": "ME", "dialCode": "+382"},
+    {"name": "Montserrat", "code": "MS", "dialCode": "+1-664"},
+    {"name": "Morocco", "code": "MA", "dialCode": "+212"},
+    {"name": "Mozambique", "code": "MZ", "dialCode": "+258"},
+    {"name": "Myanmar", "code": "MM", "dialCode": "+95"},
+    {"name": "Namibia", "code": "NA", "dialCode": "+264"},
+    {"name": "Nauru", "code": "NR", "dialCode": "+674"},
+    {"name": "Nepal", "code": "NP", "dialCode": "+977"},
+    {"name": "Netherlands", "code": "NL", "dialCode": "+31"},
+    {"name": "New Caledonia", "code": "NC", "dialCode": "+687"},
+    {"name": "New Zealand", "code": "NZ", "dialCode": "+64"},
+    {"name": "Nicaragua", "code": "NI", "dialCode": "+505"},
+    {"name": "Niger", "code": "NE", "dialCode": "+227"},
+    {"name": "Nigeria", "code": "NG", "dialCode": "+234"},
+    {"name": "Niue", "code": "NU", "dialCode": "+683"},
+    {"name": "Norfolk Island", "code": "NF", "dialCode": "+672"},
+    {"name": "Northern Mariana Islands", "code": "MP", "dialCode": "+1-670"},
+    {"name": "Norway", "code": "NO", "dialCode": "+47"},
+    {"name": "Oman", "code": "OM", "dialCode": "+968"},
+    {"name": "Pakistan", "code": "PK", "dialCode": "+92"},
+    {"name": "Palau", "code": "PW", "dialCode": "+680"},
+    {"name": "Palestine, State of", "code": "PS", "dialCode": "+970"},
+    {"name": "Panama", "code": "PA", "dialCode": "+507"},
+    {"name": "Papua New Guinea", "code": "PG", "dialCode": "+675"},
+    {"name": "Paraguay", "code": "PY", "dialCode": "+595"},
+    {"name": "Peru", "code": "PE", "dialCode": "+51"},
+    {"name": "Philippines", "code": "PH", "dialCode": "+63"},
+    {"name": "Pitcairn", "code": "PN", "dialCode": "+64"},
+    {"name": "Poland", "code": "PL", "dialCode": "+48"},
+    {"name": "Portugal", "code": "PT", "dialCode": "+351"},
+    {"name": "Puerto Rico", "code": "PR", "dialCode": "+1-787, +1-939"},
+    {"name": "Qatar", "code": "QA", "dialCode": "+974"},
+    {"name": "Reunion", "code": "RE", "dialCode": "+262"},
+    {"name": "Romania", "code": "RO", "dialCode": "+40"},
+    {"name": "Russian Federation", "code": "RU", "dialCode": "+7"},
+    {"name": "Rwanda", "code": "RW", "dialCode": "+250"},
+    {"name": "Saint Barthelemy", "code": "BL", "dialCode": "+590"},
+    {"name": "Saint Helena, Ascension and Tristan Da Cunha", "code": "SH", "dialCode": "+290"},
+    {"name": "Saint Kitts and Nevis", "code": "KN", "dialCode": "+1-869"},
+    {"name": "Saint Lucia", "code": "LC", "dialCode": "+1-758"},
+    {"name": "Saint Martin", "code": "MF", "dialCode": "+590"},
+    {"name": "Saint Pierre and Miquelon", "code": "PM", "dialCode": "+508"},
+    {"name": "Saint Vincent and the Grenadines", "code": "VC", "dialCode": "+1-784"},
+    {"name": "Samoa", "code": "WS", "dialCode": "+685"},
+    {"name": "San Marino", "code": "SM", "dialCode": "+378"},
+    {"name": "Sao Tome and Principe", "code": "ST", "dialCode": "+239"},
+    {"name": "Saudi Arabia", "code": "SA", "dialCode": "+966"},
+    {"name": "Senegal", "code": "SN", "dialCode": "+221"},
+    {"name": "Serbia", "code": "RS", "dialCode": "+381"},
+    {"name": "Seychelles", "code": "SC", "dialCode": "+248"},
+    {"name": "Sierra Leone", "code": "SL", "dialCode": "+232"},
+    {"name": "Singapore", "code": "SG", "dialCode": "+65"},
+    {"name": "Sint Maarten", "code": "SX", "dialCode": "+1-721"},
+    {"name": "Slovakia", "code": "SK", "dialCode": "+421"},
+    {"name": "Slovenia", "code": "SI", "dialCode": "+386"},
+    {"name": "Solomon Islands", "code": "SB", "dialCode": "+677"},
+    {"name": "Somalia", "code": "SO", "dialCode": "+252"},
+    {"name": "South Africa", "code": "ZA", "dialCode": "+27"},
+    {"name": "South Georgia and the South Sandwich Islands", "code": "GS", "dialCode": "+500"},
+    {"name": "South Sudan", "code": "SS", "dialCode": "+211"},
+    {"name": "Spain", "code": "ES", "dialCode": "+34"},
+    {"name": "Sri Lanka", "code": "LK", "dialCode": "+94"},
+    {"name": "Sudan", "code": "SD", "dialCode": "+249"},
+    {"name": "Suriname", "code": "SR", "dialCode": "+597"},
+    {"name": "Svalbard and Jan Mayen", "code": "SJ", "dialCode": "+47"},
+    {"name": "Swaziland", "code": "SZ", "dialCode": "+268"},
+    {"name": "Sweden", "code": "SE", "dialCode": "+46"},
+    {"name": "Switzerland", "code": "CH", "dialCode": "+41"},
+    {"name": "Syrian Arab Republic", "code": "SY", "dialCode": "+963"},
+    {"name": "Taiwan, Province of China", "code": "TW", "dialCode": "+886"},
+    {"name": "Tajikistan", "code": "TJ", "dialCode": "+992"},
+    {"name": "Tanzania, United Republic of", "code": "TZ", "dialCode": "+255"},
+    {"name": "Thailand", "code": "TH", "dialCode": "+66"},
+    {"name": "Timor-Leste", "code": "TL", "dialCode": "+670"},
+    {"name": "Togo", "code": "TG", "dialCode": "+228"},
+    {"name": "Tokelau", "code": "TK", "dialCode": "+690"},
+    {"name": "Tonga", "code": "TO", "dialCode": "+676"},
+    {"name": "Trinidad and Tobago", "code": "TT", "dialCode": "+1-868"},
+    {"name": "Tunisia", "code": "TN", "dialCode": "+216"},
+    {"name": "Turkey", "code": "TR", "dialCode": "+90"},
+    {"name": "Turkmenistan", "code": "TM", "dialCode": "+993"},
+    {"name": "Turks and Caicos Islands", "code": "TC", "dialCode": "+1-649"},
+    {"name": "Tuvalu", "code": "TV", "dialCode": "+688"},
+    {"name": "Uganda", "code": "UG", "dialCode": "+256"},
+    {"name": "Ukraine", "code": "UA", "dialCode": "+380"},
+    {"name": "United Arab Emirates", "code": "AE", "dialCode": "+971"},
+    {"name": "United Kingdom", "code": "GB", "dialCode": "+44"},
+    {"name": "United States", "code": "US", "dialCode": "+1"},
+    {"name": "Uruguay", "code": "UY", "dialCode": "+598"},
+    {"name": "Uzbekistan", "code": "UZ", "dialCode": "+998"},
+    {"name": "Vanuatu", "code": "VU", "dialCode": "+678"},
+    {"name": "Venezuela", "code": "VE", "dialCode": "+58"},
+    {"name": "Viet Nam", "code": "VN", "dialCode": "+84"},
+    {"name": "Virgin Islands, British", "code": "VG", "dialCode": "+1-284"},
+    {"name": "Virgin Islands, U.S.", "code": "VI", "dialCode": "+1-340"},
+    {"name": "Wallis and Futuna", "code": "WF", "dialCode": "+681"},
+    {"name": "Western Sahara", "code": "EH", "dialCode": "+212"},
+    {"name": "Yemen", "code": "YE", "dialCode": "+967"},
+    {"name": "Zambia", "code": "ZM", "dialCode": "+260"},
+    {"name": "Zimbabwe", "code": "ZW", "dialCode": "+263"}
+]
+
+    $(document).ajaxStart(function () {
+        $("#ajax-loader, #overlay").fadeIn();
+    });
+
+    $(document).ajaxStop(function () {
+        $("#ajax-loader, #overlay").fadeOut();
+    });
+
+    // Add styling class
+    $("#continue").addClass('btn btn-primary w-100')
+    $(".intro").addClass("registration-header")
+    $("#api").addClass("registration-form")
+    $("form").addClass("registration-form")
+    $("form #attributeList").addClass("w-100")
+    $("form .attr>ul").addClass("registration-form ps-0")
+    $("#optIn_true").parent().addClass("optional")
+    $("#country").addClass("form-dropdown-select form-select")
+    $("#country").addClass('placeholder-color')
+
+    // Append new elements
+    $("#api>.intro").prepend("<span>Please provide the following details to get started.</span>")
+    $("#api>.intro").prepend('<h1 class="h3">Create account</h1>')
+    $('.g-recaptcha').appendTo('#attributeList ul');
+    $(`<div id="new-password-container" class="password-container"></div>`).insertBefore($("#newPassword"))
+    $(`<div id="confirm-password-container" class="password-container"></div>`).insertBefore($("#reenterPassword"))
+    $('#new-password-container').prepend(
+        ` <span tab-index="0" aria-label="Toggle new password visibility" class="input-eye-icon none">
+          </span>
+    `)
+    $('#confirm-password-container').prepend(
+        ` <span tab-index="0" aria-label="Toggle confirm password visibility" class="input-eye-icon none">
+          </span>
+    `)
+    const tooltipHTML = `
+        <div class="tooltip-body">
+            <span>Password must contain</span>
+            <ul>
+                <li>At least 8 characters</li>
+                <li>Uppercase letters</li>
+                <li>One or more numbers</li>
+                <li>One or more symbols</li>
+            </ul>
+        </div>
+    `
+    $("#newPassword").attr("data-bs-toggle", "tooltip")
+    $("#newPassword").attr("data-bs-html", "true")
+    $("#newPassword").attr("data-bs-placement", "right")
+    $("#newPassword").attr("data-bs-container", "body")
+    $("#newPassword").attr("data-bs-title", tooltipHTML)
+    $("#reenterPassword").attr("data-bs-toggle", "tooltip")
+    $("#reenterPassword").attr("data-bs-html", "true")
+    $("#reenterPassword").attr("data-bs-container", "body")
+    $("#reenterPassword").attr("data-bs-placement", "right")
+    $("#reenterPassword").attr("data-bs-title", tooltipHTML)
+
+    // Replacements
+    $("#continue").text("Get started")
+    $("#email").attr('placeholder', 'Enter your email address')    
+    $("#newPassword").attr('placeholder', 'Enter password')
+    $("#reenterPassword").attr('placeholder', 'Confirm password')
+    $("#givenName").attr('placeholder', 'Enter first name')
+    $("#surname").attr('placeholder', 'Enter last name')
+    $('#country>option[disabled="disabled"]').text("Select country")
+    $("#mobileNumber").attr('placeholder', 'Enter mobile phone number')
+    $('label[for="toc_true"]').html('By checking here, I state that I have read and understood the <a href="https://www.intel.com/content/www/us/en/content-details/784518/intel-commercial-software-saas-terms-and-conditions.html" target="_blank">terms and conditions</a>');
+    $('label[for="optIn_true"]').html('I opt-in to Intel® Tiber™ AI Cloud communications.');
+
+    // Move elements
+    $("#email").parent().children(".error.itemLevel").insertAfter("#email")
+    $("#country").parent().children(".error.itemLevel").insertAfter("#country")
+    $("#newPassword").prependTo("#new-password-container")
+    $("#new-password-container").parent().children(".error.itemLevel").insertAfter("#newPassword")
+    $("#reenterPassword").prependTo("#confirm-password-container")
+    $("#confirm-password-container").parent().children(".error.itemLevel").insertAfter("#reenterPassword")
+    $("#givenName").parent().children(".error.itemLevel").insertAfter("#givenName")
+    $("#surname").parent().children(".error.itemLevel").insertAfter("#surname")
+    $("#mobileNumber").parent().children(".error.itemLevel").insertAfter("#mobileNumber")    
+    $("#g-recaptcha-response-toms").parent().children(".error.itemLevel").insertAfter("#g-recaptcha-response-toms")
+    $('<div id="toc_true_container" class="form-check"></div>').insertBefore($("#toc_true"))
+    $("#toc_true").appendTo("#toc_true_container")
+    $('label[for="toc_true"]').appendTo("#toc_true_container")
+    $('<div id="optIn_true_container" class="form-check"></div>').insertBefore($("#optIn_true"))
+    $("#optIn_true").appendTo("#optIn_true_container")
+    $('label[for="optIn_true"]').appendTo("#optIn_true_container")
+    $("#toc_true_container").parent().children(".error.itemLevel").insertAfter("#true_option")
+    $("#optIn_true_container").parent().children(".error.itemLevel").insertAfter("#optIn_true")
+    $(".CheckboxMultiSelect:has( #toc_true)").insertAfter(".CheckboxMultiSelect:has( #optIn_true)")
+
+    // Custom Logic
+    $("#country").change(function() {
+        var selectedCountry = countries.find(m=>m.dialCode == $('#country option:selected').val());
+
+        if(selectedCountry != undefined)
+          $('#extension_country').val(selectedCountry.code);
+        $("#country").removeClass('placeholder-color')
+    });
+
+    $("#continue").on("click", function () {
+        grecaptcha?.reset();
+    })
+
+    function setPasswordVisibility (id) {
+        const shouldHide = $(id).parent().children(".input-eye-icon").hasClass("none") || $(id).parent().children(".input-eye-icon").hasClass("show")
+        if (shouldHide) {
+            $(id).parent().children(".input-eye-icon").html(
+            ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"/>
+                <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"/>
+              </svg>
+            `
+            )
+            $(id).parent().children(".input-eye-icon").removeClass("none show").addClass("hide")
+            $(id).attr("type", "password")
+        } else {
+            $(id).parent().children(".input-eye-icon").html(
+            ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+              </svg>
+            `
+          )
+          $(id).parent().children(".input-eye-icon").removeClass("hide").addClass("show")
+          $(id).attr("type", "text")
+        }
+      }
+      $("#new-password-container .input-eye-icon").on("click", function() {
+        setPasswordVisibility("#newPassword")
+      })
+      $("#confirm-password-container .input-eye-icon").on("click", function() {
+        setPasswordVisibility("#reenterPassword")
+      })
+      setPasswordVisibility("#newPassword")
+      setPasswordVisibility("#reenterPassword")
+
+      function enableTooltips() {
+        if (bootstrap === undefined) {
+            setTimeout(() => {
+                enableTooltips()
+            }, 500);
+        } else if (bootstrap) {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        }
+      }
+
+      setTimeout(() => {
+        enableTooltips()
+      }, 500)
+
+      $("#continue").attr("data-wap_ref", "btn-signup")
+
+      var checkLoadWap = setInterval(function() {
+        if (typeof loadWap === "function") {
+            clearInterval(checkLoadWap); // Stop checking once function is available
+            loadWap(); // Call the function
+        }
+    }, 500); // Check every 500ms
+  })
+</script>
+</html>

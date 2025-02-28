@@ -1,0 +1,20 @@
+replicaCount: 1
+
+image:
+  tgiProxy:
+    repository: cnvrg/infaas-inference
+    pullPolicy: Always
+    tag: "proxy-dev"
+  tgiServer:
+    repository: "moditamam/tgi-gaudi"
+    pullPolicy: IfNotPresent
+    tag: "2.0.6"
+
+imagePullSecrets:
+  - name: cnvrg-dockerhub-secret
+  
+volumes:
+  - name: models-cache
+    hostPath:
+      path: /data
+      type: Directory

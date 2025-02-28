@@ -1,0 +1,5 @@
+apiVersion: v2
+name: network-crds
+description: IDC Network Custom Resource Definitions
+type: application
+version: 0.1.0

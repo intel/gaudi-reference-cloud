@@ -1,0 +1,14 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  labels:
+    harvesterhci.io/imageDisplayName: "iks-vm-u22-wk-1-31-3-v250108"
+    harvesterhci.io/image-type: "raw_qcow2"
+    harvesterhci.io/os-type: "ubuntu"
+  name: "iks-vm-u22-wk-1-31-3-v250108"
+  namespace: "default"
+spec:
+  checksum: "c2766c653e32bfad5076cb7896adbf0c63e5468c212757c8543eb1a2704e01e665c8c831184a797a8f795b2fbea609edc0eb3343e322de3a29e2926b78f6ca86"
+  displayName: "iks-vm-u22-wk-1-31-3-v250108"
+  sourceType: "download"
+  url: "http://10.45.124.15/vmaas/images/iks-vm-u22-wk-1-31-3-v250108.qcow2"

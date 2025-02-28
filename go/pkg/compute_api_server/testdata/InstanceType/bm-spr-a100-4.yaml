@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+metadata:
+  name: bm-spr-a100-4
+spec:
+  name: bm-spr-a100-4
+  displayName: NVIDIA A100 Tensor Core GPUs on 4th Gen Intel® Xeon® processors – A100 series (4x)
+  description: NVIDIA A100 Tensor Core GPUs on 4th Gen Intel® Xeon® processors – A100 series (4x)
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 56
+    id: "0x806F8"
+    modelName: 4th Generation Intel® Xeon® Scalable Processors (Sapphire Rapids)
+    sockets: 2
+    threads: 2
+  gpu:
+    modelName: "a100"
+    count: 4
+  memory:
+    size: 512Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4800
+  disks:
+    - size: 7153Gi

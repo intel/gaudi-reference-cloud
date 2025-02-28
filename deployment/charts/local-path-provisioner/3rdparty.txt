@@ -1,0 +1,9 @@
+```text
+SPDX-License-Identifier: Apache-2.0
+Copyright (c) Intel Corporation
+```
+
+#local-path-provisioner chart source
+https://github.com/rancher/local-path-provisioner
+
+Commit SHA-1: `97e0501428f0a5bcac49ecd0bfdb051797c4a6c5`

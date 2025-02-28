@@ -1,0 +1,231 @@
+# Default values for baremetal-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# If true, the operator will watch all namespaces.
+# By default, only baremetalhosts in .Release.namespace are watched.
+watchAllNamespaces: false
+
+useHostNetwork: false
+
+# Disable ironic pod dnsmasq container if set to true
+disableIronicPodDnsmasq: true
+
+# If true, enable init container to download IPA images.
+enableIPAinitContainer: false
+
+# Baremetal Operator images
+# quay.io/metal3-io/baremetal-operator
+bareMetalOperatorImageRepo: internal-placeholder.com/intelcloud/baremetal-operator
+bareMetalOperatorImagePullPolicy: IfNotPresent
+bareMetalOperatorImageTag: "7-68ce9c1"
+
+# bitnami/kube-rbac-proxy
+kubeRBACPolicyImageRepo: internal-placeholder.com/cache/bitnami/kube-rbac-proxy
+kubeRBACPolicyImagePullPolicy: IfNotPresent
+kubeRBACPolicyImageTag: 0.18.1
+
+# Baremetal Ironic images
+# quay.io/metal3-io/ironic
+ironicImageRepo: internal-placeholder.com/intelcloud/ironic-image
+ironicImagePullPolicy: IfNotPresent
+ironicImageTag: "10-84928c8"
+
+# IPA Downloader Image
+# quay.io/metal3-io/ironic-ipa-downloader
+ironicIPAImageRepo: internal-placeholder.com/cache-quay/metal3-io/ironic-ipa-downloader
+ironicIPAImagePullPolicy: IfNotPresent
+ironicIPAImageTag: latest
+
+# MariaDB image
+# quay.io/metal3-io/mariadb
+mariaDBImageRepo: internal-placeholder.com/cache-quay/metal3-io/mariadb
+mariaDBImagePullPolicy: IfNotPresent
+mariaDBImageTag: latest
+mariaDBPassword: changeme
+
+ironic:
+  username: idcs
+  password: changeme
+
+inspector:
+  username: idcs
+  password: changeme
+
+ironicEnvConfigMap:
+  automatedCleaningTimeout: 6000
+  bootRetryTimeout: 2100
+  cacheURL: http://127.0.0.1/images
+  deployCallbackTimeout: 6300
+  deployKernelURL: http://127.0.0.1:6180/images/ironic-python-agent.kernel
+  deployRamdiskURL: http://127.0.0.1:6180/images/ironic-python-agent.initramfs
+  dhcpRangeStartingIP: 172.22.0.10
+  dhcpRangeFinalIP: 172.22.0.100
+  disableIronicDHCP: true
+  enableAnsibleDeployInterface: false
+  enableEraseDevices: false
+  httpPort: 6180
+  inspectorAddPorts: all
+  ironicCert: /certs/ironic/tls.crt
+  ironicCACert: /certs/ca/ironic/tls.crt
+  ironicKey: /certs/ironic/tls.key
+  inspectorCert: /certs/ironic-inspector/tls.crt
+  inspectorCACert: /certs/ca/ironic-inspector/tls.crt
+  inspectorKey: /certs/ironic-inspector/tls.key
+  ironicEndpoint: http://127.0.0.1:6385/v1/
+  ironicIP: ""
+  ironicInspectionTimeout: 2700
+  ironicInspectorEndpoint: http://127.0.0.1:5050/v1/
+  ironicFastTrack: true
+  ironicUseMariaDB: true
+  mariaDBCert: /certs/mariadb/tls.crt
+  mariaDBCACert: /certs/ca/mariadb/tls.crt
+  mariaDBKey: certs/mariadb/tls.key
+  provisioningInterface: eth0
+  provisioningLimit: 20
+  restartContainer: true
+
+
+ironicFWUpdateConfigMap:
+  # Firmware Image server
+  firmwareImageServer: http://1.1.1.1:50001
+  # BKC FW versions and config
+  bkc:
+    # DenaliPass BKC
+    dnp:
+      # DenaliPass BKC config
+      config:
+        denalipassBIOSUpdateWaitTime: 600
+        denalipassBMCUpdateWaitTime: 360
+        denalipassCPLDUpdateWaitTime: 480
+        denalipassCleaningPriority: 0
+        denalipassConnectionAttempts: 5
+        denalipassConnectionRetryInterval: 5
+        denalipassFWUpdateFailInterval: 60
+        denalipassFWUpdateStatusInterval: 60
+        denalipassTaskMonitorCheckAttempts: 60
+        denalipassTaskMonitorRetryInterval: 10
+        denalipassTaskMonitorTimeout: 600
+      # DenaliPass BKC expected FW versions
+      fwVersions:
+        bmc: ""
+        bios: ""
+        cpld: ""
+    redfish:  # this covers the following smc and dell
+      config:
+        firmwareCleaningPriority: 0
+    smc:  # paramaters for SMC for redfish
+      config:
+        BIOSUpdateWaitTime: 240
+        BMCUpdateWaitTime: 360
+      fwVersions:
+        pvc_1100: {}
+        pvc_1550: {}
+        type_3: {}
+        gaudi_2: {}
+        gaudi_3: {}
+    dell:  # paramaters for dell for redfish
+      config:
+        BIOSUpdateWaitTime: 240
+        BMCUpdateWaitTime: 720
+      fwVersions:
+        hs5620: {}
+        xe9680_gaudi_3: {}
+  # PVC FW versions
+  pvc:
+    pvc_1100:
+      fwVersions:
+        amc: ""
+        ifwi: ""
+        psc: ""
+    pvc_1550:
+      fwVersions:
+        amc: ""
+        ifwi: ""
+        psc: ""
+  # Gaudi2 FW versions
+  gaudi2:
+    wiwynn:
+      fwVersions:
+        # firmware build version
+        build: ""
+        spi: ""
+        full: ""
+    dell:
+      fwVersions:
+        build: ""
+        spi: ""
+        full: ""
+    smc:
+      fwVersions:
+        build: ""
+        spi: ""
+        full: ""
+  gaudi3:
+    dell:
+      fwVersions:
+        build: ""
+        cpld: ""
+        full: ""
+        spi: ""
+    smc:
+      fwVersions:
+        build: ""
+        cpld: ""
+        full: ""
+        spi: ""
+  mellanox:
+    MT_0000000436:
+      version: ""
+      sha256: ""
+    MT_0000000359:
+      version: ""
+      sha256: ""
+    MT_0000000224:
+      version: ""
+      sha256: ""
+    MT_0000000838:
+      version: ""
+      sha256: ""
+  firmwareMinVersion:
+    Virtual:
+      BIOS: 0.0.1
+      BMC: 0.0.0
+# If true, deploy operator and inspector with Basic Auth and TLS
+enableTLSandAuth: false
+
+# If true, deploy baremetal operator without Ironic
+deployStandaloneBaremetalOperator: false
+
+# If true, deploy Ironic without baremetal operator
+deployStandaloneIronic: false
+
+service:
+  type: ClusterIP
+
+# Use PKI certs and keys from vault for ironic, inspector and mariadb
+useVaultPKI: false
+
+vault:
+  service: http://vault.vault.svc.cluster.local:8200
+  refreshInterval: 1460h
+  pkiSignPathPrefix: /pki/issue
+
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https

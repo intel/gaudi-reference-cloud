@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ipmilan",
+    srcs = [
+        "helper.go",
+        "kcs.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/ipmilan",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_bougou_go_ipmi//:go-ipmi",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+    ],
+)

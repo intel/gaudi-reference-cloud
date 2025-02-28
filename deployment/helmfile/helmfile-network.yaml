@@ -1,0 +1,171 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+{{- $cloudaccountServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (dict) $.Values.defaults.region $region }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+{{- $networkApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $sdnServerAddr := print $region.region "-sdn-vn-controller.idcs-system.svc.cluster.local:8443" }}
+
+{{- if $region.network.enabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-network-crds") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: network
+      service: network
+      crd: true
+      geographicScope: region
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: network-crds
+    chart: idc/network-crds
+    version: {{ readFile (print $helmChartVersionsDir "/network-crds.version") | quote }}
+  
+  {{- if $region.network.devDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-network-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: network
+      service: network-api-server
+      database: network
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: network-db
+      clusterName: {{ $clusterName | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-network_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-network_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region.network.devDb.primary.persistence.enabled }}
+  {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-network-api-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      applicationName: network-api-server
+      clusterName: {{ $clusterName | quote }}
+      component: network
+      geographicScope: regional
+      kubeContext: {{ $region.kubeContext }}
+      region: {{ $region.region }}
+      service: network
+    chart: idc/network-api-server
+    version: {{ readFile (print $helmChartVersionsDir "/network-api-server.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - database:
+          arg: {{ $region.network.apiServer.database.arg | quote }}
+          name: main
+          service: {{ $region | get "network.apiServer.database.service" (print $region.region "-network-db-postgresql") | quote }}
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-network-api-server/database"
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}network-api-server@sha256"
+      - nodePort: {{ $region.network.apiServer.service.nodePort }}
+      - ingress:
+          enabled: {{ $region.network.apiServer.ingress.enabled }}
+          className: {{ $region.network.apiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region.network.apiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region.network.apiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region.network.apiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region.network.apiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.network.apiServer.ingress.host | quote }}
+          {{- end }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - region: {{ $region.region | quote }}
+      - availabilityZones:
+          {{- toYaml $region.network.apiServer.availabilityZones | nindent 12 }}
+      - cloudaccountServerAddr: {{ $cloudaccountServerAddr| quote }}
+      - service:
+          type: {{ $region.network.apiServer.service.type | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+  
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-network-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      applicationName: network-operator
+      clusterName: {{ $clusterName | quote }}
+      component: network
+      geographicScope: regional
+      kubeContext: {{ $region.kubeContext }}
+      region: {{ $region.region }}
+      service: network
+    chart: idc/network-operator
+    version: {{ readFile (print $helmChartVersionsDir "/network-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}network-operator@sha256"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - region: {{ $region.region | quote }}
+      - cloudaccountServerAddr: {{ $cloudaccountServerAddr | quote }}
+      - networkApiServerAddr: {{ $networkApiServerAddr | quote }}
+      - sdnServerAddr: {{ $sdnServerAddr }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+{{- end }}
+{{- end }}

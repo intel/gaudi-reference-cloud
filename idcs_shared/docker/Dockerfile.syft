@@ -1,0 +1,22 @@
+FROM internal-placeholder.com/cache/library/ubuntu:22.04 as builder
+
+ENV http_proxy="http://internal-placeholder.com:911/" \
+    https_proxy="http://internal-placeholder.com:912/" \
+    no_proxy="127.0.0.1,localhost,intel.com"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl tar ca-certificates   && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -LO --insecure -s https://internal-placeholder.com/artifactory/it-btrm-local/intel_cacerts/install_intel_cacerts_linux.sh \
+    && chmod +x install_intel_cacerts_linux.sh \
+    && bash ./install_intel_cacerts_linux.sh \
+    && curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+ARG jenkins_user=intelcloudservices
+RUN adduser --home /home/$jenkins_user --shell /bin/bash --uid 1000 --disabled-password $jenkins_user
+# RUN chown -R $jenkins_user:$jenkins_user /coverity /home/$jenkins_user
+USER $jenkins_user

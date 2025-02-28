@@ -1,0 +1,27 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/notification-gateway
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+database:
+  service: notification-db-postgresql
+  vaultCredentialsPath: notificationsecret/data/notificationdb
+
+# notifications config for testing
+aws:
+  vaultCredentialsPath: controlplane/data/notification-gateway/awssecrets
+  credentialsFile: /vault/secrets/aws_credentials
+  region: "us-west-2"
+  role_arn: arn:aws:iam::390677890188:role/notification-gateway-irsa-dev-role
+  accountIdFile: /vault/secrets/accountid
+  sns:
+    topicArn: arn:aws:sns:us-west-2:accountid:idc-staging-cloud-credits-topic
+  sqs:
+    queueArn: arn:aws:sqs:us-west-2:accountid:idc-staging-cloud-credits-queue
+    queueUrl: "https://sqs.us-west-2.amazonaws.com/accountid/idc-staging-cloud-credits-queue"
+
+otel:
+  otelAnnotations: false

@@ -1,0 +1,42 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/metering
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  service: metering-db-postgresql
+  vaultCredentialsPath: meteringsecret/data/meteringdb
+
+service:
+  type: ClusterIP
+
+# productcatalog and billing enabled serviceTypes
+validServiceTypes:
+  - ComputeAsAService
+  - FileStorageAsAService
+  - ObjectStorageAsAService
+  - FileStorageAsAService-SC
+  - ObjectStorageAsAService-SC
+  - KubernetesAsAService
+  - TrainingAsAService
+  - SuperComputingAsAService
+
+fargateAnnotations:
+  CapacityProvisioned: "1vCPU 2GB"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
+
+otel:
+  otelAnnotations: false

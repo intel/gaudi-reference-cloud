@@ -1,0 +1,41 @@
+metadata:
+  name: "iks-pv-u22-cd-wk-1-31-3-v250108"
+spec:
+  displayName: IKS Ubuntu 22.04 Worker for PV v1.31.3 released on 2025-01-08
+  description: IKS Ubuntu 22.04 Worker for PV v1.31.3 released on 2025-01-08
+  hidden: true
+  instanceCategories:
+    - BareMetalHost
+  instanceTypes:
+    - bm-spr-pvc-1100-1
+    - bm-spr-pvc-1100-4
+    - bm-spr-pvc-1100-4-sa
+    - bm-spr-pvc-1100-8
+    - bm-spr-pvc-1550-8
+  md5sum: "bbf8bd84d2b400f8d7f0197d5539ac2c"
+  sha256sum: "4f4a16264d72bf399b10b6ce05f814d95d79300eb0ab7b0ac73806cc8ff0fe68"
+  sha512sum: "25291c870696fd01e2aac13912792a4e09ec32902d4b1c80c51182e6bb92f8aa57df730092d624c6fa2325d3fde87cf96f923e22275603654d956b88ce4d8b01"
+  virtualSizeBytes: 64424509440
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (Baremetal only)
+    iks: "true"
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+    - IKS
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: IKS Core Components
+      type: Software kit
+      version: "1.31.3"
+      description: core set of tools for Kubernetes.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20sthttps://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png

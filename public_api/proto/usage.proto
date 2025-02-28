@@ -1,0 +1,393 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option (idc.file).deploy = global;
+
+service UsageService {
+    rpc PostBulkUploadResourceUsages(BulkUploadResourceUsages) returns (BulkUploadResourceUsagesFailed) {
+        option (google.api.http) = {
+            post: "/v1/usages/bulk"
+            body: "*"
+        };
+    };
+    rpc CreateResourceUsage(ResourceUsageCreate) returns (ResourceUsage) {
+        option (google.api.http) = {
+            post: "/v1/usages/resources"
+            body: "*"
+        };
+    };
+    rpc UpdateResourceUsage(ResourceUsageUpdate) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put: "/v1/usages/resources"
+            body: "*"
+        };
+    };
+    rpc GetResourceUsageById(ResourceUsageId) returns (ResourceUsage) {
+        option (google.api.http) = {
+          get: "/v1/usages/resources/id/{id}"
+        };
+      };
+    rpc MarkResourceUsageAsReported(ResourceUsageId) returns (google.protobuf.Empty) {
+      };
+    rpc GetProductUsageById(ProductUsageId) returns (ProductUsage) {
+        option (google.api.http) = {
+          get: "/v1/usages/products/id/{id}"
+        };
+      };
+    rpc SearchResourceUsages(ResourceUsagesFilter) returns (ResourceUsages) {
+        option (google.api.http) = {
+            post: "/v1/usages/resources/search"
+            body: "*"
+        };
+    };
+    rpc SearchProductUsages(ProductUsagesFilter) returns (ProductUsages) {
+        option (google.api.http) = {
+            post: "/v1/usages/products/search"
+            body: "*"
+        };
+    };
+    rpc UpdateProductUsageReport(ReportProductUsageUpdate) returns (google.protobuf.Empty) {
+    };
+    rpc SearchProductUsagesReport(ProductUsagesReportFilter) returns (stream ReportProductUsage) {
+        option (google.api.http) = {
+            post: "/v1/usages/reported/products"
+            body: "*"
+        };
+    };
+    rpc MarkProductUsageAsReported(ReportProductUsageId) returns (google.protobuf.Empty) {
+    };
+    // defaults to returning usages for products.
+    rpc SearchUsages(UsagesFilter) returns (Usages) {
+        option (google.api.http) = {
+            post: "/v1/usages/search"
+            body: "*"
+        };
+    };
+    //UsageService server-side streaming return a stream of ResourceUsages messages
+	rpc StreamSearchResourceUsages(ResourceUsagesFilter) returns ( stream ResourceUsage) {
+        option (google.api.http) = {
+            post: "/v1/usages/resources/search/stream"
+            body: "*"
+        };
+    };
+	//UsageService server-side streaming return a stream of ProductUsages messages
+    rpc StreamSearchProductUsages(ProductUsagesFilter) returns (stream ProductUsage) {
+        option (google.api.http) = {
+            post: "/v1/usages/products/search/stream"
+            body: "*"
+        };
+    };
+    // Ping always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+service UsageRecordService {
+    rpc CreateProductUsageRecord(ProductUsageRecordCreate) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/usages/records/products"
+            body: "*"
+        };
+    };
+    rpc SearchProductUsageRecords(ProductUsageRecordsFilter) returns (stream ProductUsageRecord) {
+        option (google.api.http) = {
+            post: "/v1/usages/records/products/search"
+            body: "*"
+        };
+    };
+    rpc SearchInvalidProductUsageRecords(InvalidProductUsageRecordsFilter) returns (stream InvalidProductUsageRecord) {
+        option (google.api.http) = {
+            post: "/v1/usages/records/products/invalid/search"
+            body: "*"
+        };
+    }; 
+    // Ping always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message InvalidProductUsageRecordsFilter { 
+    optional int64 id = 1;
+    optional string recordId = 2; 
+    optional string transactionId = 3; 
+    optional string cloudAccountId = 4;
+    optional string productName = 5;
+    optional string region = 6;
+    optional google.protobuf.Timestamp startTime = 7; 
+    optional google.protobuf.Timestamp endTime = 8; 
+}
+
+message CreateInvalidProductUsageRecords { 
+    repeated InvalidProductUsageRecordCreate createInvalidProductUsageRecords = 1; 
+}
+
+message InvalidProductUsageRecordCreate { 
+    optional string recordId = 1; 
+    string transactionId = 2; 
+    string cloudAccountId = 3;
+    string region = 4;
+    optional string productName = 5;
+    double quantity = 6; 
+    google.protobuf.Timestamp timestamp = 7;
+    optional google.protobuf.Timestamp startTime = 8; 
+    optional google.protobuf.Timestamp endTime = 9;
+    map<string, string> properties = 10;
+    ProductUsageRecordInvalidityReason productUsageRecordInvalidityReason = 11;  
+}
+
+message InvalidProductUsageRecords { 
+    repeated InvalidProductUsageRecord invalidProductUsageRecords = 1; 
+}
+
+message InvalidProductUsageRecord {
+    string id = 1; 
+    optional string recordId = 2; 
+    string transactionId = 3; 
+    string cloudAccountId = 4;
+    string region = 5;
+    optional string productName = 6;
+    double quantity = 7;
+    google.protobuf.Timestamp timestamp = 8;
+    map<string, string> properties = 9;
+    optional google.protobuf.Timestamp startTime = 10; 
+    optional google.protobuf.Timestamp endTime = 11;
+    ProductUsageRecordInvalidityReason productUsageRecordInvalidityReason = 12;  
+}
+
+enum ProductUsageRecordInvalidityReason {
+  DEFAULT_PRODUCT_USAGE_RECORD_INVALIDITY_REASON = 0;
+  PRODUCT_USAGE_RECORD_MISSING_CLOUD_ACCOUNT_ID = 1;
+  PRODUCT_USAGE_RECORD_MISSING_TRANSACTION_ID = 2;
+  PRODUCT_USAGE_RECORD_NO_MATCHING_PRODUCT = 3;
+  PRODUCT_USAGE_RECORD_DUPLICATE_TRANSACTION_ID = 4;
+  PRODUCT_USAGE_RECORD_FAILED_TO_GET_PRODUCT_RATE = 5;
+} 
+
+message ProductUsageRecordCreate {
+    // client defined identifier. 
+    string transactionId = 1; 
+    // cloud account id the usage is associated with.
+    string cloudAccountId = 2;
+    // region for which usage is being posted.
+    string region = 3;
+    // usage quantity.
+    double quantity = 4;
+    optional string productName = 5;
+    // time when the usage was measured, 
+    google.protobuf.Timestamp timestamp = 6;
+    // start time and end time if applicable.
+    optional google.protobuf.Timestamp startTime = 7;
+    // start time and end time if applicable. 
+    optional google.protobuf.Timestamp endTime = 8;
+    // additional properties. 
+    map<string, string> properties = 9; 
+}
+
+message ProductUsageRecordsFilter { 
+    optional int64 id = 1;
+    optional string transactionId = 3; 
+    optional string cloudAccountId = 4;
+    optional string region = 6;
+    optional bool reported = 7;
+    optional google.protobuf.Timestamp startTime = 8; 
+    optional google.protobuf.Timestamp endTime = 9; 
+}
+
+message ProductUsageRecord {
+    string id = 1;
+    // client defined identifier. 
+    string transactionId = 2; 
+    // cloud account id the usage is associated with.
+    string cloudAccountId = 3;
+    // region for which usage is being posted.
+    string region = 4;
+    // usage quantity.
+    double quantity = 5;
+    optional string productName = 6;
+    // time when the usage was measured, 
+    google.protobuf.Timestamp timestamp = 7;
+    // start time and end time if applicable.
+    optional google.protobuf.Timestamp startTime = 8;
+    // start time and end time if applicable. 
+    optional google.protobuf.Timestamp endTime = 9;
+    bool reported = 10;
+    // additional properties. 
+    map<string, string> properties = 11; 
+}
+
+message ResourceUsageId {
+    string id = 1;
+}
+
+message ProductUsageId {
+    string id = 1;
+}
+
+message ReportProductUsageId {
+    string id = 1;
+}
+
+message ResourceUsagesFilter { 
+    optional string resourceId = 1; 
+    optional string cloudAccountId = 2;
+    optional string region = 3;
+    optional google.protobuf.Timestamp startTime = 4; 
+    optional google.protobuf.Timestamp endTime = 5;
+    optional bool reported = 6; 
+}
+
+
+message ResourceUsageCreate { 
+    string cloudAccountId = 1;
+    string resourceId = 2;
+    string resourceName = 3;
+    string productId = 4;
+    string productName = 5;
+    string transactionId = 6; 
+    string region = 7;
+    double quantity = 8;
+    double rate = 9;
+    string usageUnitType = 10;
+    google.protobuf.Timestamp startTime = 11;
+    google.protobuf.Timestamp endTime = 12; 
+}
+
+message ResourceUsageUpdate {
+    string resourceUsageId = 1; 
+    double unReportedQuantity = 2; 
+}
+
+message ReportProductUsageUpdate {
+    string productUsageReportId = 1; 
+    double unReportedQuantity = 2; 
+}
+
+message ResourceUsageCreateFailed { 
+    string cloudAccountId = 1;
+    string resourceId = 2;
+    string resourceName = 3;
+    string productId = 4;
+    string productName = 5; 
+    string region = 6;
+    string transactionId = 7;
+}
+
+message BulkUploadResourceUsagesFailed { 
+    repeated ResourceUsageCreateFailed resourceUsages = 1; 
+}
+
+message BulkUploadResourceUsages { 
+    repeated ResourceUsageCreate resourceUsages = 1; 
+}
+
+message ResourceUsage { 
+    string id = 1; 
+    string cloudAccountId = 2;
+    string resourceId = 3;
+    string resourceName = 4;
+    string productId = 5;
+    string productName = 6; 
+    string region = 7;
+    string transactionId = 8;
+    double quantity = 9;
+    double unReportedQuantity = 10;
+    double rate = 11;
+    string usageUnitType = 12; 
+    google.protobuf.Timestamp timestamp = 13;
+    google.protobuf.Timestamp startTime = 14;
+    google.protobuf.Timestamp endTime = 15;
+    bool reported = 16;
+}
+
+
+message ResourceUsages { 
+    repeated ResourceUsage resourceUsages = 1; 
+}
+
+message ProductUsagesReportFilter { 
+    optional string productId = 1; 
+    optional string cloudAccountId = 2;
+    optional string region = 3;
+    optional bool reported = 4;
+    optional google.protobuf.Timestamp startTime = 5; 
+    optional google.protobuf.Timestamp endTime = 6; 
+}
+
+message ProductUsagesFilter { 
+    optional string productId = 1; 
+    optional string cloudAccountId = 2;
+    optional string region = 3;
+    optional google.protobuf.Timestamp startTime = 4; 
+    optional google.protobuf.Timestamp endTime = 5; 
+}
+
+message UsagesFilter { 
+    optional string cloudAccountId = 2;
+    optional string region = 3;
+    optional google.protobuf.Timestamp startTime = 4; 
+    optional google.protobuf.Timestamp endTime = 5; 
+}
+
+
+message ProductUsage { 
+    string id = 1; 
+    string cloudAccountId = 2;
+    string productId = 3;
+    string productName = 4; 
+    string region = 5;
+    double quantity = 6;
+    double rate = 7;
+    string usageUnitType = 8; 
+    google.protobuf.Timestamp timestamp = 9;
+    google.protobuf.Timestamp startTime = 10;
+    google.protobuf.Timestamp endTime = 11;
+}
+
+message ReportProductUsage { 
+    string id = 1;
+    string product_usage_id = 2; 
+    string cloudAccountId = 3;
+    string productId = 4;
+    string productName = 5; 
+    double quantity = 6;
+    double rate = 7;
+    double unReportedQuantity = 8;
+    string usageUnitType = 9; 
+    google.protobuf.Timestamp timestamp = 10;
+    google.protobuf.Timestamp startTime = 11;
+    google.protobuf.Timestamp endTime = 12;
+    bool reported = 13;
+}
+
+message ProductUsages { 
+    repeated ProductUsage productUsages = 1; 
+}
+
+message Usages {
+    double totalAmount = 1;
+    google.protobuf.Timestamp lastUpdated = 2;
+    string period = 3;
+    double totalQuantity = 4;
+    repeated UsageV2 usages = 5;
+}
+
+//Usage is taken by metering which is wrong.
+message UsageV2 {
+    string serviceName = 1;
+    string productName = 2;
+    google.protobuf.Timestamp start = 3;
+    google.protobuf.Timestamp end = 4;
+    double quantity = 5;
+    double amount = 6;
+    double rate = 7;
+    string region = 8;
+    string usageUnitType = 9; 
+}

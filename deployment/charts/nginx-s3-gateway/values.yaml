@@ -1,0 +1,13 @@
+s3_bucket_name: catalog-fs-dev
+vaultCredentialsPath: controlplane/data/us-staging-1/nginx-s3-gateway
+authPath: auth/cluster-auth
+service: https://internal-placeholder.com
+proxy_cache_valid_ok: 2h
+proxy_cache_max_size: 10g
+proxy_cache_inactive: 72h
+proxy_slice_size: 10m
+
+nginx3sServerImage:
+  repository: "amr-idc-registry-pre.infra-host.com/idc-devops/nginx-s3-gateway"
+  pullPolicy: IfNotPresent
+  tag: "v5"

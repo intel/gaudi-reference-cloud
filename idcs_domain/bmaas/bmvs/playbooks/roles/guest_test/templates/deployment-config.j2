@@ -1,0 +1,13 @@
+# Ansible generated ~/.ssh/config for prepending to the
+# user's ~/.ssh/config on the deployment host
+
+{% for vmnum in range(1, guest_test_host_deployments|int + 1) %}
+# Added by Bare Metal Virtual Stack scripting
+Host guest-{{ vmnum }} guest-test-{{ vmnum }} 192.168.{{ vmnum + 100 }}.2
+    ProxyJump bastion
+    HostName 192.168.{{ vmnum + 100 }}.2
+    User sdp
+    Port 22
+    IdentityFile ~/.ssh/guest-test-{{ vmnum }}
+
+{% endfor %}

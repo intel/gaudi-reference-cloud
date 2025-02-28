@@ -1,0 +1,37 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/sdn-integrity-checker
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+nodePort: null
+deployment: global
+
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/us-dev-1a/nw-sdn-controller
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+integrityCheckerConfig:
+  ravenEnv: staging
+  datacenter: "fxhb3p3s:fxhb3p3r"
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "debug"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+

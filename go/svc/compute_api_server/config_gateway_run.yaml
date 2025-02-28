@@ -1,0 +1,5 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Config file used when running: go run cmd/compute_api_gateway/main.go --config config_gateway_run.yaml
+listenPort: 8080
+targetAddr: localhost:8081

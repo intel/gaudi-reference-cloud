@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: {{ .Values.network.container.hostNetwork }}
+      restartPolicy: Always
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+        - name: tftpd
+          image: "{{ .Values.tftpServerImage.repository }}:{{ .Values.tftpServerImage.tag}}"
+          imagePullPolicy: {{ .Values.tftpServerImage.pullPolicy | quote }}
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: "0.5"
+              memory: 1Gi
+          ports:
+          - containerPort: {{ $.Values.network.container.port }}
+            name: tftp
+            protocol: UDP
+          securityContext:
+            capabilities:
+              drop: ["AUDIT_WRITE","DAC_OVERRIDE","FOWNER"]
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: false

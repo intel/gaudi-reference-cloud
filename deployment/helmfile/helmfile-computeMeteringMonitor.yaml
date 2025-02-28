@@ -1,0 +1,74 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $meteringAddr := print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if ($availabilityZone.meteringMonitor.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-compute-metering-monitor") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeMeteringMonitor
+      service: compute
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: compute-metering-monitor
+    chart: idc/compute-metering-monitor
+    version: {{ readFile (print $helmChartVersionsDir "/compute-metering-monitor.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}compute-metering-monitor@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            meteringServerAddr: {{ $meteringAddr | quote }}
+            maxUsageRecordSendInterval: {{ $availabilityZone.computeMeteringMonitor.maxUsageRecordSendInterval }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - cognito: # used for global:metering access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-compute-metering-monitor/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

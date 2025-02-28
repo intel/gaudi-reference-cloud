@@ -1,0 +1,38 @@
+{
+    "remainingCredits": 143.75,
+    "usedCredits": 156.25,
+    "items": [
+      {
+        "creditType": "Added credits",
+        "createdAt": "2022-11-09 08:00:00",
+        "ExpiryDate": "2022-12-09 08:00:00",
+        "total": 300,
+        "totalUsed": 156.25,
+        "totalRemaining": 143.75
+      },
+      {
+        "creditType": "Added credits",
+        "createdAt": "2022-10-09 08:00:00",
+        "ExpiryDate": "2022-11-09 08:00:00",
+        "total": 200,
+        "totalUsed": 200,
+        "totalRemaining": 0
+      },
+      {
+        "creditType": "Coupon: 1FJN-35Z2-95XB",
+        "createdAt": "2022-09-09 08:00:00",
+        "ExpiryDate": "2022-10-09 08:00:00",
+        "total": 200,
+        "totalUsed": 200,
+        "totalRemaining": 0
+      },
+      {
+        "creditType": "Initial grant",
+        "createdAt": "2022-08-09 08:00:00",
+        "ExpiryDate": "2022-09-09 08:00:00",
+        "total": 100,
+        "totalUsed": 100,
+        "totalRemaining": 0
+      }
+    ]
+  }

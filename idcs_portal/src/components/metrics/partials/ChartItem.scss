@@ -1,0 +1,16 @@
+.chartItem {
+    min-width: 20rem;
+    border: var(--card-border);
+    @media (max-width: 991px) {
+        min-width: 100%;
+        width: 100%;
+    }
+}
+
+.accordion-collapse .chartItem {
+    @media (max-width: 991px) {
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+    }
+}

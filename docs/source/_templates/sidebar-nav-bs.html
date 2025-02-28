@@ -1,0 +1,21 @@
+<nav class="bd-links" id="bd-docs-nav" aria-label="{{ _('Section navigation') }}">
+  <div class="bd-toc-item active">    
+    <!-- Refer to pydata theme updates-->
+    <!-- https://github.com/pydata/pydata-sphinx-theme/blob/8453f38ea6543e778bfc12d5c38239d25b8e30f8/src/pydata_sphinx_theme/__init__.py#L68 -->
+    <a class="nav bd-sidenav home-link" href="{{ pathto(master_doc) }}">
+      <ul> 
+        <li>Home</li>
+      </ul>
+    </a>
+    {{- generate_nav_html(
+        startdepth=0,
+        kind="sidebar",
+        maxdepth=3,
+        collapse=False,
+        includehidden=True,
+        titles_only=True,)
+   }}
+
+  </div>
+</nav>
+

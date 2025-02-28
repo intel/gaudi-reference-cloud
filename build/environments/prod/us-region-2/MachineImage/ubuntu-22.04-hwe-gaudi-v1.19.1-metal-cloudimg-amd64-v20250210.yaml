@@ -1,0 +1,52 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-22.04-hwe-gaudi-v1.19.1-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 22.04
+  description: Ubuntu 22.04.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-spr-gaudi3-dell
+  - bm-emr-gaudi3-dell
+  - bm-gnr-gaudi3-smc
+  md5sum: 4a46101ebbc64da4c031e9291dae7625
+  sha256sum: c8428b2ea9307aa50695df03e2e5c6a69a589cdd66e6ff1a464775887f122dbb
+  sha512sum: a096f3f6e4a670edd955a1612c636cdf79176d0db754fb4b72819445fed96622df9703bb613b62b9b63649bc0dda3b54a3fda7383cc77feb5f590a48e35f7a51
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    kernelVersion: 6.5 (HWE)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: Intel Gaudi SW
+    type: Software kit
+    version: 1.19.1
+    description: Designed to facilitate high-performance DL training on Habana’s Gaudi
+      accelerators.
+    infoUrl: https://docs.habana.ai/en/v1.19.1/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  - name: Intel Gaudi SW
+    type: Firmware kit
+    version: 1.19.1-26
+  - name: Intel Gaudi SW
+    type: Firmware kit
+    version: 1.19.1-26-rc1
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

@@ -1,0 +1,3 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+workspace(name = "com_intel_sds-controller")

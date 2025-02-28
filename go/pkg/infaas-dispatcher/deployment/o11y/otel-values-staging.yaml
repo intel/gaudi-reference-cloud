@@ -1,0 +1,11 @@
+config:
+  exporters:
+    otlphttp:
+      endpoint: https://idcstg03-otel.idcstage.intel.com:443
+      tls:
+        ca_file: null
+        insecure_skip_verify: true
+
+extraEnvs:
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: clustername=maas-o11y-staging,elasticsearch.index.suffix=-maas-o11y

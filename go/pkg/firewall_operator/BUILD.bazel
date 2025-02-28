@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_container_image")
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "firewall_operator_image",
+    files = [
+        "//go/pkg/firewall_operator/cmd:firewall_operator",
+    ],
+    layers = ["//go/certs:intel_certs"],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

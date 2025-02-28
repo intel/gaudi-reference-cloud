@@ -1,0 +1,16 @@
+[build_servers]
+# flex126 ansible_host=10.45.193.233
+# sdpvm33380 ansible_host=10.165.58.158
+# sdpvm33381 ansible_host=10.165.56.73 
+# sdp120308 ansible_host=10.45.177.169
+# sdp126442 ansible_host=10.165.160.171
+# sdp126439 ansible_host=10.165.161.138
+# sdp119446 ansible_host=10.165.161.81
+# sdp120785 ansible_host=10.165.58.174
+
+
+# [support]
+# sdp126442 ansible_host=10.165.160.171
+
+# [docker]
+# reservation ansible_host=10.165.58.174

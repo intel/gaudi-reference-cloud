@@ -1,0 +1,26 @@
+tls:
+  client:
+    rootCa: kind-singlecluster-root-ca
+  server:
+    requireClientCertificate: "false"
+
+regions:
+  us-dev-1:
+    availabilityZones:
+      us-dev-1a:
+        sdnController:
+          restAPI:
+            enabled: true
+          managerConfig:
+            controllerManagerConfigYaml:
+              controllerConfig:
+                switchPortImportSource: none
+                switchBackendMode: eapi
+                allowedVlanIds: "1-100,4000-4096"
+                allowedNativeVlanIds: "1-100,4000-4096"
+                allowedModes:
+                  - "access"
+                  - "trunk"
+                dataCenter: "clab"
+                allowedTrunkGroups: [ ] # Unrestricted
+                portChannelsEnabled: true

@@ -1,0 +1,167 @@
+{
+    "apiVersion": "metal3.io/v1alpha1",
+    "kind": "BareMetalHost",
+    "metadata": {
+        "annotations": {
+            "cloud.intel.com/host-cpu-model": "Intel(R) Xeon(R) Platinum 8480+"
+        },
+        "creationTimestamp": "2023-06-17T02:13:03Z",
+        "generation": 2,
+        "labels": {
+            "cloud.intel.com/hbm-mode": "",
+            "cloud.intel.com/host-cpu-cores": "112",
+            "cloud.intel.com/host-cpu-count": "224",
+            "cloud.intel.com/host-cpu-id": "0x806f8",
+            "cloud.intel.com/host-cpu-manufacturer": "Intel_Corporation",
+            "cloud.intel.com/host-cpu-sockets": "2",
+            "cloud.intel.com/host-cpu-threads": "224",
+            "cloud.intel.com/host-gpu-count": "0",
+            "cloud.intel.com/host-gpu-model": ""
+        },
+        "name": "pdx04-c01-bmas052",
+        "namespace": "metal3-2"
+    },
+    "spec": {
+        "automatedCleaningMode": "metadata",
+        "bmc": {
+            "address": "intel-denali-redfish+https://100.64.186.245/redfish/v1/Systems/system",
+            "credentialsName": "pdx04-c01-bmas052-bmc-secret",
+            "disableCertificateVerification": true
+        },
+        "bootMACAddress": "6c:fe:54:4a:e8:98",
+        "bootMode": "UEFI",
+        "image": {
+            "checksum": "http://10.45.124.15/bmaas/images/ubuntu-22.04-server-cloudimg-amd64-latest.qcow2.md5sum",
+            "format": "qcow2",
+            "url": "http://10.45.124.15/bmaas/images/ubuntu-22.04-server-cloudimg-amd64-latest.qcow2"
+        },
+        "metaData": {
+            "name": "metadata-2215bd83-d814-4610-b9a5-8c3538daaab1-secret",
+            "namespace": "metal3-2"
+        },
+        "networkData": {
+            "name": "network-2215bd83-d814-4610-b9a5-8c3538daaab1-secret",
+            "namespace": "metal3-2"
+        },
+        "online": true,
+        "rootDeviceHints": {},
+        "userData": {
+            "name": "usr2215bd83-d814-4610-b9a5-8c3538daaab1-secret",
+            "namespace": "metal3-2"
+        }
+    },
+    "status": {
+        "errorCount": 0,
+        "errorMessage": "",
+        "goodCredentials": {
+            "credentials": {
+                "name": "pdx04-c01-bmas052-bmc-secret",
+                "namespace": "metal3-2"
+            },
+            "credentialsVersion": "3003053"
+        },
+        "hardware": {
+            "cpu": {
+                "arch": "x86_64",
+                "clockMegahertz": 3800,
+                "count": 224,
+                "flags": [
+                    "3dnowprefetch",
+                    "abm"
+                ],
+                "model": "Intel(R) Xeon(R) Platinum 8480+"
+            },
+            "firmware": {
+                "bios": {
+                    "date": "10/20/2022",
+                    "vendor": "Intel Corporation",
+                    "version": "SE5C7411.86B.8901.D06.2210200424"
+                }
+            },
+            "hostname": "localhost.localdomain",
+            "nics": [
+                {
+                    "ip": "1.2.3.4",
+                    "lldp": {
+                        "switch_chassis_id": "c4:ca:2b:9b:26:bd",
+                        "switch_port_id": "Ethernet28/1",
+                        "switch_port_link_aggregation_support": true,
+                        "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7050CX3-32S",
+                        "switch_system_name": "internal-placeholder.com"
+                    },
+                    "mac": "6c:fe:54:4a:e8:98",
+                    "model": "0x8086 0x1592",
+                    "name": "ens786f0",
+                    "pxe": true
+                },
+                {
+                    "ip": "fe80::d70:d362:de97:bdad%ens786f0",
+                    "lldp": {
+                        "switch_chassis_id": "c4:ca:2b:9b:26:bd",
+                        "switch_port_id": "Ethernet28/1",
+                        "switch_port_link_aggregation_support": true,
+                        "switch_system_description": "Arista Networks EOS version 4.29.2F running on an Arista Networks DCS-7050CX3-32S",
+                        "switch_system_name": "internal-placeholder.com"
+                    },
+                    "mac": "6c:fe:54:4a:e8:98",
+                    "model": "0x8086 0x1592",
+                    "name": "ens786f0",
+                    "pxe": true
+                },
+                {
+                    "lldp": {},
+                    "mac": "6c:fe:54:4a:e8:99",
+                    "model": "0x8086 0x1592",
+                    "name": "ens786f1"
+                },
+                {
+                    "lldp": {},
+                    "mac": "a4:bf:01:93:06:88",
+                    "model": "0x8086 0x15ff",
+                    "name": "eno0"
+                }
+            ],
+            "ramMebibytes": 524288,
+            "storage": [
+                {
+                    "model": "INTEL SSDPF2KX038TZ",
+                    "name": "/dev/nvme0n1",
+                    "serialNumber": "PHAC221007WA3P8AGN",
+                    "sizeBytes": 3840755982336,
+                    "type": "NVME",
+                    "wwn": "eui.01000000000000005cd2e4a6cc605551"
+                }
+            ],
+            "systemVendor": {
+                "manufacturer": "Intel Corporation",
+                "productName": "D50DNP1SBB (SKU Number)",
+                "serialNumber": "LUD924400068"
+            }
+        },
+        "hardwareProfile": "unknown",
+        "operationalStatus": "OK",
+        "poweredOn": true,
+        "provisioning": {
+            "ID": "e03fcce9-22ec-409b-bf49-7e8c77c07470",
+            "bootMode": "UEFI",
+            "image": {
+                "checksum": "http://2.2.2.2/bmaas/images/ubuntu-22.04-server-cloudimg-amd64-latest.qcow2.md5sum",
+                "format": "qcow2",
+                "url": "http://3.3.3.3/bmaas/images/ubuntu-22.04-server-cloudimg-amd64-latest.qcow2"
+            },
+            "raid": {
+                "hardwareRAIDVolumes": null,
+                "softwareRAIDVolumes": []
+            },
+            "rootDeviceHints": {},
+            "state": "provisioned"
+        },
+        "triedCredentials": {
+            "credentials": {
+                "name": "pdx04-c01-bmas052-bmc-secret",
+                "namespace": "metal3-2"
+            },
+            "credentialsVersion": "3003053"
+        }
+    }
+}

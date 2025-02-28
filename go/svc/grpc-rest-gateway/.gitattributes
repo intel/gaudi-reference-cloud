@@ -1,0 +1,2 @@
+# Do not show diffs of generated files.
+register.go -diff linguist-generated

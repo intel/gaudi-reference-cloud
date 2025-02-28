@@ -1,0 +1,174 @@
+# An Ansible playbook demonstrating how to deploy Slurm on IDC VMaaS.
+# See https://galaxy.ansible.com/galaxyproject/slurm
+
+- name: Prepare infrastructure
+  gather_facts: false
+  hosts: localhost
+  vars_files:
+    - "vars/slurm.yml"
+  tasks:
+
+    - name: Calculate worker names
+      set_fact:
+        worker_names: "{{ [cluster_name + '-compute-'] | product(range(0,num_workers)) | map('join') | list }}"
+
+    - name: Calculate instance names
+      set_fact:
+        instance_names: "{{ controller_names + worker_names }}"
+
+    - name: Create Kubernetes namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: "{{ namespace }}"
+        state: present
+
+    - name: Delete instances
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: cloud.intel.com/v1alpha1
+          kind: Instance
+          metadata:
+            name: "{{ item }}"
+            namespace: "{{ namespace }}"
+        wait: yes
+      loop: "{{ instance_names }}"
+      when: "force_clean | bool"
+
+    - name: Create SshPublicKey object
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: cloud.intel.com/v1alpha1
+          kind: SshPublicKey
+          metadata:
+            name: "{{ cluster_name }}"
+            namespace: "{{ namespace }}"
+          spec:
+            sshPublicKey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+    - name: Create controller instances
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: cloud.intel.com/v1alpha1
+          kind: Instance
+          metadata:
+            name: "{{ item }}"
+            namespace: "{{ namespace }}"
+          spec:
+            instanceType: tiny
+            machineImage: ubuntu-22.04
+            sshPublicKeyNames:
+              - "{{ cluster_name }}"
+        # TODO: wait for condition
+      loop: "{{ controller_names }}"
+
+    - name: Create worker instances
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: cloud.intel.com/v1alpha1
+          kind: Instance
+          metadata:
+            name: "{{ item }}"
+            namespace: "{{ namespace }}"
+          spec:
+            instanceType: tiny
+            machineImage: ubuntu-22.04
+            sshPublicKeyNames:
+              - "{{ cluster_name }}"
+        # TODO: wait for condition
+      loop: "{{ worker_names }}"
+
+    - name: Get controller instance details
+      kubernetes.core.k8s_info:
+        api_version: cloud.intel.com/v1alpha1
+        kind: Instance
+        name: "{{ item }}"
+        namespace: "{{ namespace }}"        
+      register: controller_instances
+      # TODO: Use condition instead of until
+      until: "controller_instances.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 5
+      loop: "{{ controller_names }}"
+
+    - name: Get worker instance details
+      kubernetes.core.k8s_info:
+        api_version: cloud.intel.com/v1alpha1
+        kind: Instance
+        name: "{{ item }}"
+        namespace: "{{ namespace }}"        
+      register: worker_instances
+      # TODO: Use condition instead of until
+      until: "worker_instances.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 5
+      loop: "{{ worker_names }}"
+
+    - name: Add controllers to Ansible inventory
+      add_host:
+        hostname: "{{ item.resources[0].metadata.name }}"
+        ansible_host: "{{ item.resources[0].status.interfaces[0].addresses[0] }}"
+        ansible_ssh_common_args: "-J {{ ssh_proxy_user }}@{{ ssh_proxy_host }}"
+        groupname:
+          - slurmservers
+      loop: "{{ controller_instances.results }}"
+
+    - name: Add workers to Ansible inventory
+      add_host:
+        hostname: "{{ item.resources[0].metadata.name }}"
+        ansible_host: "{{ item.resources[0].status.interfaces[0].addresses[0] }}"
+        ansible_ssh_common_args: "-J {{ ssh_proxy_user }}@{{ ssh_proxy_host }}"
+        groupname:
+          - slurmexechosts
+      loop: "{{ worker_instances.results }}"
+
+- name: Wait for instances
+  gather_facts: false
+  hosts: "slurmservers,slurmexechosts"
+  remote_user: ubuntu
+  tasks:
+    - name: Wait for SSH connection to instances
+      ansible.builtin.wait_for_connection:
+
+# TODO: Need to wait for apt to finish.
+
+- name: Configure instances
+  gather_facts: true
+  hosts: "slurmservers,slurmexechosts"
+  remote_user: ubuntu
+  tasks:
+
+    - name: Update /etc/hosts
+      become: true
+      lineinfile:
+        dest: "/etc/hosts"
+        regexp: ".*{{ item }}$"
+        line: "{{ hostvars[item].ansible_default_ipv4.address }} {{item}}"
+        state: present
+      when: "hostvars[item].ansible_default_ipv4.address is defined"
+      with_items: "{{ groups['all'] }}"
+
+    - name: Show /etc/hosts
+      shell: "cat /etc/hosts"
+      register: command_output
+
+    - ansible.builtin.debug:
+        var: command_output.stdout_lines
+
+- name: Install Slurm
+  gather_facts: true
+  hosts: "slurmservers,slurmexechosts"
+  remote_user: ubuntu
+  vars_files:
+    - "vars/slurm-common.yml"
+    - "vars/slurm.yml"
+  vars:
+    SlurmctldHost: "{{ controller_names[0] }}"
+    SlurmNodeNames: "{{ cluster_name }}-compute-[0-{{ num_workers | string }}]"
+  roles:
+    - role: galaxyproject.slurm
+      become: true

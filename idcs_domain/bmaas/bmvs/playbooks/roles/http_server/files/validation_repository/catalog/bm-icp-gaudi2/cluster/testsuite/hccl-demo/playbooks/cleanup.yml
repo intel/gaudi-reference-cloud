@@ -1,0 +1,116 @@
+- name: Manage Docker containers and images
+  hosts: all
+  vars_files:
+    - "vars/common.yml"
+
+  tasks:
+    - name: Fetch running containers with IMAGE=ighs_level2
+      shell: docker ps -aq --filter "name=ighs_*"
+      register: running_containers
+      ignore_errors: yes
+
+    - name: Stop ighs_level2 containers
+      docker_container:
+        name: "{{ item }}"
+        state: stopped
+      loop: "{{ running_containers.stdout_lines }}"
+      when: running_containers.stdout_lines | length > 0
+
+    - name: Container stopped successfully
+      debug:
+        msg: "Stopped container: {{ item }}"
+      loop: "{{ running_containers.stdout_lines }}"
+      when: running_containers.stdout_lines | length > 0
+
+    - name: Remove stopped containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ running_containers.stdout_lines }}"
+      when: running_containers.stdout_lines | length > 0
+      register: deleted_containers
+
+    - name: Print deleted containers
+      debug:
+        msg: "Deleted container: {{ item.item }}"
+      loop: "{{ deleted_containers.results }}"
+      when: deleted_containers is defined
+
+    - name: Fetch all images for ighs
+      shell: docker images -q "ighs_*"
+      register: ighs_images
+      ignore_errors: yes
+
+    - name: Print fetched docker images
+      debug:
+        msg: "IGHS docker images: {{ item }}"
+      loop: "{{ ighs_images.stdout_lines }}"
+      when: ighs_images.stdout_lines | length > 0
+
+    - name: Remove docker images ighs_level1 and ighs_level2
+      shell: docker rmi -f {{ item }}
+      loop: "{{ ighs_images.stdout_lines }}"
+      when: ighs_images.stdout_lines | length > 0
+      register: deleted_images
+
+    - name: Print deleted image
+      debug:
+        msg: "Deleted image: {{ item.stdout }}"
+      loop: "{{ deleted_images.results }}"
+      when: deleted_images is defined
+
+    - name: Delete pycache
+      file:
+        path: "{{ ighs_files_dir }}/__pycache__"
+        state: absent
+      delegate_to: localhost
+      run_once: true
+
+    - name: Delete SSH keys for bare-metal passwordless SSH
+      file:
+        path: "{{ ighs_files_dir }}/ssh"
+        state: absent
+      delegate_to: localhost
+      ignore_errors: yes
+    
+    - name: Delete SSH keys for docker container passwordless SSH
+      file:
+        path: "{{ ighs_files_dir }}/template/bare-metal/ssh"
+        state: absent
+      delegate_to: localhost
+
+    - name: Delete tmp generated during IGHS execution
+      file:
+        path: "{{ ighs_files_dir }}/tmp"
+        state: absent
+      delegate_to: localhost
+    
+    - name: Delete config file generated during IGHS execution
+      file:
+        path: "{{ ighs_files_dir }}/config.yaml"
+        state: absent
+      delegate_to: localhost
+    
+    - name: Delete build files generated during IGHS execution
+      file:
+        path: "{{ ighs_files_dir }}/build"
+        state: absent
+      delegate_to: localhost
+
+    - name: Delete IGHS and HCCL-Demo hostfile
+      file:
+        path: "{{ ighs_files_dir }}/hostfile"
+        state: absent
+      delegate_to: localhost
+
+    - name: Delete versions.yml used for dependencies
+      file:
+        path: /tmp/validation/testsuite/hccl-demo/playbooks/vars/versions.yml
+        state: absent
+      delegate_to: localhost
+    
+    - name: Delete execution logs
+      file:
+        path: "{{ ighs_files_dir }}/hccl_demo_logs"
+        state: absent
+      delegate_to: localhost

@@ -1,0 +1,4 @@
+#cloud-init
+packages:
+  - nginx
+computeHostInstance: {{ Values.ComputeHostInstance }}

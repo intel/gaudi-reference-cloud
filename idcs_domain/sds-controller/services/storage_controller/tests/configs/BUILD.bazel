@@ -1,0 +1,5 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["storage-conf.yaml"])

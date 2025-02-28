@@ -1,0 +1,149 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $computeApiServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  # Create a vm-instance-operator for each Harvester cluster.
+  {{- if and ($.Values.components.computeVm.enabled) ($availabilityZone.vmInstanceOperator.enabled) }}
+  {{- range $clusterIndex, $cluster := $availabilityZone.harvesterClusters }}
+  - name: {{ include "idc-common.toReleaseName" (dict "name" (print $availabilityZone.availabilityZone "-vm-instance-operator-" $cluster.clusterId) "kubeContext" $availabilityZone.kubeContext) }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeVmInstanceOperator
+      service: compute-vm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: vm-instance-operator
+    chart: idc/vm-instance-operator
+    version: {{ readFile (print $helmChartVersionsDir "/vm-instance-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}vm-instance-operator@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            leaderElection:
+              resourceName: vm-instance-operator-{{ $cluster.clusterId }}.cloud.intel.com
+            instanceOperator:
+              computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+              filter:
+                labels:
+                  clusterId: {{ $cluster.clusterId }}
+                  region: {{ $region.region }}
+              sshProxyTunnelCluster:
+                kubeConfigFilePath: ""
+              operatorFeatureFlags:
+                enableQuickConnectClientCA: {{ $availabilityZone.vmInstanceOperator.operatorFeatureFlags.enableQuickConnectClientCA }}
+              quickConnectHost: {{ $availabilityZone.quickConnect.host }}
+              storageClusterAddr: {{ $region.storageConfig.storageController.fileStorageClusterAddr }}
+            storageServerSubnets: {{ $region.storageServerSubnets | toJson }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $availabilityZone.availabilityZone }}-vm-instance-operator-{{ $cluster.clusterId }}
+                pathQuickConnectClientCA: {{ $availabilityZone.availabilityZone }}-quick-connect-client-ca/cert/ca_chain
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - serviceMonitor:
+            enabled: {{ $.Values.serviceMonitor.regional.enabled }}
+  {{- end }}
+  # Create a vm-instance-operator for each Kubevirt cluster.
+  {{- range $kubeVirtclusterIndex, $kubeVirtcluster := $availabilityZone.kubeVirtClusters }}
+  - name: {{ include "idc-common.toReleaseName" (dict "name" (print $availabilityZone.availabilityZone "-vm-instance-operator-" $kubeVirtcluster.clusterId) "kubeContext" $availabilityZone.kubeContext) }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeVmInstanceOperator
+      service: compute-vm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: vm-instance-operator
+    chart: idc/vm-instance-operator
+    version: {{ readFile (print $helmChartVersionsDir "/vm-instance-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}vm-instance-operator@sha256"
+            {{- if $.Values.zeroResources }}
+            resources:
+            {{- end }}
+      - managerConfig:
+          controllerManagerConfigYaml:
+            leaderElection:
+              resourceName: vm-instance-operator-{{ $kubeVirtcluster.clusterId }}.cloud.intel.com
+            instanceOperator:
+              computeApiServerAddr: {{ $computeApiServerAddr | quote }}
+              filter:
+                labels:
+                  clusterId: {{ $kubeVirtcluster.clusterId }}
+                  region: {{ $region.region }}
+              sshProxyTunnelCluster:
+                kubeConfigFilePath: ""
+              operatorFeatureFlags:
+                enableQuickConnectClientCA: {{ $availabilityZone.vmInstanceOperator.operatorFeatureFlags.enableQuickConnectClientCA }}
+                useKubeVirtCluster: true
+              quickConnectHost: {{ $availabilityZone.quickConnect.host }}
+            storageServerSubnets: {{ $region.storageServerSubnets | toJson }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          agent:
+            inject:
+              secret:
+                path: controlplane/data/{{ $availabilityZone.availabilityZone }}-vm-instance-operator-{{ $kubeVirtcluster.clusterId }}
+                pathQuickConnectClientCA: {{ $availabilityZone.availabilityZone }}-quick-connect-client-ca/cert/ca_chain
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - serviceMonitor:
+          enabled: {{ $.Values.serviceMonitor.regional.enabled }}
+  {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

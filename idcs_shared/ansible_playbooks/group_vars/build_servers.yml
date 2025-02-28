@@ -1,0 +1,12 @@
+ansible_user: "{{ devcloud_default_user }}"
+ansible_password: "{{ devcloud_default_password }}"
+ansible_sudo_pass: "{{ devcloud_default_password }}"
+ansible_connection: 'ssh'
+
+devops_user: intelcloudservices
+devops_password: devopsjenkins
+publickey_path: "./icsjenkins.pub"
+group_id: 1010
+user_id: 1010
+newuser: "{{ devops_user }}"
+docker_user: "{{ devops_user }}"

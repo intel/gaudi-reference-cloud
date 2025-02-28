@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    prometheus: infra
+  name: storage-controller
+spec:
+  endpoints:
+  - honorLabels: true
+    port: metrics-server
+  selector:
+    matchLabels:
+      kustomize.toolkit.fluxcd.io/name: storage-controller

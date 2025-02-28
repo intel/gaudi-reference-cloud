@@ -1,0 +1,1 @@
+ALTER TABLE cloudaccountextraspec ADD COLUMN allow_create_storage BOOLEAN DEFAULT FALSE;

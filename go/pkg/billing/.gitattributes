@@ -1,0 +1,2 @@
+# Do not show diffs of generated files.
+driverproxy.go -diff linguist-generated

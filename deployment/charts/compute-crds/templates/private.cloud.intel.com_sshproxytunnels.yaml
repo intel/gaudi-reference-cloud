@@ -1,0 +1,89 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: sshproxytunnels.private.cloud.intel.com
+spec:
+  group: private.cloud.intel.com
+  names:
+    kind: SshProxyTunnel
+    listKind: SshProxyTunnelList
+    plural: sshproxytunnels
+    singular: sshproxytunnel
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: SshProxyTunnel is the Schema for the sshproxytunnels API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: SshProxyTunnelSpec defines the desired state of SshProxyTunnel
+            properties:
+              sshPublicKeys:
+                description: SshPublicKeys specifies the list of ssh public keys of
+                  the tenant (id_rsa.pub) trying to access the instances
+                items:
+                  type: string
+                type: array
+              targetAddresses:
+                description: TargetAddresses specifies the list private ip of the
+                  instances which needs to be accessed from outside by the tenant
+                items:
+                  type: string
+                type: array
+              targetPorts:
+                description: TargetPorts specifies the list of ports at which the
+                  instance can be accessed
+                items:
+                  type: integer
+                type: array
+            required:
+            - sshPublicKeys
+            - targetAddresses
+            - targetPorts
+            type: object
+          status:
+            description: SshProxyTunnelStatus defines the observed state of SshProxyTunnel
+            properties:
+              proxyAddress:
+                description: ProxyAddress specifies the proxy server where tenant
+                  ssh request will come to
+                type: string
+              proxyPort:
+                description: ProxyPort specifies the port at which the proxy server
+                  will listen for incoming ssh connection from tenant
+                type: integer
+              proxyUser:
+                description: ProxyUser specifies the user the tenant will use to access
+                  the proxy server
+                type: string
+            required:
+            - proxyAddress
+            - proxyPort
+            - proxyUser
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

@@ -1,0 +1,42 @@
+---
+
+# Generate a new SSH key pair for server access
+- name: Block for creating SSH Key Pair
+  block:
+    - name: create SSH Key directory
+      file:
+        path: "{{ ssh_key_dir }}"
+        state: directory
+        mode: u+rxw,g-rwx,o-rwx
+      register: cache
+    - name: checking if ssh_key file exists {{ ssh_key_server_name }}
+      stat:
+        path: "{{ ssh_key_file }}"
+      register: ssh_key_file_result
+    - name: Generate SSH Key pair
+      ansible.builtin.shell:
+        cmd: >
+          ssh-keygen
+          -t "{{ ssh_key_type }}"
+          -b "{{ ssh_key_bits }}"
+          -f "{{ ssh_key_file }}"
+          -C "{{ ssh_comment }}"
+          -P ""
+      register: ssh_key_gen_result
+      changed_when: "ssh_key_gen_result.rc != 0"
+      when: not ssh_key_file_result.stat.exists
+  vars:
+    ssh_key_file: "{{ ssh_key_dir }}/{{ ssh_key_server_name }}"
+    ssh_key_type: "rsa"
+    ssh_key_bits: "4096"
+    ssh_comment: "{{ ssh_key_server_name }}_{{ '%Y%m%dT%H%M%S' | strftime }}_ansible"
+  become: false
+  tags: ssh_key
+
+# Clean Up SSH Key directory
+- name: Clean up the SSH Key directory
+  ansible.builtin.file:
+    path: "{{ ssh_key_dir }}"
+    state: absent
+  when: ssh_key_dir is defined
+  tags: [never, clean]

@@ -1,0 +1,18 @@
+replicaCount: 1
+image:
+  repository: intelcloud/cloudaccount-enroll
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+icp:
+  # For production environment use url as https://apis.intel.com. This is accessible outside of intel network aswell.
+  # Development environment use url as https://apis-sandbox.intel.com.
+  url: https://apis.intel.com
+  vaultCredentialsPath: controlplane/data/cloudaccount-enroll/icp
+
+otel:
+  otelAnnotations: false
+
+authz:
+  enabled: false

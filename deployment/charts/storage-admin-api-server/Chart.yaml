@@ -1,0 +1,6 @@
+apiVersion: v2
+name: storage-admin-api-server
+description: IDC Storage Admin API Server
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

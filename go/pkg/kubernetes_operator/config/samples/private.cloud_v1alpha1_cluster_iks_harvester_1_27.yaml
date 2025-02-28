@@ -1,0 +1,74 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    nodegroup.devcloud.io/gateway: 10.64.112.1
+    nodegroup.devcloud.io/ip-addresses: 10.64.112.220,10.64.112.221,10.64.112.222
+    nodegroup.devcloud.io/nameserver: 10.248.2.17
+    nodegroup.devcloud.io/apiserver-lb-ip: 10.18.89.98
+    nodegroup.devcloud.io/etcd-lb-ip: 10.18.89.98
+    nodegroup.devcloud.io/konnectivity-lb-ip: 10.18.89.98
+  name: cl-1234abcd-ej
+  namespace: default
+spec:
+  advancedConfig:
+    kubeApiServerArgs: ""
+    kubeControllerManagerArgs: ""
+    kubeProxyArgs: ""
+    kubeSchedulerArgs: ""
+    kubeletArgs: ""
+  backup: ""
+  instanceIMI: image-h59jw
+  instanceType: small
+  kubernetesProvider: iks
+  kubernetesProviderConfig:
+    caCertAuthEndpoint: ""
+    enableAuthEndpoint: false
+    envVars:
+      HTTP_PROXY: http://internal-placeholder.com:912
+      HTTPS_PROXY: http://internal-placeholder.com:912
+      NO_PROXY: localhost,127.0.0.0/8,127.0.0.1/8,10.0.0.0/8,.intel.com
+    fqdnAuthEndpoint: ""
+  kubernetesVersion: v1.27.1
+  nodeProvider: Harvester 
+  runtime: runc
+  network:
+    clusterDNS: "100.66.0.10"
+    podCIDR: "100.68.0.0/16"
+    serviceCIDR: "100.66.0.0/16"
+  nodegroups:
+    - annotations:
+        nodegroup.devcloud.io/gateway: 10.64.112.1
+        nodegroup.devcloud.io/ip-addresses: 10.64.112.223,10.64.112.224
+        nodegroup.devcloud.io/nameserver: 10.248.2.17
+      count: 1
+      instanceIMI: image-2vzjd 
+      instanceType: small
+      name: ng-1234abcd-ej
+      sshKey: 
+        - mysshkey
+      kubernetesVersion: ""
+      labels: {}
+      taints: {}
+      upgradeStrategy:
+        drainBefore: false
+        maxUnavailablePercent: 0
+  addons:
+    - name: kube-proxy
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/kube-proxy-k1271-1.template
+    - name: coredns
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/coredns-171-k1271-1.template
+    - name: calico-operator
+      type: kubectl-replace
+      artifact: http://10.11.183.185:8081/calico-operator-3260-k1271-1.template
+    - name: calico-config
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/calico-config-3260-k1271-1.template
+    - name: konnectivity-agent
+      type: kubectl-apply
+      artifact: http://10.11.183.185:8081/konnectivity-agent.template
+

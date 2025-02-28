@@ -1,0 +1,431 @@
+{{- $trust_chain_verification := "VERIFY_TRUST_CHAIN" }}
+{{- if $.Values.tls.client.insecureSkipVerify }}
+{{- $trust_chain_verification := "ACCEPT_UNTRUSTED" }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+  annotations:
+    # Add important parameters as annotations so that an administrator can easily see the effective values in this ConfigMap.
+    # These annotations have no effect.
+    tls.client.insecureSkipVerify: {{ $.Values.tls.client.insecureSkipVerify | quote }}
+    tls.enabled: {{ $.Values.tls.enabled | quote }}
+    tls.server.requireClientCertificate: {{ $.Values.tls.server.requireClientCertificate | quote }}
+data:
+  config.yaml: |
+    clientCertificate:
+      commonName: {{ .Values.clientCertificate.commonName }}
+      ttl: {{ .Values.clientCertificate.ttl }}
+    computeApiServerAddr: {{ .Values.computeApiServerAddr | quote }}
+    listenPort: 8080
+    targetPort: 57066
+{{- if $.Values.tls.enabled }}
+  sds.yaml: |
+    resources:
+      - "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
+        name: tls_sds
+        tls_certificate:
+          certificate_chain:
+            filename: "/vault/secrets/cert.pem"
+          private_key:
+            filename: "/vault/secrets/cert.key"
+          watched_directory:
+            path: /vault/secrets
+{{- end }}
+  envoy.yaml: |
+    node:
+      id: "quick-connect"
+      cluster: "quick-connect"
+    static_resources:
+      listeners:
+      - name: listener_0
+        address:
+          socket_address:
+            address: {{ .Values.listenAddress }}
+            port_value: {{ include "idc-common.listenPort" . }}
+        filter_chains:
+        - filters:
+          - name: envoy.filters.network.http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              # maximum request headers size for incoming connections
+              # max_request_headers_kb: 1024
+              # time that Envoy will wait for the entire request to be received
+              common_http_protocol_options:
+                idle_timeout: 600s # Maximum idle time for connections.
+              request_timeout: 120s
+              access_log:
+              - name: envoy.access_loggers.stdout
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                  log_format:
+                    text_format: "[%START_TIME%] \"%REQ(:METHOD)% %REQ_WITHOUT_QUERY(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%\" %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% \"%REQ(X-FORWARDED-FOR)%\" \"%REQ(USER-AGENT)%\" \"%REQ(X-REQUEST-ID)%\" \"%REQ(:AUTHORITY)%\" \"%UPSTREAM_HOST%\"\n"
+                    formatters:
+                    - name: envoy.formatter.req_without_query
+                      typed_config:
+                        "@type": type.googleapis.com/envoy.extensions.formatter.req_without_query.v3.ReqWithoutQuery
+              http_filters:
+              - name: envoy.filters.http.lua
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                  default_source_code:
+                    inline_string: |
+                      -- Validate the state parameter of the callback endpoint and redirect the global Oauth
+                      -- callback to the instance-specific callback. This ensures that the resulting Oauth cookies
+                      -- belong to the instance-specific domain.
+                      function hex2str(h) return string.char(tonumber(h, 16)) end
+                      function decode_url(s) return string.gsub(s, '%%(%x%x)', hex2str) end
+                      function envoy_on_request(request_handle)
+                        path = request_handle:headers():get(":path")
+                        if path:find("^/v1/callback%?") ~= nil then
+                          state = path:match('[?&]state=([^&]+)')
+                          if state ~= nil then
+                            url = decode_url(state)
+                            -- TODO Post v1.31 release of Envoy will need the following addition:
+                            -- url = decode_url(url):match('[?&]?url=([^&]+)')
+                            instance = url:match('https://(%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x).{{ .Values.host | replace "-" "%-" }}/v1/connect/%d%d%d%d%d%d%d%d%d%d%d%d/%1')
+                            if instance ~= nil then
+                              authority = request_handle:headers():get(":authority")
+                              if authority == "{{ .Values.oauth.redirectHost }}" then
+                                request_handle:respond(
+                                  {[":status"] = "302",
+                                  ["location"] = "https://"..instance..".{{ .Values.host }}"..path},
+                                  nil)
+                              end
+                              -- The state parameter is valid, continue with the next filter
+                              return
+                            end
+                          end
+                          -- Respond with bad request when the callback request does not match our expectations
+                          request_handle:respond({[":status"] = "400"}, nil)
+                        end
+                      end
+              - name: envoy.filters.http.lua
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                  default_source_code:
+                    inline_string: |
+                      -- Rewrite SameSite policy of Oauth related cookies. The SameSite attribute is
+                      -- not part of the OauthHMAC calculation so this is safe to do here.
+                      function rewrite(c)
+                        if c:find("^OauthHMAC=") ~= nil or
+                          c:find("^OauthExpires=") ~= nil or
+                          c:find("^BearerToken=") ~= nil or
+                          c:find("^IdToken=") ~= nil or
+                          c:find("^RefreshToken=") ~= nil then
+                          c, n = c:gsub("[Ss]ame[Ss]ite=[^;]+", "SameSite=Lax")
+                          if n == 0 then
+                            c = c..";SameSite=Lax"
+                          end
+                        end
+                        return c
+                      end
+                      function envoy_on_response(response_handle)
+                        local cs = {}
+                        for h, c in pairs(response_handle:headers()) do
+                          if h == "set-cookie" then
+                            table.insert(cs, rewrite(c))
+                          end
+                        end
+                        response_handle:headers():remove("set-cookie")
+                        for _, c in ipairs(cs) do
+                            response_handle:headers():add("set-cookie", c)
+                        end
+                      end
+{{- if .Values.oauth.enabled }}
+              - name: envoy.filters.http.oauth2
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2
+                  config:
+                    token_endpoint:
+                      cluster: oauth
+                      uri: {{ .Values.oauth.tokenURL }}
+                      timeout: 5s
+                    authorization_endpoint: {{ .Values.oauth.authorizationURL }}
+                    credentials:
+                      client_id: {{ .Values.oauth.clientID }}
+                      # oauth2 filter requires client credentials
+                      token_secret:
+                        name: token
+                        sds_config:
+                          path_config_source:
+                            path: "/vault/secrets/token_secret.yaml"
+                      hmac_secret:
+                        name: hmac
+                        sds_config:
+                          path_config_source:
+                            path: "/vault/secrets/hmac_secret.yaml"
+                    redirect_uri: "https://{{ .Values.oauth.redirectHost }}/v1/callback"
+                    pass_through_matcher:
+                    - name: ":path"
+                      string_match:
+                        prefix: "/v1/"
+                      invert_match: true
+                    - name: ":path"
+                      string_match:
+                        exact: "/readyz"
+                    redirect_path_matcher:
+                      path:
+                        exact: /v1/callback
+                    signout_path:
+                      path:
+                        exact: /v1/signout
+                    forward_bearer_token: true
+                    auth_scopes:
+                    {{- .Values.oauth.scopes | toYaml | nindent 20 }}
+{{- end }}
+{{- if .Values.oidc.servers }}
+              - name: envoy.filters.http.jwt_authn
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+                  providers:
+{{- range $key, $value := $.Values.oidc.servers }}
+                    oidc_provider_{{ $key }}:
+                      issuer: {{ $value.issueURL }}
+{{- if $value.audiences }}
+                      audiences:
+{{- range $value.audiences }}
+                      - {{ . }}
+{{- end }}
+{{- end }}
+                      remote_jwks:
+                        http_uri:
+                          uri: {{ $value.keyURL }}
+                          cluster: oidc_cluster_{{ $key }}
+                          timeout: 5s
+                        cache_duration:
+                          seconds: 300
+                      forward: "true"
+                      from_headers:
+                        - name: Authorization
+                          value_prefix: "Bearer "
+{{- end }}
+{{- if .Values.enableJwtValidation }}
+                  rules:
+                  - match:
+                      prefix: "/"
+                    requires:
+{{- if eq (len .Values.oidc.servers) 1 }}
+                      provider_name: oidc_provider_0
+{{- else }}
+                      requires_any:
+                        requirements:
+{{- range $key, $value := $.Values.oidc.servers }}
+                        - provider_name: oidc_provider_{{ $key }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+              - name: envoy.filters.http.router
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+              codec_type: AUTO
+              stat_prefix: quick_connect
+              route_config:
+                name: local_route
+                virtual_hosts:
+                - name: http
+                  domains:
+                  - "*"
+                  routes:
+                  - match:
+                      path_separated_prefix: "/v1/connect"
+                    route:
+                      auto_host_rewrite: true
+                      cluster: "quick-connect-api-server"
+                  - match:
+                      path: "/readyz"
+                    route:
+                      auto_host_rewrite: true
+                      cluster: "quick-connect-api-server"
+                    typed_per_filter_config:
+{{- if .Values.oidc.servers }}
+                      envoy.filters.http.jwt_authn:
+                        "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.PerRouteConfig
+                        disabled: true
+{{- end }}
+              upgrade_configs:
+              - upgrade_type: websocket
+                enabled: true
+{{- if $.Values.tls.enabled }}
+          transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+              require_client_certificate: {{ $.Values.tls.server.requireClientCertificate }}
+              common_tls_context:
+                tls_certificate_sds_secret_configs:
+                  name: tls_sds
+                  sds_config:
+                    path: /etc/envoy/sds.yaml
+                tls_params:
+                  tls_maximum_protocol_version: TLSv1_3
+                  # This must allow TLS 1.2 because nginx ingress controller 1.2.4 does not support TLS 1.3 by default.
+                  tls_minimum_protocol_version: TLSv1_2
+                validation_context:
+                  trusted_ca:
+                    filename: /vault/secrets/ca.pem
+                  watched_directory:
+                    path: /vault/secrets
+                  trust_chain_verification: {{ $trust_chain_verification }}
+{{- end }}
+{{- if $.Values.proxy.https_proxy }}
+      - name: proxy_listener
+        address:
+          socket_address:
+            address: 127.0.0.1
+            port_value: 9191
+        listener_filters:
+        - name: envoy.filters.listener.tls_inspector
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector
+        filter_chains:
+        - filters:
+          - name: envoy.filters.network.tcp_proxy
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy
+              stat_prefix: tcp_proxy
+              cluster: "https_proxy"
+              tunneling_config:
+                hostname: "%REQUESTED_SERVER_NAME%:443"
+              access_log:
+              - name: envoy.access_loggers.stdout
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                  log_format:
+                    text_format: "[%START_TIME%] \"%REQUESTED_SERVER_NAME%\" %BYTES_RECEIVED% %BYTES_SENT% %DURATION% \"%UPSTREAM_HOST%\"\n"
+{{- end }}
+      clusters:
+      - name: "quick-connect-api-server"
+        connect_timeout: 0.5s
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        load_assignment:
+          cluster_name: "quick-connect-api-server"
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: 127.0.0.1
+                    port_value: 8080
+{{- if .Values.oauth.enabled }}
+      - name: "oauth"
+        connect_timeout: 2s
+        type: LOGICAL_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        load_assignment:
+          cluster_name: "oauth"
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+{{- if $.Values.proxy.https_proxy }}
+                    address: 127.0.0.1
+                    port_value: 9191
+{{- else }}
+                    address: {{ .Values.oauth.host }}
+                    port_value: {{ .Values.oauth.port }}
+{{- end }}
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            sni: {{ .Values.oauth.host }}
+            common_tls_context:
+              tls_params:
+                tls_maximum_protocol_version: TLSv1_3
+                tls_minimum_protocol_version: TLSv1_2
+              validation_context:
+                trusted_ca:
+                  filename: /etc/ssl/certs/ca-certificates.crt
+                trust_chain_verification: {{ $trust_chain_verification }}
+{{- end }}
+{{- range $key, $value := $.Values.oidc.servers }}
+      - name: oidc_cluster_{{ $key  }}
+        connect_timeout: {{ $.Values.oidc.oidcServerConnectTimeout }}
+        type: LOGICAL_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        load_assignment:
+          cluster_name: oidc_cluster_{{ $key  }}
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+{{- if $.Values.proxy.https_proxy }}
+                    address: 127.0.0.1
+                    port_value: 9191
+{{- else }}
+                    address: {{ $value.server }}
+                    port_value: {{ $value.port }}
+{{- end }}
+{{- if ne (index $value "useTls") false }}
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            sni: {{ $value.server }}
+            common_tls_context:
+              tls_params:
+                tls_maximum_protocol_version: TLSv1_3
+                tls_minimum_protocol_version: TLSv1_2
+              validation_context:
+                trusted_ca:
+                  filename: /etc/ssl/certs/ca-certificates.crt
+                trust_chain_verification: {{ $trust_chain_verification }}
+{{- end }}
+{{- end }}
+{{- if $.Values.proxy.https_proxy }}
+      - name: "https_proxy"
+        connect_timeout: 0.5s
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        load_assignment:
+          cluster_name: "https_proxy"
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+{{- $url := urlParse $.Values.proxy.https_proxy }}
+{{- $hostport := mustRegexSplit ":" $url.host -1 }}
+                    address: {{ index $hostport 0 }}
+                    port_value: {{ index $hostport 1 }}
+{{- end }}
+{{- if .Values.statsd.enabled }}
+      - name: statsd-exporter
+        connect_timeout: 0.25s
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        http2_protocol_options: {}
+        load_assignment:
+          cluster_name: statsd-exporter
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: {{ .Values.statsd.address }}
+                    port_value: {{ .Values.statsd.port }}
+    stats_sinks:
+      - name: envoy.stat_sinks.statsd
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.metrics.v3.StatsdSink
+          tcp_cluster_name: statsd-exporter
+          prefix: {{ .Values.statsd.prefix }}
+{{- end }}
+    admin:
+      access_log_path: /dev/stdout
+      address:
+        socket_address:
+          address: 127.0.0.1
+          port_value: 8090

@@ -1,0 +1,56 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/billing
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  service: cloudcredits-db-postgresql
+  vaultCredentialsPath: cloudcreditssecret/data/cloudcreditsdb
+
+creditsInstallSchedulerInterval: 3600
+reportUsageSchedulerInterval: 1800
+creditUsageSchedulerInterval: 240
+creditExpirySchedulerInterval: 240
+premiumCloudCreditThreshold: 80
+intelCloudCreditThreshold: 80
+enterpriseCloudCreditThreshold: 80
+premiumCloudCreditNotifyBeforeExpiry: 4320
+intelCloudCreditNotifyBeforeExpiry: 4320
+enterpriseCloudCreditNotifyBeforeExpiry: 4320
+servicesTerminationSchedulerInterval: 240
+servicesTerminationInterval: 4320
+instanceTerminationMeteringDuration: 2
+creditsExpiryMinimumInterval: 38
+eventExpirySchedulerInterval: 1440
+cloudCreditUsageReportSchedulerInterval: 3600
+runSchedulers: false
+couponNumberOfUsesThresholdStandard: 500
+couponNumberOfUsesThresholdNonStandard: 50
+
+features:
+  creditInstallScheduler: true
+  reportUsageScheduler: true
+  creditUsageScheduler: false
+  creditExpiryScheduler: false
+  servicesTerminationScheduler: true
+  eventExpiryScheduler: true
+  creditUsageEmail: false
+  creditExpiryEmail: false
+  cloudCreditUsageReportScheduler: true
+  billingUsageMetrics: true
+  servicesTerminationAccountTypes:
+    - ACCOUNT_TYPE_STANDARD
+
+resources:
+  requests:
+    memory: "8Gi"
+    cpu: "4000m"
+  limits:
+    memory: "8Gi"
+    cpu: "8000m"
+
+otel:
+  otelAnnotations: false

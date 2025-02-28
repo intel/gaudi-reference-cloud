@@ -1,0 +1,35 @@
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/loadbalancer-replicator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+# The address of the Compute API Server in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+computeApiServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+regionId: us-dev-1
+availabilityZoneId: us-dev-1a
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1000m"
+  limits:
+    memory: "1Gi"
+    cpu: "2000m"
+
+podAnnotations:
+
+replicaCount: 1
+
+autoscaling:
+  enabled: false

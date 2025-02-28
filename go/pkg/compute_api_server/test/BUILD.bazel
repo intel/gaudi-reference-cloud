@@ -1,0 +1,68 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "git_to_grpc_synchronizer_test.go",
+        "instance_delete_db_records_test.go",
+        "instance_delete_deactivated_instances_test.go",
+        "instance_group_test.go",
+        "instance_sql_transformer_test.go",
+        "instance_test.go",
+        "instance_watch_test.go",
+        "loadbalancer_test.go",
+        "machine_image_test.go",
+        "proto_json_table_test.go",
+        "ssh_public_key_test.go",
+        "suite_test.go",
+    ],
+    data = [
+        "//go/pkg/compute_api_server:testdata",
+        "//go/pkg/observability:configdata",
+    ],
+    env = {
+        # Following setting enable tests to send traces to ELK.
+        # If not set, traces will not be sent.
+        "OTEL_SERVICE_NAME": "compute-api-server-test",
+        "OTEL_EXPORTER_OTLP_CERTIFICATE": "../../observability/otel-ca.pem",
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "internal-placeholder.com:443",
+        "https_proxy": "http://internal-placeholder.com:912",
+    },
+    env_inherit = [
+        "OTEL_RESOURCE_ATTRIBUTES",
+    ],
+    deps = [
+        "//go/pkg/cloudaccount",
+        "//go/pkg/compute_api_server/config",
+        "//go/pkg/compute_api_server/db",
+        "//go/pkg/compute_api_server/instance",
+        "//go/pkg/compute_api_server/instance_type",
+        "//go/pkg/compute_api_server/machine_image",
+        "//go/pkg/compute_api_server/openapi",
+        "//go/pkg/compute_api_server/server",
+        "//go/pkg/compute_api_server/vnet",
+        "//go/pkg/grpc_rest_gateway",
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@com_github_amacneil_dbmate//pkg/driver/postgres",
+        "@com_github_golang_mock//gomock",
+        "@com_github_google_go_cmp//cmp",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//testing/protocmp",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)

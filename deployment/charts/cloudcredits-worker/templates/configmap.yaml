@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenConfig:
+      listenPort: {{ include "idc-common.listenPort" . }}
+    workerConfig:
+      initSleepTimeSeconds: {{ .Values.workerConfig.initSleepTimeSeconds }}
+      maxSleepTimeSeconds: {{ .Values.workerConfig.maxSleepTimeSeconds }}
+      channelCapacity:    {{ .Values.workerConfig.channelCapacity }}
+    notifications:
+      senderEmail: {{ .Values.notifications.senderEmail }}
+      consoleUrl: {{ .Values.notifications.consoleUrl }}
+      paymentUrl: {{ .Values.notifications.paymentUrl }}
+      cloudCreditExpiryTemplate: {{ .Values.notifications.cloudCreditExpiryTemplate }}
+      cloudCreditEightyPercentUsedTemplate: {{ .Values.notifications.cloudCreditEightyPercentUsedTemplate }}
+      cloudCreditHundredPercentUsedTemplate: {{ .Values.notifications.cloudCreditHundredPercentUsedTemplate }}
+      opsPDL: {{ .Values.notifications.opsPDL }}
+    features:
+      sendCreditUsageEmail: {{ .Values.features.sendCreditUsageEmail }}
+      sendCreditExpiryEmail: {{ .Values.features.sendCreditExpiryEmail }}
+      servicesTerminationScheduler: {{ .Values.features.servicesTerminationScheduler }}
+      servicesTerminationAccountTypes: 
+      {{- if $.Values.features.servicesTerminationAccountTypes }}
+        {{- range $value := $.Values.features.servicesTerminationAccountTypes }}
+          - {{ $value }}
+        {{- end }}
+      {{- end }}
+      creditUsageEmailAccountTypes: 
+      {{- if $.Values.features.creditUsageEmailAccountTypes }}
+        {{- range $value := $.Values.features.creditUsageEmailAccountTypes }}
+          - {{ $value }}
+        {{- end }}
+      {{- end }}
+      creditExpiryEmailAccountTypes: 
+      {{- if $.Values.features.creditExpiryEmailAccountTypes }}
+        {{- range $value := $.Values.features.creditExpiryEmailAccountTypes }}
+          - {{ $value }}
+        {{- end }}
+      {{- end }}
+    aws:
+      sqs:
+        queueName: {{ .Values.aws.sqs.queueName | quote }}
+        waitTimeSeconds: {{ .Values.aws.sqs.waitTimeSeconds | quote }}
+        maxNumberofMessages: {{ .Values.aws.sqs.maxNumberofMessages | quote }}
+    intelCloudCreditThreshold: {{ .Values.intelCloudCreditThreshold }}
+    enterpriseCloudCreditThreshold: {{ .Values.enterpriseCloudCreditThreshold }}
+    premiumCloudCreditNotifyBeforeExpiry: {{ .Values.premiumCloudCreditNotifyBeforeExpiry }}

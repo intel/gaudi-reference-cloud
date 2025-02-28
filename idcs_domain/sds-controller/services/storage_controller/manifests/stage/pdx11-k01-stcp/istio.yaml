@@ -1,0 +1,207 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: ingressgateway
+spec:
+  selector:
+    app: istio-ingressgateway
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: vault-idc-mtls-cert
+      hosts:
+        - "*"
+    - port:
+        number: 15443
+        name: mtls
+        protocol: HTTPS
+      tls:
+        mode: MUTUAL
+        credentialName: vault-idc-mtls-cert
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: storage-controller-http-vs
+spec:
+  gateways:
+    - ingressgateway
+  hosts:
+    - "*"
+  http:
+    - match:
+        - uri:
+            prefix: /intel.storagecontroller.v1
+      route:
+        - destination:
+            host: storage-controller-v1.storage-controller.svc.cluster.local
+            port:
+              number: 50051
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: storage-controller-mtls-operator-allow
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - when:
+    - key: request.headers[x-forwarded-client-cert]
+      values: [
+        "*DNS=us-staging-3a-storage-operator.idcs-system.svc.cluster.local",
+        "*DNS=us-staging-3-storage-user.idcs-system.svc.cluster.local",
+        "*DNS=us-staging-3a-object-store-operator.idcs-system.svc.cluster.local",
+        "*DNS=us-staging-3-storage-scheduler.idcs-system.svc.cluster.local",
+        "*DNS=us-staging-3a-vast-storage-operator.idcs-system.svc.cluster.local",
+        "*DNS=internal-placeholder.com",
+      ]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: storage-controller-mtls-metering-allow
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - to:
+    - operation:
+        ports: ["15443"]
+        hosts: ["*"]
+        paths: [
+          "/intel.storagecontroller.v1.S3Service/ListBuckets",
+          "/intel.storagecontroller.v1.weka.FilesystemService/ListFilesystems",
+          "/intel.storagecontroller.v1.NamespaceService/ListNamespaces",
+          "/intel.storagecontroller.v1.vast.FilesystemService/ListFilesystems",
+        ]
+    when:
+    - key: request.headers[x-forwarded-client-cert]
+      values: [
+        "*DNS=us-staging-3a-bucket-metering-monitor.idcs-system.svc.cluster.local",
+        "*DNS=us-staging-3-storage-custom-metrics-service.idcs-system.svc.cluster.local",
+        "*DNS=us-staging-1-storage-admin-api-server.idcs-system.svc.cluster.local",
+        "*DNS=us-staging-3-storage-admin-api-server.idcs-system.svc.cluster.local",
+      ]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: storage-controller-mtls-get-allow
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - to:
+    - operation:
+        ports: ["15443"]
+        hosts: ["*"]
+        paths: ["/intel.storagecontroller.v1.ClusterService/*"]
+# Allows all on these ports for testing
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: storage-controller-testing-allow
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - to:
+    - operation:
+        hosts: ["*"]
+        ports: ["8080", "8443"]
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: ratelimit-filter-sds-controller
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: VIRTUAL_HOST
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            name: "*:80"
+            route:
+              action: ANY
+      patch:
+        operation: MERGE
+        value:
+          rate_limits:
+            - actions:
+              - request_headers:
+                  header_name: ":path"
+                  descriptor_key: "PATH"
+              - request_headers:
+                  header_name: "X-Cloud-Account"
+                  descriptor_key: "CLOUD_ACCOUNT"
+                  skip_if_absent: true
+    - applyTo: VIRTUAL_HOST
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            name: "*:443"
+            route:
+              action: ANY
+      patch:
+        operation: MERGE
+        value:
+          rate_limits:
+            - actions:
+              - request_headers:
+                  header_name: ":path"
+                  descriptor_key: "PATH"
+              - request_headers:
+                  header_name: "X-Cloud-Account"
+                  descriptor_key: "CLOUD_ACCOUNT"
+                  skip_if_absent: true
+    - applyTo: VIRTUAL_HOST
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            name: "*:15443"
+            route:
+              action: ANY
+      patch:
+        operation: MERGE
+        value:
+          rate_limits:
+            - actions:
+              - request_headers:
+                  header_name: ":path"
+                  descriptor_key: "PATH"
+              - request_headers:
+                  header_name: "X-Cloud-Account"
+                  descriptor_key: "CLOUD_ACCOUNT"
+                  skip_if_absent: true

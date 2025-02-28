@@ -1,0 +1,7 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+region: us-dev-1
+availabilityZone: us-dev-1b
+addressSpace: storage
+subnet: 100.85.28.0/22
+vlanId: 9

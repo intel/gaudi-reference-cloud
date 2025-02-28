@@ -1,0 +1,68 @@
+@import "colors";
+// Dark color mode variables
+//
+// Custom variables for the `[data-bs-theme="dark"]` theme.
+
+// Colors used on Alerts and List Groups
+$primary-text-emphasis-dark:   $gray-100 !default;
+$secondary-text-emphasis-dark: $secondary-color-dark !default;
+$success-text-emphasis-dark:   #{shade-color($success, 80)} !default;
+$info-text-emphasis-dark:      #{shade-color($energy-blue-shade2, 90)} !default;
+$warning-text-emphasis-dark:   #{shade-color($warning, 90)} !default;
+$danger-text-emphasis-dark:    #{shade-color($danger, 80)} !default;
+$light-text-emphasis-dark:     $gray-900 !default;
+$dark-text-emphasis-dark:      $gray-100 !default;
+
+$primary-bg-subtle-dark:       $primary !default;
+$secondary-bg-subtle-dark:     $secondary-bg-dark !default;
+$success-bg-subtle-dark:       $status-success-soft-dark-mode !default;
+$info-bg-subtle-dark:          $energy-blue-shade1 !default;
+$warning-bg-subtle-dark:       $status-warning-soft-dark-mode !default;
+$danger-bg-subtle-dark:        $status-error-soft-dark-mode !default;
+$light-bg-subtle-dark:         $gray-200 !default;
+$dark-bg-subtle-dark:          $gray-800 !default;
+
+$primary-border-subtle-dark:   $classic-blue-tint1 !default;
+$secondary-border-subtle-dark: $classic-blue-tint1 !default;
+$success-border-subtle-dark:   #{tint-color($success, 50)} !default;
+$info-border-subtle-dark:      $info !default;
+$warning-border-subtle-dark:   #{tint-color($warning, 50)} !default;
+$danger-border-subtle-dark:    #{tint-color($danger, 50)} !default;
+$light-border-subtle-dark:     $gray-500 !default;
+$dark-border-subtle-dark:      $gray-600 !default;
+
+$body-color-dark: $gray-100 !default;
+$body-bg-dark:    #1c2024 !default;
+
+$link-color-dark: $classic-blue-tint1 !default;
+
+$mark-bg-dark:    $daisy-shade1 !default;
+
+$form-valid-color-dark:             $status-success-soft-dark-mode !default;
+$form-valid-border-color-dark:      $status-success-soft-dark-mode !default;
+$form-invalid-color-dark:           $status-error-soft-dark-mode !default;
+$form-invalid-border-color-dark:    $status-error-soft-dark-mode !default;
+
+// Bootstrap original
+$body-secondary-color-dark:         rgba($body-color-dark, .75) !default;
+$body-secondary-bg-dark:            $gray-800 !default;
+$body-tertiary-color-dark:          rgba($body-color-dark, .5) !default;
+$body-emphasis-color-dark:          $white !default;
+$border-color-dark:                 $gray-700 !default;
+$border-color-translucent-dark:     rgba($white, .15) !default;
+$headings-color-dark:               inherit !default;
+$link-hover-color-dark:             shift-color($link-color-dark, -$link-shade-percentage) !default;
+$code-color-dark:                   tint-color($code-color, 40%) !default;
+$mark-color-dark:                   $body-color-dark !default;
+
+// Forms
+$form-select-indicator-color-dark:  $body-color-dark !default;
+$form-select-indicator-dark:        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#{$form-select-indicator-color-dark}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>") !default;
+$form-switch-color-dark:            rgba($white, .25) !default;
+$form-switch-bg-image-dark:         url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$form-switch-color-dark}'/></svg>") !default;
+
+// Accordion
+$accordion-icon-color-dark:         $primary-text-emphasis-dark !default;
+$accordion-icon-active-color-dark:  $black !default;
+$accordion-button-icon-dark:         url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$accordion-icon-color-dark}'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>") !default;
+$accordion-button-active-icon-dark:  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$accordion-icon-active-color-dark}'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>") !default;

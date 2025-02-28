@@ -1,0 +1,44 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_container_image")
+
+go_library(
+    name = "ssh_proxy_operator_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/ssh_proxy_operator",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/k8s/generated/cloudintelclient/clientset/versioned",
+        "//go/pkg/k8s/generated/cloudintelclient/informers/externalversions",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/observability",
+        "//go/pkg/ssh_proxy_operator/controllers/private.cloud:private_cloud",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/healthz",
+        "@io_k8s_sigs_controller_runtime//pkg/manager",
+    ],
+)
+
+go_binary(
+    name = "ssh_proxy_operator",
+    embed = [":ssh_proxy_operator_lib"],
+    visibility = ["//visibility:public"],
+)
+
+# See https://github.com/bazelbuild/rules_docker/blob/master/docs/container.md#container_image
+idc_container_image(
+    name = "ssh_proxy_operator_image",
+    files = [
+        "//go/pkg/ssh_proxy_operator",
+    ],
+    user = "1001:1001",
+    visibility = ["//visibility:public"],
+)

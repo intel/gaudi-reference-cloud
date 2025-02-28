@@ -1,0 +1,55 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-22.04-gaudi-v1.19.1-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 22.04
+  description: Ubuntu 22.04.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-icp-gaudi2
+  - bm-spr-gaudi2
+  - bm-icx-gaudi2
+  - bm-icp-gaudi2-debug
+  - bm-icp-gaudi2-sc
+  - bm-icx-gaudi2-sc
+  md5sum: 472206d52416c08d0981d91b756c2041
+  sha256sum: 6c776479d6b66499cc3175efbf182c3396478fce6b1dbe6de2c5ece978c117aa
+  sha512sum: 03d8a40cec79569538221de71aec6fb3032b6a9e294aa9523f8a2cf604c2ef793fb96c6a23dc6e3cda9895c805ebbd8775056f2b13472ad89d2f667c6b8ebdd5
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2204-lts
+    kernelVersion: 5.15 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 22.04 LTS
+    type: OS
+    version: "22.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/jammy
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: Intel Gaudi SW
+    type: Software kit
+    version: 1.19.1
+    description: Designed to facilitate high-performance DL training on Habana’s Gaudi
+      accelerators.
+    infoUrl: https://docs.habana.ai/en/v1.19.1/Installation_Guide/Bare_Metal_Fresh_OS.html#set-up-intel-gaudi-software-stack
+  - name: Intel Gaudi SW
+    type: Firmware kit
+    version: 1.19.1-26
+  - name: Intel Gaudi SW
+    type: Firmware kit
+    version: 1.19.0-561
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

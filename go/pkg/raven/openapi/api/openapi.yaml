@@ -1,0 +1,441 @@
+openapi: 3.0.0
+info:
+  title: Devcloud API
+  version: 1.0.0
+servers:
+- url: /
+security:
+- bearerAuth: []
+tags:
+- name: Auth
+paths:
+  /devcloud/v2/{environment}/configure/port/access:
+    put:
+      parameters:
+      - explode: false
+        in: path
+        name: environment
+        required: true
+        schema:
+          enum:
+          - rnd
+          - staging
+          - prod
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Unauthorized
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Internal Server Error
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/503'
+          description: Temporarily Unavailable
+      tags:
+      - Ports
+  /devcloud/v2/{environment}/configure/port/trunk:
+    put:
+      parameters:
+      - explode: false
+        in: path
+        name: environment
+        required: true
+        schema:
+          enum:
+          - rnd
+          - staging
+          - prod
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_trunk_put_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Unauthorized
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Internal Server Error
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/503'
+          description: Temporarily Unavailable
+      tags:
+      - Ports
+  /devcloud/v2/{environment}/list/ports:
+    get:
+      parameters:
+      - explode: true
+        in: query
+        name: switch_fqdn
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: path
+        name: environment
+        required: true
+        schema:
+          enum:
+          - rnd
+          - staging
+          - prod
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__list_ports_get_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Unauthorized
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Internal Server Error
+      tags:
+      - Ports
+  /devcloud/v2/{environment}/port/details:
+    get:
+      parameters:
+      - explode: true
+        in: query
+        name: switch_fqdn
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: switch_port
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: path
+        name: environment
+        required: true
+        schema:
+          enum:
+          - rnd
+          - staging
+          - prod
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__port_details_get_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Unauthorized
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Internal Server Error
+      tags:
+      - Ports
+  /login:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_login_post_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_login_post_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_devcloud_v2__environment__configure_port_access_put_400_response'
+          description: Internal Server Error
+      tags:
+      - Auth
+components:
+  schemas:
+    devcloud_port:
+      example:
+        mode: mode
+        interface_mode: interface_mode
+        untagged_vlan: null
+        port: port
+        trunk_groups: trunk_groups
+        description: description
+        link_status: link_status
+        native_vlan: null
+      properties:
+        description:
+          type: string
+        interface_mode:
+          type: string
+        link_status:
+          type: string
+        mode:
+          type: string
+        native_vlan:
+          $ref: '#/components/schemas/devcloud_port_native_vlan'
+        port:
+          type: string
+        trunk_groups:
+          type: string
+        untagged_vlan:
+          $ref: '#/components/schemas/devcloud_port_native_vlan'
+      type: object
+    "503":
+      properties:
+        error:
+          default: Service Temporarily Unavailable
+          type: string
+        message:
+          items:
+            default: Service Temporarily Unavailable
+            type: string
+          type: array
+        status:
+          default: false
+          type: boolean
+      type: object
+    error_response:
+      properties:
+        error:
+          type: string
+        message:
+          items:
+            type: string
+          type: array
+        status:
+          default: false
+          type: boolean
+      type: object
+    headers:
+      properties:
+        Authorization:
+          format: Bearer
+          type: string
+      type: object
+    _devcloud_v2__environment__configure_port_access_put_request:
+      properties:
+        description:
+          type: string
+        switch_fqdn:
+          type: string
+        switch_port:
+          type: string
+        vlan_tag:
+          type: number
+      type: object
+    _devcloud_v2__environment__configure_port_access_put_200_response:
+      example:
+        success: true
+        message:
+        - message
+        - message
+      properties:
+        message:
+          description: "If task failed, contains a human-readable messages"
+          items:
+            type: string
+          type: array
+        success:
+          description: Indicates if task succeeded
+          type: boolean
+      type: object
+    _devcloud_v2__environment__configure_port_access_put_400_response:
+      properties:
+        error:
+          type: string
+        message:
+          items:
+            type: string
+          type: array
+        status:
+          default: false
+          type: boolean
+      type: object
+    _devcloud_v2__environment__configure_port_trunk_put_request:
+      properties:
+        description:
+          type: string
+        native_vlan:
+          type: number
+        switch_fqdn:
+          type: string
+        switch_port:
+          type: string
+        trunk_group:
+          type: string
+      type: object
+    _devcloud_v2__environment__list_ports_get_200_response:
+      example:
+        port_list:
+        - mode: mode
+          interface_mode: interface_mode
+          untagged_vlan: null
+          port: port
+          trunk_groups: trunk_groups
+          description: description
+          link_status: link_status
+          native_vlan: null
+        - mode: mode
+          interface_mode: interface_mode
+          untagged_vlan: null
+          port: port
+          trunk_groups: trunk_groups
+          description: description
+          link_status: link_status
+          native_vlan: null
+        status: true
+      properties:
+        port_list:
+          items:
+            $ref: '#/components/schemas/devcloud_port'
+          type: array
+        status:
+          type: boolean
+      type: object
+    _devcloud_v2__environment__port_details_get_200_response:
+      example:
+        port_information:
+          mode: mode
+          interface_mode: interface_mode
+          untagged_vlan: null
+          port: port
+          trunk_groups: trunk_groups
+          description: description
+          link_status: link_status
+          native_vlan: null
+        status: true
+      properties:
+        port_information:
+          $ref: '#/components/schemas/devcloud_port'
+        status:
+          type: boolean
+      type: object
+    _login_post_request:
+      properties:
+        password:
+          type: string
+        username:
+          type: string
+      type: object
+    _login_post_200_response:
+      example:
+        role: role
+        message: message
+        status: true
+        token: token
+      properties:
+        message:
+          type: string
+        role:
+          type: string
+        status:
+          type: boolean
+        token:
+          type: string
+      type: object
+    devcloud_port_native_vlan:
+      oneOf:
+      - type: number
+      - type: string
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http

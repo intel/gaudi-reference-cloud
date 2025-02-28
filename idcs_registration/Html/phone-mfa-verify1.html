@@ -1,0 +1,91 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>    
+  <title>$$CONSOLENAME$$</title>
+  <link rel="icon" href="$$CDN$$/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+    href="$$CDN$$/static/css/main.css"
+    rel="stylesheet"
+    data-preload="true"
+  />
+  <script type="text/javascript" src="$$CDN$$/analytics.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root" data-bs-theme="light" class="phone-mfa-setup-template">
+    <div id="overlay"></div>
+      <div id="ajax-loader">
+        <div class="loader"></div>
+     </div>
+    <div class="container registration-container" role="main">
+      <div class="registration-section">
+        <div class="siteNavBrand d-flex text-center align-items-center gap-s6">
+            <button id="backButton" class="btn btn-link" href="#" aria-label="Back">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+              </svg>
+              Back
+            </button>
+          </div>
+        <div id="api" role="main"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</body>
+<script>
+  $(document).ready(function () {
+    // Add styling class
+    $("#sendCode").addClass('btn btn-primary w-100')
+    $("#verifyCode").addClass('btn btn-primary w-100')
+    $("#retryCode").addClass('btn btn-link w-100')
+    $(".intro").addClass("registration-header")
+    $("#api").addClass("registration-form")
+    $("#codeVerification").addClass("d-flex-customInput")
+    $(".buttons").addClass("d-flex flex-column gap-s6 pt-s6")
+
+    // Append new elements
+    $(".number").prependTo("#api>.intro")
+    $("#api>.intro").prepend("<span>An authentication code has been sent to your phone number. Please enter the code below to verify your identity and continue.</span>")
+    $("#api>.intro").prepend('<h1 class="h3">Phone authentication</h1>')
+
+    // Replacements
+    $(".number").html(`<span id="namePhone" class="fw-semibold">Provided phone number: </span> <span id="numberValue">${$(".number").text()}</span>`)
+    $("#retryCode").text("Resend code")
+    $("#verifyCode").text("Verify code")
+    $("#verificationCode").attr('placeholder', 'Enter your authentication code')
+    $('.actionLabel label[for="verificationCode"]').text('Authentication code')
+
+    // Move elements
+    $("#verificationCode").parent().children(".error.itemLevel").insertAfter("#verificationCode")
+    $(".actionLabel").insertAfter("#cancel")
+    $('.actionLabel label[for="verificationCode"]').insertBefore("#verificationCode")
+
+    // Custom Logic
+    $("#backButton").on("click", function() { history.back(); return true; })
+
+    $("#sendCode").attr("data-wap_ref","btn-send-code")
+    $("#verifyCode").attr("data-wap_ref","btn-verify-code")
+
+    $(document).ajaxStart(function () {
+          $("#ajax-loader, #overlay").fadeIn();
+      });
+
+      $(document).ajaxStop(function () {
+          $("#ajax-loader, #overlay").fadeOut();
+      });
+
+      var checkLoadWap = setInterval(function() {
+        if (typeof loadWap === "function") {
+            clearInterval(checkLoadWap); // Stop checking once function is available
+            loadWap(); // Call the function
+        }
+    }, 500); // Check every 500ms
+  })
+</script>
+</html>

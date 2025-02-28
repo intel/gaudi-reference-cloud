@@ -1,0 +1,8 @@
+# List all the files that you want to have ignored in all the folders below the main project folder.
+# Patterns are full case-sensitive Java regular expressions, and match against the simple file or directory name, not its entire path.
+
+\.bdsignore
+\.bdsignore.all
+\.github
+\.gitignore
+Jenkinsfile

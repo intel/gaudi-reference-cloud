@@ -1,0 +1,33 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "kubectl",
+    srcs = [
+        "config.go",
+        "provider.go",
+        "templates.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/kubernetes_operator/addon_provider/kubectl",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/kubernetes_operator/utils",
+        "@com_github_jonboulle_clockwork//:clockwork",
+        "@com_github_minio_minio_go_v7//:minio-go",
+        "@com_github_minio_minio_go_v7//pkg/credentials",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/api/meta",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1/unstructured",
+        "@io_k8s_apimachinery//pkg/runtime/schema",
+        "@io_k8s_apimachinery//pkg/util/yaml",
+        "@io_k8s_cli_runtime//pkg/resource",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//restmapper",
+        "@io_k8s_kubectl//pkg/cmd/apply",
+        "@io_k8s_kubectl//pkg/util",
+    ],
+)

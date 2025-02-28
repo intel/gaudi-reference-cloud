@@ -1,0 +1,6 @@
+- name: Software updates
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    autoremove: yes

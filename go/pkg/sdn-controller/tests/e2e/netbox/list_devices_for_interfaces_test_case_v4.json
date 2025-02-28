@@ -1,0 +1,860 @@
+{
+    "count": 4,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 20951,
+            "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/devices/20951/",
+            "display": "phx02-c01-akvm001 (S497867X3517056)",
+            "name": "phx02-c01-akvm001",
+            "device_type": {
+              "id": 583,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-types/583/",
+              "display": "IDC-SYS-Type 3 CP-AKVM",
+              "manufacturer": {
+                "id": 13,
+                "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/manufacturers/13/",
+                "display": "Supermicro",
+                "name": "Supermicro",
+                "slug": "supermicro",
+                "description": "Supermicro Inc."
+              },
+              "model": "IDC-SYS-Type 3 CP-AKVM",
+              "slug": "idc-sys-type-3-cp-akvm",
+              "description": "Supermicro based IDC control plane node w/ OCP NIC"
+            },
+            "role": {
+              "id": 343,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-roles/343/",
+              "display": "Availability Zone KVM",
+              "name": "Availability Zone KVM",
+              "slug": "akvm",
+              "description": ""
+            },
+            "tenant": {
+              "id": 1,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/tenancy/tenants/1/",
+              "display": "Intel Developer Cloud",
+              "name": "Intel Developer Cloud",
+              "slug": "idc",
+              "description": ""
+            },
+            "platform": null,
+            "serial": "S497867X3517056",
+            "asset_tag": "S497867X3517056",
+            "site": {
+              "id": 41,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/sites/41/",
+              "display": "P-PHX02",
+              "name": "P-PHX02",
+              "slug": "phx02",
+              "description": "IM2 - 128+ node cluster"
+            },
+            "location": {
+              "id": 128,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/locations/128/",
+              "display": "IM-2 Row J",
+              "name": "IM-2 Row J",
+              "slug": "im-2-row-j",
+              "description": "",
+              "rack_count": 0,
+              "_depth": 1
+            },
+            "rack": {
+              "id": 1647,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/racks/1647/",
+              "display": "IM1401-09A29 (BG42)",
+              "name": "IM1401-09A29",
+              "description": ""
+            },
+            "position": 31,
+            "face": {
+              "value": "front",
+              "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+              "value": "active",
+              "label": "Active"
+            },
+            "airflow": {
+              "value": "front-to-rear",
+              "label": "Front to rear"
+            },
+            "primary_ip": null,
+            "primary_ip4": null,
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "All system checks passed.",
+            "config_template": null,
+            "config_context": {
+              "ddi": "https://internal-placeholder.com",
+              "dns": "10.140.240.8",
+              "iapm": 42988,
+              "vault": "https://internal-placeholder.com",
+              "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+              "netbox": "https://netbox-us-region-3.cloud.intel.com",
+              "region": "us-region-3",
+              "search": [
+                "us-region-3.cloud.intel.com"
+              ],
+              "bastion": "bastion.cloud.us-region-3.intel.com",
+              "environment": "production",
+              "address_space": "phx02",
+              "availability_zone": "us-region-3a",
+              "run_isre_inspection": false
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+              "bkc_rev": null,
+              "bmc_pw": null,
+              "Enclave": null,
+              "gw_ip": null,
+              "idc_id": null,
+              "ccsgid": null,
+              "one_cloud_id": null
+            },
+            "created": "2024-05-20T19:25:24.437789Z",
+            "last_updated": "2024-07-16T00:47:26.118108Z",
+            "console_port_count": 1,
+            "console_server_port_count": 0,
+            "power_port_count": 2,
+            "power_outlet_count": 0,
+            "interface_count": 7,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 2,
+            "inventory_item_count": 0
+          },
+          {
+            "id": 20957,
+            "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/devices/20957/",
+            "display": "phx02-c01-akvm003 (S497867X3517054)",
+            "name": "phx02-c01-akvm003",
+            "device_type": {
+              "id": 583,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-types/583/",
+              "display": "IDC-SYS-Type 3 CP-AKVM",
+              "manufacturer": {
+                "id": 13,
+                "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/manufacturers/13/",
+                "display": "Supermicro",
+                "name": "Supermicro",
+                "slug": "supermicro",
+                "description": "Supermicro Inc."
+              },
+              "model": "IDC-SYS-Type 3 CP-AKVM",
+              "slug": "idc-sys-type-3-cp-akvm",
+              "description": "Supermicro based IDC control plane node w/ OCP NIC"
+            },
+            "role": {
+              "id": 343,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-roles/343/",
+              "display": "Availability Zone KVM",
+              "name": "Availability Zone KVM",
+              "slug": "akvm",
+              "description": ""
+            },
+            "tenant": {
+              "id": 1,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/tenancy/tenants/1/",
+              "display": "Intel Developer Cloud",
+              "name": "Intel Developer Cloud",
+              "slug": "idc",
+              "description": ""
+            },
+            "platform": null,
+            "serial": "S497867X3517054",
+            "asset_tag": "S497867X3517054",
+            "site": {
+              "id": 41,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/sites/41/",
+              "display": "P-PHX02",
+              "name": "P-PHX02",
+              "slug": "phx02",
+              "description": "IM2 - 128+ node cluster"
+            },
+            "location": {
+              "id": 128,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/locations/128/",
+              "display": "IM-2 Row J",
+              "name": "IM-2 Row J",
+              "slug": "im-2-row-j",
+              "description": "",
+              "rack_count": 0,
+              "_depth": 1
+            },
+            "rack": {
+              "id": 1649,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/racks/1649/",
+              "display": "IM1401-09A31 (BG44)",
+              "name": "IM1401-09A31",
+              "description": ""
+            },
+            "position": 31,
+            "face": {
+              "value": "front",
+              "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+              "value": "active",
+              "label": "Active"
+            },
+            "airflow": {
+              "value": "front-to-rear",
+              "label": "Front to rear"
+            },
+            "primary_ip": null,
+            "primary_ip4": null,
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "All system checks passed.",
+            "config_template": null,
+            "config_context": {
+              "ddi": "https://internal-placeholder.com",
+              "dns": "10.140.240.8",
+              "iapm": 42988,
+              "vault": "https://internal-placeholder.com",
+              "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+              "netbox": "https://netbox-us-region-3.cloud.intel.com",
+              "region": "us-region-3",
+              "search": [
+                "us-region-3.cloud.intel.com"
+              ],
+              "bastion": "bastion.cloud.us-region-3.intel.com",
+              "environment": "production",
+              "address_space": "phx02",
+              "availability_zone": "us-region-3a",
+              "run_isre_inspection": false
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+              "bkc_rev": null,
+              "bmc_pw": null,
+              "Enclave": null,
+              "gw_ip": null,
+              "idc_id": null,
+              "ccsgid": null,
+              "one_cloud_id": null
+            },
+            "created": "2024-05-20T19:25:29.516730Z",
+            "last_updated": "2024-07-16T01:48:59.571478Z",
+            "console_port_count": 1,
+            "console_server_port_count": 0,
+            "power_port_count": 2,
+            "power_outlet_count": 0,
+            "interface_count": 7,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 2,
+            "inventory_item_count": 0
+          },
+          {
+            "id": 20950,
+            "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/devices/20950/",
+            "display": "phx02-c01-ikvm001 (S497867X3511430)",
+            "name": "phx02-c01-ikvm001",
+            "device_type": {
+              "id": 582,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-types/582/",
+              "display": "IDC-SYS-Type 3 CP-IKVM",
+              "manufacturer": {
+                "id": 13,
+                "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/manufacturers/13/",
+                "display": "Supermicro",
+                "name": "Supermicro",
+                "slug": "supermicro",
+                "description": "Supermicro Inc."
+              },
+              "model": "IDC-SYS-Type 3 CP-IKVM",
+              "slug": "idc-sys-type-3-cp-ikvm",
+              "description": "Supermicro based IDC control plane node w/ OCP NIC & 2x30TB SSD"
+            },
+            "role": {
+              "id": 223,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-roles/223/",
+              "display": "Infrastructure KVM",
+              "name": "Infrastructure KVM",
+              "slug": "ikvm",
+              "description": ""
+            },
+            "tenant": {
+              "id": 1,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/tenancy/tenants/1/",
+              "display": "Intel Developer Cloud",
+              "name": "Intel Developer Cloud",
+              "slug": "idc",
+              "description": ""
+            },
+            "platform": null,
+            "serial": "S497867X3511430",
+            "asset_tag": "S497867X3511430",
+            "site": {
+              "id": 41,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/sites/41/",
+              "display": "P-PHX02",
+              "name": "P-PHX02",
+              "slug": "phx02",
+              "description": "IM2 - 128+ node cluster"
+            },
+            "location": {
+              "id": 128,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/locations/128/",
+              "display": "IM-2 Row J",
+              "name": "IM-2 Row J",
+              "slug": "im-2-row-j",
+              "description": "",
+              "rack_count": 0,
+              "_depth": 1
+            },
+            "rack": {
+              "id": 1647,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/racks/1647/",
+              "display": "IM1401-09A29 (BG42)",
+              "name": "IM1401-09A29",
+              "description": ""
+            },
+            "position": 29,
+            "face": {
+              "value": "front",
+              "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+              "value": "active",
+              "label": "Active"
+            },
+            "airflow": {
+              "value": "front-to-rear",
+              "label": "Front to rear"
+            },
+            "primary_ip": null,
+            "primary_ip4": null,
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "All system checks passed.",
+            "config_template": null,
+            "config_context": {
+              "ddi": "https://internal-placeholder.com",
+              "dns": "10.140.240.8",
+              "iapm": 42988,
+              "vault": "https://internal-placeholder.com",
+              "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+              "netbox": "https://netbox-us-region-3.cloud.intel.com",
+              "region": "us-region-3",
+              "search": [
+                "us-region-3.cloud.intel.com"
+              ],
+              "bastion": "bastion.cloud.us-region-3.intel.com",
+              "environment": "production",
+              "address_space": "phx02",
+              "availability_zone": "us-region-3a",
+              "run_isre_inspection": false
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+              "bkc_rev": null,
+              "bmc_pw": null,
+              "Enclave": null,
+              "gw_ip": null,
+              "idc_id": null,
+              "ccsgid": null,
+              "one_cloud_id": null
+            },
+            "created": "2024-05-20T19:25:23.245075Z",
+            "last_updated": "2024-07-12T22:57:52.509659Z",
+            "console_port_count": 1,
+            "console_server_port_count": 0,
+            "power_port_count": 2,
+            "power_outlet_count": 0,
+            "interface_count": 7,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 2,
+            "inventory_item_count": 0
+          },
+          {
+            "id": 10329,
+            "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/devices/10329/",
+            "display": "phx02-c01-hvst001 (S497867X3511461)",
+            "name": "phx02-c01-hvst001",
+            "device_type": {
+              "id": 95,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-types/95/",
+              "display": "IDC-SYS-Type 3 Control Plane",
+              "manufacturer": {
+                "id": 13,
+                "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/manufacturers/13/",
+                "display": "Supermicro",
+                "name": "Supermicro",
+                "slug": "supermicro",
+                "description": "Supermicro Inc."
+              },
+              "model": "IDC-SYS-Type 3 Control Plane",
+              "slug": "idc-sys-type-3-control-plane",
+              "description": "Supermicro based IDC control plane node"
+            },
+            "role": {
+              "id": 102,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-roles/102/",
+              "display": "VMaaS",
+              "name": "VMaaS",
+              "slug": "hvst",
+              "description": ""
+            },
+            "tenant": {
+              "id": 1,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/tenancy/tenants/1/",
+              "display": "Intel Developer Cloud",
+              "name": "Intel Developer Cloud",
+              "slug": "idc",
+              "description": ""
+            },
+            "platform": null,
+            "serial": "S497867X3511461",
+            "asset_tag": "S497867X3511461",
+            "site": {
+              "id": 41,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/sites/41/",
+              "display": "P-PHX02",
+              "name": "P-PHX02",
+              "slug": "phx02",
+              "description": "IM2 - 128+ node cluster"
+            },
+            "location": {
+              "id": 128,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/locations/128/",
+              "display": "IM-2 Row J",
+              "name": "IM-2 Row J",
+              "slug": "im-2-row-j",
+              "description": "",
+              "rack_count": 0,
+              "_depth": 1
+            },
+            "rack": {
+              "id": 1647,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/racks/1647/",
+              "display": "IM1401-09A29 (BG42)",
+              "name": "IM1401-09A29",
+              "description": ""
+            },
+            "position": 2,
+            "face": {
+              "value": "front",
+              "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+              "value": "active",
+              "label": "Active"
+            },
+            "airflow": {
+              "value": "front-to-rear",
+              "label": "Front to rear"
+            },
+            "primary_ip": null,
+            "primary_ip4": null,
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "Onboarding was successful",
+            "config_template": null,
+            "config_context": {
+              "ddi": "https://internal-placeholder.com",
+              "dns": "10.140.240.8",
+              "iapm": 42988,
+              "vault": "https://internal-placeholder.com",
+              "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+              "netbox": "https://netbox-us-region-3.cloud.intel.com",
+              "region": "us-region-3",
+              "search": [
+                "us-region-3.cloud.intel.com"
+              ],
+              "bastion": "bastion.cloud.us-region-3.intel.com",
+              "environment": "production",
+              "address_space": "phx02",
+              "availability_zone": "us-region-3a",
+              "run_isre_inspection": false
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+              "bkc_rev": null,
+              "bmc_pw": null,
+              "Enclave": null,
+              "gw_ip": null,
+              "idc_id": null,
+              "ccsgid": null,
+              "one_cloud_id": null
+            },
+            "created": "2023-06-27T14:00:12.612903Z",
+            "last_updated": "2024-07-18T17:48:06.078525Z",
+            "console_port_count": 1,
+            "console_server_port_count": 0,
+            "power_port_count": 2,
+            "power_outlet_count": 0,
+            "interface_count": 5,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 2,
+            "inventory_item_count": 0
+          },
+          {
+            "id": 20993,
+            "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/devices/20993/",
+            "display": "phx02-c01-acsw009 (JPA2338P1J1)",
+            "name": "phx02-c01-acsw009",
+            "device_type": {
+              "id": 425,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-types/425/",
+              "display": "DCS-7050CX4-24D8",
+              "manufacturer": {
+                "id": 12,
+                "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/manufacturers/12/",
+                "display": "Arista",
+                "name": "Arista",
+                "slug": "arista",
+                "description": ""
+              },
+              "model": "DCS-7050CX4-24D8",
+              "slug": "dcs-7050cx4-24d8",
+              "description": ""
+            },
+            "role": {
+              "id": 261,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-roles/261/",
+              "display": "Cluster Network Leaf Switch",
+              "name": "Cluster Network Leaf Switch",
+              "slug": "cluster-network-leaf-switch",
+              "description": ""
+            },
+            "tenant": {
+              "id": 1,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/tenancy/tenants/1/",
+              "display": "Intel Developer Cloud",
+              "name": "Intel Developer Cloud",
+              "slug": "idc",
+              "description": ""
+            },
+            "platform": {
+              "id": 9,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/platforms/9/",
+              "display": "Arista EOS",
+              "name": "Arista EOS",
+              "slug": "arista-eos",
+              "description": ""
+            },
+            "serial": "JPA2338P1J1",
+            "asset_tag": "JPA2338P1J1",
+            "site": {
+              "id": 41,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/sites/41/",
+              "display": "P-PHX02",
+              "name": "P-PHX02",
+              "slug": "phx02",
+              "description": "IM2 - 128+ node cluster"
+            },
+            "location": {
+              "id": 128,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/locations/128/",
+              "display": "IM-2 Row J",
+              "name": "IM-2 Row J",
+              "slug": "im-2-row-j",
+              "description": "",
+              "rack_count": 0,
+              "_depth": 1
+            },
+            "rack": {
+              "id": 1647,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/racks/1647/",
+              "display": "IM1401-09A29 (BG42)",
+              "name": "IM1401-09A29",
+              "description": ""
+            },
+            "position": 37,
+            "face": {
+              "value": "front",
+              "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+              "value": "active",
+              "label": "Active"
+            },
+            "airflow": {
+              "value": "front-to-rear",
+              "label": "Front to rear"
+            },
+            "primary_ip": {
+              "id": 70817,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/ipam/ip-addresses/70817/",
+              "display": "10.140.229.66/27",
+              "family": {
+                "value": 4,
+                "label": "IPv4"
+              },
+              "address": "10.140.229.66/27",
+              "description": ""
+            },
+            "primary_ip4": {
+              "id": 70817,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/ipam/ip-addresses/70817/",
+              "display": "10.140.229.66/27",
+              "family": {
+                "value": 4,
+                "label": "IPv4"
+              },
+              "address": "10.140.229.66/27",
+              "description": ""
+            },
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "",
+            "config_template": null,
+            "config_context": {
+              "ddi": "https://internal-placeholder.com",
+              "dns": "10.140.240.8",
+              "iapm": 42988,
+              "vault": "https://internal-placeholder.com",
+              "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+              "netbox": "https://netbox-us-region-3.cloud.intel.com",
+              "region": "us-region-3",
+              "search": [
+                "us-region-3.cloud.intel.com"
+              ],
+              "bastion": "bastion.cloud.us-region-3.intel.com",
+              "environment": "production",
+              "address_space": "phx02",
+              "availability_zone": "us-region-3a",
+              "run_isre_inspection": false
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+              "bkc_rev": null,
+              "bmc_pw": null,
+              "Enclave": null,
+              "gw_ip": null,
+              "idc_id": null,
+              "ccsgid": null,
+              "one_cloud_id": null
+            },
+            "created": "2024-05-20T19:27:18.748797Z",
+            "last_updated": "2024-08-29T17:41:41.494167Z",
+            "console_port_count": 1,
+            "console_server_port_count": 0,
+            "power_port_count": 3,
+            "power_outlet_count": 0,
+            "interface_count": 37,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 0,
+            "inventory_item_count": 0
+          },
+          {
+            "id": 20997,
+            "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/devices/20997/",
+            "display": "phx02-c01-acsw011 (JPA2343P3HX)",
+            "name": "phx02-c01-acsw011",
+            "device_type": {
+              "id": 425,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-types/425/",
+              "display": "DCS-7050CX4-24D8",
+              "manufacturer": {
+                "id": 12,
+                "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/manufacturers/12/",
+                "display": "Arista",
+                "name": "Arista",
+                "slug": "arista",
+                "description": ""
+              },
+              "model": "DCS-7050CX4-24D8",
+              "slug": "dcs-7050cx4-24d8",
+              "description": ""
+            },
+            "role": {
+              "id": 261,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/device-roles/261/",
+              "display": "Cluster Network Leaf Switch",
+              "name": "Cluster Network Leaf Switch",
+              "slug": "cluster-network-leaf-switch",
+              "description": ""
+            },
+            "tenant": {
+              "id": 1,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/tenancy/tenants/1/",
+              "display": "Intel Developer Cloud",
+              "name": "Intel Developer Cloud",
+              "slug": "idc",
+              "description": ""
+            },
+            "platform": {
+              "id": 9,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/platforms/9/",
+              "display": "Arista EOS",
+              "name": "Arista EOS",
+              "slug": "arista-eos",
+              "description": ""
+            },
+            "serial": "JPA2343P3HX",
+            "asset_tag": "JPA2343P3HX",
+            "site": {
+              "id": 41,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/sites/41/",
+              "display": "P-PHX02",
+              "name": "P-PHX02",
+              "slug": "phx02",
+              "description": "IM2 - 128+ node cluster"
+            },
+            "location": {
+              "id": 128,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/locations/128/",
+              "display": "IM-2 Row J",
+              "name": "IM-2 Row J",
+              "slug": "im-2-row-j",
+              "description": "",
+              "rack_count": 0,
+              "_depth": 1
+            },
+            "rack": {
+              "id": 1649,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/dcim/racks/1649/",
+              "display": "IM1401-09A31 (BG44)",
+              "name": "IM1401-09A31",
+              "description": ""
+            },
+            "position": 37,
+            "face": {
+              "value": "front",
+              "label": "Front"
+            },
+            "latitude": null,
+            "longitude": null,
+            "parent_device": null,
+            "status": {
+              "value": "active",
+              "label": "Active"
+            },
+            "airflow": {
+              "value": "front-to-rear",
+              "label": "Front to rear"
+            },
+            "primary_ip": {
+              "id": 70868,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/ipam/ip-addresses/70868/",
+              "display": "10.140.229.100/27",
+              "family": {
+                "value": 4,
+                "label": "IPv4"
+              },
+              "address": "10.140.229.100/27",
+              "description": ""
+            },
+            "primary_ip4": {
+              "id": 70868,
+              "url": "https://netbox-demo.sdpcloud.intel.com/api/ipam/ip-addresses/70868/",
+              "display": "10.140.229.100/27",
+              "family": {
+                "value": 4,
+                "label": "IPv4"
+              },
+              "address": "10.140.229.100/27",
+              "description": ""
+            },
+            "primary_ip6": null,
+            "oob_ip": null,
+            "cluster": null,
+            "virtual_chassis": null,
+            "vc_position": null,
+            "vc_priority": null,
+            "description": "",
+            "comments": "",
+            "config_template": null,
+            "config_context": {
+              "ddi": "https://internal-placeholder.com",
+              "dns": "10.140.240.8",
+              "iapm": 42988,
+              "vault": "https://internal-placeholder.com",
+              "ironic": "phx02-c01-irns001.us-region-3.cloud.intel.com",
+              "netbox": "https://netbox-us-region-3.cloud.intel.com",
+              "region": "us-region-3",
+              "search": [
+                "us-region-3.cloud.intel.com"
+              ],
+              "bastion": "bastion.cloud.us-region-3.intel.com",
+              "environment": "production",
+              "address_space": "phx02",
+              "availability_zone": "us-region-3a",
+              "run_isre_inspection": false
+            },
+            "local_context_data": null,
+            "tags": [],
+            "custom_fields": {
+              "bkc_rev": null,
+              "bmc_pw": null,
+              "Enclave": null,
+              "gw_ip": null,
+              "idc_id": null,
+              "ccsgid": null,
+              "one_cloud_id": null
+            },
+            "created": "2024-05-20T19:27:31.612270Z",
+            "last_updated": "2024-08-29T17:46:55.947628Z",
+            "console_port_count": 1,
+            "console_server_port_count": 0,
+            "power_port_count": 3,
+            "power_outlet_count": 0,
+            "interface_count": 37,
+            "front_port_count": 0,
+            "rear_port_count": 0,
+            "device_bay_count": 0,
+            "module_bay_count": 0,
+            "inventory_item_count": 0
+          }            
+    ]
+  }
+  

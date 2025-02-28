@@ -1,0 +1,115 @@
+@use "sass:map";
+
+body,
+[data-bs-theme=light],
+[data-bs-theme=dark] {
+    color: var(--body-color);
+    --bs-body-color: var(--body-color);
+    --bs-heading-color: var(--body-color);
+}
+
+:not(.alert) a:not([class*="nav"]):not([class*="btn"]):not([class*="dropdown"]) {
+  color: var(--link-color);
+  .h1,.h2,.h3,.h4,.h5,.h6 {
+    color: var(--link-color);
+  }
+}
+
+:not(.alert) a:not([class*="nav"]):not([class*="btn"]):not([class*="dropdown"]):hover {
+    color: var(--link-hover-color);
+    .h1,.h2,.h3,.h4,.h5,.h6 {
+        color: var(--link-hover-color);
+    }
+}
+
+.alert a:not([class*="nav"]):not([class*="btn"]):not([class*="dropdown"]) {
+  color: inherit;
+  .h1,.h2,.h3,.h4,.h5,.h6 {
+    color: inherit;
+  }
+}
+
+.alert a:not([class*="nav"]):not([class*="btn"]):not([class*="dropdown"]):hover {
+    color: inherit;
+    .h1,.h2,.h3,.h4,.h5,.h6 {
+        color: inherit;
+    }
+}
+
+a {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: map.get($spacers, "s4");
+  svg {
+    max-width: map.get($spacers, "s6");
+    max-height: map.get($spacers, "s6");
+   }
+}
+
+a.link { 
+ text-decoration: underline;  
+}
+
+a.link:hover {
+ text-decoration: none;
+}
+
+h1,h2,h3,h4,h5,h6,
+.h1,.h2,.h3,.h4,.h5,.h6 {
+  font-weight: 600;
+  @extend .mb-0;
+}
+
+.valid-feedback {
+  display: block;
+  max-width: 42rem;
+  color: var(--body-color);
+  @extend .mt-0;
+}
+
+.valid-feedback.w-100 {
+  max-width: 100%;
+}
+
+.valid-feedback a {
+  text-decoration: underline;
+}
+
+.invalid-feedback {
+  display: block;
+  max-width: 42rem;
+  @extend .mt-0;
+}
+
+strong {
+  font-weight: 600;
+}
+
+.lead {
+  font-size: #{$h4-font-size};
+}
+
+h1:not(.h1, .h3, .h4, .h5, .h6) {
+  font-size: #{$h2-font-size};
+}
+
+h2:not(.h1, .h2, .h4, .h5, .h6) {
+  font-size: #{$h3-font-size};
+}
+
+h3:not(.h1, .h2, .h3, .h5, .h6) {
+  font-size: #{$h4-font-size};
+}
+
+h4:not(.h1, .h2, .h3, .h4, .h6) {
+  font-size: #{$h5-font-size};
+}
+
+h5:not(.h1, .h2, .h3, .h4, .h5) {
+  font-size: #{$h6-font-size};
+}
+
+h6:not(.h1, .h2, .h3, .h4, .h5) {
+  font-size: #{$h6-font-size};
+}

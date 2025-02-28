@@ -1,0 +1,134 @@
+diff --git a/app.py b/app.py
+index ed3248f..5aec568 100644
+--- a/app.py
++++ b/app.py
+@@ -1,3 +1,13 @@
++import jax
++import sys
++import numpy as np
++from flax.jax_utils import replicate
++from flax.training.common_utils import shard
++from diffusers import FlaxStableDiffusionPipeline, FlaxDPMSolverMultistepScheduler
++import time
++from PIL import Image
++import argparse
++
+ import gradio as gr
+ from datasets import load_dataset
+ from PIL import Image  
+@@ -8,27 +18,70 @@ import requests
+ 
+ from share_btn import community_icon_html, loading_icon_html, share_js
+ 
+-word_list_dataset = load_dataset("stabilityai/word-list", data_files="list.txt", use_auth_token=True)
+-word_list = word_list_dataset["train"]['text']
++import random
++import base64
++from io import BytesIO
++# args
++parser = argparse.ArgumentParser("Stable diffusion generation script", add_help=False)
++parser.add_argument("-m", "--model-id", default="stabilityai/stable-diffusion-2-1", type=str, 
++    choices=["CompVis/stable-diffusion-v1-4", "stabilityai/stable-diffusion-2-1"],
++)
++parser.add_argument("--num-inference-steps", default=50, type=int, help="inference steps")
++args = parser.parse_args()
++print(args, file=sys.stderr)
++
++num_inference_steps = args.num_inference_steps
++model_id = args.model_id
++scheduler, scheduler_state = FlaxDPMSolverMultistepScheduler.from_pretrained(model_id, subfolder="scheduler")
++pipeline, params = FlaxStableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, revision="bf16", safety_checker=None, feature_extractor=None, dtype=jax.numpy.bfloat16)
++params["scheduler"] = scheduler_state
++
++prompt = "a photo of an astronaut riding a horse on mars"
++prng_seed = jax.random.PRNGKey(0)
++
++num_samples = jax.device_count()
++params = replicate(params)
++prng_seed = jax.random.split(prng_seed, num_samples)
++
++#warm up
++print(f"warm up...")
++prompt = num_samples * [prompt]
++prompt_ids = pipeline.prepare_inputs(prompt)
++prompt_ids = shard(prompt_ids)
++images = pipeline(prompt_ids, params, prng_seed, num_inference_steps, jit=True).images
++print(f"warm up done")
+ 
+ is_gpu_busy = False
+ def infer(prompt, negative, scale):
+     global is_gpu_busy
+-    for filter in word_list:
+-        if re.search(rf"\b{filter}\b", prompt):
+-            raise gr.Error("Unsafe content found. Please try again with different prompts.")
+-        
+-    images = []
+-    url = os.getenv('JAX_BACKEND_URL')
+-    payload = {'prompt': prompt, 'negative_prompt': negative, 'guidance_scale': scale}
+-    images_request = requests.post(url, json = payload)
+-    for image in images_request.json()["images"]:
+-        image_b64 = (f"data:image/jpeg;base64,{image}")
+-        images.append(image_b64)
+-    
+-    return images
++    images_b64_list = []
++    print(f"----------------------------------------------")
++    print(f"num_samples={num_samples}, prompt: {prompt}")
++
++    prompt = num_samples * [prompt]
++    prompt_ids = pipeline.prepare_inputs(prompt)
++    prompt_ids = shard(prompt_ids)
++
++    prng_seed = jax.random.PRNGKey(random.randint(0, 99))    
++    prng_seed = jax.random.split(prng_seed, num_samples)
++    print(f"random key={prng_seed}")
++
++    start = time.time()
++    images = pipeline(prompt_ids, params, prng_seed, num_inference_steps, jit=True).images
++    end = time.time()
++    print(f"{num_samples} images generated in {end-start:.3f} seconds")
++    images = images.reshape((images.shape[0],) + images.shape[-3:])
++    images = pipeline.numpy_to_pil(images)
+     
++    for image in images:        
++        buffered = BytesIO()
++        image.save(buffered, format="JPEG")
++        img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")       
++        image_b64 = (f"data:image/jpeg;base64,{img_str}")
++        images_b64_list.append(image_b64)
+     
++    return images_b64_list
++
+ css = """
+         .gradio-container {
+             font-family: 'IBM Plex Sans', sans-serif;
+@@ -230,7 +283,7 @@ with block:
+                   <rect x="23" y="69" width="23" height="23" fill="black"></rect>
+                 </svg>
+                 <h1 style="font-weight: 900; margin-bottom: 7px;margin-top:5px">
+-                  Stable Diffusion 2.1 Demo
++                  Stable Diffusion 2.1 Demo on Intel GPU
+                 </h1>
+               </div>
+               <p style="margin-bottom: 10px; font-size: 94%; line-height: 23px;">
+@@ -329,7 +382,7 @@ with block:
+         gr.HTML(
+             """
+                 <div class="footer">
+-                    <p>Model by <a href="https://huggingface.co/stabilityai" style="text-decoration: underline;" target="_blank">StabilityAI</a> - backend running JAX on TPUs due to generous support of <a href="https://sites.research.google/trc/about/" style="text-decoration: underline;" target="_blank">Google TRC program</a> - Gradio Demo by 🤗 Hugging Face
++                    <p>Model by <a href="https://huggingface.co/stabilityai" style="text-decoration: underline;" target="_blank">StabilityAI</a> - backend running JAX on Intel Data Center GPU - Gradio Demo by 🤗 Hugging Face
+                     </p>
+                 </div>
+            """
+@@ -345,5 +398,9 @@ Despite how impressive being able to turn text into image is, beware to the fact
+                 """
+             )
+         
++webui_host_ip = os.getenv("HOST_IP")
++webui_host_port = int(os.getenv("HOST_PORT"))
++share = os.getenv("SHARE", "false").lower() == "true"
++
++block.queue(concurrency_count=8, max_size=100).launch(max_threads=10, server_name=webui_host_ip, server_port=webui_host_port, share=share)
+ 
+-block.queue(concurrency_count=80, max_size=100).launch(max_threads=150)
+\ No newline at end of file

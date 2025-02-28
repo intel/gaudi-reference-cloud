@@ -1,0 +1,16 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: internet
+  namespace: "{- namespace -}"
+spec:
+  selector: component == 'singleuser-server'
+  order: 1000
+  egress:
+    - action: Allow
+      destination:
+        ports:
+          - 443
+      protocol: TCP

@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "profile",
+    srcs = ["profile.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/profile",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/runtime",
+    ],
+)
+
+go_test(
+    name = "profile_test",
+    srcs = ["profile_test.go"],
+    embed = [":profile"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework/runtime",
+    ],
+)

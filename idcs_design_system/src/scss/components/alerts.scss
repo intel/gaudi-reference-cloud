@@ -1,0 +1,94 @@
+@use "sass:map";
+
+// Global
+
+.alert {
+    display: flex;
+    border-radius: 0px;
+    align-items: flex-start;
+    svg {
+        height: 1.25rem;
+        width: 1.25rem;
+    }
+    gap: map.get($spacers, "s4");
+    .btn-close:focus {
+        box-shadow: none;
+    }
+}
+
+[data-bs-theme=dark] .alert-danger .btn-close,
+[data-bs-theme=dark] .alert-success .btn-close,
+[data-bs-theme=dark] .alert-warning .btn-close {
+    filter: brightness(1) invert(0);
+}
+
+// Primary
+
+.alert-primary {
+    background: var(--alert-primary-bg);
+    border: 1px solid var(--alert-primary-border-color);
+
+    .btn-close{
+        filter: brightness(0) invert(1);
+    }
+}
+
+// Secondary
+
+.alert-secondary {
+    color: var(--alert-secondary-color);
+    background: var(--alert-secondary-background);
+    border: 1px solid var(--alert-secondary-border-color);
+}
+
+// Success
+
+.alert-success {
+    background: var(--alert-success-bg);
+    color: var(--alert-success-color);
+    border: 1px solid var(--alert-success-border-color);
+}
+
+// Danger
+
+.alert-danger {
+    background: var(--alert-danger-bg);
+    color: var(--alert-danger-color);
+    border: 1px solid var(--alert-danger-border-color);
+}
+
+// Warning
+
+.alert-warning {
+    background: var(--alert-warning-bg);
+    color: var(--alert-warning-color);
+    border: 1px solid var(--alert-warning-border-color);
+}
+
+// Info
+
+.alert-info {
+    background: var(--alert-info-bg);
+    color: var(--alert-info-color);
+    border: 1px solid var(--alert-info-border-color);
+    .btn-close{
+        filter: brightness(0) invert(1);
+        // opacity: 1;
+    }
+}
+
+// Light
+
+.alert-light {
+    background: var(--alert-light-bg);
+    color: var(--alert-light-color);
+    border: 1px solid var(--alert-light-border-color);
+}
+
+// Dark
+
+.alert-dark {
+    background: var(--alert-dark-bg);
+    color: var(--alert-dark-color);
+    border: 1px solid var(--alert-dark-border-color);
+}

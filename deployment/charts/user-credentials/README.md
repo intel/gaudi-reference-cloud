@@ -1,0 +1,1 @@
+The Token Service issues and manages client credentials for IDC Users to access control plane backend APIs (global and regional) via applications like CLI/SDK/Postman other than Web Browser (IDC Console.)

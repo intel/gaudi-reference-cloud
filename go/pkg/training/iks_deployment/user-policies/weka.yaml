@@ -1,0 +1,17 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: weka
+  namespace: "{- namespace -}"
+spec:
+  selector: component == 'singleuser-server'
+  order: 0
+  egress:
+    - action: Deny
+      destination:
+        nets:
+          {% for ip in weka_ips %}
+          - "{- ip -}/32"
+          {% endfor %}

@@ -1,0 +1,33 @@
+- name: Create group
+  become: true
+  group:
+    name: "{{ newuser }}"
+    state: present
+    gid: "{{ group_id }}"
+
+- name: Create new user
+  become: true
+  user:
+    name: "{{ newuser }}"
+    groups:
+      - sudo
+      - "{{ newuser }}"
+    password: "{{ vault_ansible_sudo_pass | password_hash('sha512') }}"
+    shell: /bin/bash
+    uid: "{{ user_id }}"
+
+- name: Create .ssh folder
+  become: true
+  file:
+    path: "~{{ newuser }}/.ssh"
+    state: directory
+    owner: "{{ newuser }}"
+    group: "{{ newuser }}"
+    mode: 0700
+
+- name: Set authorized key taken from file
+  become: true
+  authorized_key:
+    user: "{{ newuser }}"
+    state: present
+    key: "{{ lookup('file', publickey_path ) }}"

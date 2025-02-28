@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "supercompute_query",
+    srcs = ["create.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/iks/db/supercompute_query",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/iks/db/db_query_constants",
+        "//go/pkg/iks/db/iks_utils",
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)

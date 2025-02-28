@@ -1,0 +1,103 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("@aspect_rules_lint//format:defs.bzl", "multi_formatter_binary")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_go//go:def.bzl", "TOOLS_NOGO", "nogo")
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+package(default_visibility = ["//visibility:public"])
+
+gazelle(name = "gazelle")
+
+# gazelle:exclude gen.go
+
+# Run this target to update all the generated .pb.go files in the repo:
+# bazel run //:update_gen
+#
+# Note that each target also has a corresponding test asserting that the
+# generated files stay up-to-date.
+write_source_files(
+    name = "update_gen",
+    additional_update_targets = [
+        "//api/intel/storagecontroller/v1:write_gen",
+        "//api/intel/storagecontroller/v1/weka:write_gen",
+        "//api/intel/storagecontroller/v1/vast:write_gen",
+        "//ci/k6/modules/weka/api/v4:write_gen",
+        "//services/storage_controller/pkg/backend/weka/client/v4:write_gen",
+        "//services/storage_controller/pkg/backend/vast/client:write_gen",
+    ],
+)
+
+nogo(
+    name = "nogo",
+    visibility = ["//visibility:public"],  # must have public visibility
+    deps = TOOLS_NOGO + [
+        # analyzer from the local repository
+        "@//ci/linters/disallow_int_formatter",
+    ],
+)
+
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+platform(
+    name = "linux_x86_64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+platform(
+    name = "osx_arm64",
+    constraint_values = [
+        "@platforms//os:osx",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+platform(
+    name = "osx_x86_64",
+    constraint_values = [
+        "@platforms//os:osx",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+platform(
+    name = "windows_arm64",
+    constraint_values = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+platform(
+    name = "windows_x86_64",
+    constraint_values = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+compile_pip_requirements(
+    name = "requirements",
+    src = "requirements.in",
+    requirements_txt = "requirements_lock.txt",
+    tags = [
+        "manual",
+    ],
+)
+
+multi_formatter_binary(
+    name = "format",
+    go = "@go_sdk//:bin/gofmt",
+    protobuf = "@rules_buf_toolchains//:buf",
+    starlark = "@buildifier_prebuilt//:buildifier",
+)

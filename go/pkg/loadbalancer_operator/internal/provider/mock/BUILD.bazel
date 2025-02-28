@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "mock",
+    srcs = ["provider.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/loadbalancer_operator/internal/provider/mock",
+    visibility = ["//go/pkg/loadbalancer_operator:__subpackages__"],
+    deps = [
+        "//go/pkg/firewall_operator/api/v1alpha1",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/loadbalancer_operator/api/v1alpha1",
+    ],
+)

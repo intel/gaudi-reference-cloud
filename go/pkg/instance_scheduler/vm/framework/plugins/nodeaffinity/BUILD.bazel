@@ -1,0 +1,37 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "nodeaffinity",
+    srcs = ["node_affinity.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/framework/plugins/nodeaffinity",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/helper",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/names",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/sets",
+        "@io_k8s_component_helpers//scheduling/corev1/nodeaffinity",
+    ],
+)
+
+go_test(
+    name = "nodeaffinity_test",
+    srcs = ["node_affinity_test.go"],
+    embed = [":nodeaffinity"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/runtime",
+        "//go/pkg/instance_scheduler/vm/internal/cache",
+        "@com_github_google_go_cmp//cmp",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/util/sets",
+    ],
+)

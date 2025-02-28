@@ -1,0 +1,67 @@
+@use "sass:map";
+
+.navbar {
+    background: var(--surface-background-color);
+    border-bottom: 1px solid var(--navbar-border-bottom-color);
+    display: flex;
+    height: 64px;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    @extend .py-s4;
+    @extend .px-s5;
+}
+
+.navbar.siteToolbar {
+  background: var(--nav-bar-site-toolbar-background-color);
+  border-bottom: 1px solid var(--nav-bar-site-toolbar-border-bottom-color);
+}
+
+.navbar .navbar-nav:not(.nav-tabs) .nav-link:hover {
+    text-decoration: none;
+    background: var(--nav-bar-nav-item-hover-background-color);
+}
+
+.navbar .navbar-nav:not(.nav-tabs) .nav-link.active,
+.navbar .navbar-nav:not(.nav-tabs) .nav-link:active{
+    text-decoration: none;
+    background: var(--nav-item-active-background-color);
+}
+
+.navbar svg,
+.navbar .navbar-nav svg {
+    color: var(--gray-700);
+}
+
+.navbar button svg,
+.navbar .navbar-nav button svg,
+.navbar a svg,
+.navbar .navbar-nav a svg {
+    color: var(--nav-bar-svg-color);
+}
+
+
+.navbar .navbar-nav .dropdown-toggle::after,
+.navbar .navbar-nav .nav-link::after  {
+    color: var(--nav-bar-svg-color);
+} 
+
+.navbar .navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: map.get($spacers, "s4");
+}
+
+.dropdown-menu-end {
+    position: absolute;
+    right: 0;
+}
+
+.navbar-brand {
+    display: flex;
+    max-width: 250px;
+    align-items: center;
+    flex-shrink: 0;
+    align-self: stretch;
+    gap: map.get($spacers, "s6");
+}

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "idc-common.fullname" . }}
+  annotations:
+    {{- if eq .Values.restConfig.type "LoadBalancer" }}
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "https"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "{{.Values.restConfig.healthPort}}"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/healthz"
+    service.beta.kubernetes.io/aws-load-balancer-private-ipv4-addresses: "{{.Values.restConfig.privateIPV4Addresses}}"
+    service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
+    service.beta.kubernetes.io/load-balancer-source-ranges: "{{.Values.restConfig.loadBalancerSourceRanges}}"
+    {{- end }}
+spec:
+  type: {{ .Values.restConfig.type }}
+  ports:
+    - port: {{ .Values.restConfig.nodePort }}
+      targetPort: {{ .Values.restConfig.targetPort }}
+      protocol: TCP
+      {{- if eq .Values.restConfig.type "NodePort" }}
+      nodePort: {{ .Values.restConfig.nodePort }}
+      {{- end }}
+      name: http
+  selector:
+    {{- include "idc-common.selectorLabels" . | nindent 4 }}

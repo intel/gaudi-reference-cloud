@@ -1,0 +1,37 @@
+metadata:
+  name: "iks-vm-u22-cp-1-31-3-v250108"
+spec:
+  displayName: IKS Ubuntu 22.04 Controlplane for VM v1.31.3 released on 2025-01-08
+  description: IKS Ubuntu 22.04 Controlplane for VM v1.31.3 released on 2025-01-08
+  hidden: true
+  instanceCategories:
+    - VirtualMachine
+  instanceTypes: []
+  md5sum: "92f70395f9e953ea10998b792b99dc44"
+  sha256sum: "376ae7294c31873047c88485c09c0d0724039c6a5ffcd3ceaf920f79390f004a"
+  sha512sum: "08431eb83f64c153fd6e27e4653123b0094f4df9aba1838e68c5e5599b4948ba3608c789475dee825360a70c854ecdb29d904b41d433bf03ce4ef4f0aa54c6c8"
+  virtualSizeBytes: 10737418240
+  labels:
+    family: ubuntu-2204-lts
+    architecture: X86_64 (VM only)
+    iks: "true"
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  imageCategories:
+    - AI
+    - General Computing
+    - Deep Learning
+    - App testing
+    - IKS
+  components:
+    - name: Ubuntu 22.04 LTS
+      type: OS
+      version: "22.04"
+      description: Ubuntu Server is a version of the Ubuntu operating system designed and engineered as a backbone for the internet.
+      infoUrl: https://discourse.ubuntu.com/t/jammy-jellyfish-release-notes/24668?_ga=2.61253994.716223186.1673128475-452578204.1673128475
+      imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+    - name: IKS Core Components
+      type: Software kit
+      version: "1.31.3"
+      description: core set of tools for Kubernetes.
+      infoUrl: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html#gs.ma20sthttps://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  userName: ubuntu

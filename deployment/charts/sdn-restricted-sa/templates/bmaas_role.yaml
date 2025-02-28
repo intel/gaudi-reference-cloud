@@ -1,0 +1,70 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: sdn-bmaas-role
+rules:
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switchports
+  - networknodes
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switchports/status
+  verbs:
+  - get
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - nodegroups
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - nodegroups/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - nodegroups/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - nodegrouptopoolmappings
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - nodegrouptopoolmappings/status
+  verbs:
+  - get

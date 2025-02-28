@@ -1,0 +1,35 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "console",
+    srcs = [
+        "console.go",
+        "invoice.go",
+        "testing.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/console",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/billing",
+        "//go/pkg/grpcutil",
+        "//go/pkg/pb",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+    ],
+)
+
+go_test(
+    name = "console_test",
+    timeout = "long",
+    srcs = ["main_test.go"],
+    embed = [":console"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/log",
+    ],
+)

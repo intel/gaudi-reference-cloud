@@ -1,0 +1,8 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "ARTIFACT_REPOSITORY_URL",
+    "DOCKER_TAG",
+    "HELM_CHART_VERSION",
+    "IDC_FULL_VERSION",
+])

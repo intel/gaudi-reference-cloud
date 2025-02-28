@@ -1,0 +1,144 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- $cloudaccountServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $quotaManagementEnabled := $region.quotaManagementService.enabled }}
+{{- $quotaManagementDb := $region.quotaManagementDb.enabled }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- if $quotaManagementEnabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-quota-management-service") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: quotaManagementService
+      service: quota-management-service
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: quota-management-service
+    chart: idc/quota-management-service
+    version: {{ readFile (print $helmChartVersionsDir "/quota-management-service.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}quota-management-service@sha256"
+      - nodePort: {{ $region | get "quotaManagementService.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "quotaManagementService.service.type" $.Values.defaults.region.quotaManagementService.service.type | quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - region: {{ $region.region | quote }}
+      - cloudaccountServerAddr: {{ $cloudaccountServerAddr| quote }}
+      - domainSuffix: {{ $region | get "quotaManagementService.domainSuffix" $.Values.defaults.region.quotaManagementService.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+          enable: true
+          annotations:
+            vault.hashicorp.com/agent-inject-secret-secret-id: "controlplane/data/{{ $region.region }}/quota-management-service/enrollment/approle"
+            vault.hashicorp.com/agent-inject-secret-role-id: "controlplane/data/{{ $region.region }}/quota-management-service/enrollment/approle"
+            vault.hashicorp.com/role: "{{ $region.region }}-quota-management-service-role"
+            vault.hashicorp.com/agent-inject-template-secret-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/quota-management-service/enrollment/approle" }}
+                {{ `{{- .Data.data.secret_id -}}` }}
+                {{ `{{- end -}}` }}
+            vault.hashicorp.com/agent-inject-template-role-id: |
+                {{ `{{- with secret `}} "controlplane/data/{{ $region.region }}/quota-management-service/enrollment/approle" }}
+                {{ `{{- .Data.data.role_id -}}` }}
+                {{ `{{- end -}}` }}
+      - selectedRegion:  {{ $region.region | quote }}
+      - database:
+          service: {{ $region | get "quotaManagementService.database.service" (print $region.region "-quota-management-service-db-postgresql") | quote }}
+          arg: {{ $region | get "quotaManagementService.database.arg" $.Values.defaults.region.quotaManagementService.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-quota-management-service/database"
+      - cognito: # used by quota-management-service for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-quota-management-service/cognito
+          {{- end }}
+      - bootstrappedServices:  {{ $region.quotaManagementService.bootstrappedServices | toJson }}
+
+
+{{- end }}
+
+{{- if ($region.quotaManagementDb.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-quota-management-service-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: quotaManagementService
+      service: quota-management-service
+      database: quota-management-service
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: quota-management-service-db
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/" $region.region "-quota-management-service_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-quota-management-service_db_admin_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region | get "quotaManagementDb.primary.persistence.enabled" $.Values.defaults.region.quotaManagementDb.primary.persistence.enabled }}
+{{- end }}
+
+{{- end }}

@@ -1,0 +1,35 @@
+FROM internal-placeholder.com/cache/library/ubuntu:22.04
+
+ENV http_proxy="http://internal-placeholder.com:911/" \
+    https_proxy="http://internal-placeholder.com:912/" \
+    no_proxy="127.0.0.1,localhost,intel.com"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl tar ca-certificates make \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install go version 1.19
+RUN curl -LO --insecure -s https://go.dev/dl/go1.19.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.19.linux-amd64.tar.gz \
+    && rm go1.19.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+
+
+# Install intel cerctificates
+WORKDIR /tmp
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -LO --insecure -s https://internal-placeholder.com/artifactory/it-btrm-local/intel_cacerts/install_intel_cacerts_linux.sh \
+    && chmod +x install_intel_cacerts_linux.sh \
+    && bash ./install_intel_cacerts_linux.sh \
+    && rm ./install_intel_cacerts_linux.sh
+
+# Install Bazelisk, rename it as bazel then remove go tar
+RUN go install github.com/bazelbuild/bazelisk@latest \
+    && mv root/go/bin/bazelisk /usr/local/bin/bazel \
+    && rm go1.19.linux-amd64.tar.gz intel_*
+
+ENV http_proxy=  \
+    https_proxy=  \
+    no_proxy=

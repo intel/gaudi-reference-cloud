@@ -1,0 +1,162 @@
+// After updating this file, run "make generate-go".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+//import "network_subnet.proto";
+import "compute_private.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "network-api-server";
+
+// Private Port Service
+service IPRMPrivateService {
+    // Reserve a port.
+    rpc ReservePort(ReservePortRequest) returns (PortPrivate) {};
+
+    // release port.
+    rpc ReleasePort(ReleasePortRequest) returns (google.protobuf.Empty) {};
+
+    // List Ports as a stream.
+    // This returns all non-deleted ports as messages with WatchDeltaType=Updated,
+    // followed by a single WatchDeltaType=Bookmark with the last-seen resourceVersion.
+    rpc SearchStreamPrivate(PortSearchStreamPrivateRequest) returns (stream PortWatchResponse) {};
+
+    // Return a stream of changes to vpcs using messages with WatchDeltaType=Updated or Deleted.
+    // Messages with WatchDeltaType=Bookmark and the last-seen resourceVersion will be sent periodically.
+    rpc Watch(PortWatchRequest) returns (stream PortWatchResponse) {
+        option (idc.method).streamForever = true;
+    };
+
+    // Update the resource status.
+    rpc UpdateStatus(PortUpdateStatusRequest) returns (google.protobuf.Empty) {};
+
+    // Retrieve a Port record from DB
+    rpc GetPortPrivate(GetPortPrivateRequest) returns (PortPrivate) {};
+
+
+    // PingPrivate always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc PingPrivate(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message PortSearchStreamPrivateRequest {
+}
+
+message PortWatchRequest {
+    string resourceVersion = 1;
+}
+
+message PortWatchResponse {
+    WatchDeltaType type = 1;
+    PortPrivateWatchResponse object = 2;
+}
+
+message PortPrivateWatchResponse {
+    PortMetadataPrivate metadata = 1;
+    string spec = 2;
+    string status = 3;
+}
+
+
+message ReservePortRequest {
+    PortMetadataCreatePrivate metadata = 1;
+    PortSpecPrivate spec = 2;
+}
+
+message PortMetadataCreatePrivate {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+
+    // Name will be generated if empty.
+    string name = 2;
+
+    string resourceId = 3;
+}
+
+message PortSpecPrivate {
+    string subnetId = 1;
+    string ipuSerialNumber = 2;
+    string chassisId = 3;
+    string ipAddress = 4;
+    string macAddress = 5;
+    bool ssh_enabled = 6;
+    bool internet_access = 7;
+}
+
+message PortMetadataReference {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    string resourceId = 2;
+
+    // If provided, the existing record must have this resourceVersion for the request to succeed.
+    string resourceVersion = 4;
+
+}
+
+message PortMetadataPrivate {
+    string cloudAccountId = 1;
+    string name = 2;
+    string resourceId = 3;
+    // resourceVersion can be provided with Update and Delete for concurrency control.
+    string resourceVersion = 4;
+    // Not implemented.
+    google.protobuf.Timestamp creationTimestamp = 5;
+    // Timestamp when resource was requested to be deleted.
+    google.protobuf.Timestamp deletionTimestamp = 6;
+    // Timestamp when resource was deleted.
+    google.protobuf.Timestamp deletedTimestamp = 7;
+
+}
+message ReleasePortRequest {
+    PortMetadataReference metadata = 1;
+}
+
+
+message PortStatusPrivate {
+    // Subnet phase.
+    PortPhase phase = 1;
+    // Additional details about the state or any error conditions.
+    string message = 2;
+}
+
+enum PortPhase {
+    // The system is creating the Subnet.
+    // Default.
+    PortPhase_Provisioning = 0;
+    // The port has been created in the IPU
+    PortPhase_Ready = 1;
+
+    // The port is in the process of release.
+    PortPhase_Deleting = 2;
+
+    // The port has been released.
+    PortPhase_Deleted = 3;
+}
+message PortPrivate {
+    PortMetadataPrivate metadata = 1;
+    PortSpecPrivate spec = 2;
+    PortStatusPrivate status = 3;
+}
+message PortUpdateStatusRequest {
+    PortMetadataReference metadata = 1;
+    PortStatusPrivate status = 2;
+}
+
+message GetPortPrivateRequest {
+    PortMetadataReference metadata = 1;
+}

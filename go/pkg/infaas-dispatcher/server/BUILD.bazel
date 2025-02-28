@@ -1,0 +1,56 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "server",
+    srcs = [
+        "dispatcher.go",
+        "health.go",
+        "mockstream.go",
+        "types.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/infaas-dispatcher/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/infaas-dispatcher/config",
+        "//go/pkg/infaas-dispatcher/metrics",
+        "//go/pkg/pb",
+        "@com_github_appsflyer_go_sundheit//:go-sundheit",
+        "@com_github_appsflyer_go_sundheit//checks",
+        "@com_github_friendsofgo_errors//:errors",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//health",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+        "@org_golang_google_grpc//metadata",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)
+
+go_test(
+    name = "server_test",
+    srcs = ["local_integration_test.go"],
+    embed = [":server"],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/infaas-agent/agent",
+        "//go/pkg/infaas-agent/inference",
+        "//go/pkg/infaas-dispatcher/config",
+        "//go/pkg/infaas-dispatcher/metrics",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//test/bufconn",
+    ],
+)

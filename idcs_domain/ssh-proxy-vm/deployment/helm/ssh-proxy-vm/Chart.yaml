@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ssh-proxy-vm
+description: Deploys an SSH proxy VM that can be managed by the SSH Proxy Operator.
+type: application
+version: 0.1.0
+appVersion: 0.1.0

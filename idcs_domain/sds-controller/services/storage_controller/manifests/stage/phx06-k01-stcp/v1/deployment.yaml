@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-controller
+spec:
+  template:
+    metadata:
+      labels:
+        sidecar.istio.io/inject: "true"
+    spec:
+      volumes:
+        - name: phx06-storage-controller-creds
+          secret:
+            secretName: phx06-storage-controller-creds
+            items:
+              - key: _raw
+                path: phx06-storage-controller-creds.json
+      containers:
+        - name: storage-controller
+          volumeMounts:
+            - name: phx06-storage-controller-creds
+              mountPath: /app/secret/phx06-storage-controller-creds.json
+              subPath: phx06-storage-controller-creds.json
+              readOnly: true

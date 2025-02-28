@@ -1,0 +1,22 @@
+# Note: the ip field value with switch hostname only works for running the lab locally.
+---
+# frontend-leaf1
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: Switch
+metadata:
+  name: "clab-frontendonly-frontend-leaf1"
+  namespace: idcs-system
+spec:
+  fqdn: "clab-frontendonly-frontend-leaf1"
+  ip: "clab-frontendonly-frontend-leaf1"
+
+---
+# frontend-leaf2
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: Switch
+metadata:
+  name: "clab-frontendonly-frontend-leaf2"
+  namespace: idcs-system
+spec:
+  fqdn: "clab-frontendonly-frontend-leaf2"
+  ip: "clab-frontendonly-frontend-leaf2"

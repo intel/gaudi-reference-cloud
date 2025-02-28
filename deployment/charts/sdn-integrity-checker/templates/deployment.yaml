@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: sdn-integrity-checker
+        apparmor.security.beta.kubernetes.io/{{ .Chart.Name }}: runtime/default
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        vault.hashicorp.com/agent-inject-secret-raven: {{ .Values.vault.agent.inject.secret.path }}/raven
+        vault.hashicorp.com/agent-inject-template-raven: |-
+          {{`{{- with secret `}}"{{ .Values.vault.agent.inject.secret.path }}/raven"{{` -}}`}}
+          ---
+          credentials:
+            username: "{{`{{ .Data.data.username | trimSpace }}`}}"
+            password: "{{`{{ .Data.data.password | trimSpace }}`}}"
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-eapi: {{ .Values.vault.agent.inject.secret.path }}/eapi
+        vault.hashicorp.com/agent-inject-template-eapi: |-
+          {{`{{- with secret `}}"{{ .Values.vault.agent.inject.secret.path }}/eapi"{{` -}}`}}
+          ---
+          credentials:
+            username: "{{`{{ .Data.data.username | trimSpace }}`}}"
+            password: "{{`{{ .Data.data.password | trimSpace }}`}}"
+          {{`{{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-bmhkubeconfig: {{ .Values.vault.agent.inject.secret.path }}/bmhkubeconfig
+        vault.hashicorp.com/agent-inject-template-bmhkubeconfig: |-
+          {{`{{- with secret `}}"{{ .Values.vault.agent.inject.secret.path }}/bmhkubeconfig"{{` -}}`}}
+          {{`{{ .Data.data.kubeconfig }}`}}
+          {{`{{- end }}`}}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 10
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 10
+      containers:
+      - command:
+        - /app/go/pkg/sdn-controller/tests/data_integrity_check/sdn-integrity-checker_image_1.binary
+        args:
+        - --bmhKubeconfig=/vault/secrets/bmhkubeconfig
+        - --ravenEnv={{ .Values.integrityCheckerConfig.ravenEnv }}
+        - --eapiSecretPath=/vault/secrets/eapi
+        - --datacenter={{ .Values.integrityCheckerConfig.datacenter }}
+{{/*        {{- include "idc-common.logArgs" . | nindent 8 }}*/}}
+        env:
+          {{- include "idc-common.proxyEnv" . | nindent 10 }}
+          {{- include "idc-common.otelEnv" . | nindent 10 }}
+        image: {{ include "idc-common.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Chart.Name }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - "ALL"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        ports:
+        # - containerPort: 8082   
+        #   protocol: TCP

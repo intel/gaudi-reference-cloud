@@ -1,0 +1,27 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "test_test",
+    srcs = [
+        "filesystem_test.go",
+        "suite_test.go",
+    ],
+    deps = [
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/pb",
+        "//go/pkg/storage/api_server/pkg/server",
+        "//go/pkg/storage/database",
+        "//go/pkg/storage/storage_admin_api_server/pkg/server",
+        "//go/pkg/storage/storagecontroller",
+        "//go/pkg/storage/storagecontroller/api:go_proto",
+        "//go/pkg/storage/storagecontroller/test/mocks",
+        "@com_github_golang_mock//gomock",
+        "@com_github_golang_protobuf//ptypes/empty",
+        "@com_github_onsi_ginkgo//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

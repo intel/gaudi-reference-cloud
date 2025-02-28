@@ -1,0 +1,11 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("//build/docker:docker.bzl", "idc_go_image")
+
+package(default_visibility = ["//visibility:public"])
+
+idc_go_image(
+    name = "fleet_node_reporter_image",
+    embed = ["//go/pkg/fleet_node_reporter/cmd/fleet_node_reporter:fleet_node_reporter_lib"],
+    visibility = ["//visibility:public"],
+)

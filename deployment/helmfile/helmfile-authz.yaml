@@ -1,0 +1,106 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.authz.enabled }}
+  {{- if $.Values.global.authzDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: authz-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: authz
+      database: authz
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: authz-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.authz.database.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/authz_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/authz_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.authzDb.primary.persistence.enabled }}
+  {{- end }}
+  {{- end }}
+
+  {{- if $.Values.global.authz.enabled }}
+  - name: authz
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: authz
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: authz
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/authz
+    version: {{ readFile (print $helmChartVersionsDir "/authz.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.authz.replicaCount }}
+      - database:
+          arg: {{ $.Values.global.authz.database.arg | quote }}
+          name: {{ $.Values.global.authz.database.name | quote }}
+          service: {{ $.Values.global.authz.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.authz.database.vaultCredentialsPath | quote }}
+      - limits:
+          maxCloudAccountRoles: {{ $.Values.global.authz.limits.maxCloudAccountRoles }}
+          maxPermissions: {{ $.Values.global.authz.limits.maxPermissions }}
+      - features:
+          policiesStartupSync: {{ $.Values.global.authz.features.policiesStartupSync }}
+          watcher: {{ $.Values.global.authz.features.watcher }}
+          auditLogging:
+            enabled: {{ $.Values.global.authz.features.auditLogging.enabled }}
+            cleanupSchedulerEnabled: {{ $.Values.global.authz.features.auditLogging.cleanupSchedulerEnabled }}
+            retentionPeriodInDays: {{ $.Values.global.authz.features.auditLogging.retentionPeriodInDays }}
+            schedulerTime: {{ $.Values.global.authz.features.auditLogging.schedulerTime }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}authz@sha256"
+      - policyFilesContent: |
+          policies:
+{{- range $index,$policyFile := readDir $.Values.global.authz.policiesPath }}
+{{ readFile $policyFile | indent 12 }}
+{{- end }}
+      - groups: {{ readFile $.Values.global.authz.groupsFile | quote }}
+      - modelConf: {{ readFile $.Values.global.authz.modelConfFile | quote }}
+      - resourcesContent: {{ readFile $.Values.global.authz.resourcesFile | quote }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+          grpcTlsAuthz: 
+            enabled: {{ $.Values.global.authz.tls.grpcTlsAuthz.enabled }}
+            allowedCallers: {{ $.Values.global.authz.tls.grpcTlsAuthz.allowedCallers }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

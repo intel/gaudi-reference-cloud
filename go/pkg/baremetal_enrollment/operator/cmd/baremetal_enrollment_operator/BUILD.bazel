@@ -1,0 +1,38 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "baremetal_enrollment_operator_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/operator/cmd/baremetal_enrollment_operator",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/dcim",
+        "//go/pkg/baremetal_enrollment/ddi",
+        "//go/pkg/baremetal_enrollment/operator/controllers",
+        "//go/pkg/baremetal_enrollment/secrets",
+        "//go/pkg/baremetal_enrollment/tasks",
+        "//go/pkg/grpcutil",
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/k8s/apis/private.cloud/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/pb",
+        "@com_github_hashicorp_go_multierror//:go-multierror",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//plugin/pkg/client/auth",
+        "@io_k8s_client_go//util/retry",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/healthz",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
+    ],
+)
+
+go_binary(
+    name = "baremetal_enrollment_operator",
+    embed = [":baremetal_enrollment_operator_lib"],
+    visibility = ["//visibility:public"],
+)

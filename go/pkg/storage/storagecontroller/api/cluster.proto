@@ -1,0 +1,167 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api";
+
+// Provides methods to interact with storage cluster
+service ClusterService {
+  // Query available clusters
+  rpc ListClusters(ListClustersRequest) returns (ListClustersResponse) {}
+
+  // Queries specific cluster
+  rpc GetCluster(GetClusterRequest) returns (GetClusterResponse) {}
+}
+
+message ListClustersRequest {
+  // Gives ability to filter out required clusters
+  Filter filter = 1;
+
+  message Filter {
+    // Collection of names which should be included
+    repeated string names = 1;
+
+    // Cluster locations to be included
+    repeated string locations = 2;
+
+    // Types of cluster to return
+    repeated Cluster.Type types = 3;
+
+    // List of labels as key/value pairs
+    map<string, string> labels = 4;
+  }
+}
+
+message ListClustersResponse {
+  // Collection of all found clusters
+  repeated Cluster clusters = 1;
+}
+
+message GetClusterRequest {
+  // ID of the cluster
+  ClusterIdentifier cluster_id = 1 ;
+}
+
+message GetClusterResponse {
+  // If cluster was found, contains `cluster` object
+  Cluster cluster = 1;
+}
+
+message ClusterIdentifier {
+  // Cluster UUID, should be in string format with as 32 HEX characters with delimiters.
+  // `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`
+  string uuid = 1 ;
+}
+
+message Cluster {
+  // ID of the cluster
+  ClusterIdentifier id = 1 ;
+
+  // Cluster name arbitrary string
+  string name = 2 ;
+
+  // Location of the cluster, usualy Datacenter, e.g. `pdx04`
+  string location = 3 ;
+
+  // Type of the cluster, always defined
+  Type type = 4 ;
+
+  // Arbitrary list of labels, can be used to filter and identify cluster
+  // examples of labels are `category`, `operation`.
+  map<string, string> labels = 5;
+
+  // Cluster capacity, should be used to filter/select cluster which can fulfill request
+  Capacity capacity = 6;
+
+  // Current cluster health, always defined, should be used to select healthy cluster to interact with
+  Health health = 7 ;
+
+  repeated ApiType supports_api = 8;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+
+    // Weka storage cluster, high performance storage system
+    TYPE_WEKA = 1;
+
+    // MinIO storage cluster, object store
+    TYPE_MINIO = 2;
+
+    // Vast storage cluster
+    TYPE_VAST = 3;
+  }
+
+  enum ApiType {
+    API_TYPE_UNSPECIFIED = 0;
+    API_TYPE_WEKA_FILESYSTEM = 1;
+    API_TYPE_OBJECT_STORE = 2;
+    API_TYPE_VAST_VIEW = 3;
+  }
+
+  // Capacity of the cluster
+  message Capacity {
+    // Storage level capacity
+    Storage storage = 1;
+
+    // Namespace level capacity, e.g. how many namespaces can be created
+    Namespaces namespaces = 2;
+
+    // Filesystems capacity, e.g. how many filesystems can be created
+    Filesystems filesystems = 3;
+
+    // Users capacity, e.g. how many users can be created in this cluster
+    Users users = 4;
+
+    message Storage {
+      // Total storage bytes capacity
+      uint64 total_bytes = 1;
+
+      // Available amount of bytes to be used for new objects/filesystems
+      uint64 available_bytes = 2;
+    }
+
+    message Namespaces {
+      // Total amount of namespaces which cluster supports
+      int32 total_count = 1;
+
+      // Available amount of namespaces to be created
+      int32 available_count = 2;
+    }
+
+    message Filesystems {
+      // Total amount of filesystems which cluster supports
+      int32 total_count = 1;
+
+      // Available amount of filesystems to be created
+      int32 available_count = 2;
+    }
+
+    message Users {
+      // Total amount of users which can be created
+      int32 total_count = 1;
+
+      // Available amount of users to be created
+      int32 available_count = 2;
+    }
+  }
+
+  message Health {
+    // Status of the cluster health
+    Status status = 1;
+
+    enum Status {
+      STATUS_UNSPECIFIED = 0;
+      // Cluster is Healthy and can be used
+      STATUS_HEALTHY = 1;
+
+      // Cluster in degraded state, while still some features are available avoid creating new objects
+      // inside this cluster
+      STATUS_DEGRADED = 2;
+
+      // Cluster is unhealthy, either down or does not provide essential services
+      STATUS_UNHEALTHY = 3;
+    }
+  }
+}

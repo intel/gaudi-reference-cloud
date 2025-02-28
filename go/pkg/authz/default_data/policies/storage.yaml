@@ -1,0 +1,327 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# All intel_admin are allowed by default by opa policy
+
+# Service => FileStorageService
+# Role => cloud_account_admin
+# Method - Create
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems
+  action: POST
+  expression: "true"
+# Method - Get
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id
+  action: GET
+  expression: "true"
+# Method - Get
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name
+  action: GET
+  expression: "true"
+# Method - Search
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems
+  action: GET
+  expression: "true"
+# Method - Update - DEPRECATED
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id
+  action: PUT
+  expression: "true"
+# Method - Update - DEPRECATED
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name
+  action: PUT
+  expression: "true"
+# Method - Delete
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id
+  action: DELETE
+  expression: "true"
+# Method - Delete
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name
+  action: DELETE
+  expression: "true"
+# Method - GetUser
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id/user
+  action: GET
+  expression: "true"
+# Method - GetUser
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name/user
+  action: GET
+  expression: "true"
+
+
+# Role => cloud_account_member
+# Method - Create
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems
+  action: POST
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'filestorage','*','create')"
+# Method - Get
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'filestorage',r.payload.metadata.resourceId,'get')"
+# Method - Get - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name
+  action: GET
+  expression: "true"
+# Method - Search - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'filestorage','*','search')"
+# Method - Update - DEPRECATED
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id
+  action: PUT
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'filestorage',r.payload.metadata.resourceId,'update')"
+# Method - Update - DEPRECATED - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name
+  action: "PUT"
+  expression: "true"
+# Method - Delete 
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id
+  action: DELETE
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'filestorage',r.payload.metadata.resourceId,'delete')"
+# Method - Delete - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name
+  action: "DELETE"
+  expression: "true"
+# Method - GetUser
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/id/:resource_id/user
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'filestorage',r.payload.metadata.resourceId,'getuser')"
+# Method - GetUser - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/filesystems/name/:name/user
+  action: GET
+  expression: "true"
+
+
+# Service => ObjectStorageService
+# Role => cloud_account_admin
+# Method - Create
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets
+  action: POST
+  expression: "true"
+# Method - Get
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id
+  action: GET
+  expression: "true"
+# Method - Get
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/name/:bucket_name
+  action: GET
+  expression: "true"
+# Method - Search
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets
+  action: GET
+  expression: "true"
+# Method - Delete
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id
+  action: DELETE
+  expression: "true"
+# Method - Delete
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/name/:bucket_name
+  action: DELETE
+  expression: "true"
+# Method - Create Lifecycle Rule
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule
+  action: POST
+  expression: "true"
+# Method - Get Lifecycle Rule
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule/id/:rule_id
+  action: GET
+  expression: "true"
+# Method - Update Lifecycle Rule
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule/id/:rule_id
+  action: PUT
+  expression: "true"
+# Method - Search Lifecycle Rule
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule
+  action: GET
+  expression: "true"
+# Method - Delete Lifecycle Rule
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule/id/:rule_id
+  action: DELETE
+  expression: "true"
+# Method - Create Principal
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users
+  action: POST
+  expression: "true"
+# Method - Get Principal
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id
+  action: GET
+  expression: "true"
+# Method - Get Principal
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name
+  action: GET
+  expression: "true"
+# Method - Search Principals
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users
+  action: GET
+  expression: "true"
+# Method - Update Principal Policy
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id/policy
+  action: PUT
+  expression: "true"
+# Method - Update Principal Policy
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name/policy
+  action: PUT
+  expression: "true"
+# Method - Update Principal Credentials
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id/credentials
+  action: PUT
+  expression: "true"
+# Method - Update Principal Credentials
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name/credentials
+  action: PUT
+  expression: "true"
+# Method - Delete Principal
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id
+  action: DELETE
+  expression: "true"
+# Method - Delete Principal
+- subject: cloud_account_admin
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name
+  action: DELETE
+  expression: "true"
+
+# Role => cloud_account_member
+# Method - Create
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets
+  action: POST
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'objectstorage','*','create')"
+# Method - Get
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'objectstorage',r.payload.metadata.bucketId,'get')"
+# Method - Get - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/name/:bucket_name
+  action: GET
+  expression: "true"
+# Method - Search - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'objectstorage','*','search')"
+# Method - Delete 
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id
+  action: DELETE
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'objectstorage', r.payload.metadata.bucketId,'delete')"
+# Method - Delete - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/name/:bucket_name
+  action: "DELETE"
+  expression: "true"
+# Method - Create Lifecycle Rule
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule
+  action: POST
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'lifecyclerule','*','create')"
+# Method - Get Lifecycle Rule - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule/id/:rule_id
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'lifecyclerule', r.payload.metadata.ruleId,'get')"
+# Method - Update Lifecycle Rule - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule/id/:rule_id
+  action: PUT
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'lifecyclerule', r.payload.metadata.ruleId,'update')"
+# Method - Search Lifecycle Rule - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'lifecyclerule','*','search')"
+# Method - Delete Lifecycle Rule - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/buckets/id/:bucket_id/lifecyclerule/id/:rule_id
+  action: DELETE
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'lifecyclerule', r.payload.metadata.ruleId,'delete')"
+
+
+# Method - Create Principal
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users
+  action: POST
+  expression: "true"
+# Method - Get Principal
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'principal',r.payload.metadata.userId,'get')"
+# Method - Get Principal - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name
+  action: GET
+  expression: "true"
+# Method - Search Principals - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users
+  action: GET
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.cloudAccountId,'principal','*','search')"
+# Method - Update Principal Credentials
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id/credentials
+  action: PUT
+  expression: "checkPermissions(r.decision_id,r.sub,r.payload.metadata.cloudAccountId,'principal', r.payload.metadata.userId,'updatecreds')"
+# Method - Update Principal Credentials - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name/credentials
+  action: "PUT"
+  expression: "true"
+# Method - Update Principal Policy
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id/policy
+  action: PUT
+  expression: "true"
+# Method - Update Principal Policy - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name/policy
+  action: "PUT"
+  expression: "true"
+# Method - Delete Principal
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/id/:user_id
+  action: "DELETE"
+  expression: "true"
+# Method - Delete Principal - LOOKUP - ADDITIONAL BINDING - LOOKUP DONE
+- subject: cloud_account_member
+  object: /v1/cloudaccounts/:cloud_account_id/objects/users/name/:user_name
+  action: "DELETE"
+  expression: "true"

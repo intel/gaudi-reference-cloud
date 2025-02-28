@@ -1,0 +1,11 @@
+---
+ansible_network_os: 'ios'
+ubuntu_server_cloudimg: "jammy-server-cloudimg-amd64.img"
+ubuntu_server_cloudimg_base_url: "https://cloud-images.ubuntu.com/jammy/current/"
+ubuntu_server_cloudimg_url: "{{ ubuntu_server_cloudimg_base_url }}/{{ ubuntu_server_cloudimg }}"
+# ubuntu_server_cloudimg_url: "file://{{ role_path }}/files/{{ ubuntu_server_cloudimg }}"
+libvirt_image_dir: "/var/lib/libvirt/images/"
+guest_test_server_name: "guest-test-{{ vmnum }}"
+guest_test_server_cloudimg: "{{ guest_test_server_name }}.qcow2"
+guest_test_base_mac: "52:54:00:be:cf:"
+ubuntu_cloud_init_iso: "{{ libvirt_image_dir }}/{{ guest_test_server_name }}_cloud_init.iso"

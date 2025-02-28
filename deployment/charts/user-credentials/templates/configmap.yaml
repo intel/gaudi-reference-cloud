@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    listenPort: {{ include "idc-common.listenPort" . }}
+    database:
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+      passwordFile: /vault/secrets/db_password
+    usercredentials:
+      emailExclusionPattern: {{ .Values.emailExclusionPattern | quote }}
+      aws:
+          credentialsFile: {{ .Values.aws.credentialsFile }}
+          region: {{ .Values.aws.region | quote }}
+          userPool: {{ .Values.aws.userPool | quote }}
+          customScope: {{ .Values.aws.customScope | quote }}
+          accountIdFile: {{ .Values.aws.accountIdFile }}
+          cognitoUrl: {{ .Values.aws.cognitoUrl }}

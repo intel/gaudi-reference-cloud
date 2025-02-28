@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "ddi",
+    srcs = ["menandmice.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/ddi",
+    visibility = ["//visibility:public"],
+    deps = ["//go/pkg/baremetal_enrollment/util"],
+)
+
+go_test(
+    name = "ddi_test",
+    srcs = ["menandmice_test.go"],
+    embed = [":ddi"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/mocks",
+        "@com_github_golang_mock//gomock",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

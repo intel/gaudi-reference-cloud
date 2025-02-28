@@ -1,0 +1,35 @@
+diff --git a/vLLM/model_repository/vllm/1/model.py b/vLLM/model_repository/vllm/1/model.py
+index 02348fa..2467040 100644
+--- a/vLLM/model_repository/vllm/1/model.py
++++ b/vLLM/model_repository/vllm/1/model.py
+@@ -6,14 +6,14 @@ from typing import AsyncGenerator
+ 
+ import numpy as np
+ import triton_python_backend_utils as pb_utils
+-from vllm import SamplingParams
+-from vllm.engine.arg_utils import AsyncEngineArgs
+-from vllm.engine.async_llm_engine import AsyncLLMEngine
+-from vllm.utils import random_uuid
++from bigdl.llm.vllm.sampling_params import SamplingParams
++from bigdl.llm.vllm.engine.arg_utils import AsyncEngineArgs
++from bigdl.llm.vllm.engine.async_llm_engine import AsyncLLMEngine
++from bigdl.llm.vllm.utils import random_uuid
+ import huggingface_hub
+ 
+ _VLLM_ENGINE_ARGS_FILENAME = "vllm_engine_args.json"
+-huggingface_hub.login(token="") ## Add your HF credentials
++huggingface_hub.login(token="Your HF token") ## Add your HF credentials
+ 
+ 
+ class TritonPythonModel:
+diff --git a/vLLM/model_repository/vllm/vllm_engine_args.json b/vLLM/model_repository/vllm/vllm_engine_args.json
+index ef1a09e..e3acb92 100644
+--- a/vLLM/model_repository/vllm/vllm_engine_args.json
++++ b/vLLM/model_repository/vllm/vllm_engine_args.json
+@@ -1,4 +1,5 @@
+ {
+     "model":"meta-llama/Llama-2-7b-chat-hf",
+-    "disable_log_requests": "true"
++    "disable_log_requests": "true",
++    "device": "xpu"
+ }

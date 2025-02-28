@@ -1,0 +1,67 @@
+@import 'intel.css';
+@import 'devcloud.css';
+
+
+/*
+CSS & VARS() USAGE - EXAMPLES
+https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/styling.html
+https://github.com/openvinotoolkit/openvino/blob/master/docs/openvino_sphinx_theme/openvino_sphinx_theme/static/css/openvino_sphinx_theme.css
+*/
+
+
+:root {
+    /*  */
+    --pst-color-navbar-background: var(--bs-cobalt-shade1);
+}
+
+.navbar {
+    background:var(--idc-navbar-bg) !important;
+    justify-content: right !important;
+    padding-bottom: .5rem !important;
+    padding-top: .5rem !important;
+    padding-left: .75rem !important;
+    padding-right: .75rem !important;
+    height: 64px;
+    max-width: 100vw;
+}
+
+.navbar .container-xl {
+  padding: 0 !important;
+}
+
+.navbar-light .navbar-nav li a.nav-link {
+    color: #000000 !important;
+    font-size: 1rem;
+    white-space: nowrap!important;
+    padding-right:0;
+    padding: 0 1.8rem;
+    text-decoration: none;
+}
+
+.navbar-light .navbar-nav li a.nav-link:hover {
+  text-decoration: underline;
+  color: var(--CTA-primary);
+  text-underline-offset: 0.85em;
+}
+
+
+.navbar-brand{
+    color: #FFFFFF !important;
+    text-align: center;
+}
+
+.navbar-name{
+  font-weight: 400;
+  color: var(--bs-carbon-tint2);
+}
+
+img.logo{
+  height: 90%;
+  width: 90%;
+}
+
+.siteLogo {
+  content:url(../assets/IntelTiberDeveloperCloudLogo.svg);
+  height: 3.25rem;
+  margin-left: 0.75rem;
+}

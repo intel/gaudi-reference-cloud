@@ -1,0 +1,80 @@
+{{- if .Values.enableTLSandAuth -}}
+{{- if not .Values.useVaultPKI }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ironic-cacert
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  commonName: ironic-ca
+  ipAddresses:
+  - 127.0.0.1
+{{- if .Values.ironicEnvConfigMap.ironicIP }}
+  - {{ .Values.ironicEnvConfigMap.ironicIP }}
+{{- end }}
+  isCA: true
+  issuerRef:
+    kind: Issuer
+    name: selfsigned-issuer
+  secretName: ironic-cacert
+---
+{{- if not .Values.deployStandaloneBaremetalOperator -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ironic-cert
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  commonName: ironic-cert
+  ipAddresses:
+  - 127.0.0.1
+{{- if .Values.ironicEnvConfigMap.ironicIP }}
+  - {{ .Values.ironicEnvConfigMap.ironicIP }}
+{{- end }}
+  issuerRef:
+    kind: Issuer
+    name: ca-issuer
+  secretName: ironic-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ironic-inspector-cert
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  commonName: ironic-inspector-cert
+  ipAddresses:
+  - 127.0.0.1
+{{- if .Values.ironicEnvConfigMap.ironicIP }}
+  - {{ .Values.ironicEnvConfigMap.ironicIP }}
+{{- end }}
+  issuerRef:
+    kind: Issuer
+    name: ca-issuer
+  secretName: ironic-inspector-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mariadb-cert
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  commonName: mariadb-cert
+  ipAddresses:
+  - 127.0.0.1
+  issuerRef:
+    kind: Issuer
+    name: ca-issuer
+  secretName: mariadb-cert
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,58 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "ip_resource_manager",
+    srcs = [
+        "ip_resource_manager.go",
+        "subnet_synchronizer.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/compute_api_server/ip_resource_manager",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/git_to_grpc_synchronizer",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/pb",
+        "//go/pkg/utils",
+        "@com_github_praserx_ipconv//:ipconv",
+        "@io_k8s_apimachinery//pkg/util/wait",
+        "@io_k8s_client_go//util/retry",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)
+
+go_test(
+    name = "ip_resource_manager_test",
+    srcs = [
+        "git_to_grpc_synchronizer_test.go",
+        "ip_resource_manager_test.go",
+        "suite_test.go",
+    ],
+    data = [
+        "//go/pkg/compute_api_server:testdata",
+    ],
+    embed = [":ip_resource_manager"],
+    deps = [
+        "//go/pkg/compute_api_server/db",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/pb",
+        "//go/pkg/tools/stoppable",
+        "//go/pkg/utils",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_praserx_ipconv//:ipconv",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)

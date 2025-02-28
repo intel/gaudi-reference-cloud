@@ -1,0 +1,15 @@
+.custom-captcha-template {
+  #api .intro p,
+  .helpLink.tiny,
+  .verifying-modal,
+  .TextBox:has( #extension_country),
+  li:has( #g-recaptcha-response-toms),
+  #toc_label,
+  #optIn_label {
+    display: none;
+  }
+}
+
+#country.placeholder-color:not(:focus-visible) {
+  color: var(--form-control-place-holder-color);
+}

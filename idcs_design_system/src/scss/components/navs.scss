@@ -1,0 +1,145 @@
+@use "sass:map";
+
+// Off Canvas
+
+.offcanvas.show {
+    @extend .offcanvas-sm-width;
+}
+
+.offcanvas,
+.learningBar,
+.sideNavBar {
+    background: var(--surface-background-color);
+}
+
+.offcanvas.show .offcanvas-header,
+.learningBar-header{
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: map.get($spacers, "s4");
+//   @extend .p-s6;
+}
+
+.offcanvas.show .offcanvas-body,
+.learningBar .offcanvas-body{
+    @extend .p-s6;
+}
+
+// Nav
+
+.flex-column.nav {
+    gap: map.get($spacers, "s4");
+}
+
+// Nav Items
+
+.flex-column.nav .nav-item .icon-wrapper {
+    height: map.get($spacers, "s6");;
+    width: map.get($spacers, "s6");;
+    color: var(--nav-item-svg-color);
+}
+
+.flex-column.nav .nav-item:disabled {
+    color: var(--nav-item-disabled-color);
+}
+
+.flex-column.nav .nav-item .icon-wrapper:disabled {
+    color: var(--nav-item-disabled-color);
+}
+
+.flex-column.nav .nav-item:hover,
+.flex-column.nav .nav-item:focus-visible {
+    color: var(--primary);
+    text-decoration: none;
+    background: var(--nav-item-hover-background-color);
+}
+
+.flex-column.nav .nav-item.active,
+.flex-column.nav .nav-item:active {
+    text-decoration: none;
+    background: var(--nav-item-active-background-color);
+}
+
+.flex-column.nav .nav-item {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    gap: map.get($spacers, "s3");
+    color: var(--body-color);
+    @extend .py-s4;
+    @extend .px-s6;
+}
+
+.flex-column.nav .nav-item .wrapper {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    gap: map.get($spacers, "s4");
+    @extend .pe-s7;
+}
+
+.flex-column.nav .nav-item .wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1 0 0;
+    gap: map.get($spacers, "s4");
+    @extend .pe-s3;
+}
+
+.flex-column.nav .nav-item[data-bs-toggle="collapse"] .wrapper {    
+    @extend .pe-0;
+}
+
+.flex-column.nav .nav-item.second-level {
+    padding-left: 48px !important;
+    background: var(--nav-item-second-level-background);
+}
+  
+.flex-column.nav .nav-item.second-level:hover,
+.flex-column.nav .nav-item.second-level:focus-visible {
+    background: var(--nav-item-second-level-hover-background);
+}
+
+.flex-column.nav .nav-item.second-level:active,
+.flex-column.nav .nav-item.active.second-level {
+    background: var(--nav-item-second-level-active-background);
+    border-right: 3px solid var(--primary)
+}
+
+ul.submenu {
+    @extend .m-0;
+    @extend .py-s4;
+    @extend .px-0;
+    transition: none;
+}
+
+.flex-column.nav .collapse.submenu.show {
+    display: flex;     
+    flex-direction: column;    
+    align-items: flex-start;
+    align-self: stretch;
+}
+
+.flex-column.nav .nav-item .caret-up  {
+    display: none;
+}
+
+.flex-column.nav .nav-item[aria-expanded="false"] .caret-up  {
+    display: none;
+}
+
+.flex-column.nav .nav-item[aria-expanded="true"] .caret-down {
+    display: none;
+}
+
+.flex-column.nav .nav-item[aria-expanded="true"] .caret-up {
+    display: flex;
+}
+
+// Nav links
+
+.nav-link {
+    color: var(--body-color);
+}
+

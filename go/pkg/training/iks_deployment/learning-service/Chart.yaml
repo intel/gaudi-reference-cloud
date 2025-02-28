@@ -1,0 +1,7 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: v2
+name: learning-service
+description: ITAC Learning Catalog Notebook Service
+type: application
+version: 0.1.0

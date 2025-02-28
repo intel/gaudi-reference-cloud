@@ -1,0 +1,24 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "ssh",
+    srcs = ["ssh_key.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/tools/ssh",
+    visibility = ["//visibility:public"],
+    deps = ["@org_golang_x_crypto//ssh"],
+)
+
+go_test(
+    name = "ssh_test",
+    srcs = [
+        "ssh_key_test.go",
+        "suite_test.go",
+    ],
+    embed = [":ssh"],
+    deps = [
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

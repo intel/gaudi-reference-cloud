@@ -1,0 +1,25 @@
+# Default values for dhcp-proxy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/dhcp-proxy
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+useHostNetwork: true
+
+dhcpProxyConfig:
+  restport: 50100
+  dhcpFileserver: "172.18.0.2"

@@ -1,0 +1,29 @@
+{
+  "environments": {
+    "staging": {
+      "components": {
+        "billing": {
+          "commit": "b966d5f3a3aa2762532d82a06e5ea0435fbc89d4"
+        }
+      },
+      "regions": {
+        "us-staging-1": {
+          "components": {
+            "compute": {
+              "commit": "b966d5f3a3aa2762532d82a06e5ea0435fbc89d4"
+            }
+          },
+          "availabilityZones": {
+            "us-staging-1a": {
+              "components": {
+                "computeBmInstanceOperator": {
+                  "commit": "b966d5f3a3aa2762532d82a06e5ea0435fbc89d4"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Loadbalancer
+metadata:
+  name: dpai-test-lb
+  namespace: "486596936008"
+  labels:
+    environment: dev-22-test
+spec:
+  labels:
+    lb: dpai-lb-ingress 
+  listeners:
+  - owner: vedang.parasnis@intel.com
+    vip:
+      ipprotocol: "tcp"
+      iptype: "public"
+      persist: "i_client_ip_5min"
+      port: 443
+      sslProfile:
+        # name: lbauto-slurmaas-metric-us-staging-1-ssl
+        name: lbauto-dpai-cloudworkspace-io-ssl
+    pool:
+      port: 32443
+      loadbalancingmode: "least-connections-member"
+      minactivemembers: 1
+      monitor: "tcp"
+      members: []
+        #- instanceRef: "instance-001"
+        #adminState: "enabled"
+        #connectionLimit: 100
+        #monitorStatus: "up"
+        #priorityGroup: 0
+        #ratio: 1
+      instanceSelectors:
+        nodegroupName: ng-q276j7uyf4 # labeled nodes of ingress worker nodegroup
+  security:
+    sourceips:
+    - "any"

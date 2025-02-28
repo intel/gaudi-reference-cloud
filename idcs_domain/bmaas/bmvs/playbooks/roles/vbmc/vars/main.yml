@@ -1,0 +1,5 @@
+---
+ansible_network_os: 'ios'
+sushy_conf_dir: "/etc/sushy/"
+sushy_passwd_file: "sushy_htpasswd"
+sushy_log_dir: "/var/log/"

@@ -1,0 +1,27 @@
+collector:
+  commands:
+    get-nodes: kubectl get nodes -o wide
+    get-nodes-json: kubectl get nodes -o json | jq -c '.items[]'
+    get-applications: kubectl get applications -A
+    get-applications-json: kubectl get applications -A -o json | jq -c '.items[]'
+    get-deployments: kubectl get deployments -A -o wide
+    get-deployments-json: kubectl get deployments -A -o json | jq -c '.items[]'
+    get-jobs: kubectl get jobs -A -o wide
+    get-jobs-json: kubectl get jobs -A -o json | jq -c '.items[]'
+    get-pods: kubectl get pods -A -o wide
+    get-pods-json: kubectl get pods -A -o json | jq -c '.items[]'
+    get-baremetalhosts: kubectl get baremetalhosts -A
+    get-baremetalhosts-json: kubectl get baremetalhosts -A -o json | jq -c '.items[]'
+    get-instances: kubectl get instances -A
+    get-instances-json: kubectl get instances -A -o json | jq -c '.items[]'
+  enabled: false
+  image:
+    registry: docker.io
+    repository: "bitnami/kubectl@sha256"
+    tag: "3e89d1d1dbd10b1809bde3436bbe9f3708ad4c7d3ad4a9551cd8a16d88400365"
+  # Run every 3 minutes
+  schedule: "*/3 * * * *"
+image:
+  registry: docker.io
+  repository: "nicolaka/netshoot@sha256"
+  tag: "a7c92e1a2fb9287576a16e107166fee7f9925e15d2c1a683dbb1f4370ba9bfe8"

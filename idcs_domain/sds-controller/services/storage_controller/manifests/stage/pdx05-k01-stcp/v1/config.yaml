@@ -1,0 +1,114 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  - name: pdx05-dev-1
+    uuid: 19b1706d-6e21-4b21-912c-fb14e9cd4e33
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+      - "ObjectStore"
+    labels:
+      operation: testing
+      category: testing
+      wekaBackend: pdx05-dev-1.us-staging-1.cloud.intel.com # IDC uses for scheduler, will be removed in future
+      s3Endpoints: https://s3w-pdx05-1.us-staging-1.cloud.intel.com:9000
+    location: pdx05-c01
+    api:
+      type: REST
+      url: https://pdx05-dev-1.us-staging-1.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx05-storage-controller-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx05-dev-1.us-staging-1.cloud.intel.com
+  - name: pdx05-dev-2
+    uuid: 918b5026-d516-48c8-bfd3-5998547265b2
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+      - "ObjectStore"
+    labels:
+      operation: development
+      category: development
+      wekaBackend: pdx05-dev-2.us-staging-1.cloud.intel.com # IDC uses for scheduler, will be removed in future
+      s3Endpoints: https://s3w-pdx05-2.us-staging-1.cloud.intel.com:9000
+    location: pdx05-c01
+    api:
+      type: REST
+      url: https://pdx05-dev-2.us-staging-1.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx05-storage-controller-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx05-dev-2.us-staging-1.cloud.intel.com
+  # - name: pdx05-dev-3
+  #   uuid: ef3c8f5b-d918-4d3a-adb6-3e36c666036f
+  #   type: MinIO
+  #   supportsApi:
+  #     - "ObjectStore"
+  #   labels:
+  #     operation: testing
+  #     category: testing
+  #     s3Endpoints: https://pdx05-dev-3.us-staging-1.cloud.intel.com:9000
+  #   location: pdx05-c01
+  #   api:
+  #     type: REST
+  #     url: pdx05-dev-3.us-staging-1.cloud.intel.com:9000
+  #     caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+  #   auth:
+  #     scheme: Basic
+  #     vaultFile: /app/secret/pdx05-storage-controller-creds.json
+  #   minioConfig:
+  #     kesKey: "minio-kes-key"
+  - name: pdx05-dev-4
+    uuid: 8623ccaa-704e-4839-bc72-9a89daa20111
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: development
+      category: development
+      s3Endpoints: https://pdx05-dev-4.us-staging-1.cloud.intel.com:9000
+    location: pdx05-c01
+    api:
+      type: REST
+      url: pdx05-dev-4.us-staging-1.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx05-storage-controller-creds.json
+    minioConfig:
+      kesKey: "minio-kes-key"
+  - name: pdx05-dev-6
+    uuid: 8b8e82d8-b7a1-4f0f-bfbc-46312904696f 
+    type: Vast
+    supportsApi:
+      - "VastView"
+    labels:
+      operation: development
+      category: development
+      vastBackend: vip1.vast-pdx05-1.us-staging-1.cloud.intel.com
+      vastVMSEndpoint: pdx05-vast01.us-staging-1.cloud.intel.com
+    location: pdx05-c01
+    api:
+      type: REST
+      url: https://pdx05-vast01.us-staging-1.cloud.intel.com/api/v5
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx05-storage-controller-vast-creds.json
+    vastConfig:
+      vipPool: vip1
+      protectedOrgIds:
+        - "1"

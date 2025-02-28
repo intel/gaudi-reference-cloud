@@ -1,0 +1,34 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "tests",
+    srcs = ["testing.go"],
+    embedsrcs = [
+        "migrations/000007_create_table_all.down.sql",
+        "migrations/000007_create_table_all.up.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudmonitor/tests",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/cloudmonitor/config",
+        "//go/pkg/cloudmonitor/server",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/pb",
+        "@com_github_lib_pq//:pq",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+    ],
+)
+
+go_test(
+    name = "tests_test",
+    srcs = [
+        "cloudmonitor_test.go",
+        "query_test.go",
+    ],
+    embed = [":tests"],
+    deps = ["//go/pkg/pb"],
+)

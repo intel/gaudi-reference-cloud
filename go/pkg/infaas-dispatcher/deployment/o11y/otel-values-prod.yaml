@@ -1,0 +1,8 @@
+config:
+  exporters:
+    otlphttp:
+      endpoint: https://internal-placeholder.com:443
+
+extraEnvs:
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: clustername=maas-o11y-prod,elasticsearch.index.suffix=-maas-o11y

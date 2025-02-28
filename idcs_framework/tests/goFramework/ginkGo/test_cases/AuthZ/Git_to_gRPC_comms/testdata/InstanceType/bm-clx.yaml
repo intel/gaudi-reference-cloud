@@ -1,0 +1,22 @@
+metadata:
+  name: bm-clx
+spec:
+  name: bm-clx
+  displayName: 2nd Generation Intel® Xeon® Scalable Processors (Cascade Lake)
+  description: 2nd Generation Intel® Xeon® Scalable Processors (Cascade Lake)
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 24
+    id: "0x50656"
+    modelName: 2nd Generation Intel® Xeon® Scalable Processors (Cascade Lake)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 0
+  memory:
+    size: 256Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4000
+  disks:
+    - size: 2000Gi

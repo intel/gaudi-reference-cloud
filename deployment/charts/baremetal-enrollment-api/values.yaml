@@ -1,0 +1,64 @@
+# Default values for baremetal-enrollment-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+apiServer:
+  replicaCount: 1
+  image:
+    repository: internal-placeholder.com/intelcloud/baremetal-enrollment-api@sha256
+    pullPolicy: IfNotPresent
+    tag: v1
+  config:
+      backoffLimit: 2
+      provisioningDuration: 5400
+      deprovisioningDuration: 5400
+      jobCleanupDelay: 30
+      computeApiServerAddr: "us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443"
+      # vault and netbox address for the enrollment job.
+      # In production, need to use the external vault and netbox address.
+      vaultAddress: "http://vault.vault.svc.cluster.local:8200"
+      vaultAuthPath: "auth/cluster-auth"
+      vaultApproleSecretsPath: "controlplane/data/us-dev-1/baremetal/enrollment/approle"
+      vaultAuthRole: "us-dev-1a-baremetal-enrollment-task-role"
+      secretCaPemPath: "kind-jenkins-root-ca/cert/ca_chain"
+      secretCertKeyPemPath: ""
+      netboxAddress: "netbox.idcs-enrollment.svc.cluster.local"
+      netboxSkipTlsVerify: true
+      enrollmentRegion: "us-dev-1"
+      dhcpProxy:
+        enabled: false
+        url: "http://172.18.0.2:50100"
+      menAndMice:
+        enabled: true
+        url: "https://1.1.1.1/"
+        tftpServerIp: "1.1.1.1"
+        serverAddress: localhost 
+        insecureSkipVerify: true
+  service:
+    type: ClusterIP
+    port: 8080
+    nodePort: ""
+    targetPort: http
+  ingress:
+    enabled: true
+    className: "nginx"
+    issueCa: ""
+    externalSecret:
+      enabled: true
+      refreshInterval: 30m
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: baremetal-enrollment-api.local
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - baremetal-enrollment-api.local
+  extraEnvs: []
+  imagePullSecrets: []
+  vault:
+    enable: false
+    annotations: {}

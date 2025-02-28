@@ -1,0 +1,38 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NetworkNode
+metadata:
+  name: pdx05-c01-bgan003
+  namespace: idcs-system
+spec:
+  acceleratorFabric:
+    switchPorts:
+    - ethernet43-1.internal-placeholder.com
+    - ethernet36-1.internal-placeholder.com
+    - ethernet40-1.internal-placeholder.com
+    - ethernet26-1.internal-placeholder.com
+    - ethernet35-1.internal-placeholder.com
+    - ethernet30-1.internal-placeholder.com
+    - ethernet45-1.internal-placeholder.com
+    - ethernet48-1.internal-placeholder.com
+    - ethernet38-1.internal-placeholder.com
+    - ethernet29-1.internal-placeholder.com
+    - ethernet47-1.internal-placeholder.com
+    - ethernet42-1.internal-placeholder.com
+    - ethernet32-1.internal-placeholder.com
+    - ethernet27-1.internal-placeholder.com
+    - ethernet34-1.internal-placeholder.com
+    - ethernet31-1.internal-placeholder.com
+    - ethernet41-1.internal-placeholder.com
+    - ethernet33-1.internal-placeholder.com
+    - ethernet37-1.internal-placeholder.com
+    - ethernet39-1.internal-placeholder.com
+    - ethernet25-1.internal-placeholder.com
+    - ethernet44-1.internal-placeholder.com
+    - ethernet28-1.internal-placeholder.com
+    - ethernet46-1.internal-placeholder.com
+    vlanId: 100
+  frontEndFabric:
+    switchPort: ethernet3-1.internal-placeholder.com
+    vlanId: 4008

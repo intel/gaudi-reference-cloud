@@ -1,0 +1,8 @@
+{
+  "TemplateName": "Multi-User-Invitation-Expired-Template-Dev",
+  "TemplateContent": {
+    "Subject": "Your Invitation Expired",
+    "Text": "Dear Intel Developer Cloud Customer,\n\nYour invitation to {{memberEmail}} expired and has been removed.\n\nSincerely,\nIntel Cloud Services",
+    "Html": "<p>Dear Intel Developer Cloud Customer,</p><p>Your invitation to {{memberEmail}} expired and has been removed.</p><p>Sincerely,<br>Intel Cloud Services</p>"
+  }
+}

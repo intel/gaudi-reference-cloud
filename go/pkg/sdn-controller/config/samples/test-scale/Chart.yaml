@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: v2
+name: test-scale
+version: 0.0.1
+description: To create thousands to CRs to test performance of k8s controller.

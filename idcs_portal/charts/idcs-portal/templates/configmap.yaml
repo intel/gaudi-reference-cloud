@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idcs-portal.fullname" . }}
+  namespace: {{ include "idcs-portal.namespace" . }}  
+data:
+  configMap.json: {{ .Values.configMap | toJson | quote }}
+  siteBannerMessages.json: {{ .Values.siteBannerMessages | toJson | quote }}
+  docData.json: {{ .Values.docData | toJson | quote }}

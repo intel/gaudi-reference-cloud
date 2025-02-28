@@ -1,0 +1,15 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: NetworkNode
+metadata:
+  name: pdx03-c04-dspr002-dupe
+  namespace: idcs-system
+spec:
+  frontEndFabric:
+    switchPort: ethernet20-1.internal-placeholder.com
+    vlanId: -1
+status:
+  acceleratorFabricStatus: {}
+  frontEndFabricStatus:
+    readiness: 0/1

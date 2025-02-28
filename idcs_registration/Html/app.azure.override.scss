@@ -1,0 +1,49 @@
+input[type="text"],
+input[type="password"] {
+    @extend .form-control;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    @extend .form-check-input;
+}
+
+.buttons {
+    @extend .w-100;
+}
+
+.error.itemLevel p,
+.error.itemLevel.show {
+    @extend .invalid-feedback;
+    @extend .mb-0;
+}
+
+.error.pageLevel {
+    @extend .alert;
+    @extend .alert-warning;
+    @extend .show;
+}
+
+.error.pageLevel p {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.highlightError,
+.attrEntry.validate:not(.optional):has(.error.itemLevel.show) input:not(:checked) {
+    @extend .is-invalid;
+}
+
+.entry-item,
+.attrEntry {
+    @extend .d-flex-customInput;    
+}
+
+.attr>ul {
+ list-style: none;
+}
+
+.attr>ul>li {
+    @extend .w-100;
+}

@@ -1,0 +1,201 @@
+// After updating this file, run "make generate-go".
+//
+// See:
+//  - https://developers.google.com/protocol-buffers/docs/proto3
+//  - https://github.com/googleapis/googleapis/blob/master/google/api/http.proto
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "network-api-server";
+
+// -------------------------------------------------------------------------------------------
+// VPC Service
+// -------------------------------------------------------------------------------------------
+
+service VPCService {
+    // Create a VPC.
+    rpc Create(VPCCreateRequest) returns (VPC) {
+      option (google.api.http) = {
+        post: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs"
+        body: "*"
+      };
+      option (idc.method).authz.cloudAccount = true;
+    };
+    // Retrieve a VPC record from DB
+    rpc Get(VPCGetRequest) returns (VPC) {
+      option (google.api.http) = {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs/id/{metadata.resourceId}"
+        additional_bindings: {
+          get: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs/name/{metadata.name}"
+        }
+      };
+      option (idc.method).authz.cloudAccount = true;
+    };
+    // Get a list of stored VPCs.
+    rpc Search(VPCSearchRequest) returns (VPCSearchResponse) {
+      option (google.api.http) = {
+        get: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs"
+        additional_bindings {
+          post: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs/search"
+          body: "*"
+        }
+      };
+      option (idc.method).authz.cloudAccount = true;
+    };
+    // Update name or labels for VPC
+    rpc Update(VPCUpdateRequest) returns (google.protobuf.Empty) {
+      option (google.api.http) = {
+        put: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs/id/{metadata.resourceId}"
+        body: "*"
+        additional_bindings: {
+          put: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs/name/{metadata.name}"
+          body: "*"
+        }
+      };
+      option (idc.method).authz.cloudAccount = true;
+    };
+    // Delete a VPC from the DB.
+    // Returns FailedPrecondition if VPC has any resources associated like routers, subnets, ports or security groups.
+    rpc Delete(VPCDeleteRequest) returns (google.protobuf.Empty) {
+      option (google.api.http) = {
+        delete: "/v1/cloudaccounts/{metadata.cloudAccountId}/network/vpcs/id/{metadata.resourceId}"
+      };
+      option (idc.method).authz.cloudAccount = true;
+    };
+    // Ping always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  }
+
+  message VPCCreateRequest {
+    VPCMetadataCreate metadata = 1;
+    VPCSpec spec = 2;
+  }
+
+  message VPCGetRequest {
+    VPCMetadataReference metadata = 1;
+  }
+
+  message VPCSearchRequest {
+    VPCMetadataSearch metadata = 1;
+  }
+  
+  message VPCMetadataSearch {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    // If not empty, only return instances that have these key/value pairs.
+    map<string, string> labels = 2;
+    // Reserved. Added this field to overcome openAPi-same-struct issue.
+    string reserved1 = 3 [deprecated = true];
+  }
+
+  message VPCSearchResponse {
+    repeated VPC items = 1;
+  }
+
+  message VPCMetadataCreate {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    // Name will be generated if empty.
+    string name = 2;
+    // Map of string keys and values that can be used to organize and categorize instances.
+    // This is also used by TopologySpreadConstraints.
+    map<string, string> labels = 3;
+    // Reserved. Added this field to overcome openAPi-same-struct issue.
+    string reserved1 = 4 [deprecated = true];
+  }
+
+  message VPC {
+    VPCMetadata metadata = 1;
+    VPCSpec spec = 2;
+    VPCStatus status = 3;
+  }
+
+  message VPCMetadata {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    string name = 2;
+    string resourceId = 3;
+    // resourceVersion can be provided with Update and Delete for concurrency control.
+    string resourceVersion = 4;
+    // Map of string keys and values that can be used to organize and categorize vpcs.
+    // This can also be used by to evaluate placements for instances.
+    map<string, string> labels = 5;
+    // Not implemented.
+    google.protobuf.Timestamp creationTimestamp = 6;
+    // Timestamp when resource was requested to be deleted.
+    google.protobuf.Timestamp deletionTimestamp = 7;
+  }
+
+  message VPCSpec {
+    string cidrBlock = 1;
+  }
+
+  message VPCStatus {
+    // VPC phase.
+    VPCPhase phase = 1;
+    // Additional details about the state or any error conditions.
+    string message = 2;
+  }
+
+  enum VPCPhase {
+    // The system is creating the VPC.
+    // Default.
+    VPCPhase_Provisioning = 0;
+    // The VPC has been created.
+    VPCPhase_Ready = 1;
+  }
+
+  message VPCDeleteRequest {
+    VPCMetadataReference metadata = 1;
+  }
+
+  // A reference to a single vpc.
+  message VPCMetadataReference {
+    string cloudAccountId = 1 [
+      (idc.field).cloudAccount = true
+    ];
+    oneof nameOrId {
+      string resourceId = 2;
+      string name = 3;
+    }
+    // If provided, the existing record must have this resourceVersion for the request to succeed.
+    string resourceVersion = 4;
+    // Reserved. Added this field to overcome openAPi-same-struct issue.
+    string reserved1 = 5 [deprecated = true];
+}
+
+message VPCUpdateRequest {
+  VPCMetadataUpdate metadata = 1;
+}
+
+message VPCMetadataUpdate {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  oneof nameOrId {
+    string name = 2;
+    string resourceId = 3;
+  }
+  // If provided, the existing record must have this resourceVersion for the request to succeed.
+  string resourceVersion = 4;
+  // The entire set of labels will be replaced with these labels.
+  // Not implemented.
+  map<string, string> labels = 5;
+  // Reserved. Added this field to overcome openAPi-same-struct issue.
+  string reserved1 = 6 [deprecated = true];
+}

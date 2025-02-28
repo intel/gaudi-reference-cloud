@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "clab",
+    srcs = ["clab-manager.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/clab",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "//go/pkg/sdn-controller/pkg/switch-clients",
+        "//go/pkg/sdn-controller/tests/test_utils",
+        "@com_github_go_logr_logr//:logr",
+        "@in_gopkg_yaml_v2//:yaml_v2",
+    ],
+)

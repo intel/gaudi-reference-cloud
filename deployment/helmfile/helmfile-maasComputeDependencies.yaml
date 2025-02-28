@@ -1,0 +1,186 @@
+bases:
+  - environments.yaml
+
+---
+
+
+{{- $istioChartsVersion := "1.24.2" }}
+{{- $vaultChartVersion := "0.9.1" }}
+{{- $nginxIngressChartVersion := "4.12.0" }}
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+
+{{- if $availabilityZone.maasCompute.enabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-vault-secrets-operator") }}
+    namespace: vault-secrets-operator-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: vault-secrets-operator
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasComputeDependencies
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: vault-secrets-operator
+    chart: idc/vault-secrets-operator
+    version: {{ $vaultChartVersion | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - defaultVaultConnection:
+          enabled: true
+          address: {{ $.Values.vault.service | quote }}
+        controller:
+          manager:
+            image:
+              pullPolicy: IfNotPresent
+              tag: {{ $vaultChartVersion | quote }}
+            clientCache:
+              persistenceModel: none
+              storageEncryption:
+                enabled: false
+                mount: cluster-auth #maas-cluster-auth
+                keyName: vso-client-cache
+                transitMount: maas-iks
+                kubernetes:
+                  # role gets overriden during deployment with --set controller.manager.clientCache.storageEncryption.kubernetes.role=...
+                  role: {{ $availabilityZone.availabilityZone }}-maas-vault-operator-role
+                  serviceAccount: vault-secrets-operator-controller-manager
+                  tokenAudiences: ["vault"]
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-istio-base") }}
+    namespace: istio-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: istio-base
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasComputeDependencies
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: istio-base
+    chart: idc/istio/base
+    version: {{ $istioChartsVersion | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-istiod") }}
+    namespace: istio-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: istiod
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasComputeDependencies
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: istiod
+    chart: idc/istio/istiod
+    version: {{ $istioChartsVersion | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - meshConfig:
+          accessLogFile: /dev/stdout
+      - global:
+          variant: distroless
+      - env:
+        - name: PILOT_LOG_LEVEL
+          value: "warn"
+        - name: PILOT_ENABLE_DEBUG_ONHTTP
+          value: "false"
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-istio-ingressgateway") }}
+    namespace: istio-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: istio-gateway
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasComputeDependencies
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: istio-gateway
+    chart: idc/istio/gateway
+    version: {{ $istioChartsVersion | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - env:
+        - name: ISTIO_LOG_LEVEL
+          value: "trace"
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-ingress-nginx") }}
+    namespace: ingress-nginx
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: ingress-nginx
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasComputeDependencies
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: ingress-nginx
+    chart: idc/ingress-nginx
+    version: {{ $nginxIngressChartVersion | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controller:
+          hostNetwork: true
+          image:
+            registry: {{ $availabilityZone.maasCompute.ingressController.registry | quote }}
+            image: {{  $availabilityZone.maasCompute.ingressController.image | quote }}
+            tag: {{ $availabilityZone.maasCompute.ingressController.tag | quote }}
+            digest: sha256:d2196b8aeb018d5f735f535872cd1c0067710d5c3b7a351300d6abd5bb78702c
+            pullPolicy: IfNotPresent
+          extraArgs:
+            default-ssl-certificate: "istio-system/ingress-certs"
+          rbac:
+            create: true
+            scope: true
+          config:
+            log-level: warn
+          admissionWebhooks:
+            enabled: false
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-infaas-resources") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: infaas-resources
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasComputeDependencies
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: infaas-resources
+    chart: idc/infaas-resources
+    version: {{ readFile (print $helmChartVersionsDir "/infaas-resources.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - region: {{ $availabilityZone.availabilityZone | quote }}
+{{- end }}
+{{- end }}
+{{- end }}

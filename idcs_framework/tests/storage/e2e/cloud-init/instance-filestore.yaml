@@ -1,0 +1,217 @@
+#cloud-init
+package_update: true
+packages:
+  - python3
+  - python3-pip
+  - nfs-common
+
+write_files:
+  - path: /home/ubuntu/mountwekavolume.sh
+    content: |
+      #!/bin/bash -x
+      # Usage:
+      # mountvolume.sh <account num> <volume pw> <mount path> <volume name> <WEKA URL>
+      # Example:
+      # mountvolume.sh 440440958336 'password123' '/mnt/test' 'automation-storage-bc14e0' 'pdx05-dev-2.us-staging-1.cloud.intel.com' 'udp'
+
+      # Check if the number of arguments is equal to 6
+      if [ "$#" -ne 6 ]; then
+          echo "Error: This script requires exactly 6 arguments."
+          exit 1
+      fi
+
+      ACCOUNTNUM=$1
+      VOLUMEPASSWORD=$2
+      MOUNTPATH=$3
+      VOLUMENAME=$4
+      WEKAURL=$5
+      NETWORK=$6
+
+      echo "$(date +%T) Mount script starting..."
+
+      curl http://${WEKAURL}:14000/dist/v1/install | sudo sh
+      weka user login -H ${WEKAURL} --org ns${ACCOUNTNUM} u${ACCOUNTNUM} "${VOLUMEPASSWORD}"
+      sudo mkdir -p ${MOUNTPATH}
+      sudo weka mount -t wekafs -o net=${NETWORK} ${WEKAURL}/${VOLUMENAME} ${MOUNTPATH}
+    permissions: '0755'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/waitforcloudinit.sh
+    content: |
+      #!/bin/bash
+
+      # Timeout duration in seconds
+      TIMEOUT=$1
+
+      # Interval between checks in seconds
+      INTERVAL=15
+
+      # Start time
+      START_TIME=$(date +%s)
+
+      # Function to check cloud-init status
+      check_cloud_init_status() {
+          STATUS=$(sudo cloud-init status --wait 2>/dev/null | grep -i "status: done")
+          if [[ -n "$STATUS" ]]; then
+              return 0
+          else
+              return 1
+          fi
+      }
+
+      # Loop until cloud-init status is Done or timeout is reached
+      while true; do
+          if check_cloud_init_status; then
+              echo "cloud-init status: Done"
+              exit 0
+          fi
+
+          # Check if timeout is reached
+          CURRENT_TIME=$(date +%s)
+          ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
+          if [[ $ELAPSED_TIME -ge $TIMEOUT ]]; then
+              echo "Timeout reached: cloud-init did not return Done within $TIMEOUT seconds."
+              exit 1
+          fi
+
+          # Wait for the interval before checking again
+          sleep $INTERVAL
+      done
+    permissions: '0755'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/mountvastvolume.sh
+    content: |
+      #!/bin/bash -x
+      # Usage:
+      # mountvastvolume.sh <mount path> <volume name> <VAST URL>
+      # Example:
+      # mountvastvolume.sh '/mnt/test' 'testvast01' 'vip1.vast-pdx05-1.us-staging-1.cloud.intel.com'
+
+      MOUNTPATH=$1
+      VOLUMENAME=$2
+      VASTURL=$3
+
+      sudo mkdir ${MOUNTPATH}
+      sudo chmod 755 ${MOUNTPATH}
+      sudo mount -o noresvport,vers=4.1,nconnect=16 localhost:/${VOLUMENAME} ${MOUNTPATH}
+    permissions: '0755'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/waitformount.sh
+    content: |
+      #!/bin/bash
+
+      # Check if the number of arguments is equal to 1
+      if [ "$#" -ne 1 ]; then
+          echo "Error: This script requires exactly 1 argument."
+          exit 1
+      fi
+
+      MOUNTPATH=$1
+
+      # Set the duration for the loop in seconds
+      duration=$((10 * 60))
+      start_time=$SECONDS
+
+      # Initialize exit status flag
+      exit_status=1
+
+      # Loop until the duration has elapsed or the condition is met
+      while [ $(($SECONDS - start_time)) -lt $duration ]; do
+
+        if mountpoint -q ${MOUNTPATH}; then
+          echo "$(date +%T) Mount is ready, exiting the loop."
+          exit_status=0
+          break
+        else
+          echo "$(date +%T) Mount is not ready. Trying again..."
+        fi
+        
+        sleep 5
+      done
+
+      # Exit with the status determined by the condition
+      exit $exit_status
+    permissions: '0755'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/waitforunmount.sh
+    content: |
+      #!/bin/bash
+
+      # Check if the number of arguments is equal to 1
+      if [ "$#" -ne 1 ]; then
+          echo "Error: This script requires exactly 1 argument."
+          exit 1
+      fi
+
+      MOUNTPATH=$1
+
+      # Set the duration for the loop in seconds
+      duration=$((10 * 60))
+      start_time=$SECONDS
+
+      # Initialize exit status flag
+      exit_status=1
+
+      # Loop until the duration has elapsed or the condition is met
+      while [ $(($SECONDS - start_time)) -lt $duration ]; do
+
+        if ! mountpoint -q ${MOUNTPATH}; then
+          echo "$(date +%T) Mount is inaccessible, exiting the loop."
+          exit_status=0
+          break
+        else
+          echo "$(date +%T) Mount is still accessible. Trying again..."
+        fi
+        
+        sleep 5
+      done
+
+      # Exit with the status determined by the condition
+      exit $exit_status
+    permissions: '0755'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/runtests.sh
+    content: |
+      #!/bin/bash
+      # Check if the number of arguments is equal to 1
+      if [ "$#" -ne 1 ]; then
+          echo "Error: This script requires exactly 1 argument."
+          exit 1
+      fi
+
+      MOUNTPATH=$1
+
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y fio
+      sudo fio --name=test --ioengine=libaio --iodepth=16 --rw=randread --bs=4k --direct=1 --size=1G --numjobs=4 --runtime=60 --group_reporting --directory=${MOUNTPATH}
+      sudo echo $? > /home/ubuntu/fioresult.log
+    permissions: '0755'
+    owner: root
+    group: root
+
+  - path: /home/ubuntu/unmountvolume.sh
+    content: |
+      #!/bin/bash
+      # Check if the number of arguments is equal to 1
+      if [ "$#" -ne 1 ]; then
+          echo "Error: This script requires exactly 1 argument."
+          exit 1
+      fi
+
+      MOUNTPATH=$1
+      sudo umount ${MOUNTPATH}
+    permissions: '0755'
+    owner: root
+    group: root
+
+runcmd:
+  - echo "STAAS script completed" >> /var/log/cloud-init-output.log
+

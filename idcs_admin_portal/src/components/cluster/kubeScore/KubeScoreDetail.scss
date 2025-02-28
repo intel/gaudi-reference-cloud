@@ -1,0 +1,8 @@
+.dropdown:has(#ReleaseVersion-toggle-form-select) {
+    display: flex;
+    min-width: 18.75rem;
+    align-items: center;
+    flex-shrink: 0;
+    max-width: 18.75rem;
+    width: 100%;
+}

@@ -1,0 +1,28 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2024 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  - name: phx06-1
+    uuid: fdc431d7-510b-4e65-b34c-24883465beb5
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: development
+      category: development
+      wekaBackend: phx06-1.us-staging-4.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: phx06-c01
+    api:
+      type: REST
+      url: https://phx06-1.us-staging-4.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/phx06-storage-controller-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: phx06-1.us-staging-4.cloud.intel.com

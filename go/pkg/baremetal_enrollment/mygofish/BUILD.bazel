@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "mygofish",
+    srcs = ["mygofish.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/mygofish",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_stmcginnis_gofish//:gofish",
+        "@com_github_stmcginnis_gofish//redfish",
+    ],
+)

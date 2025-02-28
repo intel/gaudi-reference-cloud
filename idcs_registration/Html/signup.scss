@@ -1,0 +1,9 @@
+.signup-template {
+    div:has(>#GoogleExchange1),
+    div:has(>#GitHubExchange1),
+    div:has(>#AzureADExchange1),
+    div:has(>#SelfAsserted-LocalAccountSigninEx1),
+    .intro h2 {
+        display: none;
+    }
+}

@@ -1,0 +1,31 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "hms",
+    srcs = [
+        "create.go",
+        "delete.go",
+        "resize.go",
+        "restart.go",
+        "tasks.go",
+        "upgrade.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/dpai/deployment/hms",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/dpai/db/models",
+        "//go/pkg/dpai/deployment",
+        "//go/pkg/dpai/deployment/postgres",
+        "//go/pkg/dpai/utils",
+        "//go/pkg/dpai/utils/helm",
+        "//go/pkg/dpai/utils/k8s",
+        "//go/pkg/pb",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_jackc_pgx_v5//pgtype",
+        "@com_github_mittwald_go_helm_client//:go-helm-client",
+        "@sh_helm_helm_v3//pkg/release",
+        "@sh_helm_helm_v3//pkg/repo",
+    ],
+)

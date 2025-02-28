@@ -1,0 +1,65 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: Cluster
+metadata:
+  name: cl-1234abcd-yl
+  namespace: default
+spec:
+  advancedConfig:
+    kubeApiServerArgs: ""
+    kubeControllerManagerArgs: ""
+    kubeProxyArgs: ""
+    kubeSchedulerArgs: ""
+    kubeletArgs: ""
+  backup: ""
+  instanceIMI: ubuntu-2204-jammy-v20230122
+  instanceType: vm-spr-tny
+  kubernetesProvider: iks
+  sshKey: 
+    - test-key
+  kubernetesProviderConfig:
+    caCertAuthEndpoint: ""
+    enableAuthEndpoint: false
+    envVars:
+      HTTP_PROXY: http://internal-placeholder.com:912
+      HTTPS_PROXY: http://internal-placeholder.com:912
+      NO_PROXY: localhost,127.0.0.0/8,127.0.0.1/8,10.0.0.0/8,.intel.com,100.0.0.0/8
+    fqdnAuthEndpoint: ""
+  nodeProviderConfig:
+    cloudaccountid: "604003815017"
+  vnets:
+    - availabilityzone: us-region-1a
+      networkvnet: us-region-1a-default
+    - availabilityzone: us-region-1a
+      networkvnet: us-region-1a-default
+    - availabilityzone: us-region-1a
+      networkvnet: us-region-1a-default
+  kubernetesVersion: v1.27.1
+  nodeProvider: Compute
+  runtime: runc
+  network:
+    serviceCIDR: "100.66.0.0/16"
+    podCIDR: "100.68.0.0/16"
+    clusterDNS: "100.66.0.10"
+  nodegroups:
+      count: 1
+      instanceIMI: ubuntu-2204-jammy-v20230122
+      instanceType: vm-spr-tny
+      name: ng-1234abcd-yl
+      sshKey:
+        - test-key
+      kubernetesVersion: ""
+      labels: {}
+      taints: {}
+      upgradeStrategy:
+        drainBefore: false
+        maxUnavailablePercent: 0
+      vnets:
+        - availabilityzone: us-region-1a
+          networkvnet: us-region-1a-default
+        - availabilityzone: us-region-1a
+          networkvnet: us-region-1a-default
+        - availabilityzone: us-region-1a
+          networkvnet: us-region-1a-default
+    

@@ -1,0 +1,3 @@
+https://internal-placeholder.com/artifactory/coverity-or-local/Archive/2023.12.0/reports/cov-reports-linux64-2023.12.0.sh
+https://internal-placeholder.com/artifactory/coverity-or-local/Archive/2023.12.0/cov-analysis-linux64-2023.12.0.sh
+https://internal-placeholder.com/artifactory/coverity-or-local/Enterprise/license.dat

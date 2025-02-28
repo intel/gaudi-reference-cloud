@@ -1,0 +1,16 @@
+tls:
+  client:
+    rootCa: kind-singlecluster-root-ca
+
+regions:
+  us-dev-1:
+    availabilityZones:
+      us-dev-1a:
+        sdnController:
+          managerConfig:
+            controllerManagerConfigYaml:
+              controllerConfig:
+                switchImportSource: netbox
+                netboxServer: "not-a-valid-url.fake.intel.com"
+                netboxProtocol: "http"
+                netboxSwitchFQDNDomainName: "fakeinternal-placeholder.com"

@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "rancher",
+    srcs = ["provider.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/kubernetes_operator/kubernetes_provider/rancher",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/kubernetes_operator/api/v1alpha1",
+        "//go/pkg/kubernetes_operator/utils",
+        "@com_github_pkg_errors//:errors",
+        "@com_github_rancher_norman//clientbase",
+        "@com_github_rancher_norman//types",
+        "@com_github_rancher_rancher_pkg_apis//provisioning.cattle.io/v1:provisioning_cattle_io",
+        "@com_github_rancher_rancher_pkg_apis//rke.cattle.io/v1:rke_cattle_io",
+        "@com_github_rancher_rancher_pkg_client//generated/management/v3:management",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+    ],
+)

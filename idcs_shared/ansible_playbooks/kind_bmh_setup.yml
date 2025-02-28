@@ -1,0 +1,8 @@
+  -
+    name: Configure Kind Host 
+    hosts: test
+    roles:
+      - linux_server
+      - jenkins_server
+      - lnx_docker
+      - kind_deployment

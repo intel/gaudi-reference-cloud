@@ -1,0 +1,467 @@
+# Keep this file formatted and sorted consistently with "make helmfile-fmt".
+
+# billing-aria ariasystems endpoint for production
+ariasystem:
+  clientTaxGroupId: SERVICES
+  coreApiSuffix: /v1/core
+  directPostUrl: host.example.com
+  functionMode: direct_post_reg
+  releaseVersion: "47"
+  server:
+    adminApiUrl: host.example.com
+    coreApiUrl: host.example.com
+    objectApiUrl: host.example.com
+  # tax group number for ariasystems intel prod
+  taxGroup: 6
+# Global AWS Cognito provides client_id, client_secret for scope:metering, scope:cloudaccount/productcatalog, scope:billing, scope:cloudaccount/productcatalog
+# Used by az:compute-metering-monitor, region:grpc-proxy-external:opa, region:computer-api-server, region:training-api-server respectively
+cognito:
+  enabled: true
+  endpoint: host.example.com
+  oidc:
+    issueURL: host.example.com
+    keyURL: host.example.com
+    port: 443
+    server: host.example.com
+components:
+  cloudmonitor:
+    enabled: true
+  firewall:
+    enabled: true
+  iks:
+    enabled: true
+    listenPort: 8083
+  iksDb:
+    enabled: false
+    primary:
+      persistence:
+        enabled: false
+  iksOperators:
+    enabled: true
+  loadbalancer:
+    enabled: true
+  maas:
+    enabled: true
+  networkCluster:
+    enabled: true
+  quickConnect:
+    enabled: true
+  storageFile:
+    enabled: true
+  storageObject:
+    enabled: true
+  training:
+    armada:
+      enabled: false
+    enabled: true
+# Global Docker registry for docker.io images.
+dockerIo:
+  registry: docker.io
+  repositoryPrefix: ""
+envoy:
+  version: v1.23.1
+externalSecrets:
+  enabled: true
+global:
+  appClientApiGrpcProxy:
+    external:
+      cognito:
+        enabled: true
+        oidc:
+          enabled: true
+          issueURL: host.example.com
+          keyURL: host.example.com
+          port: 443
+          server: host.example.com
+      enabled: false
+      # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+      # This MUST be false in production environments.
+      insecureDevEnvironment: false
+      # If insecureSkipJwtValidation is true, API authorization will be disabled.
+      # This MUST be false in production environments.
+      insecureSkipJwtValidation: false
+      opa:
+        enabled: true
+      replicaCount: 2
+      statsd:
+        enabled: true
+  appClientApiGrpcRestGateway:
+    enabled: false
+    ingress:
+      enabled: false
+      host: host.example.com
+    replicaCount: 2
+    swagger:
+      enabled: false
+  appClientTokenGrpcProxy:
+    external:
+      enabled: false
+      # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+      # This MUST be false in production environments.
+      insecureDevEnvironment: false
+      # If insecureSkipJwtValidation is true, API authorization will be disabled.
+      # This MUST be false in production environments.
+      insecureSkipJwtValidation: false
+      replicaCount: 1
+      statsd:
+        enabled: true
+  appClientTokenGrpcRestGateway:
+    enabled: false
+    ingress:
+      enabled: false
+      host: host.example.com
+    replicaCount: 1
+    swagger:
+      enabled: false
+  authz:
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: authz
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/authz/aws-database
+    enabled: true
+    features:
+      auditLogging:
+        enabled: false
+      policiesStartupSync: true
+    replicaCount: 2
+    tls:
+      grpcTlsAuthz:
+        enabled: true
+  authzDb:
+    enabled: false
+  billing:
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: cloudcredits
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/cloudcredits/aws-database
+    features:
+      servicesTerminationAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+  billingAria:
+    features:
+      deactivationScheduler: true
+      reportUsageScheduler: true
+      syncStoragePlan: true
+    productcatalog:
+      storageUsageUnitType: terabyte hour
+  billingDb:
+    enabled: false
+  billingSchedulers:
+    features:
+      cloudCreditUsageReportScheduler: true
+      creditExpiryEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+      creditExpiryScheduler: true
+      creditUsageEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+      creditUsageScheduler: true
+      eventExpiryScheduler: true
+      reportUsageScheduler: true
+      servicesTerminationAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+      servicesTerminationScheduler: false
+    notifications:
+      cloudCreditEightyPercentUsedTemplate: Terminate-Instance-80-Used-Template-Prod
+      cloudCreditExpiryTemplate: Cloud-Credit-Expired-Template-Prod
+      cloudCreditHundredPercentUsedTemplate: Terminate-Instance-100-Used-Template-Prod
+      consoleUrl: host.example.com
+      paymentUrl: host.example.com
+      pdlEmail: noreply@example.com
+      senderEmail: noreply@example.com
+    resources:
+      limits:
+        cpu: "8"
+        memory: 64Gi
+      requests:
+        cpu: "8"
+        memory: 64Gi
+  cloudaccount:
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: cloudaccount
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/cloudaccount/aws-database
+    features:
+      invitationsExpiryEmail: false
+      invitationsExpiryScheduler: true
+    invitationsExpirySchedulerBatchSize: 100
+    invitationsExpirySchedulerTime: 0
+    replicaCount: 2
+    runSchedulers: true
+  cloudaccountDb:
+    enabled: false
+  cloudaccountEnroll:
+    replicaCount: 2
+  cloudcredits:
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: cloudcredits
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/cloudcredits/database
+    enabled: true
+  cloudcreditsDb:
+    enabled: false
+  cloudcreditsworker:
+    aws:
+      sqs:
+        queueName: idc-prod-credits-queue
+    enabled: false
+    features:
+      creditExpiryEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+      creditUsageEmailAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+        - ACCOUNT_TYPE_PREMIUM
+      sendCreditExpiryEmail: true
+      sendCreditUsageEmail: true
+      servicesTerminationAccountTypes:
+        - ACCOUNT_TYPE_STANDARD
+      servicesTerminationScheduler: false
+    notifications:
+      opsPDL: noreply@example.com
+    replicaCount: 1
+  cloudmonitor:
+    clusterEndpoint: https://AB388176057CFC66D71670C22ADE4CF9.gr7.us-west-2.eks.amazonaws.com
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: cloudmonitor
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/cloudmonitor/aws-database
+    enableMetricsBM: true
+    enabled: true
+    insecureSkipVerify: false
+    region: us-west-2
+    remoteReadAddrBM: https://cloudmonitor.pvt.api.idcservice.net/apptenant/select/%id%/prometheus/api/v1/query_range
+    remoteWriteBMAddr: https://cloudmonitor-bm.api.idcservice.net/bmauth/api/v1/write
+    remoteWriteIKSAddr: https://cloudmonitor.pvt.api.idcservice.net/app2/api/v1/query_range
+    replicaCount: 2
+    vMClusterName: idc01-k02-cmcp
+    victoriaMetricsAddr: https://cloudmonitor.pvt.api.idcservice.net/app1/api/v1/query_range
+  cloudmonitorDb:
+    enabled: false
+    primary:
+      persistence:
+        enabled: true
+  enabled: true
+  environmentName: idc-global
+  environmentType: production
+  externalSecrets:
+    enabled: false
+  grpcInternalRestGateway:
+    enabled: true
+    ingress:
+      enabled: false
+      host: host.example.com
+    replicaCount: 1
+    swagger:
+      enabled: false
+  grpcProxy:
+    external:
+      # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+      # This MUST be false in production environments.
+      insecureDevEnvironment: false
+      # If insecureSkipJwtValidation is true, API authorization will be disabled.
+      # This MUST be false in production environments.
+      insecureSkipJwtValidation: false
+      oidc:
+        # Default audience for production is: efa3cc1d-5cd7-48f0-bdfd-b43c8f0078f4
+        servers:
+          - audiences:
+              - 12345678-90ab-cdef-1234-567890abcdef
+            issueURL: host.example.com
+            keyURL: host.example.com
+            port: 443
+            server: host.example.com
+          - audiences:
+              - 12345678-90ab-cdef-1234-567890abcdef
+            issueURL: host.example.com
+            keyURL: host.example.com
+            port: 443
+            server: host.example.com
+      replicaCount: 2
+      statsd:
+        enabled: true
+        image:
+          repository: host.example.com
+    internal:
+      ingress:
+        enabled: false
+        host: host.example.com
+      # If insecureDevEnvironment is true, the Zitadel OIDC server will be enabled which allows developers to create OIDC tokens that can impersonate anybody.
+      # This MUST be false in production environments.
+      insecureDevEnvironment: false
+      # If insecureSkipJwtValidation is true, API authorization will be disabled.
+      # This MUST be false in production environments.
+      insecureSkipJwtValidation: false
+      oidc:
+        # Default audience for production is: efa3cc1d-5cd7-48f0-bdfd-b43c8f0078f4
+        servers:
+          - audiences:
+              - 12345678-90ab-cdef-1234-567890abcdef
+            issueURL: host.example.com
+            keyURL: host.example.com
+            port: 443
+            server: host.example.com
+          - audiences:
+              - 12345678-90ab-cdef-1234-567890abcdef
+            issueURL: host.example.com
+            keyURL: host.example.com
+            port: 443
+            server: host.example.com
+      opa:
+        enabled: true
+      replicaCount: 2
+      statsd:
+        enabled: true
+        image:
+          repository: host.example.com
+  grpcRestGateway:
+    ingress:
+      enabled: false
+      host: host.example.com
+    replicaCount: 2
+    swagger:
+      enabled: false
+  issueCa: prod-global-ca
+  kubeContext: idc01-k01-ekcp
+  metering:
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: metering
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/metering/aws-database
+    replicaCount: 1
+    validServiceTypes:
+      - ComputeAsAService
+      - KubernetesAsAService
+      - TrainingAsAService
+      - FileStorageAsAService
+      - ObjectStorageAsAService
+  meteringDb:
+    enabled: false
+  notifications:
+    aws:
+      credentialsFile: /vault/secrets/aws_credentials
+      region: us-west-2
+      role_arn: arn:aws:iam::123456789012:role/notification-gateway
+      vaultCredentialsPath: controlplane/data/notification-gateway/awssecrets
+    cloudCreditEightyPercentUsedTemplate: Terminate-Instance-80-Used-Template-Prod
+    cloudCreditExpiryTemplate: Cloud-Credit-Expired-Template-Prod
+    cloudCreditHundredPercentUsedTemplate: Terminate-Instance-100-Used-Template-Prod
+    consoleUrl: host.example.com
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: notification
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/notification-gateway/aws-database
+    enabled: true
+    inviteExpiredTemplate: Multi-User-Invitation-Expired-Template-Prod
+    inviteLink: host.example.com
+    inviteTemplate: Multi-User-Invitation-Template
+    otpTemplate: Multi-User-OTP-Template
+    paymentUrl: host.example.com
+    senderEmail: noreply@example.com
+  notificationsDb:
+    enabled: false
+  otel:
+    exporter:
+      otlp:
+        endpoint: host.example.com
+  productCatalog:
+    addDatabase:
+      # no additional productcatalog-db required
+      enabled: false
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: cloudaccount
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/cloudaccount/aws-database
+    replicaCount: 2
+    whitelist:
+      enabled: true
+  productCatalogDb:
+    enabled: false
+  tradeScanner:
+    replicaCount: 2
+  usage:
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: usage
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/usage/aws-database
+    resources:
+      limits:
+        cpu: "4"
+        memory: 16Gi
+      requests:
+        cpu: "4"
+        memory: 16Gi
+  usageDb:
+    enabled: false
+  usageDb:
+    enabled: false
+  usercredentials:
+    aws:
+      cognitoUrl: host.example.com
+      customScope: idc-global-production-client/read
+      region: us-west-2
+      role_arn: arn:aws:iam::123456789012:role/user-credentials
+      userPool: us-west-2_xxxxxx
+    database:
+      arg: sslmode=verify-full&sslrootcert=/vault/secrets/db_sslcert
+      name: cloudaccount
+      service: host.example.com
+      vaultCredentialsPath: controlplane/data/cloudaccount/database
+    emailExclusionPattern: '!#$%^&*()+=[]{};'':"\|<>/?'
+    enabled: true
+    replicaCount: 2
+  vault:
+    authPath: auth/jwt-eks-idc-global
+    server:
+      enabled: false
+gts:
+  business_screen_url: host.example.com
+  create_order_url: host.example.com
+  create_product_url: host.example.com
+  get_token_url: host.example.com
+# Global Helm repository for custom charts.
+idcHelmRepository:
+  url: host.example.com
+# Global Docker registry for custom images NOT built by frameworks.cloud.devcloud.services.idc.
+# This includes forks of open source projects such as Metal3 and Ironic.
+idcRegistry:
+  registry: host.example.com
+  repositoryPrefix: project/
+# Global Docker registry for custom images built by frameworks.cloud.devcloud.services.idc.
+image:
+  registry: host.example.com
+  repositoryPrefix: project/
+# Image pull secrets are provided to all Helm charts.
+imagePullSecrets:
+  - name: idc-image-pull-secret
+log:
+  encoder: json
+# Proxy parameters are used by deployment/charts/idc-common/templates/_common.tpl.
+otel:
+  otelAnnotations: true
+proxy:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+serviceMonitor:
+  global:
+    enabled: false
+  regional:
+    enabled: true
+telemetry:
+  enabled: true
+# Global Hashicorp Vault configuration.
+vault:
+  # Vault agent injector will be installed separately from IDC services.
+  enabled: false
+  service: host.example.com

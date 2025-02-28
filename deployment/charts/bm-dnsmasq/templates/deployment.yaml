@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bm-dnsmasq.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "bm-dnsmasq.labels" . | nindent 4 }}
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "bm-dnsmasq.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/configmap: {{ include (print $.Template.BasePath "/dnsmasq_conf_configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "bm-dnsmasq.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - command:
+        - /bin/rundnsmasq-idc
+        image: {{ include "bm-dnsmasq.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - ss -lun | grep :67 && ss -lun | grep :69
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: bm-dnsmasq
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - ss -lun | grep :67 && ss -lun | grep :69
+          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        # This is a development-only service that requires a writable container.
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+        volumeMounts:
+        - mountPath: /shared
+          name: dnsmasq-data-volume
+        - name: dnsmasq-config-volume
+          mountPath: /etc/dnsmasq.conf
+          subPath: dnsmasq.conf
+      hostNetwork: {{ .Values.useHostNetwork }}
+      serviceAccountName: {{ include "bm-dnsmasq.serviceAccountName" . }}
+      volumes:
+      - emptyDir: {}
+        name: dnsmasq-data-volume
+      - name: dnsmasq-config-volume
+        configMap:
+          name: {{ include "bm-dnsmasq.fullname" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

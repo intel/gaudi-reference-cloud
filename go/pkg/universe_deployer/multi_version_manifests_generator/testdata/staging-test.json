@@ -1,0 +1,44 @@
+{
+  "environments": {
+    "staging": {
+      "components": {
+        "cloudaccount": {
+          "commit": "b3e5af37162620c8f09219640df664324d021e95"
+        }
+      },
+      "regions": {
+        "us-staging-1": {
+          "components": {
+            "computeApiServer": {
+              "commit": "c385c3cbd68b516266f230380e82ce24b42e1a90"
+            }
+          },
+          "availabilityZones": {
+            "us-staging-1a": {
+              "components": {
+                "computeVmInstanceScheduler": {
+                  "commit": "HEAD"
+                }
+              }
+            }
+          }
+        },
+        "us-staging-2": {
+          "components": {
+            "computeApiServer": {
+              "commit": "c385c3cbd68b516266f230380e82ce24b42e1a90",
+              "configCommit": "HEAD"
+            }
+          }
+        },
+        "us-staging-3": {
+          "components": {
+            "computeApiServer": {
+              "commit": "c385c3cbd68b516266f230380e82ce24b42e1a90"
+            }
+          }
+        }
+      }
+    }
+  }
+}

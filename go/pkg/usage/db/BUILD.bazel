@@ -1,0 +1,18 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "db",
+    srcs = ["migrations.go"],
+    embedsrcs = [
+        "migrations/20231218043259_usage_tables.down.sql",
+        "migrations/20231218043259_usage_tables.up.sql",
+        "migrations/20240729043259_usage_tables.up.sql",
+        "migrations/20240729043259_usage_tables.down.sql",
+        "migrations/20240812043259_usage_tables.up.sql",
+        "migrations/20240812043259_usage_tables.down.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/usage/db",
+    visibility = ["//visibility:public"],
+)

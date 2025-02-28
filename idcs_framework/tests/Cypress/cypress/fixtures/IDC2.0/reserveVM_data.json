@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1052",
+    "skipped": false,
+    "Smoke": true,
+    "name": "Reserve Small VM",
+    "VMsize": "small",
+    "instanceName": "vm-small"
+  },
+  {
+    "id": "1053",
+    "skipped": false,
+    "Smoke": true,
+    "name": "Reserve Medium VM",
+    "VMsize": "medium",
+    "instanceName": "vm-medium"
+  }
+]

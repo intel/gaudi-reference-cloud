@@ -1,0 +1,33 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "models",
+    srcs = [
+        "airflow.sql.go",
+        "airflow_conf.sql.go",
+        "airflow_size.sql.go",
+        "airflow_version.sql.go",
+        "db.go",
+        "deployment.sql.go",
+        "deployment_task.sql.go",
+        "hms.sql.go",
+        "hms_conf.sql.go",
+        "hms_size.sql.go",
+        "hms_version.sql.go",
+        "models.go",
+        "postgres.sql.go",
+        "postgres_size.sql.go",
+        "postgres_version.sql.go",
+        "secret.sql.go",
+        "workspace.sql.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/dpai/db/models",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_jackc_pgx_v5//:pgx",
+        "@com_github_jackc_pgx_v5//pgconn",
+        "@com_github_jackc_pgx_v5//pgtype",
+    ],
+)

@@ -1,0 +1,30 @@
+---
+
+# Cache the ubuntu server image
+- name: Block caching the ubuntu server image
+  block:
+    - name: create cache download directory
+      file:
+        path: "{{ cache_dir }}"
+        state: directory
+        mode: g+rx,o+rx
+      register: cache
+    - name: checking if Cloud image file is in the cache
+      stat:
+        path: "{{ cache.path }}/{{ ubuntu_server_cloudimg }}"
+      register: cloudimg_file
+    - name: Download ubuntu Cloud image file to cache (do you need https_proxy set?)
+      ansible.builtin.get_url:
+        url: "{{ ubuntu_server_cloudimg_url }}"
+        dest: "{{ cache.path }}/{{ ubuntu_server_cloudimg }}"
+        mode: '0664'
+      when: not cloudimg_file.stat.exists
+  become: false
+
+# Clean Up Cache directory
+- name: Clean up the cache directory
+  ansible.builtin.file:
+    path: "{{ cache_dir }}"
+    state: absent
+  when: cache_dir is defined
+  tags: [never, teardown]

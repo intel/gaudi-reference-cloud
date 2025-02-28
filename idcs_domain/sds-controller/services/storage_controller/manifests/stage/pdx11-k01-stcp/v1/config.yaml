@@ -1,0 +1,93 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+listenPort: 50051
+healthInterval: 120
+clusters:
+  - name: pdx11-1
+    uuid: f565e7c6-b9dd-493c-a7c8-27496e373f09
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: development
+      category: development
+      type: gp
+      wekaBackend: pdx11-1.us-staging-3.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: pdx11-c01
+    api:
+      type: REST
+      url: https://pdx11-1.us-staging-3.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx11-storage-controller-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx11-1.us-staging-3.cloud.intel.com
+  - name: pdx11-2
+    uuid: bac6b8ff-7263-4f3c-b7eb-75d808da963c
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: development
+      category: development
+      type: gp
+      s3Endpoints: https://s3-pdx11-2.tenantiglb.us-staging-3.cloud.intel.com:9000
+    location: pdx11-c01
+    api:
+      type: REST
+      url: pdx11-2.us-staging-3.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx11-storage-controller-creds.json
+    minioConfig:
+      kesKey: "minio-kes-key"
+  - name: pdx11-3
+    uuid: fee356bf-74cb-457f-a430-6196ed088c98
+    type: Weka
+    supportsApi:
+      - "WekaFilesystem"
+    labels:
+      operation: development
+      category: development
+      type: fast
+      wekaBackend: pdx11-3.us-staging-3.cloud.intel.com # IDC uses for scheduler, will be removed in future
+    location: pdx11-c01
+    api:
+      type: REST
+      url: https://pdx11-3.us-staging-3.cloud.intel.com:14000/api/v2
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx11-storage-controller-creds.json
+    wekaConfig:
+      protectedOrgIds:
+        - 00000000-0000-0000-0000-000000000000
+      tenantFsGroupName: tenantfsgroup
+      fileSystemDeleteWait: 10
+      backendFqdn: pdx11-3.us-staging-3.cloud.intel.com
+  - name: pdx11-4
+    uuid: f5e00b8c-ead3-4f9a-b536-7d20c6cb62d3
+    type: MinIO
+    supportsApi:
+      - "ObjectStore"
+    labels:
+      operation: development
+      category: development
+      type: fast
+      s3Endpoints: https://s3-pdx11-4.tenantiglb.us-staging-3.cloud.intel.com:9000
+    location: pdx11-c01
+    api:
+      type: REST
+      url: pdx11-4.us-staging-3.cloud.intel.com:9000
+      caCertFile: /app/ca/Intel_SHA384_RootCA.crt
+    auth:
+      scheme: Basic
+      vaultFile: /app/secret/pdx11-storage-controller-creds.json
+    minioConfig:
+      kesKey: "minio-kes-key"

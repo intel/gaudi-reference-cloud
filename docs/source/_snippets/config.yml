@@ -1,0 +1,13 @@
+# Set image size
+IMG_SIZE: 224
+
+# Set hyperparameters used for model training
+train_parameters:
+  BATCH_SIZE: 32
+  EPOCH: 10
+
+
+# Set file directory paths for project
+paths:
+  INPUT_PATH: "./"
+  OUTPUT_PATH: /temp

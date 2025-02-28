@@ -1,0 +1,20 @@
+---
+
+# This needs to clean up a developer system to a state
+# where the BMVS could be redeploy anew
+
+- name: Bare Metal Virtual Stack Playbook Teardown
+  connection: ansible.netcommon.network_cli
+  gather_facts: false
+  hosts: deployhost
+  remote_user: root
+  vars_files:
+    - "vars/defaults.yml"
+    - "vars/bmvs.yml"
+
+  roles:
+    - http_server
+    - vbmc
+    - guest_host
+    - bastion
+    - network

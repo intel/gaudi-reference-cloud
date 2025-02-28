@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - alerts.yaml
+  - deployment.yaml
+  - hpa.yaml
+  - pdb.yaml
+  - service.yaml
+  - servicemonitor.yaml
+patches:
+  - path: image.yaml
+configMapGenerator:
+  - name: intel-root-ca
+    files:
+      - certs/Intel_SHA256_RootCA.crt
+      - certs/Intel_SHA384_RootCA.crt
+      - certs/Vast_CA.crt

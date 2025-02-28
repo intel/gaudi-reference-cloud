@@ -1,0 +1,41 @@
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
+load("//deployment:deployment.bzl", "CHARTS")
+
+ALL_CHARTS = [chart for chart in CHARTS if chart != "idc-versions"]
+ALL_CHART_VERSIONS = [":%s_chart_version" % chart for chart in ALL_CHARTS]
+
+# Build directory that will contain Chart.yaml, values.yaml, and generated *.version files.
+
+copy_file(
+    name = "chart_yaml",
+    src = "Chart.yaml",
+    out = "idc-versions/Chart.yaml",
+)
+
+copy_file(
+    name = "values_yaml",
+    src = "values.yaml",
+    out = "idc-versions/values.yaml",
+)
+
+[copy_file(
+    name = "%s_chart_version" % chart,
+    src = "//deployment:%s_chart_version" % chart,
+    out = "idc-versions/chart_versions/%s.version" % chart,
+) for chart in ALL_CHARTS]
+
+# Build Helm chart from this directory.
+
+helm_chart(
+  name = "chart",
+  srcs = [
+    ":chart_yaml",
+    ":values_yaml",
+  ] + ALL_CHART_VERSIONS,
+  package_name = "idc-versions",  # Must not have underscores.
+  # The version of this chart will include the Git commit hash.
+  helm_chart_version = "//build/dynamic:IDC_FULL_VERSION",
+  append_chart_hash_to_helm_chart_version = False,
+  visibility = ["//visibility:public"],
+)

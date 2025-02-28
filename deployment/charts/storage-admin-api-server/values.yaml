@@ -1,0 +1,37 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/storage-admin-api-server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+# The address of the Cloudaccount Service in format "host:port".
+# This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+cloudAccountServerAddr: cloudaccount.idcs-system.svc.cluster.local:8443
+storageSchedulerServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+storageKmsServerAddr: us-dev-1-storage-kms.idcs-system.svc.cluster.local:8443
+computeAPIServerAddr: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+quotaManagementServerAddr: us-dev-1-quota-management-service.idcs-system.svc.cluster.local:8443
+
+database:
+  # The DNS name used to connect to the Postgres database.
+  service: storage-db-postgresql
+  # Arguments sent to the Postgres driver.
+  # See available options in: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+  arg: sslmode=disable
+  # credentials path
+  vaultCredentialsPath: controlplane/data/us-dev-1-storage-admin-api-server
+config:
+  vaultAddress: "http://vault.kube-system.svc.cluster.local:8200"
+  vaultAuthPath: "auth/cluster-auth"
+  vaultApproleSecretsPath: "controlplane/data/us-dev-1a/storage/enrollment/approle"
+  vaultAuthRole: "us-dev-1-storage-admin-api-server-role"
+service:
+  type: ClusterIP
+cognito:
+  enabled: false
+  endpoint: ""

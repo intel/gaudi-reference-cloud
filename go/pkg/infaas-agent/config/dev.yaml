@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+Model:              "model1"
+Capacity:           2
+DispatcherAddr: "localhost:50051"
+BackendAddr:        "localhost:50051"

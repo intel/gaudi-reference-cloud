@@ -1,0 +1,45 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_layer")
+
+go_library(
+    name = "maas-gateway_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/maas-gateway",
+    visibility = ["//visibility:private"],
+    deps = ["//go/pkg/maas-gateway/cmd"],
+)
+
+go_binary(
+    name = "maas-gateway",
+    embed = [":maas-gateway_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "maas-gateway_image_base",
+    base = "@image_static_x86_64_debug//image",
+    embed = [
+        ":maas-gateway_lib",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+container_layer(
+    name = "grpc_health_probe_container_layer",
+    directory = "/opt/external_binaries",
+    files = ["@grpc_health_probe-linux-amd64//file"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "maas-gateway_image",
+    base = ":maas-gateway_image_base",
+    layers = [":grpc_health_probe_container_layer"],
+    #    symlinks = {
+    #        "/opt/external_binaries": "/external_binaries",
+    #    },
+    visibility = ["//visibility:public"],
+)

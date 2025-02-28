@@ -1,0 +1,7 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+---
+
+INSTALL_PATH: /srv/jupyter
+
+NODEJS_DEFAULT_VERSION: 18.17.1

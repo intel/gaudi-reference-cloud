@@ -1,0 +1,56 @@
+# This file contains common Helm values that will be passed to all IDC charts.
+
+{{- if .Values.zeroResources }}
+resources:
+{{- end }}
+
+vault:
+  service: {{ .Values | get "vault.service" "http://vault.vault.svc.cluster.local:8200" | quote }}
+  proxy: {{ (.Values.proxy).https_proxy }}
+
+{{- with .Values.imagePullSecrets }}
+imagePullSecrets:
+{{- toYaml . | nindent 2 }}
+{{- end }}
+
+log:
+  encoder: {{ .Values.log.encoder | quote }}
+  level: {{ .Values.log.level | quote }}
+  stacktraceLevel: {{ .Values.log.stacktraceLevel | quote }}
+  grpcGoLogSeverityLevel: {{ .Values.log.grpcGoLogSeverityLevel | quote }}
+  grpcGoLogVerbosityLevel: {{ .Values.log.grpcGoLogVerbosityLevel | quote }}
+  grpcGoLogEncoding: {{ .Values.log.grpcGoLogEncoding | quote }}
+
+otel:
+  deployment:
+    environment: {{ .Values.otel.deployment.environment | quote }}
+    group: {{ .Values.otel.deployment.group | quote }}
+  extraResourceAttributes: {{ .Values.otel.extraResourceAttributes | toJson }}
+
+tls:
+  client:
+    enabled: {{ .Values.tls.client.enabled }}
+    insecureSkipVerify: {{ .Values.tls.client.insecureSkipVerify | quote }}
+    rootCa: {{ .Values.tls.client.rootCa | quote }}
+  server:
+    enabled: {{ .Values.tls.server.enabled }}
+    requireClientCertificate: {{ .Values.tls.server.requireClientCertificate | quote }}
+
+cognito:
+  enabled: {{ .Values.defaults.cognito.enabled }}
+  
+gts:
+  get_token_url: {{ .Values.gts.get_token_url | quote }}
+  create_product_url: {{ .Values.gts.create_product_url | quote }}
+  create_order_url: {{ .Values.gts.create_order_url | quote }}
+  business_screen_url: {{ .Values.gts.business_screen_url | quote }}
+
+# GIT_COMMIT should be the full 40 character git commit hash of the application.
+{{- $gitCommit := env "GIT_COMMIT" }}
+gitCommit: {{ $gitCommit | quote }}
+
+# CONFIG_COMMIT should be the full 40 character git commit hash of the configuration.
+{{- $configCommit := env "CONFIG_COMMIT" }}
+{{- if $configCommit }}
+configCommit: {{ $configCommit | quote }}
+{{- end }}

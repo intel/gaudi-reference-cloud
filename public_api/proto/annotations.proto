@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package idc;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+message IdcFieldOptions {
+    bool cloudAccount = 1;
+    bool product = 2;
+    bool gtsCheck = 3;
+    bool userName = 4;
+    bool authzCheck = 5;
+    bool productAccess = 6;
+    bool ownerCheck = 7;
+    bool cognitoClientId = 8;
+}
+
+extend google.protobuf.FieldOptions {
+    IdcFieldOptions field = 56789;
+}
+
+// IdcServiceAuthz defines service-to-service authorization
+message IdcServiceAuthZ {
+    string server = 1; // target service
+    bool sameRegion = 2; // if true, caller and target must be in same region
+    repeated string caller = 3; // allowed callers
+}
+
+// custom options to control authorization policies
+message IdcAuthZ {
+    bool cloudAccount = 1; // cloud account in method must match user
+    bool user = 2; // any logged in user can run this method
+    bool product = 3;
+    repeated IdcServiceAuthZ service = 4;
+    bool gtsCheck = 5;
+    bool userName = 6;
+    bool authzCheck = 7; // calls the authorization service and evaluates policies
+    bool productAccess = 8;
+    bool ownerCheck = 9;
+    bool appClientAccess = 10;
+}
+
+message IdcMethodOptions {
+    IdcAuthZ authz = 1;
+    bool streamForever = 2; // long-running stream method
+}
+
+extend google.protobuf.MethodOptions {
+    IdcMethodOptions method = 56789;
+}
+
+message IdcServiceOptions {
+    // Setting proxyBillingDriver on a service implicitly enables the
+    // billing server to call all the methods on the service in any
+    // billing driver
+    bool proxyBillingDriver = 1;
+}
+
+extend google.protobuf.ServiceOptions {
+    IdcServiceOptions service = 56789;
+}
+
+enum DeploymentType {
+    unspecified = 0;
+    global = 1;
+    regional = 2;
+    az = 3;
+}
+
+message IdcFileOptions {
+    DeploymentType deploy = 1;
+    string service = 2;
+}
+
+extend google.protobuf.FileOptions {
+    IdcFileOptions file =  56789;
+}

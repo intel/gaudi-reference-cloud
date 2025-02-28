@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quantization-pod
+  labels:
+    name: quantization-pod
+spec:
+  runtimeClassName: habana
+  containers:
+  - name: quantization-env
+    image: galsarid/intel:quant-env
+    imagePullPolicy: Always 
+    securityContext:
+      capabilities:
+        add: ["SYS_PTRACE"]
+    env:
+      - name: HABANA_VISIBLE_DEVICES
+        value: all
+      - name: HF_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: hf-api-token-secret
+            key: HF_API_TOKEN
+    resources:
+      limits:
+        # change number of gaudi as needed according to the loaded model
+        habana.ai/gaudi: "8"

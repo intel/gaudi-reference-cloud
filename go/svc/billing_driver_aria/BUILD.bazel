@@ -1,0 +1,9 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+filegroup(
+    name = "billing-aria-conf",
+    srcs = glob([
+        "driver_aria.yaml",
+    ]),
+    visibility = ["//visibility:public"],
+)

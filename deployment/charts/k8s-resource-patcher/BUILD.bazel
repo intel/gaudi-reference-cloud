@@ -1,0 +1,16 @@
+# This file contains targets to build Helm charts.
+
+load("//build/helm:helm-chart-package.bzl", "helm_chart")
+
+helm_chart(
+  name = "chart",
+  srcs = glob([
+    "*.yaml", 
+    "templates/**",
+  ]),
+  image  = "//go/pkg/k8s_resource_patcher:k8s_resource_patcher_image",
+  package_name = "k8s-resource-patcher",  # Must not have underscores.
+  values_tag_yaml_path = "image.tag",
+  visibility = ["//visibility:public"],
+  chart_deps = ["//deployment/charts/idc-common:chart"]
+)

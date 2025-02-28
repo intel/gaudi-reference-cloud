@@ -1,0 +1,18 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/billing-intel
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+database:
+  service: cloudcredits-db-postgresql
+  vaultCredentialsPath: cloudcreditssecret/data/cloudcreditsdb
+
+commonConfig:
+  maxDefaultHistory: 12
+  instanceSearchWindow: 2
+  
+otel:
+  otelAnnotations: false

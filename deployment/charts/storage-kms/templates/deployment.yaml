@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }} 
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }} 
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        {{- if .Values.vault.enable }}
+      {{- with .Values.vault.annotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "idc-common.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            {{- include "idc-common.grpcPorts" . | nindent 12 }}
+          env:
+          - name: VAULT_ADDR
+            value: {{ .Values.config.vaultAddress }}
+          {{- include "idc-common.otelEnv" . | nindent 10 }}
+          {{- include "idc-common.commonEnv" . | nindent 10 }}
+          args:
+            - "--config=/config.yaml"
+            {{- include "idc-common.logArgs" . | nindent 12 }}
+          ports:
+            {{- include "idc-common.grpcPorts" . | nindent 12 }}
+          volumeMounts:
+          - mountPath: /config.yaml
+            name: config
+            subPath: config.yaml
+      volumes:
+      - configMap:
+          name: {{ include "idc-common.fullname" . }}
+        name: config
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

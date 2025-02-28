@@ -1,0 +1,10 @@
+{
+  "billing": {
+    "view":"IDC.Admin.Billing",
+    "edit":"IDC.Admin.Billing",
+    "delete":"IDC.Admin.Billing"
+  },
+  "sre": {
+    "view": "IDC.Admin.SRE"
+  }
+}

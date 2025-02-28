@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- include "idc-common.grpcServicePorts" . | nindent 4 }}
+  selector:
+    {{- include "idc-common.selectorLabels" . | nindent 4 }}

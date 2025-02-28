@@ -1,0 +1,1241 @@
+apiVersion: v1
+items:
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    creationTimestamp: "2025-02-05T00:28:51Z"
+    finalizers:
+      - baremetalhost.metal3.io
+    generation: 2
+    name: pdx07-d13-bmas007
+    namespace: metal3-1
+    resourceVersion: "772548373"
+    uid: 0580610a-5e0f-4e3b-bd8c-523d2c2adadc
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.65.197.152/redfish/v1/Systems/1
+      credentialsName: pdx07-d13-bmas007-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 58:a2:e1:12:15:64
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: pdx07-d13-bmas007-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "772514740"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 3900
+        count: 288
+        flags:
+          - 3dnowprefetch
+          - abm
+          - acpi
+          - adx
+          - aes
+          - amx_bf16
+          - amx_int8
+          - amx_tile
+          - aperfmperf
+          - apic
+          - arat
+          - arch_capabilities
+          - arch_lbr
+          - arch_perfmon
+          - art
+          - avx
+          - avx2
+          - avx512_bf16
+          - avx512_bitalg
+          - avx512_fp16
+          - avx512_vbmi2
+          - avx512_vnni
+          - avx512_vpopcntdq
+          - avx512bw
+          - avx512cd
+          - avx512dq
+          - avx512f
+          - avx512ifma
+          - avx512vbmi
+          - avx512vl
+          - avx_vnni
+          - bmi1
+          - bmi2
+          - bts
+          - bus_lock_detect
+          - cat_l2
+          - cat_l3
+          - cdp_l2
+          - cdp_l3
+          - cldemote
+          - clflush
+          - clflushopt
+          - clwb
+          - cmov
+          - constant_tsc
+          - cpuid
+          - cpuid_fault
+          - cqm
+          - cqm_llc
+          - cqm_mbm_local
+          - cqm_mbm_total
+          - cqm_occup_llc
+          - cx16
+          - cx8
+          - dca
+          - de
+          - ds_cpl
+          - dtes64
+          - dtherm
+          - dts
+          - enqcmd
+          - epb
+          - ept
+          - ept_ad
+          - erms
+          - est
+          - f16c
+          - flexpriority
+          - flush_l1d
+          - fma
+          - fpu
+          - fsgsbase
+          - fsrm
+          - fxsr
+          - gfni
+          - ht
+          - hwp
+          - hwp_act_window
+          - hwp_epp
+          - hwp_pkg_req
+          - ibpb
+          - ibrs
+          - ibrs_enhanced
+          - ida
+          - intel_pt
+          - invpcid
+          - invpcid_single
+          - la57
+          - lahf_lm
+          - lm
+          - mba
+          - mca
+          - mce
+          - md_clear
+          - mmx
+          - monitor
+          - movbe
+          - movdir64b
+          - movdiri
+          - msr
+          - mtrr
+          - nonstop_tsc
+          - nopl
+          - nx
+          - ospke
+          - pae
+          - pat
+          - pbe
+          - pcid
+          - pclmulqdq
+          - pconfig
+          - pdcm
+          - pdpe1gb
+          - pebs
+          - pge
+          - pku
+          - pln
+          - pni
+          - popcnt
+          - pse
+          - pse36
+          - pts
+          - rdpid
+          - rdrand
+          - rdseed
+          - rdt_a
+          - rdtscp
+          - rep_good
+          - sdbg
+          - sep
+          - serialize
+          - sha_ni
+          - smap
+          - smep
+          - smx
+          - split_lock_detect
+          - ss
+          - ssbd
+          - sse
+          - sse2
+          - sse4_1
+          - sse4_2
+          - ssse3
+          - stibp
+          - syscall
+          - tm
+          - tm2
+          - tme
+          - tpr_shadow
+          - tsc
+          - tsc_adjust
+          - tsc_deadline_timer
+          - tsc_known_freq
+          - tsxldtrk
+          - umip
+          - vaes
+          - vme
+          - vmx
+          - vnmi
+          - vpclmulqdq
+          - vpid
+          - waitpkg
+          - wbnoinvd
+          - x2apic
+          - xgetbv1
+          - xsave
+          - xsavec
+          - xsaveopt
+          - xsaves
+          - xtopology
+          - xtpr
+        model: Intel(R) Xeon(R) 6960P
+      firmware:
+        bios:
+          date: 09/06/2024
+          vendor: American Megatrends International, LLC.
+          version: "1.0"
+      hostname: ubuntu
+      nics:
+        - lldp: {}
+          mac: 68:93:2e:15:6f:5c
+          model: 0x1da3 0x1060
+          name: ens3d9
+        - lldp: {}
+          mac: 68:93:2e:15:70:46
+          model: 0x1da3 0x1060
+          name: ens7d3
+        - lldp: {}
+          mac: 68:93:2e:15:7e:34
+          model: 0x1da3 0x1060
+          name: ens4d17
+        - ip: 100.65.229.149
+          lldp:
+            switch_chassis_id: ac:3d:94:38:3b:91
+            switch_port_description: BM
+            switch_port_id: Ethernet3/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.29.2F running on
+              an Arista Networks DCS-7050CX3-32S
+            switch_system_name: ech2101pe-zal0513a.idcmgt.intel.com
+          mac: 58:a2:e1:12:15:64
+          model: 0x15b3 0x101d
+          name: ens4023f0np0
+          pxe: true
+        - ip: fe80::5aa2:e1ff:fe12:1564%ens4023f0np0
+          lldp:
+            switch_chassis_id: ac:3d:94:38:3b:91
+            switch_port_description: BM
+            switch_port_id: Ethernet3/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.29.2F running on
+              an Arista Networks DCS-7050CX3-32S
+            switch_system_name: ech2101pe-zal0513a.idcmgt.intel.com
+          mac: 58:a2:e1:12:15:64
+          model: 0x15b3 0x101d
+          name: ens4023f0np0
+          pxe: true
+        - lldp: {}
+          mac: 68:93:2e:15:73:1a
+          model: 0x1da3 0x1060
+          name: ens6d7
+        - lldp: {}
+          mac: 68:93:2e:15:6f:58
+          model: 0x1da3 0x1060
+          name: ens3d5
+        - lldp: {}
+          mac: 68:93:2e:28:f6:d2
+          model: 0x1da3 0x1060
+          name: enp23s0d20
+        - lldp: {}
+          mac: 58:a2:e1:12:15:65
+          model: 0x15b3 0x101d
+          name: ens4023f1np1
+        - lldp: {}
+          mac: 68:93:2e:15:6a:ac
+          model: 0x1da3 0x1060
+          name: ens2d9
+        - lldp: {}
+          mac: 68:93:2e:15:73:16
+          model: 0x1da3 0x1060
+          name: ens6d3
+        - lldp: {}
+          mac: 68:93:2e:28:f6:cf
+          model: 0x1da3 0x1060
+          name: enp23s0d17
+        - lldp: {}
+          mac: 68:93:2e:15:7e:38
+          model: 0x1da3 0x1060
+          name: ens4d21
+        - lldp: {}
+          mac: 68:93:2e:2f:c7:c3
+          model: 0x1da3 0x1060
+          name: ens8d14
+        - lldp: {}
+          mac: 68:93:2e:15:82:b1
+          model: 0x1da3 0x1060
+          name: ens5d14
+        - lldp: {}
+          mac: 7c:c2:55:ac:72:14
+          model: 0x8086 0x1563
+          name: ens1f0
+        - lldp: {}
+          mac: 68:93:2e:15:6a:a8
+          model: 0x1da3 0x1060
+          name: ens2d5
+        - lldp: {}
+          mac: 68:93:2e:15:6f:5b
+          model: 0x1da3 0x1060
+          name: ens3d8
+        - lldp: {}
+          mac: 68:93:2e:15:70:45
+          model: 0x1da3 0x1060
+          name: ens7d2
+        - lldp: {}
+          mac: 68:93:2e:28:f6:d3
+          model: 0x1da3 0x1060
+          name: enp23s0d21
+        - lldp: {}
+          mac: 68:93:2e:2f:c7:c8
+          model: 0x1da3 0x1060
+          name: ens8d19
+        - lldp: {}
+          mac: 68:93:2e:15:82:b6
+          model: 0x1da3 0x1060
+          name: ens5d19
+        - lldp: {}
+          mac: 68:93:2e:15:6a:ab
+          model: 0x1da3 0x1060
+          name: ens2d8
+        - lldp: {}
+          mac: 62:22:2d:7d:0f:6c
+          name: usb0
+        - lldp: {}
+          mac: 68:93:2e:15:70:4a
+          model: 0x1da3 0x1060
+          name: ens7d7
+        - lldp: {}
+          mac: 68:93:2e:2f:c7:c4
+          model: 0x1da3 0x1060
+          name: ens8d15
+        - lldp: {}
+          mac: 68:93:2e:15:82:b2
+          model: 0x1da3 0x1060
+          name: ens5d15
+        - lldp: {}
+          mac: 68:93:2e:15:73:15
+          model: 0x1da3 0x1060
+          name: ens6d2
+        - lldp: {}
+          mac: 7c:c2:55:ac:72:15
+          model: 0x8086 0x1563
+          name: ens1f1
+        - lldp: {}
+          mac: 68:93:2e:15:7e:37
+          model: 0x1da3 0x1060
+          name: ens4d20
+      ramMebibytes: 2359296
+      storage:
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme3n1
+          serialNumber: S665NS0T806362
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548063620025385300000001
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme2n1
+          serialNumber: S665NS0T806324
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548063240025385300000001
+        - model: SAMSUNG MZQL27T6HBLA-00A07
+          name: /dev/nvme1n1
+          serialNumber: S6CKNN0X305030
+          sizeBytes: 7681501126656
+          type: NVME
+          wwn: eui.36434b30583050300025384e00000001
+        - model: SAMSUNG MZQL27T6HBLA-00A07
+          name: /dev/nvme0n1
+          serialNumber: S6CKNN0X305029
+          sizeBytes: 7681501126656
+          type: NVME
+          wwn: eui.36434b30583050290025384e00000001
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-822GA-NGR3-IN001 (To be filled by O.E.M.)
+        serialNumber: A930999X4714526
+    hardwareProfile: unknown
+    lastUpdated: "2025-02-05T01:02:13Z"
+    operationHistory:
+      deprovision:
+        end: "2025-02-05T01:02:09Z"
+        start: "2025-02-05T00:48:25Z"
+      inspect:
+        end: "2025-02-05T00:45:58Z"
+        start: "2025-02-05T00:29:07Z"
+      provision:
+        end: "2025-02-05T00:48:22Z"
+        start: "2025-02-05T00:46:00Z"
+      register:
+        end: "2025-02-05T00:29:07Z"
+        start: "2025-02-05T00:28:52Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: b785b3a6-e545-4557-a20a-cdf51f8d2126
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: pdx07-d13-bmas007-bmc-secret
+        namespace: metal3-1
+      credentialsVersion: "772514740"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    creationTimestamp: "2025-02-05T00:29:11Z"
+    finalizers:
+      - baremetalhost.metal3.io
+    generation: 2
+    name: pdx07-d13-bmas012
+    namespace: metal3-2
+    resourceVersion: "772548450"
+    uid: 5f52149f-de6d-4014-87d8-32d068da5deb
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.65.197.16/redfish/v1/Systems/1
+      credentialsName: pdx07-d13-bmas012-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 58:a2:e1:11:d8:20
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: pdx07-d13-bmas012-bmc-secret
+        namespace: metal3-2
+      credentialsVersion: "772515070"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 3900
+        count: 288
+        flags:
+          - 3dnowprefetch
+          - abm
+          - acpi
+          - adx
+          - aes
+          - amx_bf16
+          - amx_int8
+          - amx_tile
+          - aperfmperf
+          - apic
+          - arat
+          - arch_capabilities
+          - arch_lbr
+          - arch_perfmon
+          - art
+          - avx
+          - avx2
+          - avx512_bf16
+          - avx512_bitalg
+          - avx512_fp16
+          - avx512_vbmi2
+          - avx512_vnni
+          - avx512_vpopcntdq
+          - avx512bw
+          - avx512cd
+          - avx512dq
+          - avx512f
+          - avx512ifma
+          - avx512vbmi
+          - avx512vl
+          - avx_vnni
+          - bmi1
+          - bmi2
+          - bts
+          - bus_lock_detect
+          - cat_l2
+          - cat_l3
+          - cdp_l2
+          - cdp_l3
+          - cldemote
+          - clflush
+          - clflushopt
+          - clwb
+          - cmov
+          - constant_tsc
+          - cpuid
+          - cpuid_fault
+          - cqm
+          - cqm_llc
+          - cqm_mbm_local
+          - cqm_mbm_total
+          - cqm_occup_llc
+          - cx16
+          - cx8
+          - dca
+          - de
+          - ds_cpl
+          - dtes64
+          - dtherm
+          - dts
+          - enqcmd
+          - epb
+          - ept
+          - ept_ad
+          - erms
+          - est
+          - f16c
+          - flexpriority
+          - flush_l1d
+          - fma
+          - fpu
+          - fsgsbase
+          - fsrm
+          - fxsr
+          - gfni
+          - ht
+          - hwp
+          - hwp_act_window
+          - hwp_epp
+          - hwp_pkg_req
+          - ibpb
+          - ibrs
+          - ibrs_enhanced
+          - ida
+          - intel_pt
+          - invpcid
+          - invpcid_single
+          - la57
+          - lahf_lm
+          - lm
+          - mba
+          - mca
+          - mce
+          - md_clear
+          - mmx
+          - monitor
+          - movbe
+          - movdir64b
+          - movdiri
+          - msr
+          - mtrr
+          - nonstop_tsc
+          - nopl
+          - nx
+          - ospke
+          - pae
+          - pat
+          - pbe
+          - pcid
+          - pclmulqdq
+          - pconfig
+          - pdcm
+          - pdpe1gb
+          - pebs
+          - pge
+          - pku
+          - pln
+          - pni
+          - popcnt
+          - pse
+          - pse36
+          - pts
+          - rdpid
+          - rdrand
+          - rdseed
+          - rdt_a
+          - rdtscp
+          - rep_good
+          - sdbg
+          - sep
+          - serialize
+          - sha_ni
+          - smap
+          - smep
+          - smx
+          - split_lock_detect
+          - ss
+          - ssbd
+          - sse
+          - sse2
+          - sse4_1
+          - sse4_2
+          - ssse3
+          - stibp
+          - syscall
+          - tm
+          - tm2
+          - tme
+          - tpr_shadow
+          - tsc
+          - tsc_adjust
+          - tsc_deadline_timer
+          - tsc_known_freq
+          - tsxldtrk
+          - umip
+          - vaes
+          - vme
+          - vmx
+          - vnmi
+          - vpclmulqdq
+          - vpid
+          - waitpkg
+          - wbnoinvd
+          - x2apic
+          - xgetbv1
+          - xsave
+          - xsavec
+          - xsaveopt
+          - xsaves
+          - xtopology
+          - xtpr
+        model: Intel(R) Xeon(R) 6960P
+      firmware:
+        bios:
+          date: 09/06/2024
+          vendor: American Megatrends International, LLC.
+          version: "1.0"
+      hostname: ubuntu
+      nics:
+        - lldp: {}
+          mac: 68:93:2e:2b:c4:27
+          model: 0x1da3 0x1060
+          name: ens2d5
+        - lldp: {}
+          mac: 68:93:2e:18:af:4b
+          model: 0x1da3 0x1060
+          name: ens3d8
+        - lldp: {}
+          mac: 68:93:2e:18:af:b6
+          model: 0x1da3 0x1060
+          name: ens8d19
+        - lldp: {}
+          mac: 68:93:2e:18:ab:96
+          model: 0x1da3 0x1060
+          name: ens5d19
+        - lldp: {}
+          mac: 68:93:2e:18:c8:65
+          model: 0x1da3 0x1060
+          name: ens7d2
+        - lldp: {}
+          mac: 68:93:2e:18:b4:98
+          model: 0x1da3 0x1060
+          name: enp23s0d21
+        - lldp: {}
+          mac: 68:93:2e:18:af:b2
+          model: 0x1da3 0x1060
+          name: ens8d15
+        - lldp: {}
+          mac: 68:93:2e:18:ab:92
+          model: 0x1da3 0x1060
+          name: ens5d15
+        - lldp: {}
+          mac: 68:93:2e:2b:c4:2a
+          model: 0x1da3 0x1060
+          name: ens2d8
+        - ip: 100.65.229.17
+          lldp:
+            switch_chassis_id: ac:3d:94:38:25:65
+            switch_port_description: BM
+            switch_port_id: Ethernet4/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.29.2F running on
+              an Arista Networks DCS-7050CX3-32S
+            switch_system_name: ech2101pe-zal0509a.idcmgt.intel.com
+          mac: 58:a2:e1:11:d8:20
+          model: 0x15b3 0x101d
+          name: ens4023f0np0
+          pxe: true
+        - ip: fe80::5aa2:e1ff:fe11:d820%ens4023f0np0
+          lldp:
+            switch_chassis_id: ac:3d:94:38:25:65
+            switch_port_description: BM
+            switch_port_id: Ethernet4/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.29.2F running on
+              an Arista Networks DCS-7050CX3-32S
+            switch_system_name: ech2101pe-zal0509a.idcmgt.intel.com
+          mac: 58:a2:e1:11:d8:20
+          model: 0x15b3 0x101d
+          name: ens4023f0np0
+          pxe: true
+        - lldp: {}
+          mac: 68:93:2e:18:b4:37
+          model: 0x1da3 0x1060
+          name: ens4d20
+        - lldp: {}
+          mac: 68:93:2e:18:c8:6a
+          model: 0x1da3 0x1060
+          name: ens7d7
+        - lldp: {}
+          mac: 68:93:2e:18:b6:c5
+          model: 0x1da3 0x1060
+          name: ens6d2
+        - lldp: {}
+          mac: 7c:c2:55:ac:71:81
+          model: 0x8086 0x1563
+          name: ens1f1
+        - lldp: {}
+          mac: 58:a2:e1:11:d8:21
+          model: 0x15b3 0x101d
+          name: ens4023f1np1
+        - lldp: {}
+          mac: 68:93:2e:18:af:4c
+          model: 0x1da3 0x1060
+          name: ens3d9
+        - lldp: {}
+          mac: 68:93:2e:18:b4:34
+          model: 0x1da3 0x1060
+          name: ens4d17
+        - lldp: {}
+          mac: 2a:e0:cd:c5:00:63
+          name: usb0
+        - lldp: {}
+          mac: 68:93:2e:18:c8:66
+          model: 0x1da3 0x1060
+          name: ens7d3
+        - lldp: {}
+          mac: 68:93:2e:18:b6:ca
+          model: 0x1da3 0x1060
+          name: ens6d7
+        - lldp: {}
+          mac: 68:93:2e:18:af:48
+          model: 0x1da3 0x1060
+          name: ens3d5
+        - lldp: {}
+          mac: 68:93:2e:18:b4:97
+          model: 0x1da3 0x1060
+          name: enp23s0d20
+        - lldp: {}
+          mac: 68:93:2e:2b:c4:2b
+          model: 0x1da3 0x1060
+          name: ens2d9
+        - lldp: {}
+          mac: 68:93:2e:18:b4:38
+          model: 0x1da3 0x1060
+          name: ens4d21
+        - lldp: {}
+          mac: 68:93:2e:18:af:b1
+          model: 0x1da3 0x1060
+          name: ens8d14
+        - lldp: {}
+          mac: 68:93:2e:18:ab:91
+          model: 0x1da3 0x1060
+          name: ens5d14
+        - lldp: {}
+          mac: 68:93:2e:18:b6:c6
+          model: 0x1da3 0x1060
+          name: ens6d3
+        - lldp: {}
+          mac: 68:93:2e:18:b4:94
+          model: 0x1da3 0x1060
+          name: enp23s0d17
+        - lldp: {}
+          mac: 7c:c2:55:ac:71:80
+          model: 0x8086 0x1563
+          name: ens1f0
+      ramMebibytes: 2359296
+      storage:
+        - model: SAMSUNG MZQL27T6HBLA-00A07
+          name: /dev/nvme1n1
+          serialNumber: S6CKNN0X305066
+          sizeBytes: 7681501126656
+          type: NVME
+          wwn: eui.36434b30583050660025384e00000001
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme3n1
+          serialNumber: S665NS0T806302
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548063020025385300000001
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme2n1
+          serialNumber: S665NS0T806296
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548062960025385300000001
+        - model: SAMSUNG MZQL27T6HBLA-00A07
+          name: /dev/nvme0n1
+          serialNumber: S6CKNN0X305074
+          sizeBytes: 7681501126656
+          type: NVME
+          wwn: eui.36434b30583050740025384e00000001
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-822GA-NGR3-IN001 (To be filled by O.E.M.)
+        serialNumber: A930999X4812863
+    hardwareProfile: unknown
+    lastUpdated: "2025-02-05T01:02:15Z"
+    operationHistory:
+      deprovision:
+        end: "2025-02-05T01:02:10Z"
+        start: "2025-02-05T00:48:47Z"
+      inspect:
+        end: "2025-02-05T00:46:20Z"
+        start: "2025-02-05T00:29:26Z"
+      provision:
+        end: "2025-02-05T00:48:44Z"
+        start: "2025-02-05T00:46:23Z"
+      register:
+        end: "2025-02-05T00:29:26Z"
+        start: "2025-02-05T00:29:11Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 36920acd-f0d0-4652-a621-275082a34a9e
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: pdx07-d13-bmas012-bmc-secret
+        namespace: metal3-2
+      credentialsVersion: "772515070"
+- apiVersion: metal3.io/v1alpha1
+  kind: BareMetalHost
+  metadata:
+    creationTimestamp: "2025-02-05T03:07:24Z"
+    finalizers:
+      - baremetalhost.metal3.io
+    generation: 2
+    name: pdx07-d13-bmas016
+    namespace: metal3-2
+    resourceVersion: "772713965"
+    uid: a92a034b-3327-49ff-b5cd-11ddfab92e1b
+  spec:
+    automatedCleaningMode: metadata
+    bmc:
+      address: redfish+https://100.65.197.23/redfish/v1/Systems/1
+      credentialsName: pdx07-d13-bmas016-bmc-secret
+      disableCertificateVerification: true
+    bootMACAddress: 58:a2:e1:11:dd:14
+    bootMode: UEFI
+    online: true
+    rootDeviceHints: {}
+  status:
+    errorCount: 0
+    errorMessage: ""
+    goodCredentials:
+      credentials:
+        name: pdx07-d13-bmas016-bmc-secret
+        namespace: metal3-2
+      credentialsVersion: "772674762"
+    hardware:
+      cpu:
+        arch: x86_64
+        clockMegahertz: 3900
+        count: 288
+        flags:
+          - 3dnowprefetch
+          - abm
+          - acpi
+          - adx
+          - aes
+          - amx_bf16
+          - amx_int8
+          - amx_tile
+          - aperfmperf
+          - apic
+          - arat
+          - arch_capabilities
+          - arch_lbr
+          - arch_perfmon
+          - art
+          - avx
+          - avx2
+          - avx512_bf16
+          - avx512_bitalg
+          - avx512_fp16
+          - avx512_vbmi2
+          - avx512_vnni
+          - avx512_vpopcntdq
+          - avx512bw
+          - avx512cd
+          - avx512dq
+          - avx512f
+          - avx512ifma
+          - avx512vbmi
+          - avx512vl
+          - avx_vnni
+          - bmi1
+          - bmi2
+          - bts
+          - bus_lock_detect
+          - cat_l2
+          - cat_l3
+          - cdp_l2
+          - cdp_l3
+          - cldemote
+          - clflush
+          - clflushopt
+          - clwb
+          - cmov
+          - constant_tsc
+          - cpuid
+          - cpuid_fault
+          - cqm
+          - cqm_llc
+          - cqm_mbm_local
+          - cqm_mbm_total
+          - cqm_occup_llc
+          - cx16
+          - cx8
+          - dca
+          - de
+          - ds_cpl
+          - dtes64
+          - dtherm
+          - dts
+          - enqcmd
+          - epb
+          - ept
+          - ept_ad
+          - erms
+          - est
+          - f16c
+          - flexpriority
+          - flush_l1d
+          - fma
+          - fpu
+          - fsgsbase
+          - fsrm
+          - fxsr
+          - gfni
+          - ht
+          - hwp
+          - hwp_act_window
+          - hwp_epp
+          - hwp_pkg_req
+          - ibpb
+          - ibrs
+          - ibrs_enhanced
+          - ida
+          - intel_pt
+          - invpcid
+          - invpcid_single
+          - la57
+          - lahf_lm
+          - lm
+          - mba
+          - mca
+          - mce
+          - md_clear
+          - mmx
+          - monitor
+          - movbe
+          - movdir64b
+          - movdiri
+          - msr
+          - mtrr
+          - nonstop_tsc
+          - nopl
+          - nx
+          - ospke
+          - pae
+          - pat
+          - pbe
+          - pcid
+          - pclmulqdq
+          - pconfig
+          - pdcm
+          - pdpe1gb
+          - pebs
+          - pge
+          - pku
+          - pln
+          - pni
+          - popcnt
+          - pse
+          - pse36
+          - pts
+          - rdpid
+          - rdrand
+          - rdseed
+          - rdt_a
+          - rdtscp
+          - rep_good
+          - sdbg
+          - sep
+          - serialize
+          - sha_ni
+          - smap
+          - smep
+          - smx
+          - split_lock_detect
+          - ss
+          - ssbd
+          - sse
+          - sse2
+          - sse4_1
+          - sse4_2
+          - ssse3
+          - stibp
+          - syscall
+          - tm
+          - tm2
+          - tme
+          - tpr_shadow
+          - tsc
+          - tsc_adjust
+          - tsc_deadline_timer
+          - tsc_known_freq
+          - tsxldtrk
+          - umip
+          - vaes
+          - vme
+          - vmx
+          - vnmi
+          - vpclmulqdq
+          - vpid
+          - waitpkg
+          - wbnoinvd
+          - x2apic
+          - xgetbv1
+          - xsave
+          - xsavec
+          - xsaveopt
+          - xsaves
+          - xtopology
+          - xtpr
+        model: Intel(R) Xeon(R) 6960P
+      firmware:
+        bios:
+          date: 09/06/2024
+          vendor: American Megatrends International, LLC.
+          version: "1.0"
+      hostname: ubuntu
+      nics:
+        - lldp: {}
+          mac: 68:93:2e:16:21:86
+          model: 0x1da3 0x1060
+          name: ens8d19
+        - lldp: {}
+          mac: 68:93:2e:16:15:b6
+          model: 0x1da3 0x1060
+          name: ens5d19
+        - lldp: {}
+          mac: 68:93:2e:16:1b:1b
+          model: 0x1da3 0x1060
+          name: ens3d8
+        - lldp: {}
+          mac: 68:93:2e:16:20:b5
+          model: 0x1da3 0x1060
+          name: ens7d2
+        - lldp: {}
+          mac: 68:93:2e:16:21:82
+          model: 0x1da3 0x1060
+          name: ens8d15
+        - lldp: {}
+          mac: 68:93:2e:16:15:b2
+          model: 0x1da3 0x1060
+          name: ens5d15
+        - lldp: {}
+          mac: 68:93:2e:16:20:37
+          model: 0x1da3 0x1060
+          name: ens4d20
+        - ip: 100.65.229.18
+          lldp:
+            switch_chassis_id: ac:3d:94:38:25:65
+            switch_port_description: BM
+            switch_port_id: Ethernet5/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.29.2F running on
+              an Arista Networks DCS-7050CX3-32S
+            switch_system_name: ech2101pe-zal0509a.idcmgt.intel.com
+          mac: 58:a2:e1:11:dd:14
+          model: 0x15b3 0x101d
+          name: ens4023f0np0
+          pxe: true
+        - ip: fe80::5aa2:e1ff:fe11:dd14%ens4023f0np0
+          lldp:
+            switch_chassis_id: ac:3d:94:38:25:65
+            switch_port_description: BM
+            switch_port_id: Ethernet5/1
+            switch_port_link_aggregation_support: true
+            switch_system_description: Arista Networks EOS version 4.29.2F running on
+              an Arista Networks DCS-7050CX3-32S
+            switch_system_name: ech2101pe-zal0509a.idcmgt.intel.com
+          mac: 58:a2:e1:11:dd:14
+          model: 0x15b3 0x101d
+          name: ens4023f0np0
+          pxe: true
+        - lldp: {}
+          mac: 68:93:2e:2b:90:3a
+          model: 0x1da3 0x1060
+          name: ens2d8
+        - lldp: {}
+          mac: 68:93:2e:16:20:ba
+          model: 0x1da3 0x1060
+          name: ens7d7
+        - lldp: {}
+          mac: 46:24:24:9e:52:e7
+          name: usb0
+        - lldp: {}
+          mac: 58:a2:e1:11:dd:15
+          model: 0x15b3 0x101d
+          name: ens4023f1np1
+        - lldp: {}
+          mac: 68:93:2e:16:1d:b5
+          model: 0x1da3 0x1060
+          name: ens6d2
+        - lldp: {}
+          mac: 7c:c2:55:ac:df:89
+          model: 0x8086 0x1563
+          name: ens1f1
+        - lldp: {}
+          mac: 68:93:2e:2e:ec:f1
+          model: 0x1da3 0x1060
+          name: enp23s0d20
+        - lldp: {}
+          mac: 68:93:2e:16:20:34
+          model: 0x1da3 0x1060
+          name: ens4d17
+        - lldp: {}
+          mac: 68:93:2e:16:1b:1c
+          model: 0x1da3 0x1060
+          name: ens3d9
+        - lldp: {}
+          mac: 68:93:2e:16:20:b6
+          model: 0x1da3 0x1060
+          name: ens7d3
+        - lldp: {}
+          mac: 68:93:2e:2e:ec:ee
+          model: 0x1da3 0x1060
+          name: enp23s0d17
+        - lldp: {}
+          mac: 68:93:2e:16:1d:ba
+          model: 0x1da3 0x1060
+          name: ens6d7
+        - lldp: {}
+          mac: 68:93:2e:16:1b:18
+          model: 0x1da3 0x1060
+          name: ens3d5
+        - lldp: {}
+          mac: 68:93:2e:16:20:38
+          model: 0x1da3 0x1060
+          name: ens4d21
+        - lldp: {}
+          mac: 68:93:2e:16:21:81
+          model: 0x1da3 0x1060
+          name: ens8d14
+        - lldp: {}
+          mac: 68:93:2e:16:15:b1
+          model: 0x1da3 0x1060
+          name: ens5d14
+        - lldp: {}
+          mac: 68:93:2e:2b:90:3b
+          model: 0x1da3 0x1060
+          name: ens2d9
+        - lldp: {}
+          mac: 68:93:2e:16:1d:b6
+          model: 0x1da3 0x1060
+          name: ens6d3
+        - lldp: {}
+          mac: 68:93:2e:2e:ec:f2
+          model: 0x1da3 0x1060
+          name: enp23s0d21
+        - lldp: {}
+          mac: 7c:c2:55:ac:df:88
+          model: 0x8086 0x1563
+          name: ens1f0
+        - lldp: {}
+          mac: 68:93:2e:2b:90:37
+          model: 0x1da3 0x1060
+          name: ens2d5
+      ramMebibytes: 2359296
+      storage:
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme2n1
+          serialNumber: S665NS0T806340
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548063400025385300000001
+        - model: SAMSUNG MZ1L2960HCJR-00A07
+          name: /dev/nvme3n1
+          serialNumber: S665NS0T806346
+          sizeBytes: 960197124096
+          type: NVME
+          wwn: eui.36363530548063460025385300000001
+        - model: SAMSUNG MZQL27T6HBLA-00A07
+          name: /dev/nvme1n1
+          serialNumber: S6CKNN0X305036
+          sizeBytes: 7681501126656
+          type: NVME
+          wwn: eui.36434b30583050360025384e00000001
+        - model: SAMSUNG MZQL27T6HBLA-00A07
+          name: /dev/nvme0n1
+          serialNumber: S6CKNN0X305020
+          sizeBytes: 7681501126656
+          type: NVME
+          wwn: eui.36434b30583050200025384e00000001
+      systemVendor:
+        manufacturer: Supermicro
+        productName: SYS-822GA-NGR3-IN001 (To be filled by O.E.M.)
+        serialNumber: A930999X4812864
+    hardwareProfile: unknown
+    lastUpdated: "2025-02-05T03:46:24Z"
+    operationHistory:
+      deprovision:
+        end: "2025-02-05T03:46:20Z"
+        start: "2025-02-05T03:31:59Z"
+      inspect:
+        end: "2025-02-05T03:29:32Z"
+        start: "2025-02-05T03:07:39Z"
+      provision:
+        end: "2025-02-05T03:31:56Z"
+        start: "2025-02-05T03:29:35Z"
+      register:
+        end: "2025-02-05T03:07:39Z"
+        start: "2025-02-05T03:07:25Z"
+    operationalStatus: OK
+    poweredOn: true
+    provisioning:
+      ID: 93d5c2f8-b67b-4438-a8ff-bed56499c214
+      bootMode: UEFI
+      image:
+        url: ""
+      raid:
+        hardwareRAIDVolumes: null
+        softwareRAIDVolumes: []
+      rootDeviceHints: {}
+      state: available
+    triedCredentials:
+      credentials:
+        name: pdx07-d13-bmas016-bmc-secret
+        namespace: metal3-2
+      credentialsVersion: "772674762"

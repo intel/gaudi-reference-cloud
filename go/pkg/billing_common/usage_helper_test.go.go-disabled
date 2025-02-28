@@ -1,0 +1,235 @@
+package billing
+
+import (
+	"context"
+	"fmt"
+	"math/rand"
+	"testing"
+	"time"
+
+	"github.com/google/uuid"
+	cloudAccount "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudaccount"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/log"
+	"github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+func verifyUsageIsInvalid(t *testing.T, usage *pb.Usage) {
+	usages := make([]*pb.Usage, 0)
+	usages = append(usages, usage)
+	validUsages, validationErrors, err := ValidateUsageToBeReported(usages)
+	if err != nil {
+		t.Fatalf("failed to validate usages: %v", err)
+	}
+	if len(validUsages) != 0 {
+		t.Fatalf("usage is not expected to be valid")
+	}
+	if len(validationErrors) == 0 {
+		t.Fatalf("validation errors are expected")
+	}
+}
+
+func TestCheckUsageIsInvalid(t *testing.T) {
+	logger := log.FromContext(context.Background()).WithName("TestCheckUsageIsInvalid")
+	usageProperties := map[string]string{
+		"region":         defaultServiceRegion,
+		"service":        uuid.NewString(),
+		"billUsage":      "true",
+		"instanceType":   xeon3SmallInstanceType,
+		"runningSeconds": "192624.136468704",
+	}
+
+	tests := []struct {
+		enabled              bool
+		validationType       string
+		usage                *pb.Usage
+		verifyUsageIsInvalid func(t *testing.T, usage *pb.Usage)
+	}{
+		{
+			enabled:        true,
+			validationType: "alreadyReported",
+			usage: &pb.Usage{
+				Id:             rand.Int63(),
+				TransactionId:  uuid.NewString(),
+				ResourceId:     uuid.NewString(),
+				CloudAccountId: cloudAccount.MustNewId(),
+				Timestamp:      timestamppb.Now(),
+				Reported:       true,
+				Properties:     usageProperties,
+			},
+			verifyUsageIsInvalid: verifyUsageIsInvalid,
+		},
+		{
+			enabled:        true,
+			validationType: "transactionIdEmpty",
+			usage: &pb.Usage{
+				Id:             rand.Int63(),
+				TransactionId:  "",
+				ResourceId:     uuid.NewString(),
+				CloudAccountId: cloudAccount.MustNewId(),
+				Timestamp:      timestamppb.Now(),
+				Reported:       false,
+				Properties:     usageProperties,
+			},
+			verifyUsageIsInvalid: verifyUsageIsInvalid,
+		},
+		{
+			enabled:        true,
+			validationType: "cloudAccountIdEmpty",
+			usage: &pb.Usage{
+				Id:             rand.Int63(),
+				TransactionId:  uuid.NewString(),
+				ResourceId:     uuid.NewString(),
+				CloudAccountId: "",
+				Timestamp:      timestamppb.Now(),
+				Reported:       false,
+				Properties:     usageProperties,
+			},
+			verifyUsageIsInvalid: verifyUsageIsInvalid,
+		},
+		{
+			enabled:        true,
+			validationType: "resourceIdEmpty",
+			usage: &pb.Usage{
+				Id:             rand.Int63(),
+				TransactionId:  uuid.NewString(),
+				ResourceId:     "",
+				CloudAccountId: cloudAccount.MustNewId(),
+				Timestamp:      timestamppb.Now(),
+				Reported:       false,
+				Properties:     usageProperties,
+			},
+			verifyUsageIsInvalid: verifyUsageIsInvalid,
+		},
+		{
+			enabled:        true,
+			validationType: "propertiesEmpty",
+			usage: &pb.Usage{
+				Id:             rand.Int63(),
+				TransactionId:  uuid.NewString(),
+				ResourceId:     uuid.NewString(),
+				CloudAccountId: cloudAccount.MustNewId(),
+				Timestamp:      timestamppb.Now(),
+				Reported:       false,
+			},
+			verifyUsageIsInvalid: verifyUsageIsInvalid,
+		},
+		{
+			enabled:        true,
+			validationType: "Invalid Cloud Account Id",
+			usage: &pb.Usage{
+				Id:             rand.Int63(),
+				TransactionId:  uuid.NewString(),
+				ResourceId:     uuid.NewString(),
+				CloudAccountId: "InvalidCloudAccountId",
+				Timestamp:      timestamppb.Now(),
+				Reported:       false,
+				Properties:     usageProperties,
+			},
+			verifyUsageIsInvalid: verifyUsageIsInvalid,
+		},
+	}
+	for index := range tests {
+		if tests[index].enabled {
+			logger.Info("Running tests for validation of usage", "validation type", tests[index].validationType)
+			tests[index].verifyUsageIsInvalid(t, tests[index].usage)
+		} else {
+			logger.Info("Enable the test for validation of usage", "validation type", tests[index].validationType)
+		}
+	}
+
+	logger.Info("All verifications done")
+}
+
+func TestCalculateUsageAmountForMetricTypeMins(t *testing.T) {
+	logger := log.FromContext(context.Background()).WithName("TestCalculateUsageAmountForMetricTypeMins")
+	// Get the ids
+	cloudAccountId := cloudAccount.MustNewId()
+	vendorId := uuid.NewString()
+	idcComputeProductFamilyId := uuid.NewString()
+	computeProductId := uuid.NewString()
+	compliantProductId := uuid.NewString()
+	usageResourceId := uuid.NewString()
+
+	matchExpressionCompute := fmt.Sprintf("billUsage && service == \"%s\" && instanceType == \"%s\"", idcComputeServiceName, xeon3SmallInstanceType)
+	matchExpressionCompliance := "compliant"
+	idcVendors := make([]*pb.Vendor, 0)
+	idcProducts := make([]*pb.Product, 0)
+
+	idcComputeProductFamilies := make([]*pb.ProductFamily, 0)
+	idcComputeProductFamily := GetIdcComputeProductFamily(idcComputeProductFamilyId)
+	idcComputeProductFamilies = append(idcComputeProductFamilies, idcComputeProductFamily)
+
+	vendor := GetIdcVendor(vendorId, idcComputeProductFamilies)
+	idcVendors = append(idcVendors, vendor)
+
+	// represents a base SKU
+	computeProduct := &pb.Product{
+		Name:        "computeProductVMSmallXeon3Name",
+		Id:          computeProductId,
+		VendorId:    vendorId,
+		FamilyId:    idcComputeProductFamilyId,
+		Description: uuid.NewString(),
+		Rates:       GetRates(),
+		MatchExpr:   matchExpressionCompute,
+	}
+
+	// represents a add on SKU for the same vendor and family
+	complianceProduct := &pb.Product{
+		Name:        "compliantProduct",
+		Id:          compliantProductId,
+		VendorId:    vendorId,
+		FamilyId:    idcComputeProductFamilyId,
+		Description: uuid.NewString(),
+		Rates:       GetRates(),
+		MatchExpr:   matchExpressionCompliance,
+	}
+
+	idcProducts = append(idcProducts, computeProduct)
+	idcProducts = append(idcProducts, complianceProduct)
+
+	previousUsage := &pb.UsageCreate{
+		TransactionId:  uuid.NewString(),
+		ResourceId:     usageResourceId,
+		CloudAccountId: cloudAccountId,
+		Timestamp:      timestamppb.New(time.Now().AddDate(0, 0, -1)),
+		Properties: map[string]string{
+			"service":        idcComputeServiceName,
+			"billUsage":      "true",
+			"instanceType":   xeon3SmallInstanceType,
+			"compliant":      "true",
+			"region":         "us-west-1",
+			"runningSeconds": "3000",
+		},
+	}
+
+	currentUsage := &pb.UsageCreate{
+		TransactionId:  uuid.NewString(),
+		ResourceId:     usageResourceId,
+		CloudAccountId: cloudAccountId,
+		Timestamp:      timestamppb.Now(),
+		Properties: map[string]string{
+			"service":        idcComputeServiceName,
+			"billUsage":      "true",
+			"instanceType":   xeon3SmallInstanceType,
+			"compliant":      "true",
+			"region":         "us-west-1",
+			"runningSeconds": "4000",
+		}}
+
+	usageClient.CreateUsage(context.Background(), previousUsage)
+	usageClient.CreateUsage(context.Background(), currentUsage)
+
+	usagesToReport, err := usageClient.GetUsagesToReport(context.Background())
+	if err != nil {
+		t.Fatal("failed to usages to report from test usage client")
+	}
+	_, handledUsages, err := CalculateUsageAmountForMetricTypeMins(usageClient, usagesToReport[1], 2)
+	if err != nil {
+		t.Fatal("failed to calculate amount")
+	}
+	if len(handledUsages) != 2 {
+		t.Fatalf("wrong handled usages")
+	}
+	logger.Info("and done with testing of calculation of amount")
+}

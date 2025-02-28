@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+data:
+  config.yaml: |
+    ovnCentral: 
+      ovnAddress: {{ .Values.ovnCentral.ovnAddress }}
+      ovnPort: {{ .Values.ovnCentral.ovnPort }}
+    grpcServer: 
+      grpcPort: {{ include "idc-common.listenPort" . }}
+    database: 
+      dbAvailable: {{ .Values.database.dbAvailable }}
+      dbAddress: {{ .Values.database.dbAddress }}
+      dbPort: {{ .Values.database.dbPort }}
+      name: {{ .Values.database.name }}
+      user: {{ .Values.database.user }}
+      password: {{ .Values.database.password }}
+      # New Additions
+      maxIdleConnectionCount: {{ .Values.dbMaxIdleConnectionCount | quote }}
+      passwordFile: /vault/secrets/db_password
+      url: {{ include "idc-common.db-url" . }}
+      usernameFile: /vault/secrets/db_username
+
+    serviceArea:
+      # We have to figure out what to do with the serviceArea. Whether needed
+      # at all. Also regionID may be duplicating with the Values.region field
+      # Kept the availability zones list as a reminder for future.
+      regionID: {{ .Values.serviceArea.regionID }}
+    security:
+      postgreSqlSSL:
+        enabled: {{ .Values.security.postgreSqlSSL.enabled }}
+        verify:  {{ .Values.security.postgreSqlSSL.verify }}
+        cA: {{ .Values.security.postgreSqlSSL.cA }}
+        certificate: {{ .Values.security.postgreSqlSSL.certificate }}
+        privateKey: {{ .Values.security.postgreSqlSSL.privateKey }}
+      ovnCentralSSL:
+        enabled: {{ .Values.security.ovnCentralSSL.enabled }}
+        verify:  {{ .Values.security.ovnCentralSSL.verify }}
+        cA: {{ .Values.security.ovnCentralSSL.cA }}
+        certificate: {{ .Values.security.ovnCentralSSL.certificate }}
+        privateKey: {{ .Values.security.ovnCentralSSL.privateKey }}
+      grpcServerSSL:
+        enabled: {{ .Values.security.grpcServerSSL.enabled }}
+        verify:  {{ .Values.security.grpcServerSSL.verify }}
+        cA: {{ .Values.security.grpcServerSSL.cA }}
+        certificate: {{ .Values.security.grpcServerSSL.certificate }}
+        privateKey: {{ .Values.security.grpcServerSSL.privateKey }}
+    gateways:
+      {{- range $index, $gateway := .Values.gateways }}
+        - Uuid: {{ $gateway.Uuid }}
+          ChassisId: {{ $gateway.ChassisId }}
+          Nexthop: {{ $gateway.Nexthop }}
+          TargetNetwork: {{ $gateway.TargetNetwork }}
+          AccessNetwork: {{ $gateway.AccessNetwork }}
+          Service: {{ $gateway.Service }}
+          MaxNATs: {{ $gateway.MaxNATs }}
+      {{- end }}

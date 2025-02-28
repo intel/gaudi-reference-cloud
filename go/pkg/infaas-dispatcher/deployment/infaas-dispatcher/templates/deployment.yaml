@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infaas-dispatcher.fullname" . }}
+  namespace: "idcs-system" # TODO should this be injected?
+  labels:
+    {{- include "infaas-dispatcher.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "infaas-dispatcher.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "infaas-dispatcher.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "infaas-dispatcher.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          args:
+            - "serve"
+            - "--config=/config.yaml"
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: IDC_CLIENT_TLS_ENABLED
+              value: "false"
+            - name: IDC_SERVER_TLS_ENABLED
+              value: "false"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: grpc
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          startupProbe:
+            exec:
+              command:
+                - go/pkg/infaas-dispatcher/infaas_dispatcher_image.binary_/infaas_dispatcher_image.binary
+                - health
+                - startup
+            initialDelaySeconds: 1
+            periodSeconds: 1
+            failureThreshold: 5
+          livenessProbe:
+            exec:
+              command:
+                - go/pkg/infaas-dispatcher/infaas_dispatcher_image.binary_/infaas_dispatcher_image.binary
+                - health
+                - startup
+            periodSeconds: 1
+            failureThreshold: 5
+            successThreshold: 1
+          readinessProbe:
+            exec:
+              command:
+                - go/pkg/infaas-dispatcher/infaas_dispatcher_image.binary_/infaas_dispatcher_image.binary
+                - health
+                - startup
+            periodSeconds: 1
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+      volumes:
+        - configMap:
+            name: {{ include "infaas-dispatcher.fullname" . }}
+          name: config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

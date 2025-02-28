@@ -1,0 +1,42 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "interpodaffinity",
+    srcs = [
+        "filtering.go",
+        "plugin.go",
+        "scoring.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/framework/plugins/interpodaffinity",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/parallelize",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/names",
+        "//go/pkg/log",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/labels",
+        "@io_k8s_apimachinery//pkg/runtime",
+    ],
+)
+
+go_test(
+    name = "interpodaffinity_test",
+    srcs = [
+        "filtering_test.go",
+        "scoring_test.go",
+    ],
+    embed = [":interpodaffinity"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/apis/config",
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/testing",
+        "//go/pkg/instance_scheduler/vm/internal/cache",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+    ],
+)

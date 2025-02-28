@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-idc-console-nodeport
+  namespace: minio-idc-tenant
+spec:
+  ports:
+  - name: https-console
+    port: 9443
+    protocol: TCP
+    targetPort: 9443
+    nodePort: 30444
+  selector:
+    v1.min.io/tenant: minio-idc
+  type: NodePort

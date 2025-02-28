@@ -1,0 +1,13 @@
+tftpServerImage:
+  repository: "amr-idc-registry-pre.infra-host.com/idc-devops/tftp-server"
+  pullPolicy: Always
+  tag: "v5"
+
+network:
+  container:
+    port:  69
+    hostNetwork: true
+  service:
+    enabled: false
+    type: NodePort
+    nodePort: 30169

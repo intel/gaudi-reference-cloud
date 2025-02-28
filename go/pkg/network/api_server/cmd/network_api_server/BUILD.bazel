@@ -1,0 +1,33 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "network_api_server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/network/api_server/cmd/network_api_server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/authutil",
+        "//go/pkg/conf",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/log/logkeys",
+        "//go/pkg/manageddb",
+        "//go/pkg/network/api_server/config",
+        "//go/pkg/network/api_server/server",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@com_github_amacneil_dbmate//pkg/driver/postgres",
+        "@com_github_jackc_pgx_v5//stdlib",
+        "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "network_api_server",
+    embed = [":network_api_server_lib"],
+    visibility = ["//visibility:public"],
+)

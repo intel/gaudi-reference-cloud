@@ -1,0 +1,55 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts 
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- if $region.pgOperator.enabled }}
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-pgoperator") }}
+    namespace: cnpg-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: pgOperator
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: pgOperator
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: cnpg/cloudnative-pg
+    version: {{ $region.pgOperator.releaseVersion }}
+    values:
+      - replicaCount: {{ $region.pgOperator.replicaCount }}
+      - resources:
+          limits:
+            cpu: {{ $region.pgOperator.resources.limits.cpu }}
+            memory: {{ $region.pgOperator.resources.limits.memory }}
+          requests:
+            cpu: {{ $region.pgOperator.resources.requests.cpu }}
+            memory: {{ $region.pgOperator.resources.requests.memory }}
+      - monitoring:
+          podMonitorEnabled: {{ $region.pgOperator.monitoring.prometheusEnabled }}
+          grafanaDashboard:
+            create: {{ $region.pgOperator.monitoring.grafanaDashboard.enabled }}
+      - additionalEnv: {{ $region.pgOperator.additionalEnv }}    
+      - config: 
+          data:
+            CERTIFICATE_DURATION: "{{ $region.pgOperator.config.data.certDuration }}"
+            INHERITED_LABELS: "{{ $region.pgOperator.config.data.inheritedLabels }}"
+
+{{- end }}
+
+{{- end }}

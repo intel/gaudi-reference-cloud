@@ -1,0 +1,13 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base
+nameSuffix: "-v1"
+patches:
+  - path: deployment.yaml
+configMapGenerator:
+  - name: storage-controller-config
+    files:
+      - config.yaml

@@ -1,0 +1,61 @@
+{
+    "baseUrl": "<<compute url>>",
+    "cloudaccount_payload": {},
+    "metering_search_payload": {
+        "resourceId": "<<resourceId>>",
+        "cloudAccountId": "<<cloudAccountId>>"
+    },
+    "staas_payload": {
+        "metadata": {
+            "name": "<<volume-name>>"
+        },
+        "spec": {
+            "Encrypted": true,
+            "accessModes": "ReadWrite",
+            "availabilityZone": "string",
+            "mountProtocol": "Weka",
+            "request": {
+                "storage": "<<volume-size>>"
+            },
+            "storageClass": "GeneralPurpose"
+        }
+    },
+    "vnet_payload": {
+        "metadata": {
+            "name": "<<vnet-name>>"
+        },
+        "spec": {
+            "region": "us-staging-1",
+            "availabilityZone": "us-staging-1a",
+            "prefixLength": 22
+        }
+    },
+    "sshpublickey_payload": {
+        "metadata": {
+            "name": "<<ssh-key-name>>"
+        },
+        "spec": {
+            "sshPublicKey": "<<ssh-user-public-key>>"
+        }
+    },
+    "instance_payload": {
+        "metadata": {
+            "name": "<<instance-name>>"
+        },
+        "spec": {
+            "availabilityZone": "us-staging-1a",
+            "instanceType": "<<instance-type>>",
+            "machineImage": "<<machine-image>>",
+            "runStrategy": "RerunOnFailure",
+            "sshPublicKeyNames": [
+                "<<ssh-public-key>>"
+            ],
+            "interfaces": [
+                {
+                    "name": "eth0",
+                    "vNet": "<<vnet-name>>"
+                }
+            ]
+        }
+    }
+}

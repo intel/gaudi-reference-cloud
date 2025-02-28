@@ -1,0 +1,482 @@
+syntax = "proto3";
+
+package proto;
+
+
+import "google/protobuf/wrappers.proto";
+import "google/api/annotations.proto";
+import "annotations.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+service AuthzService {
+  // Verifies if the user, based on the provided token, and http request information, has the necessary authorization to perform the specified action.
+  rpc Check(AuthorizationRequest) returns (AuthorizationResponse) {};
+
+  // Internal verification call to determine if a specific user has the required authorization to execute the given action. This is intended for use by internal clients.
+  rpc CheckInternal(AuthorizationRequestInternal) returns (AuthorizationResponse) {};
+
+  // Check if the user has the necessary authorization to perform the specified action given multiple resource IDs.
+  rpc Lookup(LookupRequest) returns (LookupResponse) {};
+  
+  // Internal verification call if a specific user has the necessary authorization to perform the specified action given multiple resource IDs. This is intended for use by internal clients.
+  rpc LookupInternal(LookupRequestInternal) returns (LookupResponse) {};
+
+  // Retrieves the actions that a user can perform on a resource. Requires a user token for authorization.
+  rpc Actions(ActionsRequest) returns (ActionsResponse) {
+    option (google.api.http) = {
+      post: "/v1/authorization/actions"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc CreateCloudAccountRole(CloudAccountRole) returns (CloudAccountRole) {
+    option (google.api.http) = {
+      post: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc QueryCloudAccountRoles(CloudAccountRoleQuery) returns (CloudAccountRoles) {
+    option (google.api.http) = {
+      get: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc GetCloudAccountRole(CloudAccountRoleId) returns (CloudAccountRole) {
+    option (google.api.http) = {
+      get: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{id}"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc UpdateCloudAccountRole(CloudAccountRoleUpdate) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{id}"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+  
+  rpc RemoveCloudAccountRole(CloudAccountRoleId) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{id}"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc AddUserToCloudAccountRole(CloudAccountRoleUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{id}/users"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc AddCloudAccountRolesToUser(CloudAccountRolesUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/authorization/cloudaccounts/{cloudAccountId}/users/{userId}/roles"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc RemoveCloudAccountRolesFromUser(CloudAccountRolesUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/authorization/cloudaccounts/{cloudAccountId}/users/{userId}/roles"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc RemoveResourceFromCloudAccountRole(CloudAccountRoleResourceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{id}/resources"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc RemoveUserFromCloudAccountRole(CloudAccountRoleUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{id}/users"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc AddPermissionToCloudAccountRole(CloudAccountRolePermissionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{cloudAccountRoleId}/permissions"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc UpdatePermissionCloudAccountRole(CloudAccountRolePermissionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{cloudAccountRoleId}/permissions/{permission.id}"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc RemovePermissionFromCloudAccountRole(CloudAccountRolePermissionId) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/{cloudAccountRoleId}/permissions/{id}"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc AssignSystemRole(RoleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/authorization/system_role/assign"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc UnassignSystemRole(RoleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/authorization/system_role/unassign"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc SystemRoleExists(RoleRequest) returns (SystemRoleExistResponse) {};
+
+  rpc RemovePolicy(PolicyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/authorization/policies/remove"
+      body: "*"
+    };
+  };
+
+  rpc CreatePolicy(PolicyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/authorization/policies/create"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+  };
+
+  rpc ListResourceDefinition(google.protobuf.Empty) returns (ResourceDefinitions) {
+    option (google.api.http) = {
+      get: "/v1/authorization/resources"
+    };
+    option (idc.method).authz.user = true;
+  };
+
+  rpc GetUser(GetUserRequest) returns (UserDetailed) {
+    option (google.api.http) = {
+      get: "/v1/authorization/cloudaccounts/{cloudAccountId}/users/{userId}"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+    
+  rpc ListUsersByCloudAccount(ListUsersByCloudAccountRequest) returns (ListUsersByCloudAccountResponse) {
+    option (google.api.http) = {
+      get: "/v1/authorization/cloudaccounts/{cloudAccountId}/users"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  // Internal method called only by cloudaccount-enroll
+  rpc DefaultCloudAccountRoleAssigned(DefaultCloudAccountRoleAssignedRequest) returns (DefaultCloudAccountRoleAssignedResponse) {
+    option (google.api.http) = {
+      get: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/default"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  // Internal method called only by cloudaccount-enroll
+  rpc AssignDefaultCloudAccountRole(AssignDefaultCloudAccountRoleRequest) returns (CloudAccountRole) {
+    option (google.api.http) = {
+      post: "/v1/authorization/cloudaccounts/{cloudAccountId}/roles/default"
+      body: "*"
+    };
+    option (idc.method).authz.authzCheck = true;
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/authorization/ping"
+    };
+  };
+
+  
+}
+
+enum SystemRole {
+  intel_admin = 0;
+  cloud_account_admin = 1;
+  cloud_account_member = 2;
+}
+
+message SystemRoleExistResponse {
+  bool exist = 1;
+}
+
+message UserIdentification {
+  string email = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string enterpriseId = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  repeated string groups = 3 [(validate.rules).repeated = {min_items: 0, max_items: 10}];
+}
+
+message AuthorizationRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string path = 2 [(validate.rules).string = {min_len: 1, max_len: 512}];
+  string verb = 3 [(validate.rules).string = {min_len: 1, max_len: 10}];
+  google.protobuf.Struct payload = 4;
+}
+
+message AuthorizationRequestInternal {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string path = 2 [(validate.rules).string = {min_len: 1, max_len: 512}];
+  string verb = 3 [(validate.rules).string = {min_len: 1, max_len: 10}];
+  google.protobuf.Struct payload = 4;
+  UserIdentification user = 5 [(validate.rules).message.required = true];
+}
+
+message AuthorizationResponse {
+  bool allowed = 1;
+}
+
+message LookupRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string resourceType = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string  action = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  repeated string resourceIds = 4 [(validate.rules).repeated = {min_items: 0, max_items: 1000}];
+}
+
+message LookupRequestInternal {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string resourceType = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string  action = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  repeated string resourceIds = 4 [(validate.rules).repeated = {min_items: 0, max_items: 1000}];
+  UserIdentification user = 5 [(validate.rules).message.required = true];
+}
+
+message LookupResponse {
+  string resourceType = 1;
+  repeated string resourceIds = 2;
+}
+
+message ActionsRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}, (idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string resourceType = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string resourceId = 3 [(validate.rules).string = {min_len: 0, max_len: 255}];
+}
+
+message ActionsResponse {
+  repeated string actions = 1;
+}
+
+message CloudAccountRoleId {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}, (idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string id = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+}
+
+message CloudAccountRole {
+  string id = 1 [(validate.rules).string = {min_len: 0, max_len: 255}];
+  string alias = 2  [(validate.rules).string = {min_len: 1, max_len: 255,pattern: "^[a-zA-Z0-9-]+$"}];
+  optional string createdAt = 3 [(validate.rules).string = {min_len: 1, max_len: 128}];
+  optional string updatedAt = 4 [(validate.rules).string = {min_len: 1, max_len: 128}];
+  optional string deletedAt = 5 [(validate.rules).string = {min_len: 1, max_len: 128}];
+  string cloudAccountId = 6 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  Effect effect = 7 [(validate.rules).enum = { defined_only: true }];
+  repeated string users = 8 [(validate.rules).repeated = {min_items: 0, max_items: 1000}];
+  repeated Permission permissions = 9  [(validate.rules).repeated = {min_items: 0, max_items: 1000}];
+
+  message Permission {
+    string id = 1 [(validate.rules).string = {min_len: 0, max_len: 255}];
+    string resourceType = 2  [(validate.rules).string = {min_len: 1, max_len: 255}];
+    string resourceId = 3  [(validate.rules).string = {min_len: 1, max_len: 255, pattern: "^[a-zA-Z0-9*-]+$"}];
+    repeated string actions = 4 [(validate.rules).repeated = {min_items: 0, max_items: 127}];
+    optional string createdAt = 5;
+    optional string updatedAt = 6;
+  }
+
+  enum Effect{
+    allow = 0;
+    deny = 1;
+  }
+}
+
+message CloudAccountRoleUpdate {
+  string id = 1   [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string alias = 2   [(validate.rules).string = {min_len: 1, max_len: 255, pattern: "^[a-zA-Z0-9-]+$"}];
+  string cloudAccountId = 3  [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  Effect effect = 4   [(validate.rules).enum = {defined_only: true}];
+  repeated string  users = 5 [(validate.rules).repeated = {min_items: 0, max_items: 1000}];
+  repeated Permission permissions = 6  [(validate.rules).repeated = {min_items: 0, max_items: 1000}];
+
+  message Permission {
+    optional string id = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+    string resourceType = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+    string resourceId = 3 [(validate.rules).string = {min_len: 1, max_len: 255, pattern: "^[a-zA-Z0-9*-]+$"}];
+    repeated string actions = 4 [(validate.rules).repeated = {min_items: 0, max_items: 127}];
+  } 
+
+  enum Effect {
+    allow = 0;
+    deny = 1;
+  }
+}
+
+message CloudAccountRoles {
+  repeated CloudAccountRole cloudAccountRoles = 1;
+}
+
+message CloudAccountRoleQuery {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}, (idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  optional string resourceType = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  optional string userId = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  optional uint32 page = 4 [(validate.rules).uint32.gt = 0];
+  optional uint32 size = 5 [(validate.rules).uint32.gt = 0];
+}
+
+message CloudAccountRoleUserRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}, (idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string id = 2 [(validate.rules).string = {min_len: 0, max_len: 255}];
+  string userId = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+}
+
+message CloudAccountRolesUserRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}, (idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  repeated string cloudAccountRoleIds = 2 [(validate.rules).repeated = {min_items: 1, max_items: 1000}];
+  string userId = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+}
+
+message CloudAccountRoleResourceRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255}, (idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string id = 2 [(validate.rules).string = {min_len: 0, max_len: 255}];
+  string resourceId = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string resourceType = 4 [(validate.rules).string = {min_len: 1, max_len: 255}];
+}
+
+message RoleRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string subject = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string systemRole = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+}
+
+message CloudAccountRolePermissionRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string cloudAccountRoleId = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  CloudAccountRole.Permission permission = 4 [(validate.rules).message.required = true];
+}
+
+message CloudAccountRolePermissionId {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string cloudAccountRoleId = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string id = 3 [(validate.rules).string = {min_len: 1, max_len: 255}];
+}
+
+message PolicyRequest {
+  string subject = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string object = 2 [(validate.rules).string = {min_len: 1, max_len: 512}];
+  string action = 3 [(validate.rules).string = {min_len: 1, max_len: 10}];
+  string expression = 4 [(validate.rules).string = {min_len: 1, max_len: 512}];
+}
+
+message ResourceDefinitions {
+  repeated ResourceDefinition resources = 1;
+}
+
+message ResourceDefinition {
+  string type = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string description = 2 [(validate.rules).string = {min_len: 1, max_len: 512}];
+  repeated Action  actions = 3;
+
+  message Action {
+    string name = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+    string type = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+    string description = 3 [(validate.rules).string = {min_len: 1, max_len: 512}];
+  }
+}
+
+message ListUsersByCloudAccountRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+}
+
+message ListUsersByCloudAccountResponse {
+  repeated User users = 1;
+}
+
+message GetUserRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  string userId = 2 [(validate.rules).string = {min_len: 1, max_len: 255}]; 
+}
+
+message UserDetailed {
+  string id = 1 [(validate.rules).string.min_len = 1];
+  string cloudAccountId = 2 [(validate.rules).string.min_len = 1];
+  repeated string systemRoles = 3;
+  repeated CloudAccountRoleDetailed cloudAccountRoles = 4;
+    message CloudAccountRoleDetailed {
+      string cloudAccountRoleId = 1;
+      string alias = 2;
+      optional string createdAt = 3;
+      optional string updatedAt = 4;
+      optional string deletedAt = 5;
+      optional string cloudAccountId = 6;
+      optional string effect = 7;
+      repeated CloudAccountRole.Permission permissions = 8;
+  }
+}
+
+message User {
+  string id = 1 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  string cloudAccountId = 2 [(validate.rules).string = {min_len: 1, max_len: 255}];
+  repeated string systemRoles = 3;
+  repeated CloudAccountRole cloudAccountRoles = 4;
+
+  message CloudAccountRole {
+    string cloudAccountRoleId = 1;
+    string alias = 2;
+  }
+}
+
+message DefaultCloudAccountRoleAssignedRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+}
+
+message DefaultCloudAccountRoleAssignedResponse {
+  bool assigned = 1;
+}
+
+message AssignDefaultCloudAccountRoleRequest {
+  string cloudAccountId = 1 [(validate.rules).string = {min_len: 1, max_len: 255},(idc.field).cloudAccount = true,(idc.field).authzCheck = true];
+  repeated string admins = 2 [(validate.rules).repeated = {min_items: 1, max_items: 1}];
+  repeated string members = 3 [(validate.rules).repeated = {min_items: 0, max_items: 1000}];
+}

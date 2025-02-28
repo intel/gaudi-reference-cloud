@@ -1,0 +1,41 @@
+{{- if .Values.statsd.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "idc-common.fullname" . }}-statsd-exporter-monitor
+spec:
+  selector:
+    matchLabels:
+      grpc_proxy_name: {{ include "idc-common.serviceAccountName" . }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+  {{- if .Values.rateLimit.enabled }}
+      metricRelabelings:
+      - action: replace
+        regex: envoy_grpc_(internal|external|appClient)_cluster_(.*)_ratelimit_(ok|error|over_limit|failure_mode_allowed)
+        replacement: ${1}
+        sourceLabels:
+        - __name__
+        targetLabel: grpc_proxy_type
+      - action: replace
+        regex: envoy_grpc_(internal|external|appClient)_cluster_(.*)_ratelimit_(ok|error|over_limit|failure_mode_allowed)
+        replacement: ${2}
+        sourceLabels:
+        - __name__
+        targetLabel: envoy_target_cluster
+      - action: replace
+        regex: envoy_grpc_(internal|external|appClient)_cluster_(.*)_ratelimit_(ok|error|over_limit|failure_mode_allowed)
+        replacement: ${3}
+        sourceLabels:
+        - __name__
+        targetLabel: requests_status
+      - action: replace
+        regex: envoy_grpc_(internal|external|appClient)_cluster_(.*)_ratelimit_(ok|error|over_limit|failure_mode_allowed)
+        replacement: envoy_grpc_cluster_ratelimit_requests
+        sourceLabels:
+        - __name__
+        targetLabel: __name__
+  {{- end }}
+{{- end }}

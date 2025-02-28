@@ -1,0 +1,344 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  NOTIFICATION = 1;
+  ALERT = 2;
+  EMAIL = 3;
+  RESOURCE = 4;
+  OPERATION = 5;
+  AUDIT = 6;
+  ERROR = 7;
+}
+
+// serverity decides on whether it is a notification or a alert or email
+// low will always be notifications
+// medium and high will be alerts
+enum EventSeverity {
+  EVENT_SEVERITY_UNSPECIFIED = 0;
+  LOW = 1;
+  MEDIUM = 2;
+  HIGH = 3;
+}
+
+// status field will be expanded as functionality increases
+enum EventStatus {
+  EVENT_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+}
+
+// there will be one plugin per destination
+enum EventReceiver {
+  EVENT_RECEIVER_UNSPECIFIED = 0;
+  PORTAL = 1;
+  SMTP = 2;
+  SQS = 3;
+  SES = 4;
+  DEFAULT = 5;
+}
+
+// this enum will go away when we have service registration
+enum ServiceName {
+  SERVICE_NAME_UNSPECIFIED = 0;
+  BILLING = 1;
+  CREDIT = 2;
+  BILLING_DRIVER_ARIA = 3;
+  BILLING_DRIVER_INTEL = 4;
+  BILLING_DRIVER_STANDARD = 5;
+}
+
+// receive a notification upon subscription
+message Notification {
+  string id = 1;
+  optional string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string userId = 3;
+  string notificationType = 4;
+  optional string serviceName = 5;
+  google.protobuf.Timestamp creation = 6;
+  google.protobuf.Timestamp expiration = 7;
+  string status = 8;
+  optional string severity = 9;
+  optional string message = 10;
+  map<string, string> properties = 11;
+  string clientRecordId = 12;
+}
+
+// receive a alert upon subscription
+message Alert {
+  string id = 1;
+  optional string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string userId = 3;
+  string alertType = 4;
+  optional string serviceName = 5;
+  google.protobuf.Timestamp creation = 6;
+  google.protobuf.Timestamp expiration = 7;
+  string status = 8;
+  optional string severity = 9;
+  optional string message = 10;
+  map<string, string> properties = 11;
+  string clientRecordId = 12;
+}
+
+message Error {
+  string id = 1;
+  optional string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string userId = 3;
+  string alertType = 4;
+  optional string serviceName = 5;
+  google.protobuf.Timestamp creation = 6;
+  google.protobuf.Timestamp expiration = 7;
+  string status = 8;
+  optional string severity = 9;
+  optional string message = 10;
+  map<string, string> properties = 11;
+  string clientRecordId = 12;
+  optional string region = 13;
+}
+
+
+// create a event to be sent out
+message CreateEvent {
+  EventStatus status = 1;
+  EventType type = 2;
+  optional EventSeverity severity = 3;
+  optional ServiceName serviceName = 4;
+  optional string message = 5;
+  optional string cloudAccountId = 6 [
+    (idc.field).cloudAccount = true
+  ];
+  optional string userId = 7;
+  string eventSubType = 8;
+  map<string, string> properties = 9;
+  string clientRecordId = 10;
+  optional string region = 11;
+  string eventName = 12;
+  optional string eventState=13;
+}
+
+// to register individual sub types - example - cloud credits expired
+// sub types are not understood by notification gateway
+message RegisterEventSubTypeReceiver {
+  string eventSubType = 1;
+  EventReceiver eventReceiver = 2;
+}
+
+// to register event sub types a service would send
+message RegisterServiceEvents {
+  ServiceName serviceName = 1;
+  repeated RegisterEventSubTypeReceiver eventSubTypeRecievers = 2;
+}
+
+// to receive events subscribed to
+message Events {
+  int32 numberOfNotifications = 1;
+  int32 numberOfAlerts = 2;
+  repeated Notification notifications = 3;
+  repeated Alert alerts = 4;
+}
+
+// to subscribe to events
+message EventsSubscribe {
+  string clientId = 1;
+  string cloudAccountId = 2 [
+    (idc.field).cloudAccount = true
+  ];
+}
+
+message EventsFilter {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true
+  ];
+  string clientRecordId = 2;
+}
+
+
+message PublishEventRequest {
+  CreateEvent createEvent  =1;
+  string subject = 2;
+  string topicName  = 3;
+}
+
+message SubscribeEventRequest {
+  string topicName  = 1;
+  string queueName = 2;
+  string protocol = 3;
+}
+
+message ReceiveEventRequest {
+  string queueName  = 1;
+  int64 maxNumberOfMessages = 2;
+	int64 waitTimeSeconds = 3; 
+  string eventName  = 4;
+  string timeStamp = 5;
+}
+
+message DeleteEventRequest {
+  string messageId = 1;
+  string receiptHandle  = 2;
+}
+
+message DeleteEventRequestList {
+  string queueName  = 1;
+  repeated DeleteEventRequest deleteEventRequests = 2;
+}
+
+
+message SubscribeEventResponse {
+  string subscriptionArn =1;
+}
+
+message PublishEventResponse {
+  string messageId = 1;
+}
+
+message ReceiveEventResponse {
+  repeated MessageResponse messageResponse = 1;
+}
+
+
+message MessageResponse {
+  string messageId = 1;
+  string body = 2;
+  map<string,string> attributes  = 3;
+  string receiptHandle = 4;
+}
+
+
+service NotificationGatewayService {
+  // register as a event provider
+  rpc Create(CreateEvent) returns (google.protobuf.Empty) {
+  };
+  
+  // Send email notifications
+  rpc sendEmailNotification(CreateEvent) returns (google.protobuf.Empty) {
+  };
+
+  // this will be short lived - short polling
+  rpc Read(EventsFilter) returns (Events) {
+    option (google.api.http) = {
+      get: "/v1/billing/events/all"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  // to subscribe to long polling
+  rpc Subscribe(EventsSubscribe) returns (stream Events) {
+    option (google.api.http) = {
+      post: "/v1/billing/events/subscribe"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  
+  rpc DismissEvent(EventsFilter) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/billing/event/dismiss"
+      body: "*"
+    };
+  };
+
+  rpc PublishEvent(PublishEventRequest) returns (PublishEventResponse) {
+    option (google.api.http) = {
+      post: "/v1/notification/event/publish"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc SubscribeEvents(SubscribeEventRequest) returns (SubscribeEventResponse) {
+    option (google.api.http) = {
+      post: "/v1/notification/event/subscribe"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+
+  rpc ReceiveEvents(ReceiveEventRequest) returns (ReceiveEventResponse) {
+    option (google.api.http) = {
+      post: "/v1/notification/events/receive"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+  
+  rpc DeleteEvents(DeleteEventRequestList) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/notification/events/delete"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  };
+ 
+}
+
+message EmailRequest { 
+    string messageType = 1;
+    string serviceName = 2;
+    string recipient = 3;
+    string sender = 4;
+    string templateName = 5;
+    map<string, string> templateData = 6; 
+}
+
+message SendEmailRequest { 
+    string messageType = 1;
+    string serviceName = 2;
+    repeated string recipient = 3;
+    repeated string ccRecipients = 4;
+    repeated string bccRecipients = 5;
+    string sender = 6;
+    string templateName = 7;
+    map<string, string> templateData = 8; 
+}
+
+message EmailResponse {
+  bool success = 1;
+  string messageId = 2;
+}
+
+service EmailNotificationService {
+  rpc SendUserEmail(EmailRequest) returns (EmailResponse) {
+    option (google.api.http) = {
+      post: "/v1/email/send"
+      body: "*"
+    };
+  };
+  rpc SendEmail(SendEmailRequest) returns (EmailResponse) {
+    option (google.api.http) = {
+      post: "/v1/notification/email/send"
+      body: "*"
+    };
+  };
+}
+
+enum CloudCreditsUsageState {
+  CLOUD_CREDITS_AVAILABLE = 0;
+  CLOUD_CREDITS_THRESHOLD_REACHED = 1;
+  CLOUD_CREDITS_USED = 2;
+}
+
+enum CloudCreditsExpiryState {
+  CLOUD_CREDITS_NOT_EXPIRED = 0;
+  CLOUD_CREDITS_ABOUT_TO_EXPIRE = 1;
+  CLOUD_CREDITS_EXPIRED = 2;
+}
+

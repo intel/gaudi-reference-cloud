@@ -1,0 +1,26 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-controller
+spec:
+  template:
+    metadata:
+      labels:
+        sidecar.istio.io/inject: "true"
+    spec:
+      volumes:
+        - name: phx04-weka-creds
+          secret:
+            secretName: phx04-weka-creds
+            items:
+              - key: _raw
+                path: phx04.json
+      containers:
+        - name: storage-controller
+          volumeMounts:
+            - name: phx04-weka-creds
+              mountPath: /app/secret/phx04.json
+              subPath: phx04.json
+              readOnly: true

@@ -1,0 +1,13 @@
+{{- if not .Values.deployStandaloneIronic -}}
+{{- if not .Values.useVaultPKI }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: baremetal-operator-selfsigned-issuer
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "baremetal-operator.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}
+{{- end }}

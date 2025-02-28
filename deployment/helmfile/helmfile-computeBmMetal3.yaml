@@ -1,0 +1,230 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.certManager.enabled) }}
+  - name: "cert-manager"
+    namespace: "cert-manager"
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBmMetal3
+      service: compute-bm
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: cert-manager
+    chart: "jetstack/cert-manager"
+    version: v1.9.1
+    timeout: 300
+    values:
+      - installCRDs: true
+  {{- end }}
+
+  {{- if and ($computeEnabled) ($availabilityZone.baremetalOperator.enabled) }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-metal3-crds") }}
+    namespace: metal3-crds
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBmMetal3
+      service: compute-bm
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: metal3-crds
+    chart: idc/metal3-crds
+    version: {{ readFile (print $helmChartVersionsDir "/metal3-crds.version") | quote }}
+  {{- end }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.baremetalOperator.enabled) }}
+  {{- range $availabilityZone.baremetalOperatorNamespaces }}
+  - name: baremetal-operator-ns-{{ .name }}
+    namespace: baremetal-operator
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBmMetal3
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: baremetal-operator-ns-{{ .name }}
+    chart: idc/baremetal-operator-ns
+    version: {{ readFile (print $helmChartVersionsDir "/baremetal-operator-ns.version") | quote }}
+    values:
+      - name: {{ .name }}
+      - ironicIp: "{{ .ironicIp }}"
+  {{- end }}
+  {{- end }}
+
+  {{- if and ($.Values.components.computeBm.enabled) ($availabilityZone.baremetalOperator.enabled) }}
+  {{- range $availabilityZone.baremetalOperatorNamespaces }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-baremetal-operator-") }}{{ .name }}
+    namespace: {{ .name }}
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: computeBmMetal3
+      service: compute-bm
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: baremetal-operator-{{ .name }}
+    needs:
+      - {{ $availabilityZone.kubeContext }}/cert-manager/cert-manager
+    chart: idc/baremetal-operator
+    version: {{ readFile (print $helmChartVersionsDir "/baremetal-operator.version") | quote }}
+    values:
+      - idc-common.yaml.gotmpl
+      - enableProxy: {{ .enableProxy }}
+      - httpProxy: "{{ ($.Values.proxy.http_proxy) }}"
+      - httpsProxy: "{{ ($.Values.proxy.https_proxy) }}"
+      - noProxy: "{{ ($.Values.proxy.no_proxy) }}"
+      - bareMetalOperatorImageRepo: "{{ ($.Values.idcRegistry).registry }}/{{ ($.Values.idcRegistry).repositoryPrefix }}baremetal-operator"
+      - bareMetalOperatorImageTag: "7-68ce9c1"
+      - deployStandaloneBaremetalOperator: {{ .standaloneOperator }}
+      - enableTLSandAuth: true
+      - inspector:
+          password: {{ readFile (print $secretsDir "/" $availabilityZone.availabilityZone "-inspector_password") | quote }}
+      - ironicEnvConfigMap:
+          enableEraseDevices: {{ . | get "enableEraseDevices" $availabilityZone.baremetalOperator.enableEraseDevices }}
+          ironicIP: "{{ .ironicIp }}"
+          ironicCACert: /certs/ironic/ca.crt
+          inspectorCACert: /certs/ironic-inspector/ca.crt
+          mariaDBCACert: /certs/mariadb/ca.crt
+          provisioningLimit: {{ . | get "provisioningLimit" $availabilityZone.baremetalOperator.provisioningLimit }}
+      - ironicFWUpdateConfigMap:
+          firmwareImageServer: {{ . | get "firmwareImageServer" $availabilityZone.baremetalOperator.firmwareImageServer | quote }}
+          firmwareMinVersion:
+{{ . | get "firmwareMinVersion" $availabilityZone.baremetalOperator.firmwareMinVersion | toYaml | indent 16 }}
+          bkc:
+            dnp:
+              config:
+                  denalipassCleaningPriority: {{ . | get "bkc.dnp.config.denalipassCleaningPriority" $availabilityZone.baremetalOperator.bkc.dnp.config.denalipassCleaningPriority | quote }}
+              fwVersions:
+                  bmc: {{ . | get "bkc.dnp.fwVersions.bmc" $availabilityZone.baremetalOperator.bkc.dnp.fwVersions.bmc | quote }}
+                  bios: {{ . | get "bkc.dnp.fwVersions.bios" $availabilityZone.baremetalOperator.bkc.dnp.fwVersions.bios  | quote }}
+                  cpld: {{ . | get "bkc.dnp.fwVersions.cpld" $availabilityZone.baremetalOperator.bkc.dnp.fwVersions.cpld | quote }}
+            redfish:
+              config:
+                  firmwareCleaningPriority: {{ . | get "bkc.redfish.config.firmwareCleaningPriority" $availabilityZone.baremetalOperator.bkc.redfish.config.firmwareCleaningPriority | quote }}
+            smc:
+              fwVersions:
+                pvc_1100:
+{{ . | get "bkc.smc.fwVersions.pvc_1100" $availabilityZone.baremetalOperator.bkc.smc.fwVersions.pvc_1100 | toYaml | indent 18 }}
+                pvc_1550:
+{{ . | get "bkc.smc.fwVersions.pvc_1550" $availabilityZone.baremetalOperator.bkc.smc.fwVersions.pvc_1550 | toYaml | indent 18 }}
+                type_3:
+{{ . | get "bkc.smc.fwVersions.type_3" $availabilityZone.baremetalOperator.bkc.smc.fwVersions.type_3 | toYaml | indent 18 }}
+                gaudi_2:
+{{ . | get "bkc.smc.fwVersions.gaudi_2" $availabilityZone.baremetalOperator.bkc.smc.fwVersions.gaudi_2 | toYaml | indent 18 }}
+                gaudi_3:
+{{ . | get "bkc.smc.fwVersions.gaudi_3" $availabilityZone.baremetalOperator.bkc.smc.fwVersions.gaudi_3 | toYaml | indent 18 }}
+            dell:
+              fwVersions:
+                hs5620:
+{{ . | get "bkc.dell.fwVersions.hs5620" $availabilityZone.baremetalOperator.bkc.dell.fwVersions.hs5620 | toYaml | indent 18 }}
+                xe9680_gaudi_3:
+{{ . | get "bkc.dell.fwVersions.xe9680_gaudi_3" $availabilityZone.baremetalOperator.bkc.dell.fwVersions.xe9680_gaudi_3 | toYaml | indent 18 }}
+          gaudi2:
+            dell:
+              fwVersions:
+                build: {{ . | get "gaudi2.dell.fwVersions.build" $availabilityZone.baremetalOperator.gaudi2.dell.fwVersions.build | quote }}
+                spi: {{ . | get "gaudi2.dell.fwVersions.spi" $availabilityZone.baremetalOperator.gaudi2.dell.fwVersions.spi | quote }}
+                full: {{ . | get "gaudi2.dell.fwVersions.full" $availabilityZone.baremetalOperator.gaudi2.dell.fwVersions.full | quote }}
+            smc:
+              fwVersions:
+                build: {{ . | get "gaudi2.smc.fwVersions.build" $availabilityZone.baremetalOperator.gaudi2.smc.fwVersions.build | quote }}
+                spi: {{ . | get "gaudi2.smc.fwVersions.spi" $availabilityZone.baremetalOperator.gaudi2.smc.fwVersions.spi | quote }}
+                full: {{ . | get "gaudi2.smc.fwVersions.full" $availabilityZone.baremetalOperator.gaudi2.smc.fwVersions.full | quote }}
+            wiwynn:
+              fwVersions:
+                build: {{ . | get "gaudi2.wiwynn.fwVersions.build" $availabilityZone.baremetalOperator.gaudi2.wiwynn.fwVersions.build | quote }}
+                spi: {{ . | get "gaudi2.wiwynn.fwVersions.spi" $availabilityZone.baremetalOperator.gaudi2.wiwynn.fwVersions.spi | quote }}
+                full: {{ . | get "gaudi2.wiwynn.fwVersions.full" $availabilityZone.baremetalOperator.gaudi2.wiwynn.fwVersions.full | quote }}
+          gaudi3:
+            dell:
+              fwVersions:
+                build: {{ . | get "gaudi3.dell.fwVersions.build" $availabilityZone.baremetalOperator.gaudi3.dell.fwVersions.build | quote }}
+                cpld: {{ . | get "gaudi3.dell.fwVersions.cpld" $availabilityZone.baremetalOperator.gaudi3.dell.fwVersions.cpld | quote }}
+                spi: {{ . | get "gaudi3.dell.fwVersions.spi" $availabilityZone.baremetalOperator.gaudi3.dell.fwVersions.spi | quote }}
+                full: {{ . | get "gaudi3.dell.fwVersions.full" $availabilityZone.baremetalOperator.gaudi3.dell.fwVersions.full | quote }}
+            smc:
+              fwVersions:
+                build: {{ . | get "gaudi3.smc.fwVersions.build" $availabilityZone.baremetalOperator.gaudi3.smc.fwVersions.build | quote }}
+                cpld: {{ . | get "gaudi3.smc.fwVersions.cpld" $availabilityZone.baremetalOperator.gaudi3.smc.fwVersions.cpld | quote }}
+                spi: {{ . | get "gaudi3.smc.fwVersions.spi" $availabilityZone.baremetalOperator.gaudi3.smc.fwVersions.spi | quote }}
+                full: {{ . | get "gaudi3.smc.fwVersions.full" $availabilityZone.baremetalOperator.gaudi3.smc.fwVersions.full | quote }}
+          pvc:
+            pvc_1100:
+              fwVersions:
+                amc: {{ . | get "pvc.pvc_1100.fwVersions.amc" $availabilityZone.baremetalOperator.pvc.pvc_1100.fwVersions.amc | quote }}
+                ifwi: {{ . | get "pvc.pvc_1100.fwVersions.ifwi" $availabilityZone.baremetalOperator.pvc.pvc_1100.fwVersions.ifwi | quote }}
+                psc: {{ . | get "pvc.pvc_1100.fwVersions.psc" $availabilityZone.baremetalOperator.pvc.pvc_1100.fwVersions.psc | quote }}
+            pvc_1550:
+              fwVersions:
+                amc: {{ . | get "pvc.pvc_1550.fwVersions.amc" $availabilityZone.baremetalOperator.pvc.pvc_1550.fwVersions.amc | quote }}
+                ifwi: {{ . | get "pvc.pvc_1550.fwVersions.ifwi" $availabilityZone.baremetalOperator.pvc.pvc_1550.fwVersions.ifwi | quote }}
+                psc: {{ . | get "pvc.pvc_1550.fwVersions.psc" $availabilityZone.baremetalOperator.pvc.pvc_1550.fwVersions.psc | quote }}
+          mellanox:
+            MT_0000000436:
+              version: {{ . | get "mellanox.MT_0000000436.version" $availabilityZone.baremetalOperator.mellanox.MT_0000000436.version | quote }}
+              sha256: {{ . | get "mellanox.MT_0000000436.sha256" $availabilityZone.baremetalOperator.mellanox.MT_0000000436.sha256 | quote }}
+            MT_0000000359:
+              version: {{ . | get "mellanox.MT_0000000359.version" $availabilityZone.baremetalOperator.mellanox.MT_0000000359.version | quote }}
+              sha256: {{ . | get "mellanox.MT_0000000359.sha256" $availabilityZone.baremetalOperator.mellanox.MT_0000000359.sha256 | quote }}
+            MT_0000000224:
+              version: {{ . | get "mellanox.MT_0000000224.version" $availabilityZone.baremetalOperator.mellanox.MT_0000000224.version | quote }}
+              sha256: {{ . | get "mellanox.MT_0000000224.sha256" $availabilityZone.baremetalOperator.mellanox.MT_0000000224.sha256 | quote }}
+            MT_0000000838:
+              version: {{ . | get "mellanox.MT_0000000838.version" $availabilityZone.baremetalOperator.mellanox.MT_0000000838.version | quote }}
+              sha256: {{ . | get "mellanox.MT_0000000838.sha256" $availabilityZone.baremetalOperator.mellanox.MT_0000000838.sha256 | quote }}
+      - ironicImageRepo: "{{ ($.Values.idcRegistry).registry }}/{{ ($.Values.idcRegistry).repositoryPrefix }}ironic-image"
+      - ironicImageTag: {{ . | get "ironicImageTag" $availabilityZone.baremetalOperator.ironicImageTag | quote }}
+      - ironic:
+          password: {{ readFile (print $secretsDir "/" $availabilityZone.availabilityZone "-ironic_password") | quote }}
+      - kubeRBACPolicyImageRepo: "{{ ($.Values.dockerIo).registry }}/{{ ($.Values.dockerIo).repositoryPrefix }}bitnami/kube-rbac-proxy"
+      - mariaDBImageRepo: "{{ ($.Values.idcRegistry).registry }}/{{ ($.Values.idcRegistry).repositoryPrefix }}metal3-io/mariadb"
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - service:
+          type: LoadBalancer
+      - serviceMonitor:
+            enabled: {{ $.Values.serviceMonitor.regional.enabled }}
+      - useVaultPKI: true
+      - vault:
+          authPath: {{ $availabilityZone.vault.authPath | quote }}
+          pkiSignPathPrefix: /{{ $availabilityZone.availabilityZone }}-ca/issue
+  {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

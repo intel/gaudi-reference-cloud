@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+
+go_library(
+    name = "cloudmonitor_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/cloudmonitor/cmd/cloudmonitor",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/cloudmonitor/config",
+        "//go/pkg/cloudmonitor/server",
+        "//go/pkg/conf",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/observability",
+        "@com_github_jackc_pgx_v5//stdlib",
+    ],
+)
+
+go_binary(
+    name = "cloudmonitor",
+    embed = [":cloudmonitor_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "cloudmonitor_image",
+    embed = [
+        ":cloudmonitor_lib",
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: maas-ingress
+  namespace: istio-system
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true" # TLS will terminate in the Istio Gateway
+    nginx.ingress.kubernetes.io/rewrite-target: /
+##    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/auth-tls-verify-depth: "2"
+#    # TODO we can add this later if we know what the IDC certificates look like
+#    #    nginx.ingress.kubernetes.io/auth-tls-match-cn: "CN=us-staging-3-maas-gateway"
+#    nginx.ingress.kubernetes.io/proxy-ssl-server-name: "on"
+    nginx.ingress.kubernetes.io/proxy-ssl-secret: "istio-system/ingress-certs"
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: "ingress-certs"
+      hosts:
+        - "dispatcher.intel.com" # dev
+        - "146.152.224.83" # dev
+        - "146.152.227.169" # new public staging
+        - "146.152.225.162" # old public preprod
+        - "146.152.224.101" # old public prod
+        - "maas-dispatcher.idcmgt.intel.com"
+        - "maas-dispatcher.idcstage.intel.com"
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: istio-ingressgateway
+            port:
+              number: 443

@@ -1,0 +1,21 @@
+- name: Is Terraform installed?
+  stat:
+    path: "/usr/bin/terraform"
+  register: terraform_bin
+
+- name: Add terraform to sources 
+  shell: |
+    rm -f /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    wget -e use_proxy=yes -e https_proxy=$https_proxy -nv -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+  environment:
+    http_proxy: "http://internal-placeholder.com:912"
+    https_proxy: "http://internal-placeholder.com:912"
+    no_proxy: "intel.com,.intel.com,10.0.0.0/8,192.168.0.0/16,localhost,127.0.0.0/8,134.134.0.0/16,172.16.0.0/16,192.168.150.0/24,{{ ansible_host }}"
+  when: not terraform_bin.stat.exists
+
+- name: Install Terraform 
+  ansible.builtin.apt:
+    name: terraform
+    update_cache: yes
+  when: not terraform_bin.stat.exists

@@ -1,0 +1,89 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.cloudmonitor.enabled }}
+  - name: cloudmonitor
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudmonitor
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudmonitor
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/cloudmonitor
+    version: {{ readFile (print $helmChartVersionsDir "/cloudmonitor.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}cloudmonitor@sha256"
+      - database:
+          arg: {{ $.Values.global.cloudmonitor.database.arg | quote }}
+          name: {{ $.Values.global.cloudmonitor.database.name | quote }}
+          service: {{ $.Values.global.cloudmonitor.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.cloudmonitor.database.vaultCredentialsPath | quote }}
+      - victoriaMetricsAddr: {{ $.Values.global.cloudmonitor.victoriaMetricsAddr | quote }}
+      - remoteWriteBMAddr: {{ $.Values.global.cloudmonitor.remoteWriteBMAddr | quote }}
+      - remoteReadAddrBM: {{ $.Values.global.cloudmonitor.remoteReadAddrBM | quote }}
+      - remoteWriteIKSAddr: {{ $.Values.global.cloudmonitor.remoteWriteIKSAddr | quote }}
+      - vMClusterName: {{ $.Values.global.cloudmonitor.vMClusterName | quote }}
+      - roleArn: {{ $.Values.global.cloudmonitor.roleArn | quote }}
+      - enableMetricsBM: {{ $.Values.global.cloudmonitor.enableMetricsBM | quote }}
+      - clusterEndpoint: {{ $.Values.global.cloudmonitor.clusterEndpoint | quote }}
+      - awsVMClusterRegion: {{ $.Values.global.cloudmonitor.awsVMClusterRegion | quote }}
+      - insecureSkipVerify: {{ $.Values.global.cloudmonitor.insecureSkipVerify | quote }}
+      - replicaCount: {{ $.Values.global.cloudmonitor.replicaCount }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  {{- if $.Values.global.cloudmonitorDb.enabled }}
+  - name: cloudmonitor-db
+    namespace: idcs-system
+    kubeContext: {{  $.Values.global.kubeContext }}
+    labels:
+      component: cloudmonitor
+      database: cloudmonitor
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudmonitor-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.cloudmonitor.database.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/cloudmonitor_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/cloudmonitor_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.cloudmonitorDb.primary.persistence.enabled }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

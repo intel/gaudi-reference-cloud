@@ -1,0 +1,33 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "ipacmd",
+    srcs = [
+        "habana.go",
+        "ipacmd.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/ipacmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/myssh",
+        "//go/pkg/baremetal_enrollment/secrets",
+        "@com_github_gocarina_gocsv//:gocsv",
+        "@io_k8s_sigs_controller_runtime//pkg/log",
+        "@org_golang_x_crypto//ssh",
+    ],
+)
+
+go_test(
+    name = "ipacmd_test",
+    srcs = ["ipacmd_test.go"],
+    embed = [":ipacmd"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/mocks",
+        "//go/pkg/baremetal_enrollment/util",
+        "@com_github_golang_mock//gomock",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

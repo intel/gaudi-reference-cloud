@@ -1,0 +1,703 @@
+syntax="proto3";
+ 
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+import "annotations.proto";
+import "dpai_deployment.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).service = "dpai";
+option (idc.file).deploy = regional;
+
+// Airflow Size -- Admin
+
+message DpaiAirflowSize {
+    string cloudAccountId = 1;
+    string id = 2;
+    string name = 3;
+    string description = 4;
+    int32 numberOfNodesDefault = 5;
+    string nodeSizeId = 6;
+    string backendDatabaseSizeId = 7;
+    string logDirectoryDiskSize = 8;
+    string redisDiskSize = 9;
+    DpaiAirflowSizeWebServerProperties airflowSizeWebserverProperties = 10;
+    DpaiAirflowSchedulerProperties airflowSchedulerProperties = 11;
+    DpaiAirflowWorkerProperties airflowWorkerProperties = 12;
+    DpaiAirflowTriggerProperties airflowTriggerProperties = 13;
+    DpaiMeta metadata = 14;
+ }
+
+ message DpaiAirflowSizeWebServerProperties {
+    int32 webserverCount = 1;
+    string webserverCpuLimit = 2;
+    string webserverMemoryLimit = 3;
+    string webserverCpuRequest = 4;
+    string webserverMemoryRequest = 5;
+}
+
+message DpaiAirflowSchedulerProperties{
+    int32 schedularCountDefault = 1;
+    int32 schedulerCountMin = 2;
+    int32 schedulerCountMax = 3;
+    string schedulerCpuLimit = 4;
+    string schedulerMemoryLimit = 5;
+    string schedulerMemoryRequest = 6; 
+    string schedulerCpuRequest = 7;
+}
+
+message DpaiAirflowWorkerProperties {
+    int32 workerCountDefault = 1;
+    int32 workerCountMin = 2;
+    int32 workerCountMax = 3;
+    string workerMemoryLimit = 4;
+    string workerMemoryRequest = 5;
+    string workerCpuLimit = 6;
+    string workerCpuRequest = 7;
+}
+
+message DpaiAirflowTriggerProperties{
+    int32 triggerCount = 1;
+    string triggerMemoryLimit = 2;
+    string triggerMemoryRequest = 3;
+    string triggerCpuLimit = 4;
+    string triggerCpuRequest =5;
+}
+
+//CreateRequest AirflowSize
+message DpaiAirflowSizeCreateRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string name = 2;
+    string description = 3;
+    int32 numberOfNodesDefault = 4;
+    string nodeSizeId = 5;
+    string backendDatabaseSizeId = 6;
+    string logDirectoryDiskSize = 7;
+    string redisDiskSize = 8;
+    DpaiAirflowSizeWebServerProperties airflowSizeWebserverProperties = 9;
+    DpaiAirflowSchedulerProperties airflowSchedulerProperties = 10;
+    DpaiAirflowWorkerProperties airflowWorkerProperties = 11;
+    DpaiAirflowTriggerProperties airflowTriggerProperties = 12;
+}
+
+message DpaiAirflowSizeListRequest {
+    string cloudAccountId=1 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiAirflowSizeListResponse{
+    repeated DpaiAirflowSize data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiAirflowSizeGetByIdRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+}
+
+message DpaiAirflowSizeGetByNameRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string name = 2;
+}
+
+message DpaiAirflowSizeUpdateRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+    string description = 3;
+    int32 numberOfNodesDefault = 4;
+    string nodeSizeId = 5;
+    string backendDatabaseSizeId = 6;
+    string logDirectoryDiskSize = 7;
+    string redisDiskSize = 8;
+    DpaiAirflowSizeWebServerProperties airflowSizeWebserverProperties = 9;
+    DpaiAirflowSchedulerProperties airflowSchedulerProperties = 10;
+    DpaiAirflowWorkerProperties airflowWorkerProperties = 11;
+    DpaiAirflowTriggerProperties airflowTriggerProperties = 12;
+}
+
+message DpaiAirflowSizeDeleteRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+ }
+
+message DpaiAirflowSizeDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+ service DpaiAirflowSizeService {
+  //Create new DPAI Airflow Size 
+    rpc DpaiAirflowSizeCreate(DpaiAirflowSizeCreateRequest) returns (DpaiAirflowSize) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowsize"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    //List DPAI Airflow Sizes
+    rpc DpaiAirflowSizeList(DpaiAirflowSizeListRequest) returns (DpaiAirflowSizeListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowsize"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get DPAI Airflow Size by ID 
+    rpc DpaiAirflowSizeGetById(DpaiAirflowSizeGetByIdRequest) returns (DpaiAirflowSize) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowsize/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get DPAI Airflow Size by Name 
+    rpc DpaiAirflowSizeGetByName(DpaiAirflowSizeGetByNameRequest) returns (DpaiAirflowSize) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowsize/name/{name}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Update DPAI Airflow Size metadata
+    rpc DpaiAirflowSizeUpdate(DpaiAirflowSizeUpdateRequest) returns (DpaiAirflowSize) {
+        option (google.api.http) = {
+            patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowsize/{id}"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Delete DPAI Airflow Size
+    rpc DpaiAirflowSizeDelete(DpaiAirflowSizeDeleteRequest) returns (DpaiAirflowSizeDeleteResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowsize/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+}
+
+// Airflow Version -- Admin
+
+message DpaiAirflowVersion {
+    string cloudAccountId = 1;
+    string id = 2;
+    string name = 3;
+    string version = 4;
+    string backendDatabaseVersionId = 5;
+    DpaiAirflowVersionProperties airflowVersionProperties = 6; 
+    string executorType = 7;
+    DpaiImageReference imageReference = 8;
+    DpaiChartReference chartReference = 9;
+    string description = 10;
+    string backwardCompatibleFrom = 11;
+    DpaiMeta metadata = 12;
+ }
+
+ message DpaiAirflowVersionProperties {
+    string airflowVersion = 1;
+    string pythonVersion = 2;
+    string postgresVersion = 3;
+    string redisVersion = 4;
+}
+
+//CreateRequest AirflowVersion
+message DpaiAirflowVersionCreateRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string name = 2;
+    string version = 3;
+    string backendDatabaseVersionId = 4;
+    DpaiAirflowVersionProperties airflowVersionProperties = 5; 
+    string executorType = 6;
+    DpaiImageReference imageReference = 7;
+    DpaiChartReference chartReference = 8;
+    string description = 9;
+    string backwardCompatibleFrom = 10;
+}
+
+message DpaiAirflowVersionListRequest {
+    string cloudAccountId=1 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiAirflowVersionListResponse{
+    repeated DpaiAirflowVersion data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiAirflowVersionGetByIdRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+}
+
+message DpaiAirflowVersionGetByNameRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string name = 2;
+}
+
+message DpaiAirflowVersionUpdateRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+    string version = 3;
+    string description = 4;
+    DpaiImageReference imageReference = 5;
+    DpaiChartReference chartReference = 6;
+    string backwardCompatibleFrom = 7;
+}
+
+message DpaiAirflowVersionDeleteRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+ }
+
+message DpaiAirflowVersionDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+ service DpaiAirflowVersionService {
+  // Create new DPAI Airflow Version
+    rpc DpaiAirflowVersionCreate(DpaiAirflowVersionCreateRequest) returns (DpaiAirflowVersion) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowversion"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    //List DPAI Airflow Version
+    rpc DpaiAirflowVersionList(DpaiAirflowVersionListRequest) returns (DpaiAirflowVersionListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowversion"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get DPAI Airflow Version by ID 
+    rpc DpaiAirflowVersionGetById(DpaiAirflowVersionGetByIdRequest) returns (DpaiAirflowVersion) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowversion/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get DPAI Airflow Version by name
+    rpc DpaiAirflowVersionGetByName(DpaiAirflowVersionGetByNameRequest) returns (DpaiAirflowVersion) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowversion/name/{name}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Update DPAI Airflow Version metadata 
+    rpc DpaiAirflowVersionUpdate(DpaiAirflowVersionUpdateRequest) returns (DpaiAirflowVersion) {
+        option (google.api.http) = {
+            patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowversion/{id}"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Delete DPAI Airflow Version 
+    rpc DpaiAirflowVersionDelete(DpaiAirflowVersionDeleteRequest) returns (DpaiAirflowVersionDeleteResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowVersion/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+}
+
+// Airflow conf -- Admin
+
+message DpaiAirflowConf {
+    string cloudAccountId = 1;
+    string id = 2;
+    string airflowId = 3;
+    string key = 4;
+    string value = 5;
+    DpaiMeta metadata = 6;
+ }
+
+ message DpaiAirflowConfCreateRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string airflowId = 2;
+    string key = 3;
+    string value = 4;
+    string createdBy = 5;
+}
+
+message DpaiAirflowConfListRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string airflowId = 2;
+}
+
+
+message DpaiAirflowConfListResponse{
+    repeated DpaiAirflowConf data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiAirflowConfGetByIdRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+}
+
+message DpaiAirflowConfUpdateRequest {
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+    string airflowId = 3;
+    string key = 4;
+    string value = 5;
+    string updatedBy =  6;
+}
+
+message DpaiAirflowConfDeleteRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+ }
+
+ message DpaiAirflowConfDeleteByAirflowIdRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+}
+
+message DpaiAirflowConfDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+ }
+
+ service DpaiAirflowConfService {
+  // Create new DPAI Airflow Configuration
+    rpc DpaiAirflowConfCreate(DpaiAirflowConfCreateRequest) returns (DpaiAirflowConf) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowconfig"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    //List DPAI Airflow Configurations
+    rpc DpaiAirflowConfList(DpaiAirflowConfListRequest) returns (DpaiAirflowConfListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowconfig"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get DPAI Airflow Configuration by ID
+    rpc DpaiAirflowConfGetById(DpaiAirflowConfGetByIdRequest) returns (DpaiAirflowConf) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowconfig/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    /*rpc DpaiAirflowConfUpdate(DpaiAirflowConfUpdateRequest) returns (DpaiAirflowConf) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowconfig/name/{name}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }*/
+    // Delete DPAI Airflow Configuration
+    rpc DpaiAirflowConfDelete(DpaiAirflowConfDeleteRequest) returns (DpaiAirflowConfDeleteResponse) {
+        option (google.api.http) = {
+            patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowconfig/{id}"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Delete DPAI Airflow Configuration
+    rpc DpaiAirflowConfDeleteByAirflowId(DpaiAirflowConfDeleteByAirflowIdRequest) returns (DpaiAirflowConfDeleteResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowconfig/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+}
+
+// Service - Airflow
+
+message DpaiAirflowStorageProperties {
+    string bucketId = 1;
+    string bucketPrincipal =2;
+    DpaiAirflowPathProperties path =3;
+}
+
+message DpaiAirflowPathProperties{
+    string dagFolderPath = 1;
+    string pluginFolderPath = 2;
+    string requirementPath = 3;
+    string logFolder = 4;
+}
+
+message DpaiAirflowWebServerProperties{
+    string endpoint = 1; 
+    string webserverAdminUsername = 2 [(validate.rules).string = {
+        pattern: "^[a-zA-Z0-9-]+$",
+        max_bytes: 16,
+      }]; 
+
+    string webserverAdminPassword = 3[(validate.rules).string = {
+        //pattern: "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+        max_bytes: 16,
+        min_len: 8,
+      }];
+}
+
+
+message DpaiAirflowSizeProperties{
+    string size = 1;
+    int32 numberOfNodes = 2;
+    int32 numberOfWorkers = 3;
+    int32 numberOfSchedulers = 4;
+}
+
+message DpaiAirflowDeploymentMeta {
+    string deploymentId = 1;
+    string backendDatabaseId = 2;
+    string iksClusterId = 3;
+    string workspaceId = 4;
+    string nodeGroupId = 5;
+    DpaiDeploymentStatus deploymentStatus = 6;
+}
+
+message DpaiAirflow{
+    string cloudAccountId = 1;
+    string id = 2;
+    string workspaceName = 3;
+    string name = 4;
+    string description = 5;
+    string version = 6;
+    map<string, string> tags = 7;
+    DpaiAirflowStorageProperties storageProperties =8;
+    DpaiAirflowWebServerProperties webServerProperties = 9;
+    DpaiAirflowSizeProperties sizeProperties =10;
+    DpaiMeta metadata = 11;
+    DpaiAirflowDeploymentMeta deploymentMetadata = 12;
+}
+
+message DpaiAirflowCreateRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string workspaceName = 2 [(validate.rules).string = {
+            pattern: "^[a-zA-Z0-9-]+$",
+            max_bytes: 32,
+          }];
+    string workspaceId = 3;
+    string name = 4 [(validate.rules).string = {
+        pattern: "^[a-zA-Z0-9-]+$",
+        max_bytes: 32,
+      }];
+    string description = 5 [(validate.rules).string = {
+        pattern:   "^[a-zA-Z0-9-_ ]*$",
+        max_bytes: 512,
+      }];
+    string version = 6;
+    map<string, string> tags = 7;
+    DpaiAirflowStorageProperties storageProperties =8;
+    DpaiAirflowWebServerProperties webServerProperties = 9;
+    DpaiAirflowSizeProperties sizeProperties =10;
+}
+
+message DpaiAirflowListRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string workspaceId=2;
+    string name = 3;
+    int64 offset = 4;
+    int64 limit = 5;
+}
+
+message DpaiAirflowListResponse{
+    repeated DpaiAirflow data = 1;
+    int64 prevOffset = 2;
+    int64 currOffset = 3;  
+    int64 nextOffset = 4;
+    int64 lastOffset = 5;
+    int64 limit = 6;
+    int64 totalRecords = 7;
+}
+
+message DpaiAirflowGetByIdRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id=2;
+}
+
+message DpaiAirflowGetByNameRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string name=3;
+    string workspaceId=2;
+}
+
+message DpaiAirflowUpdateRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+    string description = 3;
+    map<string, string> tags = 4;
+}
+
+message DpaiAirflowDeleteRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+ }
+ 
+
+message DpaiAirflowRestartRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+    string workspaceId = 3;
+    string airflowId = 4;
+}
+
+message DpaiAirflowResizeRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+    string size = 3;
+    int32 numberOfNodes = 4;
+    int32 numberOfWorkers = 5;
+    int32 numberOfSchedulers = 6;
+    string workspaceId = 7;
+    string airflowId = 8;
+}
+
+message DpaiAirflowListUpgradeRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+}
+
+message DpaiAirflowUpgradeRequest{
+    string cloudAccountId = 1 [
+        (idc.field).cloudAccount = true
+      ];
+    string id = 2;
+    string version = 3;
+    string workspaceId = 4;
+    string airflowId = 5;
+}
+
+service DpaiAirflowService {
+     // Create new DPAI Airflow Service
+    rpc DpaiAirflowCreate(DpaiAirflowCreateRequest) returns (DpaiAirflow) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflow"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // List all the DPAI Airflow Service in the given cloud account. Supports wildcard filter on name.
+    rpc DpaiAirflowList(DpaiAirflowListRequest) returns (DpaiAirflowListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflow"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get a DPAI Airflow by ID 
+    rpc DpaiAirflowGetById(DpaiAirflowGetByIdRequest) returns (DpaiAirflow) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflow/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get a DPAI Airflow by name
+    rpc DpaiAirflowGetByName(DpaiAirflowGetByNameRequest) returns (DpaiAirflow) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflow/name/{name}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Update the DPAI Airflow metadata.
+    rpc DpaiAirflowUpdate(DpaiAirflowUpdateRequest) returns (DpaiAirflow) {
+        option (google.api.http) = {
+            patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflow/{id}"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Delete the DPAI Airflow
+    rpc DpaiAirflowDelete(DpaiAirflowDeleteRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflow/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // List DPAI Airflow for upgrade
+    rpc DpaiAirflowListUpgrade(DpaiAirflowListUpgradeRequest) returns (DpaiAirflowVersionListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/airflowlist"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Upgrade Airflow
+    rpc DpaiAirflowUpgrade(DpaiAirflowUpgradeRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/airflow/{airflowId}/upgrade"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+
+    }
+    //Restart Airflow
+    rpc DpaiAirflowRestart(DpaiAirflowRestartRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/airflow/{airflowId}/restart"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    //Resize Airflow
+    rpc DpaiAirflowResize(DpaiAirflowResizeRequest) returns (DpaiDeploymentResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspace/{workspaceId}/airflow/{airflowId}/resize"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+
+}

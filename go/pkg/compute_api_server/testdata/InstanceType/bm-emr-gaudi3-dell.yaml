@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: bm-emr-gaudi3-dell
+spec:
+  name: bm-emr-gaudi3-dell
+  displayName: 8 Gaudi HL-325H mezzanine cards with 5th Gen Xeon® processors, 2 TB RAM
+  description: 8 Gaudi HL-325H mezzanine cards with 5th Gen Xeon® processors, 2 TB RAM
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 60
+    id: "0xc06f2"
+    modelName: 5th Generation Intel® Xeon® Platinum 8580 Processors
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 8
+    modelName: HL-325
+  memory:
+    size: 2048Gi
+    dimmSize: 64Gi
+    dimmCount: 32
+    speed: 5600
+  disks:
+    - size: 2000Gi

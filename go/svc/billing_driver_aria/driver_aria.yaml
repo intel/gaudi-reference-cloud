@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Config file used when running: go run billing_driver_aria/cmd/main.go --config billing_driver_aria/driver_aria.yaml
+listenPort: 8443
+ClientIdPrefix: "$(ARIA_CLIENT_ID_PREFIX)"
+syncInterval: 14400
+usageInterval: 14400
+clientAcctGroupId: Chase
+acctPlanActiveInterval: 14400
+enterpriseAcctLinkSchedulerInterval: 14400
+paidServicesDeactivationControllerInterval: 14400,
+instanceSearchWindow: 2
+premiumDefaultCreditAmount: 2500
+premiumDefaultCreditExpirationDays: 35
+entDefaultCreditAmount: 2500
+entDefaultCreditExpirationDays: 35
+db:
+  user:     "postgres"
+  host:     "localhost"
+  port:     5432
+  connectTimeout: 5
+  name:     "idcs_billing"
+ariasystem:
+  service: billing-aria
+  vaultCredentialsPath: billing-aria/data/secrets
+  releaseVersion: "47"
+  coreApiSuffix: "/v1/core"
+  directPostUrl: "https://api.current.stage.ariasystems.net/api/direct_post_eom.php"
+  functionMode: "direct_post_reg"
+  server:
+      coreApiUrl: "https://api.future.stage.ariasystems.net"
+      objectApiUrl: "https://api.future.stage.ariasystems.net/api/AriaQuery/objects.php"
+      adminApiUrl: "https://api.future.stage.ariasystems.net/AdminTools.php/Dispatcher"
+      
+# billing aria driver sqs
+aws:
+ sqs:
+   region: "us-west-2"
+   queueUrl: "https://sqs.us-west-2.amazonaws.com/accountid/idc-staging-notifications-queue"
+
+        

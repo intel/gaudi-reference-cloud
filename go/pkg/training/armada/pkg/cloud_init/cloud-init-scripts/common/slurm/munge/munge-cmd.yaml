@@ -1,0 +1,9 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+- mkdir -p -v -m 0777 /etc/munge
+- sudo cat /etc/munge/munge.template | base64 -d > /etc/munge/munge.key && sudo rm /etc/munge/munge.template
+- sudo chmod 0400 /etc/munge/munge.key
+- sudo chown munge:munge /etc/munge/munge.key
+- sudo chown munge:munge /etc/munge
+- sudo chmod 0700 /etc/munge
+- sudo systemctl restart munge

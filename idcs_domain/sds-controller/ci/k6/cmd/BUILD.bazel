@@ -1,0 +1,38 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "k6_lib",
+    srcs = ["main.go"],
+    cgo = True,
+    clinkopts = [
+        "-w",
+        "-s",
+    ],
+    importpath = "go.k6.io/k6",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//ci/k6:k6_module",
+        "@io_k6_go_k6//cmd",
+    ],
+)
+
+go_binary(
+    name = "cmd",
+    embed = [
+        ":cmd_lib",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "cmd_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/ci/k6/cmd",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//ci/k6:k6_module",
+        "@io_k6_go_k6//cmd",
+    ],
+)

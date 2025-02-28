@@ -1,0 +1,914 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+// INTEL CONFIDENTIAL
+// Copyright (C) 2024 Intel Corporation
+syntax = "proto3";
+
+package sdn.v1;
+
+// TODO import "buf/validate/validate.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller/api/sdn/v1";
+
+// The ovnnet service provides methods to interact with ipu based network 
+// Assumes the caller manages IP as well as MAC Address Pools and allocation
+// For SNAT, requires that the subnet internal IP belongs to has a router interface
+// Pre-condition, Logic, Post-condition
+// TODO
+//   any aggregate queries needed by NaaS? Typically NaaS should be 
+//    interacting for specific objects because for normal lists etc. 
+//    it should be using it's own DB
+//   Add Port Up state to Port structure
+//   Add description for salient elements
+//   define API for system information
+//   Change the responses to return appropriate values
+//   define provider API for transitioning system through modes
+//   define pre-validation
+//   define error reporting
+//   define API for Provider
+// DONE
+//   Define ElasticIP
+//   define call signature for Update method
+//   How to associate SecurityGroup to PortGroup
+//   add ACL attributes
+//   define each of the object attributes
+//   define Filters -- not needed
+//   Add Get calls for the Objects
+//   See if Objects can be created with supplied UUID
+//   define return for Delete method
+//   obtain types of tenant_id, region_id, az
+//   Add Port Admin state change to UpdatePort
+
+
+service Ovnnet {
+
+    // Get the Ids of all the VPCs
+    //
+    rpc ListVPCs (ListVPCsRequest) returns (ListVPCsResponse) {}
+
+    // Create a new VPC and return the ID
+    //
+    rpc CreateVPC (CreateVPCRequest) returns (CreateVPCResponse) {}
+
+    // Get details of the VPC with the given ID
+    //
+    rpc GetVPC (GetVPCRequest) returns (GetVPCResponse) {}
+
+    // Delete the VPC  with the given ID
+    //
+    rpc DeleteVPC (DeleteVPCRequest) returns (DeleteVPCResponse) {} // Doc
+
+    // Get the Ids of all the Subnets
+    //
+    rpc ListSubnets (ListSubnetsRequest) returns (ListSubnetsResponse) {}
+
+    // Create a new Subnet and return the ID
+    //
+    rpc CreateSubnet (CreateSubnetRequest) returns (CreateSubnetResponse) {}
+
+    // Get details of a Subnet with the given ID
+    //
+    rpc GetSubnet (GetSubnetRequest) returns (GetSubnetResponse) {}
+
+    // Delete the Subnet  with the given ID
+    //
+    rpc DeleteSubnet (DeleteSubnetRequest) returns (DeleteSubnetResponse) {} // Doc
+    
+    // Get the Ids of all the Routers
+    //
+    rpc ListRouters (ListRoutersRequest) returns (ListRoutersResponse) {}
+
+    // Create a new Router and return the ID
+    //
+    rpc CreateRouter (CreateRouterRequest) returns (CreateRouterResponse) {}
+
+    // Get details of a Router with the given ID
+    //
+    rpc GetRouter (GetRouterRequest) returns (GetRouterResponse) {}
+
+    // Delete the Router  with the given ID
+    //
+    rpc DeleteRouter (DeleteRouterRequest) returns (DeleteRouterResponse) {} // Doc
+    
+
+    // Get the Ids of all the RouterInterfaces 
+    //
+    rpc ListRouterInterfaces (ListRouterInterfacesRequest) returns (ListRouterInterfacesResponse) {}
+
+    // Create a new RouterInterface and return the ID
+    //
+    rpc CreateRouterInterface (CreateRouterInterfaceRequest) returns (CreateRouterInterfaceResponse) {}
+
+    // Get details of a RouterInterface with the given ID
+    //
+    rpc GetRouterInterface (GetRouterInterfaceRequest) returns (GetRouterInterfaceResponse) {}
+
+    // Delete the RouterInterface  with the given ID
+    //
+    rpc DeleteRouterInterface (DeleteRouterInterfaceRequest) returns (DeleteRouterInterfaceResponse) {}
+    
+    // Get the Ids of all the StaticRoutes 
+    //
+    rpc ListStaticRoutes (ListStaticRoutesRequest) returns (ListStaticRoutesResponse) {}
+
+    // Create a new StaticRoute and return the ID
+    //
+    rpc CreateStaticRoute (CreateStaticRouteRequest) returns (CreateStaticRouteResponse) {}
+
+    // Get details of a StaticRoute with the given ID
+    //
+    rpc GetStaticRoute (GetStaticRouteRequest) returns (GetStaticRouteResponse) {}
+
+    // Delete the StaticRoute  with the given ID
+    //
+    rpc DeleteStaticRoute (DeleteStaticRouteRequest) returns (DeleteStaticRouteResponse) {}
+    
+
+    // Get the Ids of all the Ports
+    //
+    rpc ListPorts (ListPortsRequest) returns (ListPortsResponse) {}
+
+    // Create a new Port and return the ID
+    //
+    rpc CreatePort (CreatePortRequest) returns (CreatePortResponse) {}
+
+    // Get details of a Port with the given ID
+    //
+    rpc GetPort (GetPortRequest) returns (GetPortResponse) {}
+
+    // Update the Port  with the given ID to the given attributes
+    //
+    // Usage :
+    //
+    // * Enable/Disable SNAT // Deprecated -- Use AddressTranslation API
+    //
+    // This can be done by setting the IsNAT to True or False.
+    //
+    // * Associate/Disassociate ElasticIP // Deprecated -- Use AddressTranslation API
+    //
+    // In order to associate or remove Elastic IP set (or clear) the external_IP_address and External_MAC attributes for the Port.
+    // Caller must ensure the external IP address is available for assignment
+    // Only one of SNAT or External IP can be enabled at any instant
+    rpc UpdatePort (UpdatePortRequest) returns (UpdatePortResponse) {} // Doc
+
+    // Delete the Port  with the given ID
+    rpc DeletePort (DeletePortRequest) returns (DeletePortResponse) {} // Doc
+    
+
+    // Get the Ids of all the SecurityGroups
+    //
+    rpc ListSecurityGroups (ListSecurityGroupsRequest) returns (ListSecurityGroupsResponse) {}
+
+    // Create a new SecurityGroup and return the ID
+    // A Security Group can be of type PORT or SUBNET
+    // A Security Group of type PORT can only be applied to ports whereas, Security Group of type SUBNET
+    // can be applied to subnets only
+    rpc CreateSecurityGroup (CreateSecurityGroupRequest) returns (CreateSecurityGroupResponse) {}
+
+    // Get details of a SecurityGroup
+    //
+    rpc GetSecurityGroup (GetSecurityGroupRequest) returns (GetSecurityGroupResponse) {}
+
+    // Update the SecurityGroup  with the given ID to the given attributes
+    //
+    //
+    // For Security Group of type PORT this can be used to:
+    //
+    // * Add or remove Ports the SecurityGroup needs to be applied to
+    //
+    // The list of Ports specified in this call should have all the Ports
+    // that would be part of the Security Group once the update completes.
+    //
+    // For Security Group of type SUBNET this can be used to:
+    //
+    // * Add or remove Subnets the SecurityGroup needs to be applied to
+    //
+    // The list of Subnets specified in this call should have all the Subnets
+    // that would be part of the Security Group once the update completes.
+    //
+    //
+    // **Note**:
+    //
+    // Any change to the definition or application of a Security Group can have implications on traffic that is currently flowing through the affected ports.
+    //
+    // It is caller’s responsibility to assess and take appropriate measures such as quiesce the port. The API will not implicitly take any such measures.
+    //
+    rpc UpdateSecurityGroup (UpdateSecurityGroupRequest) returns (UpdateSecurityGroupResponse) {}
+
+    // Delete the SecurityGroup  with the given ID
+    // All the Security Rules belonging to the Security Group should be deleted prior to
+    // deleting the Security Group
+    rpc DeleteSecurityGroup (DeleteSecurityGroupRequest) returns (DeleteSecurityGroupResponse) {}
+    
+
+    // Get the Ids of all the SecurityRules 
+    //
+    rpc ListSecurityRules (ListSecurityRulesRequest) returns (ListSecurityRulesResponse) {}
+
+    // Create a new SecurityRule and return the ID
+    rpc CreateSecurityRule (CreateSecurityRuleRequest) returns (CreateSecurityRuleResponse) {}
+
+    // Get details of a SecurityRule
+    //
+    rpc GetSecurityRule (GetSecurityRuleRequest) returns (GetSecurityRuleResponse) {}
+
+    // Delete the SecurityRule  with the given ID
+    // Deleting a Security Rule will automatically remove the rule from the Security Group
+    // it belonged to.
+    rpc DeleteSecurityRule (DeleteSecurityRuleRequest) returns (DeleteSecurityRuleResponse) {}
+
+    // Update the SecurityRule
+    rpc UpdateSecurityRule (UpdateSecurityRuleRequest) returns (UpdateSecurityRuleResponse) {}
+    
+    // Address Translation APIs can be used to apply NATs and direct NATed traffic to a set of
+    // pre-defined gateways so that services such as internet access can be provided. 
+    //
+    // Get the Ids of all the Address Translations 
+    //
+    rpc ListAddressTranslations (ListAddressTranslationsRequest) returns (ListAddressTranslationsResponse) {}
+
+    // Create a new Address Translation and return the ID
+    rpc CreateAddressTranslation (CreateAddressTranslationRequest) returns (CreateAddressTranslationResponse) {}
+
+    // Get details of an Address Translation
+    //
+    rpc GetAddressTranslation (GetAddressTranslationRequest) returns (GetAddressTranslationResponse) {}
+
+    // Delete the Address Translation  with the given ID
+    rpc DeleteAddressTranslation (DeleteAddressTranslationRequest) returns (DeleteAddressTranslationResponse) {}
+        
+}
+
+// The request message
+
+message ListVPCsRequest {
+}
+
+// The response message
+
+message ListVPCsResponse {
+
+  repeated VPCId vpc_ids = 1;
+
+}
+
+// The request message
+
+message CreateVPCRequest {
+
+  VPCId vpc_id = 1;
+   string name = 2;
+   string tenant_id = 3; // Uniquely identifes a consumer of VPC
+   string region_id = 4; // Identifies the region. Must be same as the region of controller instance.
+}
+
+// The response message
+
+message CreateVPCResponse {
+
+  VPCId vpc_id = 1;
+
+}
+
+// The request message
+
+message GetVPCRequest {
+  VPCId vpc_id = 1;
+}
+
+// The response message
+
+message GetVPCResponse {
+  VPC vpc = 1;
+}
+
+// The request message
+
+message DeleteVPCRequest {
+  VPCId vpc_id = 1;
+}
+
+// The response message
+
+message DeleteVPCResponse {
+
+  VPCId vpc_id = 1;
+
+}
+
+// The request message
+
+message ListSubnetsRequest {
+}
+
+// The response message
+
+message ListSubnetsResponse {
+
+  repeated SubnetId subnet_ids = 1;
+
+}
+
+message CreateSubnetRequest {
+  SubnetId subnet_id = 1;
+  string name = 2 ;// TODO [(buf.validate.field).string.min_len = 1];
+  string cidr = 3;
+  string availability_zone = 4;
+  VPCId vpc_id = 5;
+}
+
+message CreateSubnetResponse {
+  SubnetId subnet_id = 1;
+}
+
+message GetSubnetRequest {
+  SubnetId subnet_id = 1;
+}
+
+message GetSubnetResponse {
+
+  Subnet subnet = 1;
+
+}
+
+message DeleteSubnetRequest {
+  SubnetId subnet_id = 1;
+}
+
+message DeleteSubnetResponse {
+  SubnetId subnet_id = 1;
+}
+
+
+
+// The request message
+
+message ListRoutersRequest {
+}
+
+// The response message
+
+message ListRoutersResponse {
+
+  repeated RouterId router_ids = 1;
+
+}
+
+message CreateRouterRequest {
+
+  RouterId router_id = 1;
+
+    string name = 2 ;// TODO [(buf.validate.field).string.min_len = 1];
+
+    VPCId vpc_id = 3;
+
+    string availability_zone = 4;
+
+}
+
+message CreateRouterResponse {
+  RouterId router_id = 1;
+}
+
+message GetRouterRequest {
+  RouterId router_id = 1;
+}
+
+message GetRouterResponse {
+
+  Router router = 1;
+
+}
+
+message DeleteRouterRequest {
+  RouterId router_id = 1;
+}
+
+message DeleteRouterResponse {
+  RouterId router_id = 1;
+}
+
+message ListRouterInterfacesRequest {
+}
+
+// The response message
+
+message ListRouterInterfacesResponse {
+
+  repeated RouterInterfaceId router_interface_ids = 1;
+
+}
+
+message CreateRouterInterfaceRequest {
+
+  RouterInterfaceId router_interface_id = 1;
+
+  RouterId router_id = 2;
+
+  SubnetId subnet_id = 3;
+
+  string interface_IP = 4;
+
+  string interface_MAC = 5;
+
+}
+
+message GetRouterInterfaceRequest {
+  RouterInterfaceId router_interface_id = 1;
+}
+
+message GetRouterInterfaceResponse {
+
+  RouterInterface router_interface = 1;
+
+}
+
+message CreateRouterInterfaceResponse {
+  RouterInterfaceId router_interface_id = 1;
+}
+
+message DeleteRouterInterfaceRequest {
+  RouterInterfaceId router_interface_id = 1;
+}
+
+message DeleteRouterInterfaceResponse {
+  RouterInterfaceId router_interface_id = 1;
+}
+
+message ListStaticRoutesRequest {
+}
+
+// The response message
+
+message ListStaticRoutesResponse {
+
+  repeated StaticRouteId static_route_ids = 1;
+
+}
+
+message CreateStaticRouteRequest {
+
+  StaticRouteId static_route_id = 1;
+   RouterId router_id = 2;
+   string prefix = 3;
+   string nexthop = 4;
+
+}
+
+message CreateStaticRouteResponse {
+  StaticRouteId static_route_id = 1;
+}
+
+message GetStaticRouteRequest {
+  StaticRouteId static_route_id = 1;
+}
+
+message GetStaticRouteResponse {
+
+  StaticRoute static_route = 1;
+
+}
+
+message DeleteStaticRouteRequest {
+  StaticRouteId static_route_id = 1;
+}
+
+message DeleteStaticRouteResponse {
+  StaticRouteId static_route_id = 1;
+}
+
+message ListPortsRequest {
+}
+
+// The response message
+
+message ListPortsResponse {
+
+  repeated PortId port_ids = 1;
+
+}
+
+message CreatePortRequest {
+
+  PortId port_id = 1;
+
+  SubnetId subnet_id = 2;
+
+  string chassis_id = 3;
+
+  uint32 device_id = 4;
+
+  string MAC_address = 5;
+
+  string internal_IP_address = 6;
+
+  bool is_enabled = 7;
+  bool isNAT = 8;
+  optional string external_IP_address = 9;
+  optional string External_MAC = 10;
+}
+
+message CreatePortResponse {
+  PortId port_id = 1;
+}
+
+message GetPortRequest {
+  PortId port_id = 1;
+}
+
+message GetPortResponse {
+
+  Port port = 1;
+
+}
+
+message UpdatePortRequest {
+
+  PortId port_id = 1;
+  
+  optional bool isNAT = 2;
+  optional string external_IP_address = 3;
+  optional string External_MAC = 4;  
+  optional bool isEnabled = 5;
+
+}
+
+message UpdatePortResponse {
+  PortId port_id = 1;
+  optional string snat_IP_address = 2;
+}
+
+message DeletePortRequest {
+  PortId port_id = 1;
+}
+
+message DeletePortResponse {
+  PortId port_id = 1;
+}
+
+message ListSecurityGroupsRequest {
+}
+
+// The response message
+
+message ListSecurityGroupsResponse {
+
+  repeated SecurityGroupId security_group_ids = 1;
+
+}
+
+// The request message
+
+message CreateSecurityGroupRequest {
+  SecurityGroupId security_group_id = 1; 
+  string name = 2;
+  SecurityGroupType type = 3;
+  repeated PortId port_ids = 4;
+  repeated SubnetId subnet_ids = 5;
+  VPCId vpc_id = 6;
+}
+
+// The response message
+
+message CreateSecurityGroupResponse {
+  SecurityGroupId security_group_id = 1;
+}
+
+message GetSecurityGroupRequest {
+  SecurityGroupId security_group_id = 1;
+}
+
+message GetSecurityGroupResponse {
+  SecurityGroup security_group = 1;
+}
+
+
+// The request message
+
+message UpdateSecurityGroupRequest {
+  SecurityGroupId security_group_id = 1; 
+   // Depending on the type of Security Group either Ports or Subnets can be listed.
+   repeated PortId port_ids = 2; // This list should contain all the Ports expected to be part of the Security Group once the update has taken effect.
+   repeated SubnetId subnet_ids = 3; // This list should contain all the Subnets expected to be part of the Security Group once the update has taken effect.
+}
+
+// The response message
+
+message UpdateSecurityGroupResponse {
+  SecurityGroupId security_group_id = 1;
+}
+
+// The request message
+
+message DeleteSecurityGroupRequest {
+  SecurityGroupId security_group_id = 1;
+}
+
+// The response message
+
+message DeleteSecurityGroupResponse {
+  SecurityGroupId security_group_id = 1;
+}
+
+message ListSecurityRulesRequest {
+}
+
+// The response message
+
+message ListSecurityRulesResponse {
+  repeated SecurityRuleId security_rule_ids = 1;
+}
+
+// The request message
+
+message CreateSecurityRuleRequest {
+  SecurityRuleId security_rule_id = 1;
+  string name = 2;
+  SecurityGroupId security_group_id = 3;
+  uint32 priority = 4;
+  Direction direction = 5;
+  repeated string source_IP_addresses = 6;
+  repeated string destination_IP_addresses = 7;
+  optional Protocol protocol = 8;
+  optional PortRange source_port_range = 9;
+  optional PortRange destination_port_range = 10;
+  SecurityAction action = 11;
+  VPCId vpc_id = 12;
+}
+
+message CreateSecurityRuleResponse {
+  SecurityRuleId security_rule_id = 1;
+}
+
+message GetSecurityRuleRequest {
+  SecurityRuleId security_rule_id = 1;
+}
+
+message GetSecurityRuleResponse {
+  SecurityRule security_rule = 1;
+}
+
+message UpdateSecurityRuleRequest {
+  SecurityRuleId security_rule_id = 1;
+  uint32 priority = 2;
+  Direction direction = 3;
+  repeated string source_IP_addresses = 4;
+  repeated string destination_IP_addresses = 5;
+  optional Protocol protocol = 6;
+  optional PortRange source_port_range = 7;
+  optional PortRange destination_port_range = 8;
+  SecurityAction action = 9;
+}
+
+message UpdateSecurityRuleResponse {
+  SecurityRuleId security_rule_id = 1;
+}
+
+message DeleteSecurityRuleRequest {
+  SecurityRuleId security_rule_id = 1;
+}
+
+message DeleteSecurityRuleResponse {
+
+  SecurityRuleId security_rule_id = 1;
+
+}
+
+message ListAddressTranslationsRequest {
+}
+
+message ListAddressTranslationsResponse {
+  repeated AddressTranslationId address_translation_ids = 1;
+}
+
+message CreateAddressTranslationRequest {
+  AddressTranslationId address_translation_id = 1;
+  string name = 2;
+  PortId port_id = 3;  // Port to create translation for
+  uint32 service_network_id = 4; // The service network the transalted traffic is to be forwarded to
+  AddressTranslationType translation_type = 5; 
+  optional string service_specific_IP =6; // IP address to translate to for the service network
+  optional string service_specific_MAC =7; // MAC address on the service network
+}
+
+message CreateAddressTranslationResponse {
+  AddressTranslationId address_translation_id = 1;
+
+}
+
+message GetAddressTranslationRequest {
+  AddressTranslationId address_translation_id = 1;
+}
+
+message GetAddressTranslationResponse {
+  AddressTranslation address_translation = 1;
+}
+
+message DeleteAddressTranslationRequest {
+  AddressTranslationId address_translation_id = 1;
+}
+
+message DeleteAddressTranslationResponse {
+
+  AddressTranslationId address_translation_id = 1;
+
+}
+
+message ObjStatus { // This is a TBD to be build up as we gain experience with the underlying library and our clients
+  string status = 1;
+}
+
+message VPCId {
+  string uuid = 1;
+}
+
+message VPC {
+
+   VPCId  id = 1;
+   string name = 2;
+   string tenant_id = 3; // Uniquely identifes a consumer of VPC
+   string region_id = 4; // Identifies the region. Must be same as the region of controller instance.
+   repeated RouterId routers = 5;
+   repeated SubnetId subnets = 6;
+   ObjStatus status = 7;
+
+}
+
+message SubnetId {
+  string uuid = 1;
+}
+
+message Subnet {
+  SubnetId id = 1;
+  string name = 2 ;// TODO [(buf.validate.field).string.min_len = 1];
+  string cidr = 3; // Should be specified in a.b.c.d/xy format
+  string availability_zone = 4;
+  VPCId vpc_id = 5;
+  ObjStatus status = 6;
+}
+
+message RouterId {
+  string uuid = 1;
+}
+
+
+message Router {
+
+    RouterId id = 1;
+
+    string name = 2 ;// TODO [(buf.validate.field).string.min_len = 1];
+
+    string availability_zone = 3;
+
+    VPCId vpc_id = 4;
+   
+   ObjStatus status = 5;
+}
+
+message RouterInterfaceId {
+  string uuid = 1;
+}
+
+message RouterInterface {
+
+  RouterInterfaceId  id = 1;
+
+  RouterId router_id = 2;
+
+  SubnetId subnet_id = 3;
+
+  string interface_IP = 4;
+
+  string interface_MAC = 5;
+   
+   ObjStatus status = 6;
+}
+
+message StaticRouteId {
+  string uuid = 1;
+}
+
+message StaticRoute {
+
+   StaticRouteId  id = 1;
+   string prefix = 2; // This is the destination IP prefix to be routed to
+   string nexthop = 3; // This is the IP Address of the device traffic is to be directed to
+   RouterId router_id = 4;
+   
+   ObjStatus status = 5;
+}
+
+message PortId {
+  string uuid = 1;
+}
+
+message Port {
+  
+  PortId id = 1;
+
+  string Name = 2;
+
+  SubnetId subnet_id = 3;
+
+  string IP_address = 4;
+
+  optional string MAC_address = 5; // The preferred approach is for the caller to provide the MAC address. It is TBD whether the system can internally generate one.
+
+  string chassis_id = 6;
+
+  uint32 device_id = 7;
+  bool is_enabled = 8;
+  optional string isNAT = 9;
+
+  optional string external_IP_address = 10;
+
+  optional string external_MAC = 11;
+   
+   ObjStatus status = 12;
+
+}
+
+message SecurityGroupId {
+  string uuid = 1;
+}
+
+message SecurityGroup {
+   SecurityGroupId  id = 1;
+   string name = 2;
+   SecurityGroupType type = 3;
+   repeated SecurityRuleId security_rule_ids = 4;
+   repeated PortId port_ids = 5;
+   repeated SubnetId subnet_ids = 6;
+   VPCId vpc_id = 7;
+   ObjStatus status = 8;
+}
+
+message SecurityRuleId {
+  string uuid = 1;
+}
+
+enum SecurityGroupType {
+  PORT = 0;
+  SUBNET = 1;
+}
+
+message SecurityRule {
+  SecurityRuleId  id = 1;
+  string name = 2;
+  SecurityGroupId security_group_id = 3;
+  uint32 priority = 4; // The priority should be unique within the SG the SR is included in otherwise behavior is unknown
+  Direction direction = 5;
+  repeated string source_IPs = 6;
+  repeated string destination_IPs = 7;
+  optional Protocol protocol = 8;
+  optional PortRange source_port_range = 9; 
+  optional PortRange destination_port_range = 10;
+  SecurityAction action = 11;
+  VPCId vpc_id = 12;
+  string logging_parameters_tbd = 13; // When implemented, add an Update API too.
+  ObjStatus status = 14;
+}
+
+enum Protocol {
+  TCP = 0;
+  UDP = 1;
+  ICMP = 2;
+ }
+ 
+ enum Direction {
+  DIR_UNSPECIFIED = 0;
+  INGRESS = 1;
+  EGRESS = 2;
+ }
+ 
+ enum SecurityAction {
+  ACTION_UNSPECIFIED = 0;
+  ALLOW = 1;
+  DENY = 2;
+ }
+ 
+ message PortRange {
+  uint32 min = 1;
+  uint32 max = 2;
+ }
+ 
+message AddressTranslationId {
+  string uuid = 1;
+}
+
+message AddressTranslation {
+  AddressTranslationId address_translation_id = 1;
+  string name = 2;
+  PortId port_id = 3;
+  uint32 service_network_id = 4;
+  AddressTranslationType translation_type = 5;
+  optional string service_specific_ip =6;  // needed for types INDIVIDUAL_CENTRALIZED and INDIVIDUAL_DISTRIBUTED
+  optional string service_specific_MAC =7; // needed only for type INDIVIDUAL_DISTRIBUTED
+}
+ 
+ enum AddressTranslationType {
+  SHARED = 0;  // This will result in a SNAT 
+  INDIVIDUAL_CENTRALIZED = 1; // This will result in a SDNAT through a centralized gateway
+  INDIVIDUAL_DISTRIBUTED = 2; // This will result in a SDNAT through a distributed gateway
+ }
+ 

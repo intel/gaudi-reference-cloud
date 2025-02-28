@@ -1,0 +1,8 @@
+ansible_user: "sdp"
+ansible_connection: 'ssh'
+vault_ansible_sudo_pass: "{{ vault_ansible_sudo_pass }}"
+newuser: sdp
+group_id: 1000
+user_id: 1000
+docker_user: sdp
+publickey_path: "./icsjenkins.pub"

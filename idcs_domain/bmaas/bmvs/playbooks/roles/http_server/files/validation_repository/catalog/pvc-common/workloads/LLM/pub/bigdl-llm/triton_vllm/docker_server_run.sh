@@ -1,0 +1,2 @@
+HOST_HF_HOME=~/.cache/huggingface
+docker run -it --rm -p 8001:8001 --net=host --device=/dev/dri --shm-size=1G --ulimit memlock=-1 --ulimit stack=67108864 --env http_proxy=${http_proxy} --env https_proxy=${https_proxy} --env no_proxy=${no_proxy} --env SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1 -v ${PWD}/triton-llama2-adapter/vLLM/model_repository/:/model_repository -v ${HOST_HF_HOME}:/root/.cache/huggingface/ bigdl-llm/triton_vllm:latest tritonserver --model-store /model_repository

@@ -1,0 +1,4058 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "compute.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "SshPublicKeyService"
+    },
+    {
+      "name": "InstanceService"
+    },
+    {
+      "name": "InstanceGroupService"
+    },
+    {
+      "name": "InstanceTypeService"
+    },
+    {
+      "name": "MachineImageService"
+    },
+    {
+      "name": "VNetService"
+    },
+    {
+      "name": "LoadBalancerService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/proto.InstanceGroupService/Ping": {
+      "post": {
+        "summary": "Ping always returns a successful response by the service implementation.\nIt can be used for testing connectivity to the service.",
+        "operationId": "InstanceGroupService_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      }
+    },
+    "/proto.InstanceService/Ping": {
+      "post": {
+        "summary": "Ping always returns a successful response by the service implementation.\nIt can be used for testing connectivity to the service.",
+        "operationId": "InstanceService_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      }
+    },
+    "/proto.InstanceTypeService/Delete": {
+      "post": {
+        "summary": "Delete an instance typ.",
+        "operationId": "InstanceTypeService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoInstanceTypeDeleteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "InstanceTypeService"
+        ]
+      }
+    },
+    "/proto.InstanceTypeService/Put": {
+      "post": {
+        "summary": "Create or update an instance type.",
+        "operationId": "InstanceTypeService_Put",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoInstanceType"
+            }
+          }
+        ],
+        "tags": [
+          "InstanceTypeService"
+        ]
+      }
+    },
+    "/proto.InstanceTypeService/SearchStream": {
+      "post": {
+        "summary": "List instance types as a stream.",
+        "operationId": "InstanceTypeService_SearchStream",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/protoInstanceType"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of protoInstanceType"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoInstanceTypeSearchRequest"
+            }
+          }
+        ],
+        "tags": [
+          "InstanceTypeService"
+        ]
+      }
+    },
+    "/proto.LoadBalancerService/Ping": {
+      "post": {
+        "summary": "Ping always returns a successful response by the service implementation.\nIt can be used for testing connectivity to the service.",
+        "operationId": "LoadBalancerService_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      }
+    },
+    "/proto.MachineImageService/Delete": {
+      "post": {
+        "summary": "Delete a machine image.",
+        "operationId": "MachineImageService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoMachineImageDeleteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MachineImageService"
+        ]
+      }
+    },
+    "/proto.MachineImageService/Put": {
+      "post": {
+        "summary": "Create or update a machine image.",
+        "operationId": "MachineImageService_Put",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoMachineImage"
+            }
+          }
+        ],
+        "tags": [
+          "MachineImageService"
+        ]
+      }
+    },
+    "/proto.MachineImageService/SearchStream": {
+      "post": {
+        "summary": "List machine images as a stream.",
+        "operationId": "MachineImageService_SearchStream",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/protoMachineImage"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of protoMachineImage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoMachineImageSearchRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MachineImageService"
+        ]
+      }
+    },
+    "/proto.SshPublicKeyService/SearchStream": {
+      "post": {
+        "summary": "List stored SSH public keys as a stream.\nWarning: This does not work with OpenAPI client.\nInternal-use only.",
+        "operationId": "SshPublicKeyService_SearchStream",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/protoSshPublicKey"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of protoSshPublicKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoSshPublicKeySearchRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      }
+    },
+    "/proto.VNetService/Ping": {
+      "post": {
+        "summary": "Ping always returns a successful response by the service implementation.\nIt can be used for testing connectivity to the service.",
+        "operationId": "VNetService_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      }
+    },
+    "/proto.VNetService/SearchStream": {
+      "post": {
+        "summary": "List stored VNets as a stream.",
+        "operationId": "VNetService_SearchStream",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/protoVNet"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of protoVNet"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoVNetSearchRequest"
+            }
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups": {
+      "get": {
+        "summary": "List instance groups.",
+        "operationId": "InstanceGroupService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstanceGroupSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      },
+      "post": {
+        "summary": "Launch a new group of instances.",
+        "operationId": "InstanceGroupService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstanceGroup"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "productId": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    },
+                    "reserved3": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoInstanceGroupSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}": {
+      "delete": {
+        "summary": "Request deletion (termination) of an instance group.",
+        "operationId": "InstanceGroupService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      },
+      "put": {
+        "summary": "Update the specification of an instanceGroup",
+        "operationId": "InstanceGroupService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "reserved3": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoInstanceGroupSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/instance/id/{instanceResourceId}": {
+      "delete": {
+        "summary": "Request deletion (termination) of an instance in a group.\nIt always retains at least one instance in the group to use a template. To delete the entire group, use Delete API instead.",
+        "operationId": "InstanceGroupService_DeleteMember",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "instanceResourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved2",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "instanceName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/instance/name/{instanceName}": {
+      "delete": {
+        "summary": "Request deletion (termination) of an instance in a group.\nIt always retains at least one instance in the group to use a template. To delete the entire group, use Delete API instead.",
+        "operationId": "InstanceGroupService_DeleteMember2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "instanceName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved2",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "instanceResourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instancegroups/name/{metadata.name}/scale-up": {
+      "patch": {
+        "summary": "Create new instances for the group to reach to the desired count.\nThis returns an error if the desired count is less than the current count.",
+        "operationId": "InstanceGroupService_ScaleUp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstanceGroupScaleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "reserved2": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoInstanceGroupSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "InstanceGroupService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instances": {
+      "get": {
+        "summary": "List instances.",
+        "operationId": "InstanceService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstanceSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.instanceGroup",
+            "description": "If instanceGroupFilter is ExactValue, return instances in this instance group.\nOtherwise, this field is ignored",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.instanceGroupFilter",
+            "description": "Filter instances by instance group.\nIf Default, this behaves like Empty and returns instances that are not in any instance group.\n\n - Default: Use the default behavior, which is described in the specific SearchFilterCriteria field.\n - Any: Return records with any value in this field (including empty).\n - Empty: Return records with an empty value in this field\n - NonEmpty: Return records with a non-empty value in this field\n - ExactValue: Return records with an exact value in this field",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Default",
+              "Any",
+              "Empty",
+              "NonEmpty",
+              "ExactValue"
+            ],
+            "default": "Default"
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      },
+      "post": {
+        "summary": "Launch a new baremetal or virtual machine instance.",
+        "operationId": "InstanceService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstance"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name will be generated if empty."
+                    },
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Map of string keys and values that can be used to organize and categorize instances.\nThis is also used by TopologySpreadConstraints."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    },
+                    "productId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoInstanceSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/id/{metadata.resourceId}": {
+      "get": {
+        "summary": "Get the status of an instance.",
+        "operationId": "InstanceService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstance"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      },
+      "delete": {
+        "summary": "Request deletion (termination) of an instance.",
+        "operationId": "InstanceService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      },
+      "put": {
+        "summary": "Update the specification of an instance.",
+        "operationId": "InstanceService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "type": "string",
+                      "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+                    },
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "The entire set of labels will be replaced with these labels.\nNot implemented."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoInstanceSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/name/{metadata.name}": {
+      "get": {
+        "summary": "Get the status of an instance.",
+        "operationId": "InstanceService_Get2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstance"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      },
+      "delete": {
+        "summary": "Request deletion (termination) of an instance.",
+        "operationId": "InstanceService_Delete2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      },
+      "put": {
+        "summary": "Update the specification of an instance.",
+        "operationId": "InstanceService_Update2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "resourceId": {
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "type": "string",
+                      "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+                    },
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "The entire set of labels will be replaced with these labels.\nNot implemented."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoInstanceSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/instances/search": {
+      "post": {
+        "summary": "List instances.",
+        "operationId": "InstanceService_Search2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstanceSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "If not empty, only return instances that have these key/value pairs."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    },
+                    "instanceGroup": {
+                      "type": "string",
+                      "title": "If instanceGroupFilter is ExactValue, return instances in this instance group.\nOtherwise, this field is ignored"
+                    },
+                    "instanceGroupFilter": {
+                      "$ref": "#/definitions/protoSearchFilterCriteria"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "InstanceService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers": {
+      "get": {
+        "summary": "List load balancers.",
+        "operationId": "LoadBalancerService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoLoadBalancerSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      },
+      "post": {
+        "summary": "Create a new load balancer.",
+        "operationId": "LoadBalancerService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoLoadBalancer"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name will be generated if empty."
+                    },
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Map of string keys and values that can be used to organize and categorize load balancers."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoLoadBalancerSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/id/{metadata.resourceId}": {
+      "get": {
+        "summary": "Get the status of a load balancer.",
+        "operationId": "LoadBalancerService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoLoadBalancer"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      },
+      "delete": {
+        "summary": "Request deletion of a load balancer.",
+        "operationId": "LoadBalancerService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      },
+      "put": {
+        "summary": "Update the specification of an load balancer.",
+        "operationId": "LoadBalancerService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "type": "string",
+                      "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+                    },
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Map of string keys and values that can be used to organize and categorize load balancers."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoLoadBalancerSpecUpdate"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/name/{metadata.name}": {
+      "get": {
+        "summary": "Get the status of a load balancer.",
+        "operationId": "LoadBalancerService_Get2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoLoadBalancer"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      },
+      "delete": {
+        "summary": "Request deletion of a load balancer.",
+        "operationId": "LoadBalancerService_Delete2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceVersion",
+            "description": "If provided, the existing record must have this resourceVersion for the request to succeed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metadata.reserved1",
+            "description": "Reserved. Added this field to overcome openAPi-same-struct issue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      },
+      "put": {
+        "summary": "Update the specification of an load balancer.",
+        "operationId": "LoadBalancerService_Update2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "resourceId": {
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "type": "string",
+                      "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+                    },
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Map of string keys and values that can be used to organize and categorize load balancers."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoLoadBalancerSpecUpdate"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/loadbalancers/search": {
+      "post": {
+        "summary": "List load balancers.",
+        "operationId": "LoadBalancerService_Search2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoLoadBalancerSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "If not empty, only return load balancers that have these key/value pairs."
+                    },
+                    "reserved1": {
+                      "type": "string",
+                      "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "LoadBalancerService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys": {
+      "get": {
+        "summary": "Get a list of stored SSH public keys.",
+        "operationId": "SshPublicKeyService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoSshPublicKeySearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      },
+      "post": {
+        "summary": "Store an SSH public key.",
+        "operationId": "SshPublicKeyService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoSshPublicKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "If Name is not empty, it must be unique within the cloudAccountId.\nIt will be generated if empty."
+                    },
+                    "labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Not implemented."
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoSshPublicKeySpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/id/{metadata.resourceId}": {
+      "get": {
+        "summary": "Retrieve a stored SSH public key.",
+        "operationId": "SshPublicKeyService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoSshPublicKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an SSH public key.",
+        "operationId": "SshPublicKeyService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/sshpublickeys/name/{metadata.name}": {
+      "get": {
+        "summary": "Retrieve a stored SSH public key.",
+        "operationId": "SshPublicKeyService_Get2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoSshPublicKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an SSH public key.",
+        "operationId": "SshPublicKeyService_Delete2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets": {
+      "get": {
+        "summary": "Get a list of stored VNets.",
+        "operationId": "VNetService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoVNetSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      },
+      "post": {
+        "summary": "Create or update a VNet.",
+        "operationId": "VNetService_Put",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoVNet"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "spec": {
+                  "$ref": "#/definitions/protoVNetSpec"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets/id/{metadata.resourceId}": {
+      "get": {
+        "summary": "Retrieve a VNet record from DB",
+        "operationId": "VNetService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoVNet"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an VNet from the DB.\nReturns FailedPrecondition if VNet has running instances or other consumed IP addresses.",
+        "operationId": "VNetService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      }
+    },
+    "/v1/cloudaccounts/{metadata.cloudAccountId}/vnets/name/{metadata.name}": {
+      "get": {
+        "summary": "Retrieve a VNet record from DB",
+        "operationId": "VNetService_Get2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoVNet"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an VNet from the DB.\nReturns FailedPrecondition if VNet has running instances or other consumed IP addresses.",
+        "operationId": "VNetService_Delete2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.cloudAccountId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metadata.resourceId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VNetService"
+        ]
+      }
+    },
+    "/v1/instancetypes": {
+      "get": {
+        "summary": "List instance types.",
+        "operationId": "InstanceTypeService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstanceTypeSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "InstanceTypeService"
+        ]
+      }
+    },
+    "/v1/instancetypes/{metadata.name}": {
+      "get": {
+        "summary": "Get an instance type.",
+        "operationId": "InstanceTypeService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInstanceType"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.name",
+            "description": "Unique name of the instance type.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InstanceTypeService"
+        ]
+      }
+    },
+    "/v1/machineimages": {
+      "get": {
+        "summary": "List machine images.",
+        "operationId": "MachineImageService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoMachineImageSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.instanceType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MachineImageService"
+        ]
+      }
+    },
+    "/v1/machineimages/{metadata.name}": {
+      "get": {
+        "summary": "Get a machine image.",
+        "operationId": "MachineImageService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoMachineImage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "metadata.name",
+            "description": "Unique name of the machine image.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MachineImageService"
+        ]
+      }
+    },
+    "/v1/ping": {
+      "get": {
+        "summary": "Ping always returns a successful response by the service implementation.\nIt can be used for testing connectivity to the service.",
+        "operationId": "SshPublicKeyService_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "SshPublicKeyService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protoCpuSpec": {
+      "type": "object",
+      "properties": {
+        "cores": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "string"
+        },
+        "modelName": {
+          "type": "string"
+        },
+        "sockets": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "threads": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protoDiskSpec": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "string"
+        }
+      }
+    },
+    "protoGpuSpec": {
+      "type": "object",
+      "properties": {
+        "modelName": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protoInstance": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoInstanceMetadata"
+        },
+        "spec": {
+          "$ref": "#/definitions/protoInstanceSpec"
+        },
+        "status": {
+          "$ref": "#/definitions/protoInstanceStatus"
+        }
+      }
+    },
+    "protoInstanceCategory": {
+      "type": "string",
+      "enum": [
+        "VirtualMachine",
+        "BareMetalHost"
+      ],
+      "default": "VirtualMachine"
+    },
+    "protoInstanceGroup": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoInstanceGroupMetadata"
+        },
+        "spec": {
+          "$ref": "#/definitions/protoInstanceGroupSpec"
+        },
+        "status": {
+          "$ref": "#/definitions/protoInstanceGroupStatus"
+        }
+      }
+    },
+    "protoInstanceGroupMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "reserved2": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      }
+    },
+    "protoInstanceGroupMetadataCreate": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        },
+        "reserved3": {
+          "type": "string"
+        }
+      }
+    },
+    "protoInstanceGroupMetadataReference": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "description": "A reference to a single instance group."
+    },
+    "protoInstanceGroupMetadataSearch": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        }
+      }
+    },
+    "protoInstanceGroupMetadataUpdate": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "reserved3": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      }
+    },
+    "protoInstanceGroupScaleResponse": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoInstanceGroupMetadata"
+        },
+        "status": {
+          "$ref": "#/definitions/protoInstanceGroupScaleStatus"
+        }
+      }
+    },
+    "protoInstanceGroupScaleStatus": {
+      "type": "object",
+      "properties": {
+        "currentCount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "the number of instances created in the instanceGroup"
+        },
+        "desiredCount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "the number of instances expected in the instanceGroup"
+        },
+        "readyCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of instances with a phase of Ready."
+        },
+        "currentMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The names of existing and non-deleting instances in the instanceGroup."
+        },
+        "newMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The names of newly created instances in the instanceGroup."
+        },
+        "readyMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The names of instances with a phase of Ready."
+        }
+      }
+    },
+    "protoInstanceGroupSearchResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoInstanceGroup"
+          }
+        }
+      }
+    },
+    "protoInstanceGroupSpec": {
+      "type": "object",
+      "properties": {
+        "instanceSpec": {
+          "$ref": "#/definitions/protoInstanceSpec"
+        },
+        "instanceCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protoInstanceGroupStatus": {
+      "type": "object",
+      "properties": {
+        "readyCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of instances with a phase of Ready.\nThe instance group is Ready when this equals InstanceGroupSpec.instanceCount."
+        }
+      }
+    },
+    "protoInstanceInterfaceStatus": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Not implemented."
+        },
+        "vNet": {
+          "type": "string",
+          "description": "Not implemented."
+        },
+        "dnsName": {
+          "type": "string",
+          "description": "Fully qualified domain name (FQDN) of interface."
+        },
+        "prefixLength": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Subnet prefix length."
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of IP addresses."
+        },
+        "subnet": {
+          "type": "string",
+          "description": "Subnet IP address in format \"1.2.3.4\"."
+        },
+        "gateway": {
+          "type": "string",
+          "description": "Gateway IP address."
+        }
+      }
+    },
+    "protoInstanceMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string",
+          "description": "resourceVersion can be provided with Update and Delete for concurrency control."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of string keys and values that can be used to organize and categorize instances.\nThis is also used by TopologySpreadConstraints."
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Not implemented."
+        },
+        "deletionTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when resource was requested to be deleted."
+        }
+      }
+    },
+    "protoInstanceMetadataCreate": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name will be generated if empty."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of string keys and values that can be used to organize and categorize instances.\nThis is also used by TopologySpreadConstraints."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        },
+        "productId": {
+          "type": "string"
+        }
+      }
+    },
+    "protoInstanceMetadataReference": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string",
+          "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      },
+      "description": "A reference to a single instance."
+    },
+    "protoInstanceMetadataSearch": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "If not empty, only return instances that have these key/value pairs."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        },
+        "instanceGroup": {
+          "type": "string",
+          "title": "If instanceGroupFilter is ExactValue, return instances in this instance group.\nOtherwise, this field is ignored"
+        },
+        "instanceGroupFilter": {
+          "$ref": "#/definitions/protoSearchFilterCriteria"
+        }
+      }
+    },
+    "protoInstanceMetadataUpdate": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string",
+          "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The entire set of labels will be replaced with these labels.\nNot implemented."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      }
+    },
+    "protoInstancePhase": {
+      "type": "string",
+      "enum": [
+        "Provisioning",
+        "Ready",
+        "Stopping",
+        "Stopped",
+        "Terminating",
+        "Failed",
+        "Starting",
+        "Started"
+      ],
+      "default": "Provisioning",
+      "description": " - Provisioning: The system is creating and starting the instance.\nDefault.\n - Ready: The instance is running and has completed the running startup process.\n - Stopping: The instance is in the process of being stopped.\n - Stopped: The instance is stopped.\n - Terminating: The instance and its associated resources are in the process of being deleted.\n - Failed: The instance crashed, failed, or is otherwise unavailable.\n - Starting: The instance is in the process of startup.\n - Started: The instance has completed startup and is available to use."
+    },
+    "protoInstanceSearchResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoInstance"
+          }
+        }
+      }
+    },
+    "protoInstanceSpec": {
+      "type": "object",
+      "properties": {
+        "availabilityZone": {
+          "type": "string",
+          "description": "Not implemented."
+        },
+        "instanceType": {
+          "type": "string",
+          "description": "The name of an InstanceType."
+        },
+        "machineImage": {
+          "type": "string",
+          "description": "The name of a MachineImage.\nNot implemented."
+        },
+        "runStrategy": {
+          "$ref": "#/definitions/protoRunStrategy"
+        },
+        "sshPublicKeyNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The name of a previously stored SSH public key.\nUsers can use the corresponding SSH private key to SSH to this instance."
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoNetworkInterface"
+          },
+          "description": "Not implemented."
+        },
+        "topologySpreadConstraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoTopologySpreadConstraints"
+          },
+          "description": "This controls how instances are spread across the failure domains within the availability zone.\nThis can help to achieve high availability.\nIf this contains at least one key/value pair in matchLabels, then instances that have all of these key/value pairs\nwill be placed evenly across failure domains."
+        },
+        "userData": {
+          "type": "string",
+          "title": "The cloud-config for this instance"
+        },
+        "instanceGroup": {
+          "type": "string",
+          "description": "If not empty, this instance is part of the named instance group."
+        },
+        "quickConnectEnabled": {
+          "$ref": "#/definitions/protoTriState"
+        }
+      }
+    },
+    "protoInstanceStatus": {
+      "type": "object",
+      "properties": {
+        "phase": {
+          "$ref": "#/definitions/protoInstancePhase"
+        },
+        "message": {
+          "type": "string",
+          "description": "Additional details about the state or any error conditions."
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoInstanceInterfaceStatus"
+          },
+          "description": "A list of network interfaces, along with the private IP address assigned to the interface."
+        },
+        "sshProxy": {
+          "$ref": "#/definitions/protoSshProxyTunnelStatus"
+        },
+        "userName": {
+          "type": "string",
+          "description": "The user name that should be used to SSH into the instance."
+        }
+      }
+    },
+    "protoInstanceType": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoInstanceTypeMetadata"
+        },
+        "spec": {
+          "$ref": "#/definitions/protoInstanceTypeSpec"
+        }
+      }
+    },
+    "protoInstanceTypeDeleteRequest": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoInstanceTypeDeleteRequestMetadata"
+        }
+      }
+    },
+    "protoInstanceTypeDeleteRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name of the instance type."
+        }
+      }
+    },
+    "protoInstanceTypeGetRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name of the instance type."
+        }
+      }
+    },
+    "protoInstanceTypeMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name of the instance type."
+        }
+      }
+    },
+    "protoInstanceTypeSearchRequest": {
+      "type": "object"
+    },
+    "protoInstanceTypeSearchResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoInstanceType"
+          }
+        }
+      }
+    },
+    "protoInstanceTypeSpec": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "instanceCategory": {
+          "$ref": "#/definitions/protoInstanceCategory"
+        },
+        "cpu": {
+          "$ref": "#/definitions/protoCpuSpec"
+        },
+        "memory": {
+          "$ref": "#/definitions/protoMemorySpec"
+        },
+        "disks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoDiskSpec"
+          }
+        },
+        "gpu": {
+          "$ref": "#/definitions/protoGpuSpec"
+        },
+        "hbmMode": {
+          "type": "string"
+        }
+      }
+    },
+    "protoLabelSelector": {
+      "type": "object",
+      "properties": {
+        "matchLabels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protoLoadBalancer": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoLoadBalancerMetadata"
+        },
+        "spec": {
+          "$ref": "#/definitions/protoLoadBalancerSpec"
+        },
+        "status": {
+          "$ref": "#/definitions/protoLoadBalancerStatus"
+        }
+      }
+    },
+    "protoLoadBalancerConditionsListenerStatus": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "poolCreated": {
+          "type": "boolean"
+        },
+        "vipCreated": {
+          "type": "boolean"
+        },
+        "vipPoolLinked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protoLoadBalancerConditionsStatus": {
+      "type": "object",
+      "properties": {
+        "listeners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoLoadBalancerConditionsListenerStatus"
+          }
+        },
+        "firewallRuleCreated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protoLoadBalancerListener": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The public port of the load balancer."
+        },
+        "pool": {
+          "$ref": "#/definitions/protoLoadBalancerPool"
+        }
+      }
+    },
+    "protoLoadBalancerListenerStatus": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "vipID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "poolMembers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoLoadBalancerPoolStatusMember"
+          }
+        },
+        "poolID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "state": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protoLoadBalancerMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string",
+          "description": "resourceVersion can be provided with Update and Delete for concurrency control."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of string keys and values that can be used to organize and categorize load balancers."
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Not implemented."
+        },
+        "deletionTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when resource was requested to be deleted."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      }
+    },
+    "protoLoadBalancerMetadataCreate": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name will be generated if empty."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of string keys and values that can be used to organize and categorize load balancers."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      }
+    },
+    "protoLoadBalancerMetadataReference": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string",
+          "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      },
+      "description": "A reference to a single load balancer."
+    },
+    "protoLoadBalancerMetadataSearch": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "If not empty, only return load balancers that have these key/value pairs."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      }
+    },
+    "protoLoadBalancerMetadataUpdate": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string",
+          "description": "If provided, the existing record must have this resourceVersion for the request to succeed."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of string keys and values that can be used to organize and categorize load balancers."
+        },
+        "reserved1": {
+          "type": "string",
+          "description": "Reserved. Added this field to overcome openAPi-same-struct issue."
+        }
+      }
+    },
+    "protoLoadBalancerMonitorType": {
+      "type": "string",
+      "enum": [
+        "tcp",
+        "http",
+        "https"
+      ],
+      "default": "tcp",
+      "description": " - tcp: Healthcheck monitoring type utilizing TCP checks.\nDefault.\n - http: HTTP monitoring type expecting a \"200 OK\" HTTP Response.\n - https: HTTPS monitoring type expecting a \"200 OK\" HTTP Response."
+    },
+    "protoLoadBalancerPool": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The port to route traffic to each instance."
+        },
+        "monitor": {
+          "$ref": "#/definitions/protoLoadBalancerMonitorType"
+        },
+        "loadBalancingMode": {
+          "$ref": "#/definitions/protoLoadBalancingMode"
+        },
+        "instanceSelectors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "(Optional) Map of string keys and values that controls how the lb pool members are selected.\n One of instances or instanceSelectors is valid."
+        },
+        "instanceResourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "(Optional) Set of Instances to make up the members of the pool.\nOne of instances or instanceSelectors is valid."
+        }
+      }
+    },
+    "protoLoadBalancerPoolStatusMember": {
+      "type": "object",
+      "properties": {
+        "instanceRef": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "string"
+        }
+      }
+    },
+    "protoLoadBalancerSearchResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoLoadBalancer"
+          }
+        }
+      }
+    },
+    "protoLoadBalancerSecurity": {
+      "type": "object",
+      "properties": {
+        "sourceips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protoLoadBalancerSpec": {
+      "type": "object",
+      "properties": {
+        "listeners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoLoadBalancerListener"
+          }
+        },
+        "security": {
+          "$ref": "#/definitions/protoLoadBalancerSecurity"
+        }
+      }
+    },
+    "protoLoadBalancerSpecUpdate": {
+      "type": "object",
+      "properties": {
+        "listeners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoLoadBalancerListener"
+          }
+        },
+        "security": {
+          "$ref": "#/definitions/protoLoadBalancerSecurity"
+        }
+      }
+    },
+    "protoLoadBalancerStatus": {
+      "type": "object",
+      "properties": {
+        "conditions": {
+          "$ref": "#/definitions/protoLoadBalancerConditionsStatus"
+        },
+        "listeners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoLoadBalancerListenerStatus"
+          }
+        },
+        "state": {
+          "type": "string"
+        },
+        "vip": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "protoLoadBalancingMode": {
+      "type": "string",
+      "enum": [
+        "roundRobin",
+        "leastConnectionsMember"
+      ],
+      "default": "roundRobin",
+      "description": " - roundRobin: Default."
+    },
+    "protoMachineImage": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoMachineImageMetadata"
+        },
+        "spec": {
+          "$ref": "#/definitions/protoMachineImageSpec"
+        }
+      }
+    },
+    "protoMachineImageComponent": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "infoUrl": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "protoMachineImageDeleteRequest": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoMachineImageDeleteRequestMetadata"
+        }
+      }
+    },
+    "protoMachineImageDeleteRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name of the machine image."
+        }
+      }
+    },
+    "protoMachineImageGetRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name of the machine image."
+        }
+      }
+    },
+    "protoMachineImageMetadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name of the machine image."
+        }
+      }
+    },
+    "protoMachineImageSearchRequest": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoMachineImageSearchRequestMetadata"
+        }
+      }
+    },
+    "protoMachineImageSearchRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "instanceType": {
+          "type": "string"
+        }
+      }
+    },
+    "protoMachineImageSearchResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoMachineImage"
+          }
+        }
+      }
+    },
+    "protoMachineImageSpec": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "instanceCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoInstanceCategory"
+          },
+          "description": "If not empty, this machine image is only compatible with the specified instance categories."
+        },
+        "instanceTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "If not empty, this machine image is only compatible with the specified instance types."
+        },
+        "md5sum": {
+          "type": "string"
+        },
+        "sha256sum": {
+          "type": "string"
+        },
+        "sha512sum": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "imageCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoMachineImageComponent"
+          }
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "If true, this machine image will not be returned by the MachineImageService.Search method but it can still be used to launch instances."
+        },
+        "virtualSizeBytes": {
+          "type": "string",
+          "format": "uint64",
+          "title": "The virtual image size (size of the disk in the guest). This can be determined with qemu-img info:\n  $ qemu-img info ubuntu-2204-jammy-v20250107.qcow2\n  virtual size: 10 GiB (10737418240 bytes)"
+        }
+      }
+    },
+    "protoMemorySpec": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "string"
+        },
+        "dimmSize": {
+          "type": "string"
+        },
+        "dimmCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "speed": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protoNetworkInterface": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the network interface as known by the operating system.\nNot implemented."
+        },
+        "vNet": {
+          "type": "string",
+          "description": "Name of the VNet that the network interface connects to."
+        }
+      }
+    },
+    "protoResourceMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string",
+          "description": "A globally unique UUID."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "allowDelete": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protoResourceMetadataCreate": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "If Name is not empty, it must be unique within the cloudAccountId.\nIt will be generated if empty."
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Not implemented."
+        }
+      }
+    },
+    "protoResourceMetadataReference": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        }
+      },
+      "description": "A reference to a single resource."
+    },
+    "protoResourceMetadataSearch": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protoRunStrategy": {
+      "type": "string",
+      "enum": [
+        "RerunOnFailure",
+        "Halted",
+        "Always"
+      ],
+      "default": "RerunOnFailure",
+      "description": " - RerunOnFailure: Instance will initially be running. It will be restarted if a failure occurs.\nIf the instance powers itself off, it will not be restarted.\nDefault.\n - Halted: Instance should never be running.\n - Always: Instance should always be running."
+    },
+    "protoSearchFilterCriteria": {
+      "type": "string",
+      "enum": [
+        "Default",
+        "Any",
+        "Empty",
+        "NonEmpty",
+        "ExactValue"
+      ],
+      "default": "Default",
+      "title": "- Default: Use the default behavior, which is described in the specific SearchFilterCriteria field.\n - Any: Return records with any value in this field (including empty).\n - Empty: Return records with an empty value in this field\n - NonEmpty: Return records with a non-empty value in this field\n - ExactValue: Return records with an exact value in this field"
+    },
+    "protoSshProxyTunnelStatus": {
+      "type": "object",
+      "properties": {
+        "proxyUser": {
+          "type": "string",
+          "description": "The username required to connect to the SSH proxy."
+        },
+        "proxyAddress": {
+          "type": "string",
+          "description": "The IP address or FQDN of the SSH proxy."
+        },
+        "proxyPort": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The TCP port for the SSH proxy."
+        }
+      }
+    },
+    "protoSshPublicKey": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoResourceMetadata"
+        },
+        "spec": {
+          "$ref": "#/definitions/protoSshPublicKeySpec"
+        }
+      }
+    },
+    "protoSshPublicKeySearchRequest": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoResourceMetadataSearch"
+        }
+      }
+    },
+    "protoSshPublicKeySearchResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoSshPublicKey"
+          }
+        }
+      }
+    },
+    "protoSshPublicKeySpec": {
+      "type": "object",
+      "properties": {
+        "sshPublicKey": {
+          "type": "string",
+          "description": "SSH public key in authorized_keys format \"ssh-rsa ... comment\"."
+        },
+        "ownerEmail": {
+          "type": "string"
+        }
+      }
+    },
+    "protoTopologySpreadConstraints": {
+      "type": "object",
+      "properties": {
+        "labelSelector": {
+          "$ref": "#/definitions/protoLabelSelector"
+        }
+      }
+    },
+    "protoTriState": {
+      "type": "string",
+      "enum": [
+        "Undefined",
+        "True",
+        "False"
+      ],
+      "default": "Undefined"
+    },
+    "protoVNet": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoVNetMetadata"
+        },
+        "spec": {
+          "$ref": "#/definitions/protoVNetSpec"
+        }
+      }
+    },
+    "protoVNetDeleteRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        }
+      }
+    },
+    "protoVNetGetRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        }
+      }
+    },
+    "protoVNetMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        }
+      }
+    },
+    "protoVNetPutRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "protoVNetSearchRequest": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/protoVNetSearchRequestMetadata"
+        }
+      }
+    },
+    "protoVNetSearchRequestMetadata": {
+      "type": "object",
+      "properties": {
+        "cloudAccountId": {
+          "type": "string"
+        }
+      }
+    },
+    "protoVNetSearchResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protoVNet"
+          }
+        }
+      }
+    },
+    "protoVNetSpec": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string"
+        },
+        "availabilityZone": {
+          "type": "string"
+        },
+        "prefixLength": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The reserved subnet will have a prefix length with this value or less."
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

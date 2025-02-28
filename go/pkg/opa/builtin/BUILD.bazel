@@ -1,0 +1,50 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "builtin",
+    srcs = [
+        "authzbuiltin.go",
+        "cloudAccountbuiltin.go",
+        "gtsCheckbuiltin.go",
+        "productCatalogbuiltin.go",
+        "tomap.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/opa/builtin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "//go/pkg/tradecheck/tradecheckintel",
+        "@com_github_open_policy_agent_opa//ast",
+        "@com_github_open_policy_agent_opa//rego",
+        "@com_github_open_policy_agent_opa//types",
+        "@io_opentelemetry_go_otel//attribute",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_protobuf//reflect/protoreflect",
+        "@org_golang_google_protobuf//types/known/structpb",
+    ],
+)
+
+go_test(
+    name = "builtin_test",
+    srcs = [
+        "authzbuiltin_test.go",
+        "cloudAccountbuiltin_test.go",
+        "tomap_test.go",
+    ],
+    embed = [":builtin"],
+    deps = [
+        "//go/pkg/authz",
+        "//go/pkg/cloudaccount",
+        "//go/pkg/grpcutil",
+        "//go/pkg/pb",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_open_policy_agent_opa//rego",
+        "@com_github_stretchr_testify//assert",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_protobuf//reflect/protoreflect",
+    ],
+)

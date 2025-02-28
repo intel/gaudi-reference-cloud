@@ -1,0 +1,50 @@
+common --enable_bzlmod=false
+
+build --color=yes
+fetch --color=yes
+run --color=yes
+
+# Fixes https://github.com/buildfarm/buildfarm/issues/1446#issuecomment-1961054972
+build --@io_bazel_rules_docker//transitions:enable=false
+fetch --@io_bazel_rules_docker//transitions:enable=false
+query --@io_bazel_rules_docker//transitions:enable=false
+
+# To avoid setting up proper cross-compiling, just disable cgo
+# https://github.com/bazelbuild/rules_docker/issues/2052
+build --@io_bazel_rules_go//go/config:pure
+build:linux_arm64 --@io_bazel_rules_docker//transitions:enable=false --platforms //build/platforms:linux_arm64
+
+# Show test errors by default.
+test --test_output=errors
+
+build --verbose_failures
+
+# Allow build actions (e.g. Universe Deployer) to access the Internet through a proxy.
+# Note that if the proxy values changes, the cache key will change, requiring a rebuild.
+build --action_env=http_proxy
+build --action_env=https_proxy
+build --action_env=no_proxy
+
+# Use an environment with a static value for PATH. This allows cross-user caching.
+build --incompatible_strict_action_env
+coverage --incompatible_strict_action_env
+run --incompatible_strict_action_env
+test --incompatible_strict_action_env
+
+# Uncomment next line to show each command that Bazel runs.
+#common --subcommands
+
+# Misc. parameters.
+build --experimental_ui_max_stdouterr_bytes=104857600
+test --experimental_ui_max_stdouterr_bytes=104857600
+build --experimental_guard_against_concurrent_changes
+test --experimental_guard_against_concurrent_changes
+
+# Increase eternal test timeout to 2 hours.
+test --test_timeout=-1,-1,-1,7200
+
+# Load Bazel remote cache options written by build/bazel-remote-cache/start-bazel-remote-cache.sh.
+try-import %workspace%/local/BAZEL_REMOTE_CACHE_OPTS
+
+# Load overrides from .bazelrclocal.
+try-import %workspace%/.bazelrclocal

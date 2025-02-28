@@ -1,0 +1,44 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "sdn-vn-controller_lib",
+    srcs = ["sdncontroller.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/conf",
+        "//go/pkg/log",
+        "//go/pkg/manageddb",
+        "//go/pkg/sdn-vn-controller/configmgr",
+        "//go/pkg/sdn-vn-controller/grpcserver",
+        "//go/pkg/sdn-vn-controller/handlers",
+        "//go/pkg/sdn-vn-controller/ovnclient",
+        "@com_github_go_logr_logr//:logr",
+        "@com_github_lib_pq//:pq",
+        "@com_github_ovn_org_libovsdb//client",
+    ],
+)
+
+go_binary(
+    name = "sdn-vn-controller",
+    embed = [":sdn-vn-controller_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "sdn-vn-controller_image_1",
+    embed = [":sdn-vn-controller_lib"],
+    visibility = ["//visibility:public"],
+)
+
+# Add the intel-certs layer to the generated image.
+container_image(
+    name = "sdn-vn-controller_image",
+    base = ":sdn-vn-controller_image_1",
+    layers = ["//go/certs:intel_certs"],
+    visibility = ["//visibility:public"],
+)

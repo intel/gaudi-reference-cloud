@@ -1,0 +1,63 @@
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//deployment:deployment.bzl", "COMPONENTS")
+
+# Targets in this filegroup will be built from source files from a component-specific Git commit.
+filegroup(
+    name = "deployment_artifacts_common",
+    srcs = [
+        "@helm3_linux_amd64//:helm",
+        "@helmfile_linux_amd64//:helmfile",
+        "//build/environments:universe_deployer",
+        "//go/pkg/authz:default_data",
+        "//go/pkg/cloudaccount_enroll:configdata",
+        "//go/pkg/compute_api_server:testdata",
+        "//go/pkg/observability:configdata",
+        "//go/pkg/productcatalog:default_data",        
+        "//go/pkg/universe_deployer/cmd/manifests_generator:manifests_generator",
+        "//go/pkg/universe_deployer/cmd/pusher:pusher",
+        "config.yaml",
+    ],
+    visibility = [
+        "//go/test/kindtestenv:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "deployment_artifacts",
+    srcs = [
+        ":deployment_artifacts_common",
+        "//deployment:all_chart_versions_except_idc_versions",
+        "//deployment/helmfile:deployment_artifacts",
+    ],
+    visibility = [
+        "//go/pkg/universe_deployer/manifests_generator:__pkg__",
+    ],
+)
+
+pkg_tar(
+    name = "deployment_artifacts_tar",
+    strip_prefix = "/",
+    srcs = [":deployment_artifacts"],
+    visibility = [
+        "//go/pkg/universe_deployer/manifests_generator:__pkg__",
+        "//go/pkg/universe_deployer/multi_version_manifests_generator:__pkg__",
+    ],
+)
+
+[filegroup(
+    name = "deployment_artifacts_%s" % component,
+    srcs = [
+        ":deployment_artifacts_common",
+        "//deployment:%s_chart_versions" % component,
+        "//deployment/helmfile:universe_deployer_%s" % component,
+    ],
+) for component in COMPONENTS]
+
+[pkg_tar(
+    name = "deployment_artifacts_%s_tar" % component,
+    strip_prefix = "/",
+    srcs = ["deployment_artifacts_%s" % component],
+    visibility = [
+        "//go/pkg/universe_deployer/manifests_generator:__pkg__",
+    ],
+) for component in COMPONENTS]

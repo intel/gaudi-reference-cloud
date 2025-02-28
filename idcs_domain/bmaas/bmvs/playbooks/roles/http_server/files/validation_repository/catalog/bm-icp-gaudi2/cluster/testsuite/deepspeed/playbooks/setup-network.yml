@@ -1,0 +1,10 @@
+---
+# Copy Network Setup Script to all Nodes
+- name: Setup Network before Running Deepspeed
+  gather_facts: false
+  hosts: hosts
+  vars_files:
+    - "vars/common.yml"
+    - "vars/val-dir.yml"
+  roles:
+    - role: setup_network

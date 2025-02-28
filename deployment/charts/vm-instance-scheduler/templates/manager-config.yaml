@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vm-instance-scheduler.fullname" . }}-manager-config
+  labels:
+  {{- include "vm-instance-scheduler.labels" . | nindent 4 }}
+data:
+  controller_manager_config.yaml: |
+    apiVersion: private.cloud.intel.com/v1alpha1
+    availabilityZone: {{ .Values.managerConfig.controllerManagerConfigYaml.availabilityZone }}
+    region: {{ .Values.managerConfig.controllerManagerConfigYaml.region }}
+    computeApiServerAddr: {{ .Values.managerConfig.controllerManagerConfigYaml.computeApiServerAddr }}
+    vmClustersKubeConfigDir: {{ .Values.managerConfig.controllerManagerConfigYaml.vmClustersKubeConfigDir
+      | quote }}
+    enableBmaasLocal: {{ .Values.managerConfig.controllerManagerConfigYaml.enableBmaasLocal }}
+    enableBmaasBinpack: {{ .Values.managerConfig.controllerManagerConfigYaml.enableBmaasBinpack }}
+    overcommitConfig:
+      cpu: {{ .Values.managerConfig.controllerManagerConfigYaml.overcommitConfig.cpu }}
+      memory: {{ .Values.managerConfig.controllerManagerConfigYaml.overcommitConfig.memory }}
+      storage: {{ .Values.managerConfig.controllerManagerConfigYaml.overcommitConfig.storage }}
+    bgpNetworkRequiredInstanceCountThreshold: {{ .Values.managerConfig.controllerManagerConfigYaml.bgpNetworkRequiredInstanceCountThreshold }}
+    health:
+      healthProbeBindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.health.healthProbeBindAddress
+        | quote }}
+    kind: VmInstanceSchedulerConfig
+    leaderElection:
+      leaderElect: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.leaderElect
+        }}
+      resourceName: {{ .Values.managerConfig.controllerManagerConfigYaml.leaderElection.resourceName
+        | quote }}
+    listenPort: {{ .Values.managerConfig.controllerManagerConfigYaml.listenPort }}
+    metrics:
+      bindAddress: {{ .Values.managerConfig.controllerManagerConfigYaml.metrics.bindAddress
+        | quote }}
+    webhook:
+      port: {{ .Values.managerConfig.controllerManagerConfigYaml.webhook.port }}

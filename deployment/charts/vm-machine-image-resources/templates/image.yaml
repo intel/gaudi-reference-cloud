@@ -1,0 +1,25 @@
+{{- $kind := print "vm-machine-image-resources." .Values.kind }}
+{{- /* sortAlpha is not necessary but eases comparison of chart output */}}
+{{- $sources := concat (keys .Values.sourceMap) (keys .Values.images) | uniq | sortAlpha }}
+{{- range $source := $sources }}
+  {{- $include := true }}
+  {{- range $regex := $.Values.excludeSources }}
+    {{- if regexMatch $regex $source }}
+      {{ $include = false }}
+    {{- end }}
+  {{- end }}
+  {{- $vmi := dict }}
+  {{- if (and $include (hasKey $.Values.sourceMap $source)) }}
+    {{- $machineImage := get $.Values.sourceMap $source }}
+    {{- if (has "VirtualMachine" $machineImage.spec.instanceCategories) }}
+      {{- $vmi = (include $kind (merge $machineImage (dict "urlPrefix" $.Values.urlPrefix))) | fromYaml }}
+    {{- end }}
+  {{- end }}
+  {{- if (and $include (hasKey $.Values.images $source)) }}
+    {{- $vmi = mustMergeOverwrite $vmi (get $.Values.images $source) }}
+  {{- end }}
+{{- if not (empty $vmi) }}
+---
+{{ $vmi | toYaml }}
+{{- end }}
+{{- end }}

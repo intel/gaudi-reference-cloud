@@ -1,0 +1,27 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "conf",
+    srcs = [
+        "conf.go",
+        "type.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/conf",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_rs_zerolog//log",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+    ],
+)
+
+go_test(
+    name = "conf_test",
+    srcs = ["conf_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":conf"],
+    deps = [
+        "@com_github_stretchr_testify//assert",
+    ],
+)

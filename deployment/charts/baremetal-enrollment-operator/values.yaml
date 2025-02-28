@@ -1,0 +1,86 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/baremetal-enrollment-operator@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2048Mi
+      requests:
+        cpu: 500m
+        memory: 1024Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+managerConfig:
+  controllerManagerConfigYaml:
+    # The address of the Compute API Server in format "host:port".
+    # This should use an FQDN so that no_proxy excludes it from passing through the proxy.
+    computeApiServerAddress: us-dev-1-compute-api-server.idcs-system.svc.cluster.local:8443
+    dhcpProxy:
+      enabled: false
+      url: "http://172.18.0.2:50100"
+    maxConcurrentReconciles: 1
+    menAndMice:
+      enabled: true
+      url: "https://1.1.1.1/"
+      tftpServerIp: "1.1.1.1"
+      serverAddress: localhost
+      insecureSkipVerify: true
+    netbox:
+      address: "netbox.idcs-enrollment.svc.cluster.local"
+      skipTlsVerify: true
+    region: "us-dev-1"
+    vaultAddress: "http://vault.vault.svc.cluster.local:8200"
+    health:
+      healthProbeBindAddress: :8081
+    leaderElection:
+      leaderElect: true
+      resourceName: 0dfb8837.intel.com
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    webhook:
+      port: 9443
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "console"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+# Path for accessing the secrets inside the vault
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/baremetal/enrollment
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https

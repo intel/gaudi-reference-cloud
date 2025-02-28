@@ -1,0 +1,22 @@
+metadata:
+  name: bm-icx
+spec:
+  name: bm-icx
+  displayName: 3rd Generation Intel® Xeon® Scalable Processors (Ice Lake)
+  description: 3rd Generation Intel® Xeon® Scalable Processors (Ice Lake)
+  instanceCategory: BareMetalHost
+  cpu:
+    cores: 24
+    id: "0x606A6"
+    modelName: 3rd Generation Intel® Xeon® Scalable Processors (Ice Lake)
+    sockets: 2
+    threads: 2
+  gpu:
+    count: 0
+  memory:
+    size: 256Gi
+    dimmSize: 32Gi
+    dimmCount: 8
+    speed: 4000
+  disks:
+    - size: 2000Gi

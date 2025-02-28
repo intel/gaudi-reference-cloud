@@ -1,0 +1,70 @@
+{
+    "compute": [
+        {
+            "match": "AI",
+            "description": "Intel® Gaudi® AI accelerators and Intel® Gaudi® software are designed to bring a new level of productivity advantages and choice to data center generative AI.",
+            "shortDescription": "High-performance, high-efficiency DL compute"
+        },
+        {
+            "match": "AI Accelerator",
+            "description": "Intel® Gaudi® AI accelerators and Intel® Gaudi® software are designed to bring a new level of productivity advantages and choice to data center generative AI."
+        },
+        {
+            "match": "Core compute",
+            "description": "Run More of the Fastest-Growing Workloads on the CPU."
+        },
+        {
+            "match": "CPU",
+            "description": "Run More of the Fastest-Growing Workloads on the CPU.",
+            "shortDescription": "General purpose AI inference, scalable, extensible"
+        },
+        {
+            "match": "GPU",
+            "description": "Intel GPUs allow you to choose the power level that suits your needs, from simple object detection to complex AI.",
+            "shortDescription": "Discrete GPUs for HPC and parallel processing"
+        },
+        {
+            "match": "HPC",
+            "description": "The Intel HPC portfolio is already optimized for the most-popular AI models and frameworks to help maximize your systems for new use cases with the power and performance you need."
+        }
+    ],
+    "software": [
+        {
+            "match": "Intel optimized machine images",
+            "description": "Optimized software recipes ready to be deployed in new instances."
+        }
+    ],
+    "training": [
+        {
+            "match": "AI with Intel Gaudi 2 Accelerator",
+            "description": "Learn how to run inference and training workloads with Gaudi.",
+            "order": 1
+        },
+        {
+            "match": "AI with Max Series GPU",
+            "description": "A collection of notebooks designed to showcase AI workloads on Intel® Data Center GPU.",
+            "order": 2
+        },
+        {
+            "match": "C++ SYCL",
+            "description": "Use oneAPI and SYCL C++ to achieve portable, performant code.",
+            "order": 3
+        },
+        {
+            "match": "Rendering Toolkit",
+            "description": "Powerful libraries for high-fidelity rendering and visualization applications.",
+            "order": 4
+        },
+        {
+            "match": "Quantum Computing",
+            "description": "Learn to build applications that integrate quantum and classical logic.",
+            "order": 5
+        }
+    ],
+    "labs": [
+        {
+            "match": "AI with Max Series GPU",
+            "description": "A collection of labs running the latest AI models on Intel® Max Series GPU accelerators."
+        }
+    ]
+}

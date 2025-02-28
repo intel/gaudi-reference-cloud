@@ -1,0 +1,203 @@
+syntax = "proto3";
+package proto;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "cloudmonitor-logs-api-server";
+
+service CloudMonitorLogsService {
+
+  rpc SearchAllLogs(SearchAllLogsRequest) returns (SearchAllLogsResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitorlogs/resources/{resourceId}/query/logs"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc SearchLogsByTerm(SearchLogsByTermRequest) returns (SearchLogsByTermResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitorlogs/resources/{resourceId}/query/byterm"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc SearchPanelData(SearchPanelDataRequest) returns (SearchPanelDataResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitorlogs/resources/{resourceId}/query/searchpanel"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc SearchLogsByFilter(SearchLogsByFilterRequest) returns (SearchLogsByFilterResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitorlogs/resources/{resourceId}/query/byfilter"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc SearchLogsByPhrase(SearchLogsByPhraseRequest) returns (SearchLogsByPhraseResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitorlogs/resources/{resourceId}/query/byphrase"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+  rpc UserRegistration(UserRegistrationRequest) returns (UserRegistrationResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/{cloudAccountId}/cloudmonitorlogs/userregistration"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+  }
+
+}
+
+
+message SearchAllLogsRequest {
+  string cloudAccountId = 1  [
+    (idc.field).cloudAccount = true
+  ];
+  string resourceType = 2;
+  string resourceId = 3;
+  int32 size = 4;
+  int32 pageNumber = 5;
+  string startTime = 6;
+  string endTime = 7;
+}
+
+message SearchAllLogsResponse {
+  repeated Hits data = 1;
+}
+
+message QueryResult {
+  int32 took = 1;
+  bool timed_out = 2;
+  HitsItem hits = 3;
+  Aggregations aggregations = 4;
+}
+
+message HitsItem {
+  repeated Hits hits = 1;
+}
+
+message Hits {
+  SourceData _source = 1;
+}
+
+message SourceData {
+  string timestamp1 = 1;
+  string system_component = 2;
+  string cluster_id = 3;
+  string log = 4;
+  string cluster_name = 5;
+  string timestamp = 6;
+  string host = 7;
+  string cluster_region = 8;
+  string cloudAccount_id = 9;
+}
+
+message Aggregations {
+  Unique_field_values unique_field_values = 1;
+}
+
+message Unique_field_values {
+  int32 doc_count_error_upper_bound = 1;
+  int32 sum_other_doc_count = 2;
+  repeated Buckets buckets = 3;
+}
+
+message Buckets {
+  string key = 1;
+  int32 doc_count = 2;
+}
+
+
+message SearchLogsByTermRequest {
+  string cloudAccountId = 1  [
+    (idc.field).cloudAccount = true
+  ];
+  string resourceType = 2;
+  string resourceId = 3;
+  string searchTerm = 4;
+  int32 size = 5;
+  int32 pageNumber = 6;
+  string startTime = 7;
+  string endTime = 8;
+}
+
+message SearchLogsByTermResponse {
+  repeated Hits data = 1;
+}
+
+message SearchPanelDataRequest {
+  string cloudAccountId = 1  [
+    (idc.field).cloudAccount = true
+  ];
+  string resourceType = 2;
+  string resourceId = 3;
+  int32 size = 4;
+  string fieldName = 5;
+  string startTime = 6;
+  string endTime = 7;
+}
+
+message SearchPanelDataResponse {
+  repeated Buckets data = 1;
+}
+
+message SearchLogsByFilterRequest {
+  string cloudAccountId = 1  [
+    (idc.field).cloudAccount = true
+  ];
+  string resourceType = 2;
+  string resourceId = 3;
+  repeated string fieldNames = 4;
+  repeated string fieldValues = 5;
+  int32 size = 6;
+  int32 pageNumber = 7;
+  string startTime = 8;
+  string endTime = 9;
+}
+
+message SearchLogsByFilterResponse {
+  repeated Hits data = 1;
+}
+
+message SearchLogsByPhraseRequest {
+  string cloudAccountId = 1  [
+    (idc.field).cloudAccount = true
+  ];
+  string resourceType = 2;
+  string resourceId = 3;
+  string searchPhrase = 4;
+  int32 size = 5;
+  int32 pageNumber = 6;
+  string startTime = 7;
+  string endTime = 8;
+}
+
+message SearchLogsByPhraseResponse {
+  repeated Hits data = 1;
+}
+
+message UserRegistrationRequest {
+  string cloudAccountId = 1  [
+    (idc.field).cloudAccount = true
+  ];
+  string resourceType = 2;
+}
+
+message UserRegistrationResponse {
+  ResponseData response = 1; 
+}
+
+message ResponseData {
+  bool isTemplateCreated = 1;
+  bool isIndexCreated = 2;
+  bool isAliasCreated = 3;
+}

@@ -1,0 +1,436 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.4
+  name: sdncontrollerconfigs.idcnetwork.intel.com
+spec:
+  group: idcnetwork.intel.com
+  names:
+    kind: SDNControllerConfig
+    listKind: SDNControllerConfigList
+    plural: sdncontrollerconfigs
+    singular: sdncontrollerconfig
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: SDNControllerConfig is the Schema for the sdncontrollerconfigs
+          API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          cacheNamespace:
+            description: |-
+              CacheNamespace if specified restricts the manager's cache to watch objects in
+              the desired namespace Defaults to all namespaces
+
+              Note: If a namespace is specified, controllers can still Watch for a
+              cluster-scoped resource (e.g Node).  For namespaced resources the cache
+              will only hold objects from the desired namespace.
+            type: string
+          controller:
+            description: |-
+              Controller contains global configuration options for controllers
+              registered within this manager.
+            properties:
+              cacheSyncTimeout:
+                description: |-
+                  CacheSyncTimeout refers to the time limit set to wait for syncing caches.
+                  Defaults to 2 minutes if not set.
+                format: int64
+                type: integer
+              groupKindConcurrency:
+                additionalProperties:
+                  type: integer
+                description: |-
+                  GroupKindConcurrency is a map from a Kind to the number of concurrent reconciliation
+                  allowed for that controller.
+
+                  When a controller is registered within this manager using the builder utilities,
+                  users have to specify the type the controller reconciles in the For(...) call.
+                  If the object's kind passed matches one of the keys in this map, the concurrency
+                  for that controller is set to the number specified.
+
+                  The key is expected to be consistent in form with GroupKind.String(),
+                  e.g. ReplicaSet in apps group (regardless of version) would be `ReplicaSet.apps`.
+                type: object
+              recoverPanic:
+                description: RecoverPanic indicates if panics should be recovered.
+                type: boolean
+            type: object
+          controllerConfig:
+            description: Configuration for the CRD controllers
+            properties:
+              allowedCountAccInterfaces:
+                description: AllowedCountAccInterfaces is the number of accelerator
+                  interfaces a BMH must have to be considered valid & imported as
+                  a NetworkNode. Comma-separated string of allowed numbers. eg. "0,24"
+                  = 0 for those without accelerators, 24 for a Gaudi2 or 3, etc.
+                type: string
+              allowedModes:
+                description: AllowedModes lists the modes that can be added to a port.
+                items:
+                  type: string
+                type: array
+              allowedNativeVlanIds:
+                description: AllowedNativeVlanIds lists the native vlan ids that can
+                  be added to a port.
+                type: string
+              allowedTrunkGroups:
+                description: AllowedTrunkGroups lists the trunkGroups that can be
+                  added to a port. An empty list allows ALL trunkGroups to be set.
+                items:
+                  type: string
+                type: array
+              allowedVlanIds:
+                description: AllowedVlanIdss lists the vlan ids that can be added
+                  to a port.
+                type: string
+              bgpCommunityIncomingGroupName:
+                description: BGPCommunityIncomingGroupName is the name of the BGP
+                  group that the accelerator leaves use in their "ip community-list
+                  <BGPCommunityIncomingGroupName> permit 101:X" config
+                type: string
+              bmhClusterKubeConfigFilePath:
+                description: BMHClusterKubeConfigFilePath is the location of the BMH
+                  Cluster kubeConfig file, or a list of paths of kubeConfig files
+                  separated by ";".
+                type: string
+              bmhResyncPeriodInSec:
+                description: BMHResyncPeriodInSec specifies the frequency of the periodic
+                  BareMetalHost reconciliation.
+                type: integer
+              dataCenter:
+                description: DataCenter is a list of data center names with ":" as
+                  the separator. e.g., "fxhb3p3s:fxhb3p3r"
+                type: string
+              enableReadOnlyMode:
+                description: EnableReadOnlyMode specifies if read only mode is enabled
+                  or not.
+                type: boolean
+              initNetworkNodeWithNOOPVlanID:
+                description: InitNetworkNodeWithNOOPVlanID. Deprecated
+                type: boolean
+              maxConcurrentNetworkNodeReconciles:
+                description: MaxConcurrentNetworkNodeReconciles specifies the number
+                  of threads of the NetworkNode reconciler.
+                type: integer
+              maxConcurrentNodeGroupReconciles:
+                description: MaxConcurrentNodeGroupReconciles specifies the number
+                  of threads of the NodeGroup reconciler.
+                type: integer
+              maxConcurrentReconciles:
+                description: MaxConcurrentReconciles specifies the number of threads
+                  of the SwitchPort reconciler.
+                type: integer
+              maxConcurrentSwitchReconciles:
+                description: MaxConcurrentSwitchReconciles specifies the number of
+                  threads of the Switch reconciler.
+                type: integer
+              netboxClientInsecureSkipVerify:
+                description: NetboxClientInsecureSkipVerify specifies the InsecureSkipVerify
+                  setting
+                type: boolean
+              netboxProviderInterfacesFilterFilePath:
+                description: |-
+                  note: filtering the interface also require the netboxProviderServersFilterFilePath value, as we need to first find the devices(switches), and then find the interfaces.
+                  NetboxProviderInterfacesFilterFilePath - the filters that define which switch ports/interfaces the Netbox Controller maintains
+                type: string
+              netboxProviderServersFilterFilePath:
+                description: NetboxProviderServersFilterFilePath - the filters that
+                  define which switches the Netbox Controller maintains
+                type: string
+              netboxServer:
+                description: |-
+                  Netbox related
+                  NetboxServer
+                type: string
+              netboxSwitchFQDNDomainName:
+                description: NetboxSwitchFQDNDomainName will be appended to hostnames
+                  loaded from Netbox. eg. "internal-placeholder.com" or "us-staging-3.cloud.intel.com"
+                type: string
+              netboxSwitchesFilterFilePath:
+                description: NetboxSwitchesFilterFilePath - the filters that define
+                  which switches the Netbox Controller maintains
+                type: string
+              netboxTokenPath:
+                description: NetboxTokenPath
+                type: string
+              networkNodeResyncPeriodInSec:
+                description: NetworkNodeResyncPeriodInSec specifies the frequency
+                  of the periodic networkNode reconciliation.
+                type: integer
+              nodeGroupResyncPeriodInSec:
+                description: NodeGroupResyncPeriodInSec specifies the frequency of
+                  the periodic NodeGroup reconciliation.
+                type: integer
+              nodeGroupToPoolMappingConfigFilePath:
+                description: |-
+                  NodeGroupToPoolMappingConfigFilePath specifies the location of the NodeGroup to Pool mapping file.
+                  This is used for the LocalPoolMapping, we don't need this if we store the mapping in Netbox.
+                type: string
+              nodeGroupToPoolMappingSource:
+                description: NodeGroupToPoolMappingSource specifies which source SDN
+                  Controller should get the Group to Pool mappings. options are "local"
+                  and "crd"
+                type: string
+              poolsConfigFilePath:
+                description: PoolsConfigFilePath is the location of the pool configuration
+                  file
+                type: string
+              portChannelsEnabled:
+                description: PortChannelsEnabled enables support for managing port-channels
+                  on the switch. Typically disabled for Tenant SDN, enabled for Provider
+                  SDN.
+                type: boolean
+              portResyncPeriodInSec:
+                description: PortResyncPeriodInSec specifies the frequency of the
+                  periodic SwitchPort reconciliation.
+                type: integer
+              provisioningVlanIds:
+                description: ProvisioningVlan lists the vlans that can be set as provisioning
+                  vlan.
+                type: string
+              statusReportAcceleratedPeriodInSec:
+                description: StatusReportAcceleratedPeriodInSec specifies the interval
+                  of getting switch config and updating the status of Switch and SwitchPort
+                  CRs for a period just after changes have been made.
+                type: integer
+              statusReportPeriodInSec:
+                description: StatusReportPeriodInSec specifies the interval of getting
+                  switch config and updating the status of Switch and SwitchPort CRs.
+                type: integer
+              switchBackendMode:
+                description: SwitchBackendMode specifies which type of switch backend
+                  that will be used.
+                type: string
+              switchImportPeriodInSec:
+                description: SwitchImportPeriodInSec specifies the interval of getting
+                  switches from Raven/Netbox and then try to create SwitchCR for it.
+                type: integer
+              switchImportSource:
+                description: 'SwitchImportSource specifies where to import the Switch
+                  data. options: "netbox", "raven" and "none"'
+                type: string
+              switchPortImportSource:
+                description: 'SwitchPortImportSource specifies where to import the
+                  SwitchPort data. options: "netbox", "bmh" and "none"'
+                type: string
+              switchResyncPeriodInSec:
+                description: SwitchResyncPeriodInSec specifies the frequency of the
+                  periodic Switch reconciliation.
+                type: integer
+              switchSecretsPath:
+                description: SwitchSecretsPath is the location of the shared eAPI
+                  secret file
+                type: string
+              useDefaultValueInPoolForMovingNodeGroup:
+                description: UseDefaultValueInPoolForMovingNodeGroup specifies if
+                  NOOP Vlan or BGP value should be used a NodeGroup is created or
+                  moved to a new Pool.
+                type: boolean
+            required:
+            - allowedCountAccInterfaces
+            - allowedModes
+            - allowedNativeVlanIds
+            - allowedTrunkGroups
+            - allowedVlanIds
+            - bgpCommunityIncomingGroupName
+            - bmhClusterKubeConfigFilePath
+            - bmhResyncPeriodInSec
+            - dataCenter
+            - enableReadOnlyMode
+            - initNetworkNodeWithNOOPVlanID
+            - maxConcurrentNetworkNodeReconciles
+            - maxConcurrentNodeGroupReconciles
+            - maxConcurrentReconciles
+            - maxConcurrentSwitchReconciles
+            - netboxClientInsecureSkipVerify
+            - netboxProviderInterfacesFilterFilePath
+            - netboxProviderServersFilterFilePath
+            - netboxServer
+            - netboxSwitchFQDNDomainName
+            - netboxSwitchesFilterFilePath
+            - netboxTokenPath
+            - networkNodeResyncPeriodInSec
+            - nodeGroupResyncPeriodInSec
+            - nodeGroupToPoolMappingConfigFilePath
+            - nodeGroupToPoolMappingSource
+            - poolsConfigFilePath
+            - portChannelsEnabled
+            - portResyncPeriodInSec
+            - provisioningVlanIds
+            - statusReportAcceleratedPeriodInSec
+            - statusReportPeriodInSec
+            - switchBackendMode
+            - switchImportPeriodInSec
+            - switchImportSource
+            - switchPortImportSource
+            - switchResyncPeriodInSec
+            - switchSecretsPath
+            - useDefaultValueInPoolForMovingNodeGroup
+            type: object
+          gracefulShutDown:
+            description: |-
+              GracefulShutdownTimeout is the duration given to runnable to stop before the manager actually returns on stop.
+              To disable graceful shutdown, set to time.Duration(0)
+              To use graceful shutdown without timeout, set to a negative duration, e.G. time.Duration(-1)
+              The graceful shutdown is skipped for safety reasons in case the leader election lease is lost.
+            type: string
+          health:
+            description: Health contains the controller health configuration
+            properties:
+              healthProbeBindAddress:
+                description: |-
+                  HealthProbeBindAddress is the TCP address that the controller should bind to
+                  for serving health probes
+                  It can be set to "0" or "" to disable serving the health probe.
+                type: string
+              livenessEndpointName:
+                description: LivenessEndpointName, defaults to "healthz"
+                type: string
+              readinessEndpointName:
+                description: ReadinessEndpointName, defaults to "readyz"
+                type: string
+            type: object
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          leaderElection:
+            description: |-
+              LeaderElection is the LeaderElection config to be used when configuring
+              the manager.Manager leader election
+            properties:
+              leaderElect:
+                description: |-
+                  leaderElect enables a leader election client to gain leadership
+                  before executing the main loop. Enable this when running replicated
+                  components for high availability.
+                type: boolean
+              leaseDuration:
+                description: |-
+                  leaseDuration is the duration that non-leader candidates will wait
+                  after observing a leadership renewal until attempting to acquire
+                  leadership of a led but unrenewed leader slot. This is effectively the
+                  maximum duration that a leader can be stopped before it is replaced
+                  by another candidate. This is only applicable if leader election is
+                  enabled.
+                type: string
+              renewDeadline:
+                description: |-
+                  renewDeadline is the interval between attempts by the acting master to
+                  renew a leadership slot before it stops leading. This must be less
+                  than or equal to the lease duration. This is only applicable if leader
+                  election is enabled.
+                type: string
+              resourceLock:
+                description: |-
+                  resourceLock indicates the resource object type that will be used to lock
+                  during leader election cycles.
+                type: string
+              resourceName:
+                description: |-
+                  resourceName indicates the name of resource object that will be used to lock
+                  during leader election cycles.
+                type: string
+              resourceNamespace:
+                description: |-
+                  resourceName indicates the namespace of resource object that will be used to lock
+                  during leader election cycles.
+                type: string
+              retryPeriod:
+                description: |-
+                  retryPeriod is the duration the clients should wait between attempting
+                  acquisition and renewal of a leadership. This is only applicable if
+                  leader election is enabled.
+                type: string
+            required:
+            - leaderElect
+            - leaseDuration
+            - renewDeadline
+            - resourceLock
+            - resourceName
+            - resourceNamespace
+            - retryPeriod
+            type: object
+          metadata:
+            type: object
+          metrics:
+            description: Metrics contains the controller metrics configuration
+            properties:
+              bindAddress:
+                description: |-
+                  BindAddress is the TCP address that the controller should bind to
+                  for serving prometheus metrics.
+                  It can be set to "0" to disable the metrics serving.
+                type: string
+            type: object
+          ravenConfig:
+            description: Raven Config
+            properties:
+              credentialsFilePath:
+                type: string
+              datacenter:
+                type: string
+              environment:
+                type: string
+              host:
+                type: string
+              insecureSkipVerify:
+                type: boolean
+            required:
+            - credentialsFilePath
+            - datacenter
+            - environment
+            - host
+            - insecureSkipVerify
+            type: object
+          syncPeriod:
+            description: |-
+              SyncPeriod determines the minimum frequency at which watched resources are
+              reconciled. A lower period will correct entropy more quickly, but reduce
+              responsiveness to change if there are many watched resources. Change this
+              value only if you know what you are doing. Defaults to 10 hours if unset.
+              there will a 10 percent jitter between the SyncPeriod of all controllers
+              so that all controllers will not send list requests simultaneously.
+            type: string
+          webhook:
+            description: Webhook contains the controllers webhook configuration
+            properties:
+              certDir:
+                description: |-
+                  CertDir is the directory that contains the server key and certificate.
+                  if not set, webhook server would look up the server key and certificate in
+                  {TempDir}/k8s-webhook-server/serving-certs. The server key and certificate
+                  must be named tls.key and tls.crt, respectively.
+                type: string
+              host:
+                description: |-
+                  Host is the hostname that the webhook server binds to.
+                  It is used to set webhook.Server.Host.
+                type: string
+              port:
+                description: |-
+                  Port is the port that the webhook server serves at.
+                  It is used to set webhook.Server.Port.
+                type: integer
+            type: object
+        required:
+        - controllerConfig
+        - ravenConfig
+        type: object
+    served: true
+    storage: true

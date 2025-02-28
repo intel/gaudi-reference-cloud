@@ -1,0 +1,169 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+{{- if $.Values.global.productCatalog.enabled }}
+
+  - name: productcatalog-crds
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: productCatalog
+      crd: true
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: productcatalog-crds
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/productcatalog-crds
+    version: {{ readFile (print $helmChartVersionsDir "/productcatalog-crds.version") | quote }}
+
+  {{- if $.Values.global.productCatalogDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: productcatalog-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: productCatalog
+      database: productcatalog
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: productcatalog-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.productCatalog.addDatabase.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/productcatalog_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/productcatalog_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.productCatalogDb.primary.persistence.enabled }}
+  {{- end }}
+
+  - name: productcatalog-operator
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: productCatalog
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: productcatalog-operator
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/productcatalog-operator
+    version: {{ readFile (print $helmChartVersionsDir "/productcatalog-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ (.Values.image).registry }}/{{ (.Values.image).repositoryPrefix }}productcatalog-operator@sha256"
+            {{- if .Values.zeroResources }}
+            resources:
+            {{- end }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ .Values.global.vault.authPath | quote }}
+      - gts:
+          usernameFile: /vault/secrets/gts_username
+          passwordFile: /vault/secrets/gts_password
+          vaultCredentialsPath: "controlplane/data/gts-trade-compliance/apigee"
+      - serviceMonitor:
+            enabled: {{ $.Values.serviceMonitor.global.enabled }}
+
+  - name: productcatalog
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: productCatalog
+      database: cloudaccount
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: productcatalog
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/productcatalog
+    version: {{ readFile (print $helmChartVersionsDir "/productcatalog.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.productCatalog.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}productcatalog@sha256"
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+      - gts:
+          usernameFile: /vault/secrets/gts_username
+          passwordFile: /vault/secrets/gts_password
+          vaultCredentialsPath: "controlplane/data/gts-trade-compliance/apigee"
+      - whitelist:
+          enabled: {{ $.Values.global.productCatalog.whitelist.enabled }}
+      - database:
+          arg: {{ $.Values.global.productCatalog.database.arg | quote }}
+          name: {{ $.Values.global.productCatalog.database.name | quote }}
+          service: {{ $.Values.global.productCatalog.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.productCatalog.database.vaultCredentialsPath | quote }}
+      {{- if $.Values.global.productCatalog.addDatabase.enabled }}
+      - addDatabase:
+          enabled: {{ $.Values.global.productCatalog.addDatabase.enabled }}
+          arg: {{ $.Values.global.productCatalog.addDatabase.arg | quote }}
+          name: {{ $.Values.global.productCatalog.addDatabase.name | quote }}
+          service: {{ $.Values.global.productCatalog.addDatabase.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.productCatalog.addDatabase.vaultCredentialsPath | quote }}
+      {{- end }}
+
+      - regions:
+          - name: global
+            friendlyName: global
+            type: open
+            subnet: NA
+            availabilityZone: NA
+            prefix: 0
+            isDefault: false
+            apiDns: NA
+            environment: {{ $.Values.global.environmentType }}
+      {{- range $regionIndex, $region := .Values.regions }}
+      {{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+      {{- range $azIndex, $availabilityZone := $region.availabilityZones }}      
+      {{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+          - name: {{ $region.region }}
+            friendlyName: {{ $region.region }}
+            type: {{ $region.access }}
+            subnet: {{ $availabilityZone.subnet.name }}
+            availabilityZone: {{ $availabilityZone.availabilityZone }}
+            prefix: {{ $availabilityZone.subnet.prefix }}
+            isDefault: {{ $region.default }}
+            apiDns: {{ $region.grpcRestGateway.ingress.host }}
+            environment: {{ $.Values.global.environmentType }}
+      {{- end }}
+      {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

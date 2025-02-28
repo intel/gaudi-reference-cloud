@@ -1,0 +1,9 @@
+.auth-mfa-verify-template {
+  #api .intro p,
+  #cancel,
+  .helpLink.tiny,
+  .verifying-modal,
+  .Paragraph.QrCodeVerifyInstruction_li {
+    display: none;
+  }
+}

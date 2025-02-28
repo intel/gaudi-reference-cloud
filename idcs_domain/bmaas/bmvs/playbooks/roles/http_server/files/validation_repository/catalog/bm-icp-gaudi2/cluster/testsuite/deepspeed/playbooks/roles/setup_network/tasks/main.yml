@@ -1,0 +1,16 @@
+---
+
+- name: Copy network test script to all nodes
+  ansible.builtin.copy:
+    src: "setup_network.sh"
+    dest: "{{ val_dir }}/setup_network.sh"
+    mode: 0755
+
+- name: Run network test script
+  shell: "bash {{ val_dir }}/setup_network.sh"
+  register: network_test_output
+
+- name: Debug network test output
+  debug:
+    msg: "{{ network_test_output.stdout_lines }}"
+  when: network_test_output|default([]) != []

@@ -1,0 +1,22 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/trade-scanner
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+gts:
+  # For production environment use url as https://apis.intel.com. This is accessible outside of intel network aswell.
+  # Development environment use url as https://apis-sandbox.intel.com.
+  usernameFile: /vault/secrets/gts_username
+  passwordFile: /vault/secrets/gts_password
+  vaultCredentialsPath: controlplane/data/gts-trade-compliance/apigee
+
+schedInterval: 86400
+
+otel:
+  otelAnnotations: false

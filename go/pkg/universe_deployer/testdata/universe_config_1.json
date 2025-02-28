@@ -1,0 +1,286 @@
+{
+  "environments": {
+    "staging": {
+      "components": {
+        "billing": {
+          "commit": "b966d5f3a3aa2762532d82a06e5ea0435fbc89d4"
+        },
+        "cloudaccount": {
+          "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+        },
+        "grpc": {
+          "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+        },
+        "metering": {
+          "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+        },
+        "productCatalog": {
+          "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+        },
+        "telemetry": {
+          "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+        },
+        "tradeScanner": {
+          "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+        }
+      },
+      "regions": {
+        "us-staging-1": {
+          "components": {
+            "compute": {
+              "commit": "b966d5f3a3aa2762532d82a06e5ea0435fbc89d4"
+            },
+            "computeApiServer": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "computeBm": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "computeBmEnrollment": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "externalSecrets": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "grpc": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "iks": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "storage": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "telemetry": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            },
+            "training": {
+              "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+            }
+          },
+          "availabilityZones": {
+            "us-staging-1a": {
+              "components": {
+                "compute": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeBm": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeBmEnrollment": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeBmInstanceOperator": {
+                  "commit": "b966d5f3a3aa2762532d82a06e5ea0435fbc89d4"
+                },
+                "computeBmMetal3": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeBmValidationOperator": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeInstanceReplicator": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeMeteringMonitor": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeSshProxy": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeVmInstanceOperator": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "computeVmInstanceScheduler": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "externalSecrets": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "iks": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "telemetry": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "sdn": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                },
+                "storage": {
+                  "commit": "a5ddeaa02a04c61e5090fae7f6981e471d89d54b"
+                }
+              },
+              "us-staging-1b": {
+                "components": {
+                  "compute": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBm": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBmEnrollment": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBmInstanceOperator": {
+                    "commit": "b966d5f3a3aa2762532d82a06e5ea0435fbc89d4"
+                  },
+                  "computeBmMetal3": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBmValidationOperator": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeInstanceReplicator": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeMeteringMonitor": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeSshProxy": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeVmInstanceOperator": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeVmInstanceScheduler": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "externalSecrets": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "iks": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "telemetry": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "sdn": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "storage": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "production": {
+        "components": {
+          "billing": {
+            "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+          },
+          "cloudaccount": {
+            "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+          },
+          "grpc": {
+            "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+          },
+          "metering": {
+            "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+          },
+          "productCatalog": {
+            "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+          },
+          "telemetry": {
+            "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+          },
+          "tradeScanner": {
+            "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+          }
+        },
+        "regions": {
+          "us-region-1": {
+            "components": {
+              "compute": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "computeApiServer": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "computeBm": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "computeBmEnrollment": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "externalSecrets": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "grpc": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "iks": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "storage": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "telemetry": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              },
+              "training": {
+                "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+              }
+            },
+            "availabilityZones": {
+              "us-region-1a": {
+                "components": {
+                  "compute": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBm": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBmEnrollment": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBmInstanceOperator": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBmMetal3": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeBmValidationOperator": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeInstanceReplicator": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeMeteringMonitor": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeSshProxy": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeVmInstanceOperator": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "computeVmInstanceScheduler": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "externalSecrets": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "iks": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "telemetry": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "sdn": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  },
+                  "storage": {
+                    "commit": "c44c863a711dd281a4cbb4f305b66895e34e7e8a"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

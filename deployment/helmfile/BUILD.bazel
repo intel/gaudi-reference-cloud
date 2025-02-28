@@ -1,0 +1,134 @@
+load("//deployment:deployment.bzl", "COMPONENTS")
+
+filegroup(
+    name = "test-e2e-common",
+    srcs = [
+        "_common.tpl",
+        "defaults.yaml.gotmpl",
+        "environments.yaml",
+        "helmfile-argocd.yaml",
+        "helmfile-coredns.yaml",
+        "helmfile-debugTools.yaml",
+        "helmfile-dump.yaml",
+        "helmfile-externalSecrets.yaml",
+        "helmfile-vault.yaml",
+        "helmfile.yaml",
+        "idc-common-global.yaml.gotmpl",
+        "idc-common.yaml.gotmpl",
+        "proxy.yaml.gotmpl",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "test-e2e-compute",
+    srcs = [
+        "helmfile-authz.yaml",
+        "helmfile-billing.yaml",
+        "helmfile-cloudaccount.yaml",
+        "helmfile-cloudcredits.yaml",
+        "helmfile-cloudmonitor.yaml",
+        "helmfile-compute.yaml",
+        "helmfile-computeApiServer.yaml",
+        "helmfile-computeBm.yaml",
+        "helmfile-computeBmEnrollment.yaml",
+        "helmfile-computeBmInstanceOperator.yaml",
+        "helmfile-computeBmMetal3.yaml",
+        "helmfile-computeBmValidationOperator.yaml",
+        "helmfile-computeInstanceReplicator.yaml",
+        "helmfile-computeMeteringMonitor.yaml",
+        "helmfile-computePopulateInstanceType.yaml",
+        "helmfile-computePopulateMachineImage.yaml",
+        "helmfile-computePopulateSubnet.yaml",
+        "helmfile-computeSshProxy.yaml",
+        "helmfile-computeVmInstanceOperator.yaml",
+        "helmfile-computeVmInstanceScheduler.yaml",
+        "helmfile-fleetAdmin.yaml",
+        "helmfile-grpc.yaml",
+        "helmfile-metering.yaml",
+        "helmfile-populateProductCatalog.yaml",
+        "helmfile-productCatalog.yaml",
+        "helmfile-rateLimit.yaml",
+        "helmfile-telemetry.yaml",
+        "helmfile-tradeScanner.yaml",
+    ],
+)
+
+filegroup(
+    name = "test-e2e-compute-vm",
+    srcs = [
+        "environments/test-e2e-compute-vm.yaml.gotmpl",
+        ":test-e2e-compute",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "test-e2e-compute-bm",
+    srcs = [
+        "environments/test-e2e-compute-bm.yaml.gotmpl",
+        ":test-e2e-compute",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "universe_deployer_common",
+    srcs = glob([
+        "environments/**/*",
+    ]) + [
+        "_common.tpl",
+        "defaults.yaml.gotmpl",
+        "environments.yaml",
+        "helmfile-argocd.yaml",
+        "helmfile-coredns.yaml",
+        "helmfile-debugTools.yaml",
+        "helmfile-dump.yaml",
+        "helmfile-externalSecrets.yaml",
+        "helmfile-vault.yaml",
+        "helmfile.yaml",
+        "idc-common-global.yaml.gotmpl",
+        "idc-common.yaml.gotmpl",
+        "proxy.yaml.gotmpl",
+    ],
+    visibility = [
+        "//go/pkg/universe_deployer/deployer:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "deployment_artifacts",
+    srcs = glob([
+        "environments/**/*",
+        "helmfile-*.yaml",
+    ]) + [
+        ":universe_deployer_common",
+        "helmfile.yaml",
+    ],
+    visibility = [
+        "//deployment/universe_deployer/deployment_artifacts:__pkg__",
+        "//go/pkg/universe_deployer/deployer:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "universe_deployer",
+    srcs = glob([
+        "helmfile-*.yaml",
+    ]) + [
+        ":universe_deployer_common",
+        "helmfile.yaml",
+    ],
+    visibility = [
+        "//go/pkg/universe_deployer/manifests_generator:__pkg__",
+    ],
+)
+
+[filegroup(
+    name = "universe_deployer_%s" % component,
+    srcs = [
+        ":universe_deployer_common",
+        "helmfile-%s.yaml" % component,
+    ],
+    visibility = ["//deployment/universe_deployer/deployment_artifacts:__pkg__"],
+) for component in COMPONENTS]

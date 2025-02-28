@@ -1,0 +1,19 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "icpintel",
+    srcs = [
+        "icp_client.go",
+        "icp_config.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/cloudaccount_enroll/icpintel",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/log",
+        "@com_github_go_resty_resty_v2//:resty",
+        "@com_github_pborman_uuid//:uuid",
+        "@in_gopkg_square_go_jose_v2//jwt",
+    ],
+)

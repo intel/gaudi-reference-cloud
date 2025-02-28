@@ -1,0 +1,22 @@
+---
+
+# TODO: refactor to use community.libvirt.virt_net
+
+# Network need to be created as root; primarily due
+# to the restriction on creating network interfaces
+
+- name: Block for removing network
+  block:
+  - name: stop libvirt network for {{ network }}
+    command: virsh net-destroy {{ network }}
+    register: result
+    changed_when: false
+    failed_when: false
+  - name: undefine libvirt network for {{ network }}
+    command: virsh net-undefine {{ network }}
+    changed_when: false
+    failed_when: false
+  become: true
+  vars:
+    ansible_network_os: 'ios'
+  tags: [never, teardown]

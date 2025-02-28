@@ -1,0 +1,20 @@
+- name: Is K9 installed?
+  stat:
+    path: "/usr/bin/k9s"
+  register: k9s_bin
+
+- name: Download k9s 
+  shell: wget -e use_proxy=yes -e https_proxy=$https_proxy https://github.com/derailed/k9s/releases/download/$K9S_VERSION/k9s_Linux_amd64.tar.gz
+  environment:
+    K9S_VERSION: v0.27.3
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+    no_proxy: intel.com,.intel.com
+  when: not k9s_bin.stat.exists
+
+- name: Install k9s 
+  shell: |
+    tar zxvf k9s*gz 
+    mv k9s /usr/bin 
+    rm k9s*gz
+  when: not k9s_bin.stat.exists

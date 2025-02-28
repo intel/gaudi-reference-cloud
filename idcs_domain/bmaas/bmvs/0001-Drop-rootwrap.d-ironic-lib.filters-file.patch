@@ -1,0 +1,36 @@
+From c1666f147da2c1603baaa1428bd627352a03792c Mon Sep 17 00:00:00 2001
+From: Mark Horn <mark.d.horn@intel.com>
+Date: Wed, 30 Nov 2022 16:42:43 -0800
+Subject: [PATCH] Drop rootwrap.d/ironic-lib.filters file
+
+Align with cli install
+
+See Commit bfb41571b23d04c9e8fc74caf3d9f94911b8e414
+
+Signed-off-by: Mark Horn <mark.d.horn@intel.com>
+---
+ .../roles/bifrost-ironic-install/tasks/bootstrap.yml      | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/playbooks/roles/bifrost-ironic-install/tasks/bootstrap.yml b/playbooks/roles/bifrost-ironic-install/tasks/bootstrap.yml
+index 9629957e4687..1c9647b6e2c3 100644
+--- a/playbooks/roles/bifrost-ironic-install/tasks/bootstrap.yml
++++ b/playbooks/roles/bifrost-ironic-install/tasks/bootstrap.yml
+@@ -158,14 +158,6 @@
+     owner: root
+     group: root
+   when: not skip_install | bool
+-- name: "Copy rootwrap.d contents from ironic-lib installation"
+-  copy:
+-    src: "{{ bifrost_venv_dir }}/etc/ironic/rootwrap.d/ironic-lib.filters"
+-    dest: "/etc/ironic/rootwrap.d/"
+-    remote_src: yes
+-    owner: root
+-    group: root
+-  when: not skip_install | bool
+ 
+ - name: "Generate htpasswd(s) for ironic"
+   htpasswd:
+-- 
+2.34.1
+

@@ -1,0 +1,26 @@
+diff --git a/toolchains/helm-3/BUILD b/toolchains/helm-3/BUILD
+index 03d83d7..fec71d6 100644
+--- a/toolchains/helm-3/BUILD
++++ b/toolchains/helm-3/BUILD
+@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:private"])
+ 
+ load(":toolchain.bzl", "helm_toolchain")
+ 
+-toolchain_type(name = "toolchain_type")
++toolchain_type(name = "toolchain_type", visibility = ["//visibility:public"])
+ 
+ toolchain(
+     name = "helm_v3.6.2_linux_toolchain",
+diff --git a/toolchains/yq/BUILD b/toolchains/yq/BUILD
+index 50edde9..c16911c 100644
+--- a/toolchains/yq/BUILD
++++ b/toolchains/yq/BUILD
+@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:private"])
+ 
+ load(":yq_toolchain.bzl", "yq_toolchain")
+ 
+-toolchain_type(name = "toolchain_type")
++toolchain_type(name = "toolchain_type", visibility = ["//visibility:public"])
+ 
+ # Default yq toolchain that expects the 'yq' executable
+ # to be in the PATH.

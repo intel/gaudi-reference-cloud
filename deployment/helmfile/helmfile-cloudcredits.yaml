@@ -1,0 +1,164 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if $.Values.global.enabled }}
+{{- if $.Values.global.idcCoreServices.enabled }}
+
+  {{- if $.Values.global.cloudcreditsDb.enabled }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: cloudcredits-db
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudcredits
+      database: cloudcredits
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudcredits-db
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          database: {{ $.Values.global.cloudcredits.database.name | quote }}
+          username: dbuser
+          password: {{ readFile (print $secretsDir "/cloudcredits_db_user_password") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/cloudcredits_db_admin_password") | quote }}
+      - primary:
+          persistence:
+            enabled: {{ $.Values.global.cloudcreditsDb.primary.persistence.enabled }}
+  {{- end }}
+
+  {{- if $.Values.global.cloudcredits.enabled }}
+  - name: cloudcredits
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudcredits
+      database: cloudcredits
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudcredits
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/cloudcredits
+    version: {{ readFile (print $helmChartVersionsDir "/cloudcredits.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}cloudcredits@sha256"
+      - database:
+          arg: {{ $.Values.global.cloudcredits.database.arg | quote }}
+          name: {{ $.Values.global.cloudcredits.database.name | quote }}
+          service: {{ $.Values.global.cloudcredits.database.service | quote }}
+          vaultCredentialsPath: {{ $.Values.global.cloudcredits.database.vaultCredentialsPath | quote }}
+      - creditsExpiryMinimumInterval: {{ $.Values.global.cloudcredits.creditsExpiryMinimumInterval }}
+      - creditUsageEventSchedulerInterval: {{ $.Values.global.cloudcredits.creditUsageEventSchedulerInterval }}
+      - creditExpiryEventSchedulerInterval: {{ $.Values.global.cloudcredits.creditExpiryEventSchedulerInterval }}
+      - creditUsageReportSchedulerInterval: {{ $.Values.global.cloudcredits.creditUsageReportSchedulerInterval }}
+      - premiumCloudCreditThreshold: {{ $.Values.global.cloudcredits.premiumCloudCreditThreshold }}
+      - intelCloudCreditThreshold: {{ $.Values.global.cloudcredits.intelCloudCreditThreshold }}
+      - enterpriseCloudCreditThreshold: {{ $.Values.global.cloudcredits.enterpriseCloudCreditThreshold }}
+      - premiumCloudCreditNotifyBeforeExpiry: {{ $.Values.global.cloudcredits.premiumCloudCreditNotifyBeforeExpiry }}
+      - intelCloudCreditNotifyBeforeExpiry: {{ $.Values.global.cloudcredits.intelCloudCreditNotifyBeforeExpiry }}
+      - enterpriseCloudCreditNotifyBeforeExpiry: {{ $.Values.global.cloudcredits.enterpriseCloudCreditNotifyBeforeExpiry }}
+      - runCreditEventSchedulers: {{ $.Values.global.cloudcredits.runCreditEventSchedulers }}
+      - couponNumberOfUsesThresholdStandard: {{ $.Values.global.cloudcredits.couponNumberOfUsesThresholdStandard }}
+      - couponNumberOfUsesThresholdNonStandard: {{ $.Values.global.cloudcredits.couponNumberOfUsesThresholdNonStandard }}
+      - features:
+          creditUsageEventScheduler: {{ $.Values.global.cloudcredits.features.creditUsageEventScheduler }}
+          creditExpiryEventScheduler: {{ $.Values.global.cloudcredits.features.creditExpiryEventScheduler }}
+          creditUsageReportScheduler: {{ $.Values.global.cloudcredits.features.creditUsageReportScheduler }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - otel:
+          otelAnnotations: {{ $.Values.otel.otelAnnotations }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+  {{- end }}
+
+  {{- if $.Values.global.cloudcreditsworker.enabled }}
+  - name: cloudcredits-worker
+    namespace: idcs-system
+    kubeContext: {{ $.Values.global.kubeContext }}
+    labels:
+      component: cloudcredits-worker
+      geographicScope: global
+      environmentName: {{ $.Values.global.environmentName }}
+      applicationName: cloudcredits-worker
+      kubeContext: {{ $.Values.global.kubeContext }}
+    chart: idc/cloudcredits-worker
+    version: {{ readFile (print $helmChartVersionsDir "/cloudcredits-worker.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - idc-common-global.yaml.gotmpl
+      - replicaCount: {{ $.Values.global.cloudcreditsworker.replicaCount }}
+      - image:
+          registry: {{ (.Values.image).registry | quote }}
+          repository: "{{ (.Values.image).repositoryPrefix }}cloudcredits-worker@sha256"
+      - nodePort: {{ $.Values.global.cloudcreditsworker.service.nodePort }}
+      - service:
+          type: {{ $.Values.global.cloudcreditsworker.service.type }}
+      - tls:
+          issueCa: {{ $.Values.global.issueCa }}
+      - vault:
+          authPath: {{ $.Values.global.vault.authPath | quote }}
+      - aws:
+          sqs:
+            queueName: {{ (.Values.global.cloudcreditsworker.aws.sqs).queueName | quote }}
+            waitTimeSeconds: {{ (.Values.global.cloudcreditsworker.aws.sqs).waitTimeSeconds | quote }}
+            maxNumberofMessages: {{ (.Values.global.cloudcreditsworker.aws.sqs).maxNumberofMessages | quote }}
+      - workerConfig:
+          initSleepTimeSeconds: {{ .Values.global.cloudcreditsworker.workerConfig.initSleepTimeSeconds }}
+          maxSleepTimeSeconds: {{ .Values.global.cloudcreditsworker.workerConfig.maxSleepTimeSeconds }}
+          channelCapacity:    {{ .Values.global.cloudcreditsworker.workerConfig.channelCapacity }}
+      - notifications:
+          senderEmail: {{  $.Values.global.notifications.senderEmail | quote }}
+          consoleUrl: {{  $.Values.global.notifications.consoleUrl | quote }}
+          paymentUrl: {{ $.Values.global.notifications.paymentUrl | quote }}
+          cloudCreditExpiryTemplate: {{ $.Values.global.notifications.cloudCreditExpiryTemplate | quote }}
+          opsPDL: {{  $.Values.global.cloudcreditsworker.notifications.opsPDL | quote }}
+      - features:
+          servicesTerminationScheduler: {{ .Values.features.servicesTerminationScheduler }}
+          sendCreditUsageEmail: {{ .Values.features.sendCreditUsageEmail }}
+          sendCreditExpiryEmail: {{ .Values.features.sendCreditExpiryEmail }}
+          servicesTerminationAccountTypes:
+          {{- range $type := $.Values.global.cloudcreditsworker.features.servicesTerminationAccountTypes }}
+            - {{ $type | quote }}
+          {{- end }}
+          creditUsageEmailAccountTypes:
+          {{- range $type := $.Values.global.cloudcreditsworker.features.creditUsageEmailAccountTypes }}
+            - {{ $type | quote }}
+          {{- end }}
+          creditExpiryEmailAccountTypes:
+          {{- range $type := $.Values.global.cloudcreditsworker.features.creditExpiryEmailAccountTypes }}
+            - {{ $type | quote }}
+          {{- end }}
+      - premiumCloudCreditThreshold: {{ $.Values.global.cloudcreditsworker.premiumCloudCreditThreshold }}
+      - intelCloudCreditThreshold: {{ $.Values.global.cloudcreditsworker.intelCloudCreditThreshold }}
+      - enterpriseCloudCreditThreshold: {{ $.Values.global.cloudcreditsworker.enterpriseCloudCreditThreshold }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

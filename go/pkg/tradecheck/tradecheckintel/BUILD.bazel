@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "tradecheckintel",
+    srcs = [
+        "client.go",
+        "helper.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/tradecheck/tradecheckintel",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/apigee",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "@com_github_go_resty_resty_v2//:resty",
+    ],
+)
+
+go_test(
+    name = "tradecheck_test",
+    srcs = ["helper_test.go"],
+    embed = [":tradecheckintel"],
+    deps = [
+        "@com_github_jarcoal_httpmock//:httpmock",
+        "@com_github_zitadel_oidc//pkg/crypto",
+        "@in_gopkg_square_go_jose_v2//:go-jose_v2",
+    ],
+)
+
+go_test(
+    name = "tradecheckintel_test",
+    srcs = ["helper_test.go"],
+    embed = [":tradecheckintel"],
+    deps = [
+        "@com_github_jarcoal_httpmock//:httpmock",
+        "@com_github_zitadel_oidc//pkg/crypto",
+        "@in_gopkg_square_go_jose_v2//:go-jose_v2",
+    ],
+)

@@ -1,0 +1,20 @@
+{
+  "count": 1,
+  "vnets": [
+    {
+      "availabilityzonename": "",
+      "networkinterfacevnetname": ""
+    }
+  ],
+  "instancetypeid": "vm-spr-sml",
+  "instanceType": "iks-cluster",
+  "userdataurl": "",
+  "name": "ng-test-1",
+  "description": "",
+  "tags": [],
+  "sshkeyname": [
+    {
+      "sshkey": "compute-key"
+    }
+  ]
+}

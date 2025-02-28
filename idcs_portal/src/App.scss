@@ -1,0 +1,164 @@
+@import "../../idcs_design_system/src/scss/providers/style.provider.common.scss";
+@import "../../idcs_design_system/src/scss/providers/style.provider.scss";
+
+.box {
+  width: 80px;
+  height: 80px;
+
+}
+.loader {
+animation: loaderOpacity 1.5s infinite ease-in-out; 
+}
+
+@keyframes loaderOpacity {
+  0%   {opacity:100%;transform: scale(100%);}
+  50%  {opacity:30%; transform: scale(95%)}
+  100% {opacity:100%; transform: scale(100%)}
+}
+
+.backdrop-spinner {
+  position: fixed;
+}
+
+.currentPaginationIndex {
+  border-bottom: 2px solid var(--primary);
+}
+
+.list-group-scroll {
+  max-height: 330px;
+  overflow-y: auto;
+}
+
+.instance-img {
+  height: 60px;
+}
+
+.background-none {
+  background: none !important;
+}
+
+.catalog-size {
+  // height: 130px;
+  padding: 1rem;
+  @media only screen and (max-width: 600px) {
+    height: auto;
+  }
+}
+
+.img-size {
+  min-height: 60px;
+}
+
+.home-training-icon{
+  width: 5rem;
+  height: 5rem;
+}
+
+.home-training-subtitle{
+  line-height: 1.5 !important;
+  display: inline-block;
+  margin: auto;
+}
+
+.select-option{
+  width: 100%;
+}
+
+.notification-panel{
+  max-height: 320px !important;
+}
+
+.align-middle {
+  vertical-align: middle !important;
+}
+
+.bg-gray-300 {
+  background: $bg-gray-300 !important;
+}
+
+.mw-80 {
+  max-width: 80% !important;
+}
+
+.mh-400 {
+  max-height: 40vh !important;
+}
+
+.add-break-line{
+  white-space: pre-wrap
+}
+
+.progress{
+  height: 2rem;
+}
+
+.modal-header-training {
+  border-bottom: 0 none;
+}
+
+.modal-header {
+  .btn-close {
+    margin-bottom: 5px;
+  }
+}
+
+.modal-footer-training {
+  justify-content: center;
+}
+
+.transparent{
+  background-color: transparent;
+}
+
+.home-training-button{
+  margin-left: -20px;
+}
+
+.x-small{
+  font-size: 0.75rem;
+}
+
+.mt-n1 {
+  margin-top: -0.25rem !important;
+}
+
+.mt-n2 {
+  margin-top: -0.5rem !important;
+}
+
+.form-select[disabled] {
+  color: $form-select-disabled-color!important;
+  background-color: $form-select-disabled-bg!important;
+  border-color: $form-select-disabled-border-color!important;
+}
+
+.invalid-feedback {
+  display: block !important;
+}
+
+.w-10r {
+  width: 10rem;
+}
+
+.flex-width-20 {
+  flex: 0 0 20% !important
+}
+
+.form-range.form-control {
+  border: none;
+  box-shadow: none;
+}
+
+.dashboard-item:hover{
+  cursor: pointer;
+  background-color: var(--surface-hover-background-color);
+}
+
+.dashboard-item:active{
+  cursor: pointer;
+  background-color: var(--surface-active-background-color);
+}
+
+.minWidth150 {
+    min-width: 150px;
+}

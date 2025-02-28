@@ -1,0 +1,6 @@
+image:
+  tgiServer:
+    repository: "moditamam/tgi-gaudi"
+  tgiProxy:
+    pullPolicy: Always
+    tag: "proxy-dev"

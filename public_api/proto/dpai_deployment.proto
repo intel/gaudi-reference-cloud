@@ -1,0 +1,349 @@
+syntax="proto3";
+ 
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+option (idc.file).service = "dpai";
+option (idc.file).deploy = regional;
+
+
+// Global
+message DpaiMeta {
+    google.protobuf.Timestamp createdAt = 1;
+    string createdBy = 2;
+    google.protobuf.Timestamp updatedAt = 3;
+    string updatedBy = 4;
+}
+
+// Common
+message DpaiDeploymentMeta {
+    google.protobuf.Timestamp createdAt = 1;
+    string createdBy = 2;
+    google.protobuf.Timestamp updatedAt = 3;
+}
+
+message DpaiDeploymentTaskMeta {
+    google.protobuf.Timestamp createdAt = 1;
+    google.protobuf.Timestamp updatedAt = 2;
+}
+
+message DpaiSecretReference {
+    string secretName = 1;
+    string secretKeyName = 2;
+}
+
+message DpaiImageReference {
+    string repository = 1;
+    string tag = 2;
+}
+
+message DpaiChartReference {
+    string repoUrl = 1;
+    string chartName = 2;
+    string version = 3;
+    string repoName = 4;
+    string username = 5;
+    string secretKey = 6;
+}
+
+enum DpaiDeploymentChangeIndicator {
+    DPAI_DEPLOYMENT_CHANGE_INDICATOR_UNSPECIFIED = 0;
+    DPAI_CREATE = 1;
+    DPAI_UPDATE = 2;
+    DPAI_DELETE = 3;
+    DPAI_RESTART = 4;
+    DPAI_RESIZE = 5;
+    DPAI_UPGRADE = 6;
+}
+
+
+message DpaiDeploymentStatus {
+    DpaiDeploymentState state = 1;
+    string displayName = 2;
+    string message = 3;
+}
+
+enum DpaiDeploymentState {
+    DPAI_DEPLOYMENT_STATE_UNSPECIFIED = 0;
+    DPAI_ACCEPTED = 1;
+    DPAI_QUEUED = 2;
+    DPAI_PENDING = 3;
+    DPAI_RUNNING = 4;
+    DPAI_SUCCESS = 5;
+    DPAI_FAILED = 6;
+    DPAI_CANCELLED = 7;
+    DPAI_WAITING_FOR_UPSTREAM = 8;
+    DPAI_UPSTREAM_FAILED = 9;
+    DPAI_UPSTREAM_CANCELLED = 10;
+}
+
+enum DpaiServiceType {
+    DPAI_SERVICE_TYPE_UNSPECIFIED = 0;
+    DPAI_WORKSPACE = 1;
+    DPAI_HMS = 2;
+    DPAI_SPARK = 3;
+    DPAI_AIRFLOW = 4;
+    DPAI_POSTGRES = 5;
+}
+
+// deployments
+message DpaiDeployment {
+    string id=1;
+    string workspaceId=2;
+    string serviceId=3;
+    DpaiServiceType serviceType=4;
+    DpaiDeploymentChangeIndicator changeIndicator = 5;
+    bytes input = 6;
+    bytes output = 7;
+    DpaiDeploymentStatus status = 8;
+    string errorMessage = 9;
+    DpaiDeploymentMeta metadata=10;
+    string cloudAccountId=11 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentResponse{
+    string deploymentId = 1;
+    DpaiDeploymentStatus status = 2;
+ }
+
+message DpaiDeploymentCreateRequest{
+    string cloudAccountId=1 [
+        (idc.field).cloudAccount = true
+      ];
+    string workspaceId=2;
+    string serviceId=3;
+    DpaiServiceType serviceType=4;
+    DpaiDeploymentChangeIndicator changeIndicator = 5;
+    string createdBy = 6;
+    bytes input = 7;
+    string DeploymentId=8;
+}
+
+message DpaiDeploymentCreateResponse{
+    string deploymentId=1;
+}
+
+message DpaiDeploymentListRequest{
+    string cloudAccountId=1 [
+        (idc.field).cloudAccount = true
+      ];
+    string workspaceId=2;
+    string serviceId=3;
+    DpaiServiceType serviceType=4;
+    DpaiDeploymentChangeIndicator changeIndicator = 5;
+    string parentDeploymentId=6;
+    int64 offset = 7;
+    int64 limit = 8;
+}
+
+message DpaiDeploymentListResponse{
+    repeated DpaiDeployment data = 1;
+    int64 prevOffset = 2;
+    int64 currOffset = 3;  
+    int64 nextOffset = 4;
+    int64 lastOffset = 5;
+    int64 limit = 6;
+    int64 totalRecords = 7;
+}
+
+message DpaiDeploymentGetRequest{
+    string id=1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentUpdateRequest{
+    string id=1;
+    DpaiDeploymentStatus status = 2;
+    string errorMessage = 3;
+    google.protobuf.Timestamp updatedAt = 4;
+    string cloudAccountId=5 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentDeleteRequest{
+    string id=1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+}
+
+service DpaiDeploymentService {
+    // Create a new DPAI Deployment
+    rpc DpaiDeploymentCreate(DpaiDeploymentCreateRequest) returns (DpaiDeploymentCreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // List all the DPAI deployments in the given cloud Account
+    rpc DpaiDeploymentList(DpaiDeploymentListRequest) returns (DpaiDeploymentListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments"
+            additional_bindings {get: "/v1/cloudaccounts/{cloudAccountId}/dpai/workspaces/{workspaceId}/deployments"}
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get the DPAI Deployment details by ID
+    rpc DpaiDeploymentGet(DpaiDeploymentGetRequest) returns (DpaiDeployment) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Update the DPAI Deployment
+    // rpc DpaiDeploymentUpdate(DpaiDeploymentUpdateRequest) returns (DpaiDeployment) {
+    //     option (google.api.http) = {
+    //         patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{id}"
+    //         body: "*"
+    //       };
+    //       option (idc.method).authz.cloudAccount = true;
+    // }
+
+
+    // Delete the DPAI deployment
+    rpc DpaiDeploymentDelete(DpaiDeploymentDeleteRequest) returns (DpaiDeploymentDeleteResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Ping always returns a successful response by the service implementation.
+    // It can be used for testing connectivity to the service.
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+// Micro deployments
+message DpaiDeploymentTask {
+    string id=1;
+    string deploymentId=2;
+    string name=3;
+    string description=4;
+    DpaiDeploymentStatus status = 5;
+    string errorMessage = 6;
+    bytes input = 7;
+    bytes output = 8;
+    DpaiDeploymentTaskMeta metadata=9;
+}
+
+message DpaiDeploymentTaskCreateRequest{
+    string deploymentId=1;
+    string name=2;
+    string description = 3;
+    string cloudAccountId=4 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentTaskCreateResponse{
+   string dpaiDeploymentTaskId=1;
+}
+
+message DpaiDeploymentTaskListRequest{
+    string deploymentId = 1;
+    string cloudAccountId=2 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentTaskListResponse{
+    repeated DpaiDeploymentTask data = 1;
+    bool hasMore = 2;
+    string nextToken = 3;
+    string prevToken = 4;
+}
+
+message DpaiDeploymentTaskGetRequest{
+    string id=1;
+    string deploymentId = 2;
+    string cloudAccountId= 3 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentTaskGetResponse{
+    DpaiDeploymentTask dpaiDeploymentTask=1;
+}
+
+message DpaiDeploymentTaskUpdateRequest{
+    string id=1;
+    DpaiDeploymentStatus status = 2;
+    string errorMessage = 3;
+    string deploymentId = 4;
+    string cloudAccountId= 5 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentTaskUpdateResponse{
+    DpaiDeploymentTask dpaiDeploymentTask=1;
+}
+
+message DpaiDeploymentTaskDeleteRequest{
+    string id=1;
+    string deploymentId = 2;
+    string cloudAccountId= 3 [
+        (idc.field).cloudAccount = true
+      ];
+}
+
+message DpaiDeploymentTaskDeleteResponse{
+    bool success = 1;
+    string errorMessage = 2;
+}
+
+service DpaiDeploymentTaskService {
+    // Create a new Task in the DPAI Deployment
+    rpc DpaiDeploymentTaskCreate(DpaiDeploymentTaskCreateRequest) returns (DpaiDeploymentTaskCreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{deploymentId}/tasks"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // List all the Tasks in the DPAI Deployment.
+    rpc DpaiDeploymentTaskList(DpaiDeploymentTaskListRequest) returns (DpaiDeploymentTaskListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{deploymentId}/tasks"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Get the DPAI Deployment Task by ID
+    rpc DpaiDeploymentTaskGet(DpaiDeploymentTaskGetRequest) returns (DpaiDeploymentTaskGetResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{deploymentId}/tasks/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Update the DPAI Deployment Task.
+    rpc DpaiDeploymentTaskUpdate(DpaiDeploymentTaskUpdateRequest) returns (DpaiDeploymentTaskUpdateResponse) {
+        option (google.api.http) = {
+            patch: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{deploymentId}/tasks/{id}"
+            body: "*"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+    // Delete the DPAI Deployment Task.
+    rpc DpaiDeploymentTaskDelete(DpaiDeploymentTaskDeleteRequest) returns (DpaiDeploymentTaskDeleteResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloudaccounts/{cloudAccountId}/dpai/deployments/{deploymentId}/tasks/{id}"
+          };
+          option (idc.method).authz.cloudAccount = true;
+    }
+}

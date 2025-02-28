@@ -1,0 +1,33 @@
+replicaCount: 1
+image:
+  repository: intelcloud/cloudcredits
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+database:
+  service: cloudcredits-db-postgresql
+  vaultCredentialsPath: cloudcreditssecret/data/cloudcreditsdb
+
+creditUsageEventSchedulerInterval: 240
+creditExpiryEventSchedulerInterval: 240
+creditUsageReportSchedulerInterval: 240
+premiumCloudCreditThreshold: 80
+intelCloudCreditThreshold: 80
+enterpriseCloudCreditThreshold: 80
+premiumCloudCreditNotifyBeforeExpiry: 4320
+intelCloudCreditNotifyBeforeExpiry: 4320
+enterpriseCloudCreditNotifyBeforeExpiry: 4320
+creditsExpiryMinimumInterval: 38
+runCreditEventSchedulers: true
+couponNumberOfUsesThresholdStandard: 500
+couponNumberOfUsesThresholdNonStandard: 50
+features:
+  creditUsageEventScheduler: true
+  creditExpiryEventScheduler: true
+  creditUsageReportScheduler: false
+ 
+
+
+otel:
+  otelAnnotations: false

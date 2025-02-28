@@ -1,0 +1,45 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+# gazelle:resolve go github.com/deepmap/oapi-codegen/v2/pkg/securityprovider @com_github_deepmap_oapi_codegen_v2//pkg/securityprovider
+# gazelle:resolve go github.com/deepmap/oapi-codegen/pkg/securityprovider @com_github_deepmap_oapi_codegen_v2//pkg/securityprovider
+
+go_library(
+    name = "vast",
+    srcs = [
+        "cluster.go",
+        "namespace.go",
+        "user.go",
+        "vast.go",
+        "view.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/backend/vast",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/backend/vast/client",
+        "//services/storage_controller/pkg/conf",
+        "//services/storage_controller/pkg/server/helpers",
+        "@com_github_deepmap_oapi_codegen_v2//pkg/securityprovider",
+        "@com_github_rs_zerolog//log",
+    ],
+)
+
+go_test(
+    name = "vast_test",
+    srcs = [
+        "cluster_test.go",
+        "namespace_test.go",
+        "vast_test.go",
+        "user_test.go",
+        "view_test.go",
+    ],
+    embed = [":vast"],
+    deps = [
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/backend/vast/client/mocks",
+        "//services/storage_controller/pkg/conf",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "test_utils",
+    srcs = ["utils.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/test_utils",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_sergi_go_diff//diffmatchpatch"],
+)
+
+go_test(
+    name = "test_utils_test",
+    srcs = ["utils_test.go"],
+    embed = [":test_utils"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

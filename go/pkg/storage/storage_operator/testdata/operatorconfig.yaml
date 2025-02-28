@@ -1,0 +1,14 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# This file contains the configuration settings when running tests.
+apiVersion: private.cloud.intel.com/v1alpha1
+kind: StorageOperatorConfig
+metadata:
+  name: storageoperatorconfig
+health:
+  healthProbeBindAddress: :8081
+metrics:
+  bindAddress: 127.0.0.1:8082
+storageControllerServerAddr: 100.64.5.132:30051
+storageControllerUserRole: OrgAdmin
+enableMeteringMonitorFinalizer: false # Disabling setting of Metering Monitor flag for unit tests

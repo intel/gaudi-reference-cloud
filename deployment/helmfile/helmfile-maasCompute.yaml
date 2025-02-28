@@ -1,0 +1,98 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+{{- if $availabilityZone.maasCompute.enabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-infaas-safeguard") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: infaas-safeguard
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasCompute
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: infaas-safeguard
+    chart: idc/infaas-safeguard
+    version: {{ readFile (print $helmChartVersionsDir "/infaas-safeguard.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - region: {{ $availabilityZone.availabilityZone | quote }}
+      - image.pullPolicy: Always
+      - repicaCount: "4"
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-infaas-dispatcher") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: infaas-dispatcher
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasCompute
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: infaas-dispatcher
+    chart: idc/infaas-dispatcher
+    version: {{ readFile (print $helmChartVersionsDir "/infaas-dispatcher.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - region: {{ $availabilityZone.availabilityZone | quote }}
+      - image.pullPolicy: Always
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}infaas-dispatcher@sha256"
+
+  {{- range $model := $availabilityZone.maasCompute.models }}
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-inference-" $model.name) }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.maasCompute.kubeContext }}
+    labels:
+      applicationName: infaas-inference
+      clusterName: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      component: maasCompute
+      geographicScope: az
+      kubeContext: {{ $availabilityZone.maasCompute.kubeContext | quote}}
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region}}
+      service: infaas-inference
+    chart: idc/infaas-inference
+    version: {{ readFile (print $helmChartVersionsDir "/infaas-inference.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - region: {{ $availabilityZone.availabilityZone | quote }}
+      - image.pullPolicy: Always
+      - deployedModel: {{ $model.model | quote }}
+      - mockInference: {{ $model.mockInference | quote }}
+      - image:
+          agent:
+            registry: {{ ($.Values.image).registry | quote }}
+            repository: "{{ ($.Values.image).repositoryPrefix }}infaas-agent@sha256"
+
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

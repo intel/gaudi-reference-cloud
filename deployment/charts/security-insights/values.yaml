@@ -1,0 +1,22 @@
+# Default values for Metering.
+# This is a YAML-formatted file.
+replicaCount: 1
+
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/insights
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag:
+
+database:
+  # The DNS name used to connect to the Postgres database.
+  #service: postgres5327-lb-or-in.dbaas.intel.com
+  service: us-dev-1-insights-db-postgresql
+  name: main
+  #port: "5433" #default is 5432
+  arg: sslmode=disable
+  # credentials path
+  vaultCredentialsPath: controlplane/data/security-insights/database
+service:
+  type: ClusterIP

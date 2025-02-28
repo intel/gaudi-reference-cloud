@@ -1,0 +1,17 @@
+- name: Connect to VM instance created and ping the other VM instance created on different cloud account
+  hosts: vm
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Ping the second instance (negative test)
+      shell: ping -c 4 {{ another_vm }}
+      ignore_errors: yes
+      register: ping_result
+
+    - name: Assert that the ping failed
+      assert:
+        that:
+          - ping_result.rc != 0
+        fail_msg: "Ping unexpectedly succeeded, but it was supposed to fail."
+        success_msg: "Ping failed as expected."

@@ -1,0 +1,23 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "parallelize",
+    srcs = [
+        "error_channel.go",
+        "parallelism.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/framework/parallelize",
+    visibility = ["//visibility:public"],
+    deps = ["@io_k8s_client_go//util/workqueue"],
+)
+
+go_test(
+    name = "parallelize_test",
+    srcs = [
+        "error_channel_test.go",
+        "parallelism_test.go",
+    ],
+    embed = [":parallelize"],
+)

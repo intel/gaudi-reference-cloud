@@ -1,0 +1,90 @@
+controllerManager:
+  kubeRbacProxy:
+    image:
+      repository: bitnami/kube-rbac-proxy
+      tag: 0.18.1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  manager:
+    image:
+      repository: internal-placeholder.com/intelcloud/ssh-proxy-operator@sha256
+      tag: v1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+managerConfig:
+  controllerManagerConfigYaml:
+    authorizedKeysFilePath: /tmp/.ssh/authorized_keys
+    # A list of SCP URIs that the authorized_keys file will be copied to.
+    # Format is: scp://guest@ssh-proxy-server-1.cloud.intel.com:22/home/guest/.ssh/authorized_keys
+    authorizedKeysScpTargets:
+    - scp://guest@10.165.62.252:22/home/guest/.ssh/authorized_keys
+    health:
+      healthProbeBindAddress: :8081
+    leaderElection:
+      leaderElect: true
+      resourceName: c163dfe6.cloud.intel.com
+    metrics:
+      bindAddress: 127.0.0.1:8082
+    # Path to the SSH private key used by this operator to connect to the SCP target servers.
+    # Example: /home/idc/.ssh/id_rsa
+    privateKeyFilePath: /vault/secrets/privatekey
+    # FQDN or IP address that end user must use to connect to the SSH proxy server.
+    # This is expected to be a load balancer.
+    proxyAddress: 10.165.62.252
+    # Port number that end user must use to connect to the SSH proxy server.
+    # This is typically 22.
+    proxyPort: 22
+    # User name that end user must use to connect to the SSH proxy server.
+    # This is typically guest.
+    proxyUser: guest
+    # Path to the SSH public key used by this operator to connect to the SCP target servers.
+    # Example: /home/idc/.ssh/id_rsa.pub
+    publicKeyFilePath: /vault/secrets/publickey
+    #  Path to the ssh proxy server host public key used for verifying the SSH proxy server
+    hostPublicKeyFilePath: /vault/secrets/host_public_key
+    webhook:
+      port: 9443
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "json"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "info"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+# Path for accessing the secrets inside the vault
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/us-dev-1a/ssh-proxy-operator
+serviceMonitor:
+  enabled: false
+  tlsConfig:
+    insecureSkipVerify: true
+  #     certFile: /vault/secrets/cert.pem
+  #     caFile: /vault/secrets/ca.pem
+  #     keyFile: /vault/secrets/cert.key
+  labels:
+    releaseName: rancher-monitoring
+  path: /metrics
+  port: https
+  scheme: https

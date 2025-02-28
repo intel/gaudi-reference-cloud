@@ -1,0 +1,6 @@
+{
+    "description": "",
+    "name": "vip-test-1",
+    "port": 80,
+    "viptype": "private"
+  }

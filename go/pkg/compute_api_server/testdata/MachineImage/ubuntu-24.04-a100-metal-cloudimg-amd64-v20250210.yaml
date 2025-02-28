@@ -1,0 +1,68 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+metadata:
+  name: ubuntu-24.04-a100-metal-cloudimg-amd64-v20250210
+spec:
+  displayName: Ubuntu 24.04 LTS v20250210
+  description: Ubuntu Server is a version of the Ubuntu operating system designed
+    and engineered as a backbone for the internet.
+  hidden: false
+  instanceCategories:
+  - BareMetalHost
+  instanceTypes:
+  - bm-spr-a100-4
+  md5sum: a11cd62da394a174004d1d313ab781bc
+  sha256sum: 7ed057930f8ff8f71d600ed9fe101c15fbf9dc25012d5c92292f53db19a37e4c
+  sha512sum: e6e7957b75b8225e7ba4d745a7ecbb31d1aa211eda06d9c8ecded9d09ea3f4fb2b03ad3b692a10c052e745ec076ce62e96b10eb1fcac7b70f34a8bc4d4a59e11
+  virtualSizeBytes: 64424509440
+  labels:
+    architecture: X86_64 (Baremetal only)
+    family: ubuntu-2404-lts
+    kernelVersion: 6.8 (GA - default)
+  icon: https://www.intel.com/content/dam/www/central-libraries/us/en/images/2024-05/newsroom-v2-intel-xeon-6.jpg.rendition.intel.web.368.207.jpg
+  imageCategories:
+  - App testing
+  components:
+  - name: Ubuntu 24.04 LTS
+    type: OS
+    version: "24.04"
+    description: Ubuntu Server is a version of the Ubuntu operating system designed
+      and engineered as a backbone for the internet.
+    infoUrl: https://releases.ubuntu.com/noble
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/3rd-gen-xeon-scalable-processor-badge-left-rwd.png.rendition.intel.web.368.207.png
+  - name: Intel® QuickAssist Technology Library (QATlib)
+    type: Software kit
+    version: 24.02.0
+    description: Intel® QuickAssist Technology (Intel® QAT) provides hardware acceleration
+      for offloading security, authentication and compression services from the CPU,
+      thus significantly increasing the performance and efficiency of standard platform
+      solutions. This package provides user space libraries that allow access to Intel®
+      QuickAssist devices and expose the Intel® QuickAssist APIs and sample codes.
+    infoUrl: https://www.intel.com/content/www/us/en/architecture-and-technology/intel-quick-assist-technology-overview.html
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/xeon-scalable-processors-family-framed-badge.jpg.rendition.intel.web.368.207.jpg
+  - name: Intel® Dynamic Load Balancer Library (Libdlb)
+    type: Software kit
+    version: 8.10.0
+    description: Intel® Dynamic Load Balancer (Intel® DLB) is a PCIe device that provides
+      loadbalanced, prioritized scheduling of events (that is, packets) across CPU
+      cores enabling efficient core-to-core communication. It is a hardware accelerator
+      located inside the latest Intel® Xeon® processors. This software kit provides
+      the client library for building DLB applications without using DPDK framework
+      (Libdlb).
+    infoUrl: https://www.intel.com/content/www/us/en/developer/articles/technical/proof-points-of-dynamic-load-balancer-dlb.html
+    imageUrl: https://www.intel.com/content/dam/www/central-libraries/us/en/images/xeon-scalable-processors-family-framed-badge.jpg.rendition.intel.web.368.207.jpg
+  - name: NVIDIA® Container Toolkit
+    type: Software kit
+    version: 1.17.4-1
+    description: The NVIDIA Container Toolkit enables users to build and run GPU-accelerated
+      containers. The toolkit includes a container runtime library and utilities to
+      automatically configure containers to leverage NVIDIA GPUs.
+    infoUrl: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/overview.html
+    imageUrl: https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/nvidia-a100-hgx-3qtr-front-left-2c50-d@2x.jpg
+  - name: OpenTelemetry Collector
+    type: Software kit
+    version: 0.103.0
+    description: Node monitoring software for optional monitoring feature.
+    infoUrl: https://opentelemetry.io
+    imageUrl: https://opentelemetry.io/img/logos/opentelemetry-horizontal-color.png
+  userName: sdp

@@ -1,0 +1,52 @@
+---
+
+# Deploy a vBMC for each guest hosts
+- name: Deploy vBMC
+  block:
+    - name: Make sure sushy config dir exists
+      file:
+        path: "{{ sushy_conf_dir | dirname }}"
+        state: directory
+        mode: '0755'
+    - name: Make sure log dir exists
+      file:
+        path: "{{ sushy_log_dir | dirname }}"
+        state: directory
+        mode: '0755'
+    - name: Install the common htpasswd file for authentication
+      ansible.builtin.copy:
+        src: "{{ sushy_passwd_file }}"
+        dest: "{{ sushy_conf_dir }}{{ sushy_passwd_file }}"
+        owner: root
+        group: root
+        mode: '0600'
+        backup: false
+    - include_tasks: create_vbmc.yml
+      loop: "{{ range(1, guest_host_deployments|int + 1, 1)|list }}"
+      loop_control:
+        loop_var: vmnum
+  become: true
+  tags: setup
+
+# Destroy vBMC for each guest hosts
+- name: Destroy vBMC
+  block:
+    - include_tasks: destroy_vbmc.yml
+      loop: "{{ range(1, guest_host_deployments|int + 1, 1)|list }}"
+      loop_control:
+        loop_var: vmnum
+  tags: [never, teardown]
+
+# Clean up vBMC for each guest hosts
+- name: Clean up vBMC
+  block:
+    - include_tasks: clean_vbmc.yml
+      loop: "{{ range(1, guest_host_deployments|int + 1, 1)|list }}"
+      loop_control:
+        loop_var: vmnum
+    - name: Remove the common htpasswd file
+      become: true
+      ansible.builtin.file:
+        path: "{{ sushy_conf_dir }}{{ sushy_passwd_file }}"
+        state: absent
+  tags: [never, clean]

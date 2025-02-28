@@ -1,0 +1,4 @@
+{
+    "site": ["pdx11"],
+    "role": ["leaf-switch","cluster-network-leaf-switch","accelerator-network-leaf-switch","storage-ply-leaf-switch","storage-network-leaf-switch"]
+}

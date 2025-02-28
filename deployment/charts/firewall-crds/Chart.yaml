@@ -1,0 +1,5 @@
+apiVersion: v2
+name: firewall-crds
+description: IDC Firewall Custom Resource Definitions
+type: application
+version: 0.0.1

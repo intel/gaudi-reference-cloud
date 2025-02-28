@@ -1,0 +1,9 @@
+# Exclude everything by default.
+*
+
+# Include in Docker context.
+!api
+!cmd
+!internal
+!go.mod
+!go.sum

@@ -1,0 +1,103 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+import "google/api/annotations.proto";
+
+import "annotations.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+import "infaas-generate.proto";
+
+option (idc.file).deploy = regional;
+option (idc.file).service = "Maas-gateway";
+
+service MaasGateway {
+  rpc GenerateStream(MaasRequest) returns (stream MaasResponse) {
+    option (google.api.http) = {
+      post: "/v1/maas/generatestream"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.product = true;
+    option (idc.method).authz.productAccess = true;
+    option (idc.method).authz.gtsCheck = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+
+  rpc GetSupportedModels(google.protobuf.Empty) returns (ListSupportedModels) {
+    option (google.api.http) = {
+      get: "/v1/maas/models"
+    };
+    option (idc.method).authz.user = true;
+    option (idc.method).authz.appClientAccess = true;
+  };
+}
+
+message ListSupportedModels {
+  repeated Model models = 1;
+}
+
+message MaasRequest {
+  string model = 1 [(validate.rules).string = {min_len: 2, max_len: 150}];
+  MaasGenerateStreamRequest request = 2 [(validate.rules).message.required = true];
+  string cloudAccountId = 3 [
+    (idc.field).cloudAccount = true
+  ];
+  string productName = 4 [
+    (idc.field).product = true,
+    (idc.field).gtsCheck = true
+  ];
+  string productId = 5 [
+    (idc.field).productAccess = true
+  ];
+}
+
+message MaasGenerateStreamRequest {
+  string prompt = 1 [(validate.rules).string.min_len = 2];
+  MaasGenerateRequestParams params = 2;
+}
+
+message MaasGenerateRequestParams {
+  /// Maximum number of generated tokens
+  uint32 max_new_tokens = 1 [(validate.rules).uint32 = {gte:1, lt:2048}];
+  /// The value used to module the logits distribution.
+  optional float temperature = 2 [(validate.rules).float = {gte:0, lt:1}];
+}
+
+message MaasResponse {
+  MaasGenerateStreamResponse response = 1;
+}
+
+message MaasGenerateStreamResponse {
+  /// Generated token
+  APIToken token = 1;
+  /// Most likely tokens
+  repeated APIToken top_tokens = 2;
+  /// Complete generated text
+  /// Only available when the generation is finished
+  optional string generated_text = 3;
+  /// Generation details
+  /// Only available when the generation is finished
+  optional StreamDetails details = 4;
+  optional string requestID = 5;
+}
+
+message APIToken {
+  /// Token ID from the model tokenizer
+  uint32 id = 1;
+  /// Token text
+  string text = 2;
+  /// Logprob
+  optional float logprob = 3;
+  /// Is the token a special token
+  /// Can be used to ignore tokens when concatenating
+  bool special = 4;
+}
+
+message Model {
+  string model_name = 1;
+  string product_id = 2;
+  string product_name = 3;
+}

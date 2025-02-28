@@ -1,0 +1,25 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "storage_controller_lib",
+    srcs = ["storage_controller.go"],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/cmd/storage_controller",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//services/storage_controller/pkg/conf",
+        "//services/storage_controller/pkg/server",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@com_github_prometheus_client_golang//prometheus/collectors",
+        "@com_github_prometheus_client_golang//prometheus/promhttp",
+        "@com_github_rs_zerolog//:zerolog",
+        "@com_github_rs_zerolog//log",
+    ],
+)
+
+go_binary(
+    name = "storage_controller",
+    embed = [":storage_controller_lib"],
+    visibility = ["//visibility:public"],
+)

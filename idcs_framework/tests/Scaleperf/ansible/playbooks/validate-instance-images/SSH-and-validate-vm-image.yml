@@ -1,0 +1,24 @@
+- name: Validate QEMA agent is running inside instance
+  hosts: vm
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Run the grep commands
+    shell: ps -ef | grep 'qemu'
+    register: qemu_status
+    ignore_errors: true
+  - debug: msg="{{qemu_status.stdout}}"
+
+  - fail:
+      msg: "Validate qemu is NOT up and running..."
+    when: qemu_status.stdout is not search('/usr/sbin/qemu-ga')
+
+  # - name: Checks the QEMU status is up and running or not
+  # set_fact:
+  # result: "{{'/usr/sbin/qemu-ga' in qemu_status.stdout}}"
+  # register: result
+
+  # - name: Print the var
+  # debug:
+  # var: result

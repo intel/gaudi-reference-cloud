@@ -1,0 +1,23 @@
+---
+- name: Modify ansible inventory with hostnames for debugging
+  hosts: hosts
+  gather_facts: yes
+  vars_files:
+  - "vars/common.yml"
+
+  tasks:
+    - name: Fetch hostnames and IPs for all nodes
+      set_fact:
+        host_info_dict: "{{ host_info_dict | default({}) | combine({hostvars[item].ansible_hostname: hostvars[item].ansible_default_ipv4.address}) }}"
+      loop: "{{ ansible_play_batch }}"
+
+    - name: Successfully fetched hosts information
+      delegate_to: localhost
+      debug:
+        var: host_info_dict
+
+    - name: Modify Ansible inventory with hostnames
+      delegate_to: localhost
+      template:
+        src: "{{ hostfile_templates_dir }}/hostname_template.j2"
+        dest: "{{ ansible_inventory_path }}/hosts.yaml"

@@ -1,0 +1,596 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "annotations.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+service CloudAccountService {
+  rpc Create(CloudAccountCreate) returns (CloudAccountId) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts"
+      body: "*"
+    };
+  };
+  rpc Ensure(CloudAccountCreate) returns (CloudAccount) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/ensure"
+      body: "*"
+    };
+  }
+  rpc GetById(CloudAccountId) returns (CloudAccount) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/id/{id}"
+    };
+  };
+  rpc GetByOid(CloudAccountOid) returns (CloudAccount) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/tid/{tid}/oid/{oid}"
+    };
+  };
+  rpc GetByName(CloudAccountName) returns (CloudAccount) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/name/{name}"
+    };
+  };
+  rpc GetByPersonId(CloudAccountPersonId) returns (CloudAccount) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/personid/{personid}"
+    };
+  };
+  rpc Search(CloudAccountFilter) returns (stream CloudAccount) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts"
+    };
+  };
+  rpc Update(CloudAccountUpdate) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch: "/v1/cloudaccounts/id/{id}"
+      body: "*"
+    };
+  };
+  rpc CheckCloudAccountExists(CloudAccountName) returns (google.protobuf.BoolValue) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/{name}"
+    };
+  }
+  rpc Delete(CloudAccountId) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/cloudaccounts/id/{id}"
+    };
+  };
+  // Ping always returns a successful response by the service implementation.
+  // It can be used for testing connectivity to the service.
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccount/ping"
+    };
+  };
+}
+
+enum AccountType {
+  ACCOUNT_TYPE_UNSPECIFIED = 0;
+  ACCOUNT_TYPE_STANDARD = 1;
+  ACCOUNT_TYPE_PREMIUM = 2;
+  ACCOUNT_TYPE_ENTERPRISE_PENDING = 3;
+  ACCOUNT_TYPE_ENTERPRISE = 4;
+  ACCOUNT_TYPE_INTEL = 5;
+  ACCOUNT_TYPE_MEMBER = 6;
+}
+
+enum UpgradeStatus{
+  UPGRADE_COMPLETE = 0;
+  UPGRADE_NOT_INITIATED = 1;
+  UPGRADE_PENDING = 2;
+  UPGRADE_PENDING_CC = 3;
+  UPGRADE_PENDING_CC_VERIFIED = 4;
+}
+
+message CloudAccount {
+  string id = 1;
+  string tid = 2; // tenant id
+  string oid = 3; // object id
+  string parentId = 4;
+  google.protobuf.Timestamp created = 5;
+  string name = 6;
+  string owner = 7;
+  AccountType type = 8;
+  bool billingAccountCreated = 9;
+  bool enrolled = 10;
+  bool lowCredits = 11;
+  google.protobuf.Timestamp creditsDepleted = 12;
+  bool terminatePaidServices = 13;
+  bool terminateMessageQueued = 14;
+  bool delinquent = 15;
+  bool paidServicesAllowed = 16;
+  string personId = 17;
+  string countryCode = 18;
+  bool restricted = 19;
+  string adminName = 20;
+  google.protobuf.Timestamp accessLimitedTimestamp = 21;
+  bool tradeRestricted = 22;
+  UpgradeStatus upgradedToPremium = 23;
+  UpgradeStatus upgradedToEnterprise = 24;
+}
+
+message CloudAccountCreate {
+  string parentId = 1;
+  string tid = 2;
+  string oid = 3;
+  string name = 4;
+  string owner = 5;
+  AccountType type = 6;
+  optional bool billingAccountCreated = 7;
+  optional bool enrolled = 8;
+  optional bool lowCredits = 9;
+  optional google.protobuf.Timestamp creditsDepleted = 10;
+  optional bool terminatePaidServices = 11;
+  optional bool terminateMessageQueued = 12;
+  optional bool delinquent = 13;
+  optional bool paidServicesAllowed = 14;
+  string personId = 15;
+  string countryCode = 16;
+  bool restricted = 17;
+  string adminName = 18;
+  google.protobuf.Timestamp accessLimitedTimestamp = 19;
+  optional bool tradeRestricted = 20;
+  optional UpgradeStatus upgradedToPremium = 21;
+  optional UpgradeStatus upgradedToEnterprise = 22;
+}
+
+message CloudAccountFilter {
+  optional string id = 1;
+  optional string parentId = 2;
+  optional string tid = 3;
+  optional string oid = 4;
+  optional google.protobuf.Timestamp created = 5;
+  optional string name = 6;
+  optional string owner = 7;
+  optional AccountType type = 8;
+  optional bool billingAccountCreated = 9;
+  optional bool enrolled = 10;
+  optional bool lowCredits = 11;
+  optional google.protobuf.Timestamp creditsDepleted = 12;
+  optional bool terminatePaidServices = 13;
+  optional bool terminateMessageQueued = 14;
+  optional string personId = 15;
+  optional string countryCode = 16;
+  optional bool paidServicesAllowed = 17;
+  optional bool restricted = 18;
+  optional string adminName = 19;
+  optional google.protobuf.Timestamp accessLimitedTimestamp = 20;
+  optional bool tradeRestricted = 21;
+  optional UpgradeStatus upgradedToPremium = 22;
+  optional UpgradeStatus upgradedToEnterprise = 23;
+}
+
+message CloudAccountUpdate {
+  string id = 1;
+  optional string parentId = 2;
+  optional string tid = 3;
+  optional string name = 4;
+  optional string owner = 5;
+  optional AccountType type = 6;
+  optional bool billingAccountCreated = 7;
+  optional bool enrolled = 8;
+  optional bool lowCredits = 9;
+  optional google.protobuf.Timestamp creditsDepleted = 10;
+  optional bool terminatePaidServices = 11;
+  optional bool terminateMessageQueued = 12;
+  optional bool delinquent = 13;
+  optional bool paidServicesAllowed = 14;
+  optional string personId = 15;
+  optional string countryCode = 16;
+  optional bool restricted = 17;
+  optional string adminName = 18;
+  optional google.protobuf.Timestamp accessLimitedTimestamp = 19;
+  optional bool tradeRestricted = 20;
+  optional UpgradeStatus upgradedToPremium = 21;
+  optional UpgradeStatus upgradedToEnterprise = 22;
+}
+
+message CloudAccountId {
+  string id = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+}
+
+message CloudAccountOid {
+  string tid = 1;
+  string oid = 2;
+}
+
+message CloudAccountName {
+  string name = 1;
+}
+
+message CloudAccountPersonId {
+  string personid = 1;
+}
+
+service CloudAccountMemberService {
+
+  rpc ReadMembers(CloudAccountId) returns (CloudAccountMembers) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/id/{id}/members"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+  // Retrieve all active members who have accepted invites of a cloud account, excluding the cloud account owner
+  rpc ReadActiveMembers(CloudAccountId) returns (CloudAccountMembers) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/id/{id}/members/active"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+
+  rpc AddMembers(CloudAccountMembers) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/id/{cloudAccountId}/members/add"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+  rpc RemoveMembers(CloudAccountMembers) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/id/{cloudAccountId}/members/delete"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+  rpc ReadUserCloudAccounts(CloudAccountUser) returns (MemberAccount) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/name/{userName}/members"
+    };
+    option (idc.method).authz.user = true;
+    option (idc.method).authz.userName = true;
+  };
+
+  // Called internally by OPA only
+  rpc GetCloudAccountsForOpa(AccountUser) returns (RelatedAccounts) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/user/{userName}/accounts"
+    };
+  };
+  
+  // Called internally by cloudaccount-enroll only
+  rpc UpdatePersonId(MemberPersonId) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/update/personid"
+      body: "*"
+    };
+  };
+
+  // Called internally by OPA only
+  rpc GetMemberPersonId(AccountUser) returns (AccountPerson) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/user/{userName}/personId"
+    };
+  };
+}
+
+service CloudAccountAppClientService {
+  // Called internally by OPA only - name and countryCode overwritten for member
+  rpc GetAppClientCloudAccount(AccountClient) returns (CloudAccount) {
+    option (google.api.http) = {
+      get: "/v1/cloudaccounts/client/{clientId}/accounts"
+    };
+  };
+}
+
+message AccountPerson {
+  string personId = 1;
+}
+
+message AccountUser {
+  string userName = 1;
+  optional string cloudAccountId = 2;
+}
+
+message AccountClient {
+  string clientId = 1;
+  optional string cloudAccountId = 2;
+}
+
+message RelatedAccount {
+  string id = 1;
+  string name = 2;
+  string owner = 3;
+}
+
+message RelatedAccounts {
+  repeated RelatedAccount relatedAccounts = 1;
+}
+
+message MemberPersonId {
+  string personId = 1;
+  string memberEmail = 2;
+}
+
+message MemberCloudAccount {
+  string id = 1;
+  string name = 2;
+  string owner = 3;
+  InvitationState invitationState = 4;
+  AccountType type = 5;
+}
+
+message MemberAccount {
+  repeated MemberCloudAccount memberAccount = 1;
+}
+
+message CloudAccountMembers {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  repeated string members = 2;
+}
+
+message CloudAccountUser {
+  string userName = 1 [
+    (idc.field).userName = true
+  ];
+  optional bool onlyActive = 2;
+}
+
+enum OtpState {
+  OTP_STATE_PENDING = 0;
+  OTP_STATE_ACCEPTED = 1;
+  OTP_STATE_EXPIRED = 2;
+  OTP_STATE_INVALID = 3;
+}
+
+enum OtpType {
+  INVITATION_VALIDATE = 0;
+  INVITATION_RESEND = 1;
+}
+
+// TODO: remove if not used
+message Otp {
+  string cloudAccountId = 1;
+  string memberEmail = 2;
+  string otpCode = 3;
+  OtpState otpState = 4;
+  google.protobuf.Timestamp expiry = 5;
+}
+
+message OtpRequest {
+  string cloudAccountId = 1[
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  string memberEmail = 2;
+}
+
+message VerifyOtpRequest {
+  string cloudAccountId = 1[
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  string memberEmail = 2;
+  string otpCode = 3;
+}
+
+message VerifyOtpResponse {
+  bool validated = 1;
+  OtpState otpState = 2;
+  string message = 3;
+  bool blocked = 4;
+  int32 retryLeft = 5;
+}
+
+service OtpService {
+  rpc CreateOtp(OtpRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/otp/create"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+  rpc VerifyOtp(VerifyOtpRequest) returns (VerifyOtpResponse) {
+    option (google.api.http) = {
+      post: "/v1/otp/verify"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+  rpc ResendOtp(OtpRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/otp/resend"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+}
+
+enum InvitationState {
+  INVITE_STATE_UNSPECIFIED = 0;
+  INVITE_STATE_PENDING_ACCEPT = 1;
+  INVITE_STATE_ACCEPTED = 2;
+  INVITE_STATE_REVOKED = 3;
+  INVITE_STATE_EXPIRED = 4;
+  INVITE_STATE_REJECTED = 5;
+  INVITE_STATE_REMOVED = 6;
+}
+
+message InviteRequest {
+  string member_email = 1;
+  google.protobuf.Timestamp expiry = 2;
+  string note = 3;
+  repeated string cloudAccountRoleIds = 4;
+}
+
+message InviteRequestList {
+  string cloudAccountId = 1[
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  repeated InviteRequest invites = 2;
+}
+
+message Invite {
+  string member_email = 1;
+  InvitationState invitation_state = 2;
+  google.protobuf.Timestamp expiry = 3;
+  string note = 4;
+}
+
+message InviteList {
+  bool can_add_more_members = 1;
+  repeated Invite invites = 2;
+  int32 members_limit = 3;
+  int32 member_count = 4;
+}
+
+message InviteFilter {
+  string adminAccountId = 1[
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+}
+
+message InviteResendRequest {
+  string adminAccountId = 1[
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  string member_email = 2;
+}
+
+message InviteResendResponse {
+  string message = 1;
+  bool blocked = 2;
+  int32 retryLeft = 3;
+}
+
+message InviteRevokeRequest {
+  string adminAccountId = 1[
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  string member_email = 2;
+  InvitationState invitation_state = 3;
+}
+
+message InviteUpdateRequest {
+  string adminAccountId = 1[
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  string memberEmail = 2[
+    (idc.field).userName = true
+  ];
+  InvitationState invitation_state = 3;
+}
+
+message ValidateInviteCodeRequest {
+  string adminCloudAccountId = 1;
+  string memberEmail = 2[
+    (idc.field).userName = true
+  ];
+  string inviteCode = 3;
+}
+
+message ValidateInviteCodeResponse {
+  bool valid = 1;
+  InvitationState invitationState = 2;
+}
+
+message SendInviteCodeRequest {
+  string adminAccountId = 1;
+  string memberEmail = 2[
+    (idc.field).userName = true
+  ];
+}
+
+service CloudAccountInvitationService {
+  rpc CreateInvite(InviteRequestList) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+        post: "/v1/cloudaccounts/invitations/create"
+        body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+  rpc ReadInvite(InviteFilter) returns (InviteList) {
+    option (google.api.http) = {
+        get: "/v1/cloudaccounts/invitations/read"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+  rpc ResendInvite(InviteResendRequest) returns (InviteResendResponse) {
+    option (google.api.http) = {
+        post: "/v1/cloudaccounts/invitations/resend"
+        body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+  rpc RevokeInvite(InviteRevokeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+        post: "/v1/cloudaccounts/invitations/revoke"
+        body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+  rpc ValidateInviteCode(ValidateInviteCodeRequest) returns (ValidateInviteCodeResponse) {
+    option (google.api.http) = {
+        post: "/v1/cloudaccounts/validateinvitecode"
+        body: "*"
+      };
+    option (idc.method).authz.user = true;
+    option (idc.method).authz.userName = true;
+  };
+  rpc SendInviteCode(SendInviteCodeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+        post: "/v1/cloudaccounts/sendinvitecode"
+        body: "*"
+      };
+    option (idc.method).authz.user = true;
+    option (idc.method).authz.userName = true;
+  };  
+  rpc RemoveInvite(InviteUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/invitations/remove"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  };
+
+}
+
+service CloudAccountInvitationMemberService {
+  rpc RejectInvite(InviteUpdateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+        post: "/v1/cloudaccounts/invitations/member/reject"
+        body: "*"
+    };
+    option (idc.method).authz.user = true;
+    option (idc.method).authz.userName = true;
+  };
+}

@@ -1,0 +1,126 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+
+releases:
+
+{{- $computeEnabled := or $.Values.components.computeBm.enabled $.Values.components.computeVm.enabled }}
+{{- $billingServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+{{- $cloudaccountServerAddr:= print $.Values.global.grpcProxy.internal.ingress.host ":443" }}
+
+{{- if $computeEnabled }}
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $objectStoreEnabled := and $.Values.components.storageObject.enabled $region.storageConfig.objectStore.enabled }}
+{{- $objectStoragePrivateServerAddr := print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- $clusterName := ($region | get "clusterName" $region.region) }}
+{{- $availabilityZone0 := ($region.availabilityZones | get (keys $region.availabilityZones | sortAlpha | first)) }}
+{{- $availabilityZone0 := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone0 }}
+
+{{- $fleetAdminServerAddr := "" }}
+{{- if $region.fleetAdmin.enabled }}
+  {{- $fleetAdminServerAddr = print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- end }}
+
+{{- $quotaManagementServerAddr := "" }}
+{{- if $region.quotaManagementService.enabled }}
+  {{- $quotaManagementServerAddr = print $region.grpcProxy.internal.ingress.host ":443" }}
+{{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-compute-api-server") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: computeApiServer
+      service: compute
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: compute-api-server
+      clusterName: {{ $clusterName | quote }}
+    chart: idc/compute-api-server
+    version: {{ readFile (print $helmChartVersionsDir "/compute-api-server.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}compute-api-server@sha256"
+      - vNetService:
+          subnetConsumerIdPattern: {{ $region.vNetService.subnetConsumerIdPattern | quote }}
+      - nodePort: {{ $region.computeApiServer.service.nodePort }}
+      - service:
+          type: {{ $region.computeApiServer.service.type | quote }}
+      - ingress:
+          enabled: {{ $region.computeApiServer.ingress.enabled }}
+          className: {{ $region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and must reinitialize when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}
+      - vmInstanceSchedulerAddr: {{ print ($availabilityZone0.vmInstanceScheduler.ingress.host) ":443" | quote }}
+      - billingServerAddr: {{ $billingServerAddr| quote }}
+      - cloudaccountServerAddr: {{ $cloudaccountServerAddr| quote }}
+      {{- if $objectStoreEnabled }}
+      - objectStoragePrivateServerAddr: {{ $objectStoragePrivateServerAddr | quote }}
+      {{- end }}
+      - cloudAccountQuota: {{ $region.computeApiServer.cloudAccountQuota | toJson }}
+      - database:
+          service: {{ $region | get "computeApiServer.database.service" (print $region.region "-compute-db-postgresql") | quote }}
+          arg: {{ $region.computeApiServer.database.arg | quote }}
+          name: main
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-compute-api-server/database"
+      - domainSuffix: {{ $region.computeApiServer.domainSuffix | quote }}
+      - featureFlags: {{ $region.computeApiServer.featureFlags | toJson }}
+      - fleetAdminServerAddr: {{ $fleetAdminServerAddr | quote }}
+      - quotaManagementServerAddr: {{ $quotaManagementServerAddr | quote }}
+      - acceleratorInterface: {{ $region.computeApiServer.acceleratorInterface | toJson }}
+      - storageInterface:  {{ $region.computeApiServer.storageInterface | toJson }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.otel.exporter.otlp.endpoint | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - cognito: # used by computer-api-server for global:billing access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-compute-api-server/cognito
+          {{- end }}
+      - vault:
+          authPath: {{ $region.vault.authPath | quote }}
+
+{{- end }}
+{{- end }}

@@ -1,0 +1,51 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "client",
+    srcs = [
+        "aria_account.go",
+        "aria_client.go",
+        "aria_client_error.go",
+        "aria_creds.go",
+        "aria_invoice.go",
+        "aria_payment.go",
+        "aria_plan.go",
+        "aria_service.go",
+        "aria_usage.go",
+        "aria_usage_type.go",
+        "idutil.go",
+        "mapped_errors.go",
+        "mock_server.go",
+        "plan_helper.go",
+        "promo.go",
+        "request_constants.go",
+        "service_credit.go",
+        "util.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/billing_driver_aria/client",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/billing_driver_aria/client/aria_mock_apis",
+        "//go/pkg/billing_driver_aria/client/request",
+        "//go/pkg/billing_driver_aria/client/request/param/accts",
+        "//go/pkg/billing_driver_aria/client/request/param/plans",
+        "//go/pkg/billing_driver_aria/client/request/param/usages",
+        "//go/pkg/billing_driver_aria/client/response",
+        "//go/pkg/billing_driver_aria/client/response/data",
+        "//go/pkg/billing_driver_aria/config",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+        "//go/pkg/pb",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+        "@org_golang_x_exp//slices",
+    ],
+)
+
+go_test(
+    name = "client_test",
+    srcs = ["util_test.go"],
+    embed = [":client"],
+)

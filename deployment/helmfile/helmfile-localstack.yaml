@@ -1,0 +1,42 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+
+repositories:
+  - name: localstack
+    url: https://localstack.github.io/helm-charts
+
+releases:
+
+  {{- if $.Values.global.localstack.enabled }}
+        - name: localstack
+          namespace: idcs-system
+          kubeContext: {{ $.Values.global.kubeContext }}
+          labels:
+            component: localstack
+            applicationName: localstack
+          chart: localstack/localstack
+          version: {{ $.Values.global.localstack.version | quote }}
+          values:
+            - startServices: "s3,sqs,sns"
+            - ingress:
+                enabled: true
+            - extraEnvVars:
+              - name: AWS_DEFAULT_REGION
+                value: "us-west-2"
+              - name: http_proxy
+                value: {{ ($.Values.proxy).http_proxy | quote }}
+              - name: HTTP_PROXY
+                value: {{ ($.Values.proxy).http_proxy | quote }}
+              - name: https_proxy
+                value: {{ ($.Values.proxy).https_proxy | quote }}
+              - name: HTTPS_PROXY
+                value: {{ ($.Values.proxy).https_proxy | quote }}
+              - name: no_proxy
+                value: {{ ($.Values.proxy).no_proxy | quote }}
+              - name: NO_PROXY
+                value: {{ ($.Values.proxy).no_proxy | quote }}
+  {{- end }}

@@ -1,0 +1,14 @@
+- name: Connect to BM instance created and ping the other BM instance created on same cloud account
+  hosts: bm
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: ping the second instance (positive test)
+    ansible.builtin.shell: ping -c 4 {{ another_bm }}
+    register: ping_result
+
+  - name: Ensure ping was successful
+    ansible.builtin.debug:
+      msg: "Ping successful"
+    when: ping_result.rc == 0

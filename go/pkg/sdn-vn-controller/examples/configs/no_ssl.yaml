@@ -1,0 +1,41 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Config Version: 1
+
+ovnCentral: 
+  ovnAddress: hostname.domain.com
+  ovnPort: 6641
+
+grpcServer: 
+  grpcPort: 50051
+
+database: 
+  dbAvailable: yes
+  dbAddress: hostname.domain.com
+  dbPort: 5432
+  name: sdncontroller
+  user: sdncontroller
+  password: ./secrets/sql-passwd
+
+serviceArea:
+  regionID: Region-1
+
+security:
+  postgreSqlSSL: 
+    enabled: yes
+    verify: yes
+    cA: ./secrets/cacert.pem
+    certificate: ./secrets/sdn-controller-cert.pem
+    privateKey: ./secrets/sdn-controller-privkey.pem
+  ovnCentralSSL:
+    enabled: no
+    verify: yes
+    cA: ./secrets/cacert.pem
+    certificate: ./secrets/sdn-controller-cert.pem
+    privateKey: ./secrets/sdn-controller-privkey.pem
+  grpcServerSSL:
+    enabled: no
+    verify: no
+    cA: ./secrets/cacert.pem
+    certificate: ./secrets/sdn-controller-cert.pem
+    privateKey: ./secrets/sdn-controller-privkey.pem

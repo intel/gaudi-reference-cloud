@@ -1,0 +1,36 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "networking",
+    srcs = [
+        "clientset.go",
+        "common.go",
+        "consts.go",
+        "create.go",
+        "delete.go",
+        "endpoints.go",
+        "firewall.go",
+        "lb.go",
+        "provider.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/dpai/utils/networking",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/dpai/config",
+        "//go/pkg/dpai/db/models",
+        "//go/pkg/dpai/deployment",
+        "//go/pkg/dpai/utils/dns:menmice",
+        "//go/pkg/dpai/utils/k8s",
+        "//go/pkg/loadbalancer_operator/api/v1alpha1",
+        "//go/pkg/pb",
+        "@com_github_cert_manager_cert_manager//pkg/apis/certmanager/v1:certmanager",
+        "@com_github_cert_manager_cert_manager//pkg/apis/meta/v1:meta",
+        "@io_istio_client_go//pkg/clientset/versioned",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+    ],
+)

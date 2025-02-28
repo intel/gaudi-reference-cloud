@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}  
+data:
+  config.yaml: |
+    github:
+      githubVaultPath: /vault/secrets/github_key
+    
+    schedulerInterval: {{ .Values.schedInterval }}
+    githubKey: /vault/secrets/github_key
+    securityInsightsService:
+      url: {{ .Values.securityInsightsServiceAddr | quote }}

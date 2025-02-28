@@ -1,0 +1,8 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+# Config file for unit tests.
+listenPort: 30410
+targetPort: 57066
+clientCertificate:
+  commonName: "dev.quick-connect.us-dev-1a.cloud.intel.com.kind.local"
+  ttl: "2m"

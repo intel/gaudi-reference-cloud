@@ -1,0 +1,6 @@
+---
+ansible_network_os: 'ios'
+http_content_dir: "{{ role_path }}/files"
+http_log_dir: "/var/log/"
+http_log_file: "{{ http_log_dir }}bmvs-http.log"
+http_port: "8888"

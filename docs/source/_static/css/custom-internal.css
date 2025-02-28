@@ -1,0 +1,151 @@
+@import 'intel.css';
+@import 'devcloud.css';
+@import 'typography.css';
+@import 'navbar-internal.css';
+
+/* 
+CSS & VARS() USAGE - EXAMPLES
+https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/styling.html
+https://github.com/openvinotoolkit/openvino/blob/master/docs/openvino_sphinx_theme/openvino_sphinx_theme/static/css/openvino_sphinx_theme.css
+*/
+
+:root {
+    /*  */
+    --pst-color-active-navigation: var(--bs-cobalt-shade1);
+    --pst-color-link: var(--bs-cobalt);
+    --pst-color-link-hover: var(--bs-cobalt-shade2);
+    --pst-color-headerlink: var(--bs-cobalt-shade2);
+
+    --pst-color-primary: var(--bs-cobalt);
+    --pst-color-secondary: 0, 153, 236;
+}
+
+.table tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+#usecase{
+  background-color:var(--bs-carbon-tint2) !important;
+  color: var(--bs-classic-blue);
+  font-weight: var(--bs-font-weight-bold);
+  border-radius: .25em .25em;
+  padding: .25rem .5rem .25rem;
+	text-align:left;
+	position:relative;
+  border: .0025em solid var(--bs-carbon-tint1);
+  margin-bottom: 1em;
+}
+
+
+.table-tiber-theme tr,td{
+  padding: .5rem;
+  background-color:var(--bs-carbon-tint2) !important;
+  border-left: .25em solid var(--bs-white);
+  border-right: .25em solid var(--bs-white);;
+  border-bottom: .25em solid var(--bs-white);;
+  border-radius: .25em .25em;
+  margin-left: .5em;
+}
+
+.table-tiber-theme  th{
+  padding: .5rem;
+  background-color: var(--bs-carbon-tint2);  
+  color: var(--bs-carbon-shade1) !important;
+  border-bottom: .25em solid var(--bs-white);
+  border-left: .25em solid var(--bs-white);
+  border-right: .25em solid var(--bs-white);;
+  margin-left: .5em;
+}
+
+#tbody td:first-child {
+  font-weight: var(--bs-font-weight-bold);
+  line-height: var(--bs-body-line-height);
+}
+
+#hide {
+  display: none;
+}
+
+.sd-row.sd-row-cols-3 {
+  padding: 1.5rem 0.25rem 1.5rem;
+}
+
+.bd-toc-item {
+  /* color: var(--bs-cobalt) !important; */
+  font-size: large;
+}
+
+/* 3-column, 2-row card layout, root index */
+div.sd-container-fluid{
+  display: grid;
+  position: relative;
+  grid-template-columns: auto auto auto;
+  grid-auto-rows: 1fr;
+  /* background-color: azure; /*testing only */
+  /* outline: 1px dotted orangered; /*testing only */
+}
+
+/* fa-chevron in sidebar section titles */
+label {
+  color: rgb(0, 0, 0);
+}
+
+#bd-docs-nav.bd-links{
+  padding: 1rem .25rem 1rem;
+}
+
+
+.toc-entry {
+  color: var(--CTA-primary);
+  .nav-link.active {
+    color: var(--CTA-primary);
+  }
+}
+
+.sd-card-header {
+  /* remove default border bottom*/
+  border: none;
+  padding-top: 1rem;
+}
+
+div.sd-card-header.docutils p.sd-card-text{
+  /* grid card header */
+  color: var(--bs-cobalt) !important;
+  font-weight: var(--bs-font-weight-bold);
+  /* line-height: var(--bs-body-line-height);  */
+}
+
+.sd-card-body{
+  padding: .25rem 1rem;
+}
+
+div.sd-card-footer {
+  /* remove default border top*/
+  border: none;
+  padding: 1rem 1rem;
+}
+
+div.sd-card-footer.docutils .sd-card-text .sd-badge{
+  /* badge in grid card footer */
+  font-weight: 500;
+  padding: .5rem .5rem;
+}
+
+/*  sidebar section titles */
+.sd-card-title {
+  color: var(--bs-cobalt) !important;
+}
+
+.bd-sidebar .nav li>a {
+  text-decoration: none;
+}
+
+.bd-search .icon.fas.fa-search{
+  color: var(--bs-cobalt);
+  -webkit-text-stroke: 1px white;
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 2.5rem;
+  /* padding-left: 15rem; */
+}

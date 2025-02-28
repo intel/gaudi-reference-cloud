@@ -1,0 +1,24 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  name: ubuntu-2204-gaudi2-1.17.0-vm-v4
+  annotations:
+    harvesterhci.io/storageClassName: harvester-longhorn
+  finalizers:
+    - wrangler.cattle.io/vm-image-controller
+  generateName: image-
+  generation: 4
+  labels:
+    harvesterhci.io/image-type: raw_qcow2
+    harvesterhci.io/imageDisplayName: ubuntu-2204-gaudi2-1.17.0-vm-v4
+    harvesterhci.io/os-type: ubuntu
+  namespace: default
+spec:
+  checksum: "86d4fa04ce12f46dce3aa27bf5b7fe771a90fb0dbac90b4d5ef8eff824242b4a0812d2366d887deaa828d4da4e2d14a42135323f8b82471d79a9e8206e12736d"
+  displayName: ubuntu-2204-gaudi2-1.17.0-vm-v4
+  sourceType: download
+  storageClassParameters:
+      migratable: 'true'
+      numberOfReplicas: '1'
+      staleReplicaTimeout: '30'
+  url: http://10.45.122.149/vmaas/images/ubuntu-22.04-gaudi-v1.17.0-vm-cloudimg-amd64-v20250123.qcow2

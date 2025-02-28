@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "helper",
+    srcs = ["helper.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller/tests/helper",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/sdn-controller/api/v1alpha1",
+        "//go/pkg/sdn-controller/pkg/client",
+        "//go/pkg/sdn-controller/pkg/utils",
+        "//go/pkg/sdn-controller/tests/clab",
+        "//go/pkg/sdn-controller/tests/mock",
+        "//go/pkg/sdn-controller/tests/test_utils",
+        "@com_github_hashicorp_go_multierror//:go-multierror",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/types",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/client",
+    ],
+)

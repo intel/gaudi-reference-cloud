@@ -1,0 +1,45 @@
+load(":helm3_toolchain.bzl", "helm3_toolchain")
+
+toolchain_type(name = "toolchain_type", visibility = ["//visibility:public"])
+
+helm3_toolchain(
+    name = "helm3_linux_amd64",
+    tool = "@helm3_linux_amd64//:helm",
+    visibility = ["//visibility:public"],
+)
+
+helm3_toolchain(
+    name = "helm3_linux_arm64",
+    tool = "@helm3_linux_arm64//:helm",
+    visibility = ["//visibility:public"],
+)
+
+toolchain(
+    name = "helm3_linux_toolchain_amd64",
+    exec_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    toolchain = "//build/toolchains/helm3:helm3_linux_amd64",
+    toolchain_type = "//build/toolchains/helm3:toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+toolchain(
+    name = "helm3_linux_toolchain_arm64",
+    exec_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+    toolchain = "//build/toolchains/helm3:helm3_linux_arm64",
+    toolchain_type = "//build/toolchains/helm3:toolchain_type",
+    visibility = ["//visibility:public"],
+)

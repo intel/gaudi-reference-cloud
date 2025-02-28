@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idc-common.fullname" . }}
+  namespace: {{ include "idc-common.namespace" . }}
+  labels:
+    {{- include "idc-common.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "idc-common.selectorLabels" . | nindent 8 }}
+  template:
+    metadata:
+      annotations:
+        {{- include "idc-common.vaultAnnotations" . | nindent 8 }}
+        {{- include "idc-common.vaultPkiAnnotations" . | nindent 8 }}
+        {{- if .Values.vault.enable }}
+        {{- with .Values.vault.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- include "idc-common.otelAnnotations" . | nindent 8 }}
+        # Add checksum to force deployment to restart pod if the configmap changes.
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "idc-common.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccount: {{ include "idc-common.serviceAccountName" . }}
+      containers:
+        - name: main
+          image: {{ include "idc-common.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--config=/config.yaml"
+            {{- include "idc-common.logArgs" . | nindent 12 }}
+          env:
+            {{- include "idc-common.commonEnv" . | nindent 12 }}
+            {{- include "idc-common.proxyEnv" . | nindent 12 }}
+            {{- include "idc-common.otelEnv" . | nindent 12 }}
+            - name: VAULT_ADDR
+              value: {{ .Values.vault.address }}
+            - name: VAULT_PKI_ENGINE
+              value: {{ .Values.vault.pkiEngine }}
+            - name: VAULT_PKI_ROLE
+              value: {{ .Values.vault.pkiRole }}
+          ports:
+            - name: main-http
+              protocol: TCP
+              containerPort: 8080
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /config.yaml
+            name: config
+            subPath: config.yaml
+          securityContext:
+          {{- include "idc-common.securityContext" . | nindent 12 }}
+        - name: envoy
+          image: {{ .Values.envoy.image.repository }}:{{ .Values.envoy.image.tag }}
+          ports:
+            - name: envoy-http
+              protocol: TCP
+              containerPort: {{ include "idc-common.listenPort" . }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: envoy-http
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.envoy.resources | nindent 12 }}
+          volumeMounts:
+          - name: config
+            mountPath: /etc/envoy/envoy.yaml
+            subPath: envoy.yaml
+          - name: config
+            mountPath: /etc/envoy/sds.yaml
+            subPath: sds.yaml
+          securityContext:
+          {{- include "idc-common.securityContext" . | nindent 12 }}
+{{- if .Values.statsd.enabled }}
+        - name: prometheus-statsd-exporter
+          args:
+          - --statsd.mapping-config=/etc/prometheus-statsd-exporter/statsd-mapping.conf
+          image: {{ .Values.statsd.image.repository }}:{{ .Values.statsd.image.tag }}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /metrics
+              port: metrics
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 1
+          ports:
+          - containerPort: 9102
+            name: metrics
+            protocol: TCP
+          - containerPort: 9125
+            name: statsd-tcp
+            protocol: TCP
+          - containerPort: 9125
+            name: statsd-udp
+            protocol: UDP
+          volumeMounts:
+          - mountPath: /etc/prometheus-statsd-exporter
+            name: statsd-mapping-config
+{{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "idc-common.fullname" . }}
+{{- if .Values.statsd.enabled }}
+      - name: statsd-mapping-config
+        configMap:
+          name: {{ include "idc-common.fullname" . }}-statsd-mapping
+          defaultMode: 420
+          items:
+          - key: statsd.mappingConf
+            path: statsd-mapping.conf
+{{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

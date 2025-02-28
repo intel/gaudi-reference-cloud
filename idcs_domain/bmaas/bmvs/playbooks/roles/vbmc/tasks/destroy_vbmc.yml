@@ -1,0 +1,19 @@
+---
+# Shutdown a vBMC for a Guest Host
+
+- name: Include common variables
+  include_vars:
+    file: sushy_files.yml
+
+- name: Block for stopping a vBMC
+  block:
+    - name: Get the pid for Sushy emumlator for Guest Host VM number {{ vmnum }}
+      command: pgrep --full {{ sushy_conf_file }}
+      register: pid_result
+      changed_when: "pid_result.rc == 0"
+      failed_when: "pid_result.rc > 1"
+    - name: Stop the vBMC for Guest Host VM number {{ vmnum }}
+      ansible.builtin.command: kill {{ pid_result.stdout }}
+      when: pid_result.stdout | length > 0
+  become: true
+  tags: [never, teardown]

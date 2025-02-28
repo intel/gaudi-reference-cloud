@@ -1,0 +1,128 @@
+$black: #000000;
+$white: #ffffff;
+
+$classic-blue: #0054ae;
+$classic-blue-tint2: #6cc4f5;
+$classic-blue-tint1: #0099ec;
+$classic-blue-shade1: #00377c;
+$classic-blue-shade2: #001e50;
+
+$energy-blue: #00B6E5;
+$energy-blue-tint2: #9FECFF;
+$energy-blue-tint1: #64DCFF;
+$energy-blue-shade1: #0089B9;
+$energy-blue-shade2: #005374;
+
+$carbon-tint2: #e9e9e9;
+$carbon-tint1-tint: #cbcbcb; // For better scaling on components, not available as named color.
+$carbon-tint1: #aeaeae;
+$carbon-tint1-shade: #979797; // For better scaling on components, not available as named color.
+$carbon: #808080;
+$carbon-shade1-tint: #696969; // For better scaling on components, not available as named color.
+$carbon-shade1: #525252;
+$carbon-shade1-shade: #3c3c3c; // For better scaling on components, not available as named color.
+$carbon-shade2: #262626;
+$carbon-gray: #E2E2E4;
+
+$blue-steel: #548fad;
+$blue-steel-tint2: #b9d6e5;
+$blue-steel-tint1: #86b3ca;
+$blue-steel-shade1: #41728a;
+$blue-steel-shade2: #183544;
+
+$geode: #8f5da2;
+$geode-tint2: #eec3f7;
+$geode-tint1: #cc94da;
+$geode-shade1: #653171;
+
+$rust: #e96115;
+$rust-tint2: #ffc599;
+$rust-tint1: #ff8f51;
+$rust-shade1: #b24501;
+
+$moss: #8bae46;
+$moss-tint2: #d7f3a2;
+$moss-tint1: #b1d272;
+$moss-shade1: #708541;
+$moss-shade2: #515a3d;
+
+$cobalt: #1e2eb8;
+$cobalt-tint2: #98a1ff;
+$cobalt-tint1: #5b69ff;
+$cobalt-shade1: #000f8a;
+$cobalt-shade2: #000864;
+$cobalt-shade3: #040e35;
+
+$coral: #ff5662;
+$coral-tint2: #ffb6b9;
+$coral-tint1: #ff848a;
+$coral-shade1: #c81326;
+
+$daisy: #fec91b;
+$daisy-tint1: #ffe17a;
+$daisy-shade1: #edb200;
+$daisy-shade2: #c98f00;
+
+$aqua: #16CFB1;
+$aqua-tint3: #D2F9F2;
+$aqua-tint2: #8FEFE0;
+$aqua-tint1: #30E9CB;
+$aqua-shade1: #0F9B8F;
+$aqua-shade2: #08746E;
+$aqua-shade3: #05433F;
+
+$cosmos: #7000FF;
+$cosmos-shade1: #5400C0;
+$cosmos-shade2: #38007F;
+$cosmos-shade3: #160033;
+
+$tiber-blue-gradient: linear-gradient(180deg, #002567 0%, #020316 100%);
+$tiber-cobalt-cosmos-gradient: linear-gradient(180deg, #000864 0%, #160033 100%);
+$tiber-cobalt-aqua-gradient: linear-gradient(264deg, #16CFB1 -11.89%, #0B5E68 24.28%, #040E35 65.48%);
+
+$gray-white: #FFF;
+$gray-50: #FFFFFF;
+$gray-75: #F9F9F9;
+$gray-100: #F4F5F5;
+$gray-200: #E9EAEB;
+$gray-300: #E2E2E4;
+$gray-400: #C9CACE;
+$gray-500: #B2B3B9;
+$gray-600: #8B8E97;
+$gray-700: #6A6D75;
+$gray-800: #494B51;
+$gray-900: #2B2C30;
+
+$hit-box:rgba(255, 255, 255, 0.00);
+
+$theme-dark: #212529;
+
+$energy-border-01: rgba(34, 87, 102, 0.30);
+
+/* NOTE: Intel Status colors, these should only be used to communicate status. */
+$status-error: #ce0000;
+$status-error-natural: #f5c7c7;
+$status-error-soft: #f88f8f;
+$status-error-natural-dark-mode: #b13d4a;
+$status-error-soft-dark-mode: #d55050;
+
+$status-success: #008A00;
+$status-success-natural: #c2e5c2;
+$status-success-soft: #add2ad;
+$status-success-natural-dark-mode: #006400;
+$status-success-soft-dark-mode: #5ca05c;
+
+$status-warning: #ffd100;
+$status-warning-natural: #fff6cc;
+$status-warning-soft: #FFF3CD;
+$status-warning-natural-dark-mode: #ffeb92;
+$status-warning-soft-dark-mode: #ffe057;
+
+// Secondary colors
+$secondary-bg-hover: $carbon-tint2;
+$secondary-bg-active: #d8d8d8;
+
+$secondary-color-dark: #00438b; // Result of #{shade-color($classic-blue, 20)};
+$secondary-bg-dark: #c4c4c4;
+$secondary-bg-dark-hover: #a0a0a0;
+$secondary-bg-dark-active: #9a9a9a;

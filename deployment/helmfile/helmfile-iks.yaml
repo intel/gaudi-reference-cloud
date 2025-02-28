@@ -1,0 +1,329 @@
+bases:
+  - environments.yaml
+
+---
+
+{{- $helmChartVersionsDir := requiredEnv "HELM_CHART_VERSIONS_DIR" }}
+{{- $secretsDir := requiredEnv "SECRETS_DIR" }}
+{{- $productCatalogAddr := print ($.Values | get "global.grpcProxy.internal.ingress.host" "") ":443" }}
+
+repositories:
+  - name: idc
+    url: {{ (.Values.idcHelmRepository).url | quote }}
+    oci: true
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+
+{{- if or $.Values.components.iks.enabled $.Values.components.iksOperators.enabled }}
+
+{{- range $regionIndex, $region := .Values.regions }}
+{{- $region := mustMergeOverwrite (deepCopy $.Values.defaults.region) $region }}
+
+{{- $iksEnabled := $.Values.components.iks.enabled }}
+
+{{- $availabilityZone0 := ($region.availabilityZones | get (keys $region.availabilityZones | sortAlpha | first)) }}
+
+{{- if $iksEnabled }}
+
+  {{- if ($region | get "iksDb.enabled" $.Values.components.iksDb.enabled) }}
+  # Helmfile is used to install Postgres for development only.
+  # For simplicity, standard Kubernetes Secrets are used, not Vault.
+  # See https://github.com/bitnami/charts/tree/main/bitnami/postgresql/#installing-the-chart
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-iks-db") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: iks
+      service: iks
+      database: iks
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: iks-db
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: bitnami/postgresql
+    version: 12.2.6
+    values:
+      - image:
+          debug: true
+      - auth:
+          password: {{ readFile (print $secretsDir "/" $region.region "-iks_db_user_password") | quote }}
+          username: {{ readFile (print $secretsDir "/" $region.region "-iks_db_username") | quote }}
+          postgresPassword: {{ readFile (print $secretsDir "/" $region.region "-iks_db_user_password") | quote }}
+          database: main
+      - primary:
+          persistence:
+            enabled: {{ $region | get "iks.primary.persistence.enabled" $.Values.components.iksDb.primary.persistence.enabled }}
+      - cognito: # used for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-iks/cognito
+          {{- end }}
+  {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $region.region "-iks") }}
+    namespace: idcs-system
+    kubeContext: {{ $region.kubeContext }}
+    labels:
+      component: iks
+      service: iks
+      geographicScope: regional
+      region: {{ $region.region }}
+      kubeContext: {{ $region.kubeContext }}
+      applicationName: iks
+      clusterName: {{ $region | get "clusterName" $region.region | quote }}
+    chart: idc/iks
+    version: {{ readFile (print $helmChartVersionsDir "/iks.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - image:
+          registry: {{ ($.Values.image).registry | quote }}
+          repository: "{{ ($.Values.image).repositoryPrefix }}iks@sha256"
+      - vNetService:
+          subnetConsumerIdPattern: {{ $region | get "vNetService.subnetConsumerIdPattern" "" | quote }}
+      - nodePort: {{ $region | get "computeApiServer.service.nodePort" "0" }}
+      - service:
+          type: {{ $region | get "computeApiServer.service.type" $.Values.defaults.region.computeApiServer.service.type | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $region.iks.otel.exporter.otlp.endpoint | quote }}
+      - computeServerAddr: {{ $region.iks.computeServerAddr | quote }}
+      - productcatalogServerAddr: {{ $productCatalogAddr| quote }}
+      - ingress:
+          enabled: {{ $region | get "computeApiServer.ingress.enabled" $.Values.defaults.region.computeApiServer.ingress.enabled }}
+          className: {{ $region | get "computeApiServer.ingress.className"  $.Values.defaults.region.computeApiServer.ingress.className | quote }}
+          annotations:
+            # GRPCS backend protocol forwards encrypted traffic to the gRPC server and terminate TLS at the gRPC server.
+            # See https://kubernetes.github.io/ingress-nginx/examples/grpc/.
+            nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+            # instance-replicator uses a streaming read from compute-api-server and dies when interrupted.
+            # Set GRPC timeout to 10 years (default is 60s).
+            {{- if ($region | get "computeApiServer.ingress.enableNginxServerSnippet" $.Values.defaults.region.computeApiServer.ingress.enableNginxServerSnippet) }}
+            nginx.ingress.kubernetes.io/server-snippet: |
+              grpc_read_timeout 315360000s;
+              grpc_send_timeout 315360000s;
+              client_body_timeout 315360000s;
+            {{- end }}
+          hosts:
+            - host: {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+              paths:
+                - path: /
+                  pathType: Prefix
+          {{- if ($region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host) }}
+          tls:
+            - secretName: {{ $region | get "computeApiServer.ingress.tls.secretName" $.Values.defaults.region.computeApiServer.ingress.tls.secretName | quote }}
+              hosts:
+                - {{ $region | get "computeApiServer.ingress.host" $.Values.defaults.region.computeApiServer.ingress.host | quote }}
+          {{- end }}
+      - nameservers: {{ $region.nameservers | toJson }}
+      - region: {{ $region.region | quote }}
+      - vmInstanceSchedulerAddr: {{ print ($availabilityZone0 | get "vmInstanceScheduler.ingress.host" $.Values.defaults.availabilityZone.vmInstanceScheduler.ingress.host) ":443" | quote }}
+      - database:
+          service: {{ $region.iks.database.service | quote }}
+          arg: {{ $region.iks.database.arg | quote }}
+          name: {{ $region.iks.database.name| quote }}
+          port: {{ $region.iks.database.port | quote }}
+          vaultCredentialsPath: "controlplane/data/{{ $region.region }}-iks/database"
+          encryptionKeysPath: "controlplane/data/{{ $region.region }}-iks/encryption_keys"
+      - admin:
+          adminVaultPath: "controlplane/data/{{ $region.region }}-iks/admin_key"
+      - resources:
+          {{- if not $.Values.zeroResources }}
+          requests:
+            memory: {{ $region.iks.resources.requests.memory | quote }}
+            cpu: {{ $region.iks.resources.requests.cpu | quote }}
+          limits:
+            memory: {{ $region.iks.resources.limits.memory | quote }}
+            cpu: {{ $region.iks.resources.limits.cpu | quote }}
+          {{- end }}
+      - domainSuffix: {{ $region | get "computeApiServer.domainSuffix" $.Values.defaults.region.computeApiServer.domainSuffix | quote }}
+      - tls:
+          issueCa: {{ $region.region }}-ca
+      - vault:
+          authPath: {{ $region | get "vault.authPath" $.Values.defaults.region.vault.authPath | quote }}
+      - dbSeed:
+          enabled: {{$region.iks.dbSeed.enabled}}
+          vaultSeedSecretPath: "controlplane/data/{{ $region.region }}-iks/db_seed_data"
+          {{- if $region.iks.dbSeed.enabled }}
+          data:
+            Region: {{ $region.region }}
+            Availabilityzone: {{ $availabilityZone0.availabilityZone }}
+            {{- range $k, $v := $region.iks.dbSeed.data}}
+            {{$k}}: {{$v | quote }}
+            {{- end }}
+          {{- end }}
+      - cognito: # used for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-iks/cognito
+          {{- end }}
+{{- end }}
+
+{{- range $availabilityZoneIndex, $availabilityZone := $region.availabilityZones }}
+{{- $availabilityZone := mustMergeOverwrite (deepCopy $.Values.defaults.availabilityZone) $availabilityZone }}
+
+{{- $iksOperatorsEnabled := $.Values.components.iksOperators.enabled }}
+
+{{- if $iksOperatorsEnabled }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-ilb-crds") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: iks
+      service: iks
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: ilb-crds
+    chart: idc/ilb-crds
+    version: {{ readFile (print $helmChartVersionsDir "/ilb-crds.version") | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-kubernetes-crds") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: iks
+      service: iks
+      crd: true
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: kubernetes-crds
+    chart: idc/kubernetes-crds
+    version: {{ readFile (print $helmChartVersionsDir "/kubernetes-crds.version") | quote }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-ilb-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: iks
+      service: iks
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: ilb-operator
+    chart: idc/ilb-operator
+    version: {{ readFile (print $helmChartVersionsDir "/ilb-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}ilb-operator@sha256"
+            resources:
+              limits:
+                cpu: {{ $availabilityZone.ilbOperator.resources.limits.cpu | quote }}
+                memory: {{ $availabilityZone.ilbOperator.resources.limits.memory | quote }}
+              requests:
+                cpu: {{ $availabilityZone.ilbOperator.resources.requests.cpu | quote }}
+                memory: {{ $availabilityZone.ilbOperator.resources.requests.memory | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vaultAgentSecretPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-ilb-operator
+      - cognito: # used for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-iks/cognito
+          {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-kubernetes-operator") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: iks
+      service: iks
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: kubernetes-operator
+    chart: idc/kubernetes-operator
+    version: {{ readFile (print $helmChartVersionsDir "/kubernetes-operator.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}kubernetes-operator@sha256"
+            resources:
+              limits:
+                cpu: {{ $availabilityZone.kubernetesOperator.resources.limits.cpu | quote }}
+                memory: {{ $availabilityZone.kubernetesOperator.resources.limits.memory | quote }}
+              requests:
+                cpu: {{ $availabilityZone.kubernetesOperator.resources.requests.cpu | quote }}
+                memory: {{ $availabilityZone.kubernetesOperator.resources.requests.memory | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vaultAgentSecretPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-kubernetes-operator
+      - cognito: # used for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-iks/cognito
+          {{- end }}
+
+  - name: {{ include "idc-common.toReleaseName" (print $availabilityZone.availabilityZone "-kubernetes-reconciler") }}
+    namespace: idcs-system
+    kubeContext: {{ $availabilityZone.kubeContext }}
+    labels:
+      component: iks
+      service: iks
+      geographicScope: az
+      availabilityZone: {{ $availabilityZone.availabilityZone }}
+      region: {{ $region.region }}
+      kubeContext: {{ $availabilityZone.kubeContext }}
+      applicationName: kubernetes-reconciler
+    chart: idc/kubernetes-reconciler
+    version: {{ readFile (print $helmChartVersionsDir "/kubernetes-reconciler.version") | quote }}
+    values:
+      - proxy.yaml.gotmpl
+      - idc-common.yaml.gotmpl
+      - tls:
+          issueCa: {{ $availabilityZone.availabilityZone }}-ca
+      - controllerManager:
+          manager:
+            image:
+              repository: "{{ ($.Values.image).registry }}/{{ ($.Values.image).repositoryPrefix }}kubernetes-reconciler@sha256"
+            resources:
+              limits:
+                cpu: {{ $availabilityZone.kubernetesReconciler.resources.limits.cpu | quote }}
+                memory: {{ $availabilityZone.kubernetesReconciler.resources.limits.memory | quote }}
+              requests:
+                cpu: {{ $availabilityZone.kubernetesReconciler.resources.requests.cpu | quote }}
+                memory: {{ $availabilityZone.kubernetesReconciler.resources.requests.memory | quote }}
+      - otel:
+          exporter:
+            otlp:
+              endpoint: {{ $availabilityZone.otel.exporter.otlp.endpoint | quote }}
+      - vaultAgentSecretPath: controlplane/data/{{ $availabilityZone.availabilityZone }}-kubernetes-reconciler
+      - cognito: # used for global:cloudaccount access
+          enabled: {{ $.Values.cognito.enabled }}
+          {{- if $.Values.cognito.enabled }}
+          endpoint: {{ $.Values.cognito.endpoint | quote }}
+          vaultCredentialsPath: controlplane/data/{{ $region.region }}-iks/cognito
+          {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

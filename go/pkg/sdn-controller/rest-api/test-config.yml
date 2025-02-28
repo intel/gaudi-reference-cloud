@@ -1,0 +1,6 @@
+apiVersion: idcnetwork.intel.com/v1alpha1
+kind: SDNControllerRestConfig
+restConfig:
+  listenPort: 8081
+  healthPort: 8080
+  dataCenter: "fxhb3p3r:fxhb3p3s:clab"

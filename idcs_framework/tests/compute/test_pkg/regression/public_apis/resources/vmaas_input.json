@@ -1,0 +1,61 @@
+{
+  "instanceTypeToBeCreated": "vm-spr-sml",
+  "machineImagesMapping": [
+    {"instanceType": "vm-spr-sml",        "machineImage": "ubuntu-2204-jammy-v20240308"},
+    {"instanceType": "vm-spr-med",        "machineImage": "ubuntu-2204-jammy-v20240308"},
+    {"instanceType": "vm-spr-lrg",        "machineImage": "ubuntu-2204-jammy-v20240308"},
+    {"instanceType": "vm-spr-gaudi2-1",   "machineImage": ""},
+    {"instanceType": "vm-icp-gaudi2",     "machineImage": "ubuntu-20.04-gaudi2-v1.13-vm-v2"},
+    {"instanceType": "vm-spr-pvc-1100-1", "machineImage": "ubuntu-22.04-pvc-v1100-vm-v2"}
+  ],
+  "vnetPayload": {
+    "metadata": {
+      "name": "<<vnet-name>>"
+    },
+    "spec": {
+      "region": "us-dev-1",
+      "availabilityZone": "us-dev-1a",
+      "prefixLength": 22
+    }
+  },
+  "sshPublicKeyPayload":{
+      "metadata": {
+          "name": "<<ssh-key-name>>"
+      },
+      "spec": {
+          "sshPublicKey": "<<ssh-user-public-key>>"
+      }
+  },
+  "instancePayload":{
+      "metadata": {
+        "name": "<<instance-name>>"
+      },
+      "spec": {
+        "availabilityZone": "<<availability-zone>>",
+        "instanceType": "<<instance-type>>",
+        "machineImage": "<<machine-image>>",
+        "runStrategy": "RerunOnFailure",
+        "sshPublicKeyNames": [
+          "<<ssh-key-name>>"
+        ],
+        "interfaces": [
+          {
+            "name": "eth0",
+            "vNet": "<<vnet-name>>"
+          }
+        ]
+      }
+  },
+  "instancePutPayload": {
+    "spec": {
+      "sshPublicKeyNames": [
+        "<<ssh-public-key>>"
+      ]
+    }
+  },
+  "meteringMonitoringPayload":{
+    "resourceId": "<<resource-id>>"
+  },
+  "instanceGroupPayload": {
+  }
+}

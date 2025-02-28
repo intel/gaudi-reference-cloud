@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: intel-device-plugin-daemonset
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: intel-device-plugin-label
+  template:
+    metadata:
+      labels:
+        name: intel-device-plugin-label
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+      - image: {{ include "idc-common.image" . }}
+        imagePullPolicy: Always
+        name: intel-device-plugin-container
+        command:
+        - /intel_device_plugin
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+          runAsUser: 0
+          seLinuxOptions:
+            level: s0  
+        volumeMounts:
+          - name: dp
+            mountPath: /var/lib/kubelet/device-plugins
+          - name: sys
+            mountPath: /sys
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        env:
+          - name: TEST_MODE
+            value: {{ .Values.testMode | quote }}
+      volumes:
+        - name: dp
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+        - name: sys
+          hostPath:
+            path: /sys

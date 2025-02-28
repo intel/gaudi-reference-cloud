@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "annotations.proto";
+import "cloudaccount.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/pb";
+
+option (idc.file).deploy = global;
+
+service CloudAccountEnrollService {
+  // Enroll creates a cloud account and a billing account for a new user.
+  // For premium users, Enroll checks for billing options or cloud credits.
+  // CloudAccountEnrollResponse.Action tells the caller what to do next to
+  // move the enrollment process further.
+  rpc Enroll(CloudAccountEnrollRequest) returns (CloudAccountEnrollResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/enroll"
+      body: "*"
+    };
+    option (idc.method).authz.user = true;
+  }
+  rpc Upgrade(CloudAccountUpgradeRequest) returns (CloudAccountUpgradeResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/upgrade"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  }
+  rpc UpgradeWithCreditCard(CloudAccountUpgradeWithCreditCardRequest) returns (CloudAccountUpgradeResponse) {
+    option (google.api.http) = {
+      post: "/v1/cloudaccounts/upgradecc"
+      body: "*"
+    };
+    option (idc.method).authz.cloudAccount = true;
+    option (idc.method).authz.ownerCheck = true;
+  }
+}
+
+message CloudAccountEnrollRequest {
+
+  reserved 1,2,3,4;
+  // premium query parameter from post-registration redirect
+  bool premium = 5;
+  bool termsStatus = 6;
+}
+
+message CloudAccountUpgradeRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  AccountType cloudAccountUpgradeToType = 2;
+  optional string code = 3;
+}
+
+message CloudAccountUpgradeWithCreditCardRequest {
+  string cloudAccountId = 1 [
+    (idc.field).cloudAccount = true,
+    (idc.field).ownerCheck = true
+  ];
+  AccountType cloudAccountUpgradeToType = 2;
+}
+
+enum CloudAccountEnrollAction {
+  // No action needed. Enrollment is done.
+  ENROLL_ACTION_NONE = 0;
+
+  // Role is missing. Redirect user's browser to registration flow.
+  ENROLL_ACTION_REGISTER = 1;
+
+  // Premium account with no payment method. Prompt for payment or
+  // coupon.
+  ENROLL_ACTION_COUPON_OR_CREDIT_CARD = 2;
+
+  // An error occurred. Call Enroll again.
+  ENROLL_ACTION_RETRY = 3;
+
+  // Terms & Condition accept status
+  ENROLL_ACTION_TC = 4;
+}
+
+enum CloudAccountUpgradeAction {
+
+  // An error occurred. Call Upgrade again.
+  UPGRADE_ACTION_RETRY = 0;
+
+  // An error occurred. Upgrade not supported.
+  UPGRADE_ACTION_UNSUPPORTED = 1;
+
+  // No action needed. Upgrade is done.
+  UPGRADE_ACTION_NONE = 2; 
+
+}
+
+message CloudAccountEnrollResponse {
+  bool registered = 1;
+  bool haveCloudAccount = 2;
+  bool haveBillingAccount = 3;
+  bool enrolled = 4;
+  CloudAccountEnrollAction action = 5;
+  string cloudAccountId = 6;
+  AccountType cloudAccountType = 7;
+  bool isMember = 8;
+}
+
+message CloudAccountUpgradeResponse {
+  CloudAccountUpgradeAction action = 1;
+  string cloudAccountId = 2;
+  AccountType cloudAccountType = 3;
+}

@@ -1,0 +1,3 @@
+defaultVaultConnection:
+  enabled: true
+  address: "https://idcvaultproduction.eglb.intel.com"

@@ -1,0 +1,6 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+## trade compliance scanner sample config
+
+# schedule interval in seconds
+schedulerInterval: 3600

@@ -1,0 +1,35 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+exports_files(["backend.go"])
+
+go_library(
+    name = "backend",
+    srcs = [
+        "backend.go",
+        "s3.go",
+        "transport.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/backend",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/storage_controller/pkg/conf",
+        "@com_github_rs_zerolog//log",
+        "@org_golang_x_exp//maps",
+    ],
+)
+
+go_test(
+    name = "backend_test",
+    srcs = [
+        "s3_test.go",
+        "transport_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":backend"],
+    deps = [
+        "//services/storage_controller/pkg/conf",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

@@ -1,0 +1,146 @@
+// INTEL CONFIDENTIAL
+// Copyright (C) 2023 Intel Corporation
+syntax = "proto3";
+
+package intel.storagecontroller.v1;
+
+import "go/pkg/storage/storagecontroller/api/cluster.proto";
+
+option go_package = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/storage/storagecontroller/api";
+
+// Admin level service, used to manage `Namespaces`, each `Namespace` acts as a
+// container for the all resources inside it, like `fileystems` and `users`.
+// `Namespaces` are `Cluster` bound.
+service NamespaceService {
+  // Queries all available namespaces for the cluster
+  rpc ListNamespaces(ListNamespacesRequest) returns (ListNamespacesResponse) {}
+
+  // Get specific namespace in the cluster
+  rpc GetNamespace(GetNamespaceRequest) returns (GetNamespaceResponse) {}
+
+  // Creates new namespace in the cluster
+  rpc CreateNamespace(CreateNamespaceRequest) returns (CreateNamespaceResponse) {}
+
+  // Updates namespace in the cluster
+  rpc UpdateNamespace(UpdateNamespaceRequest) returns (UpdateNamespaceResponse) {}
+
+  // Delete namespace from the cluster
+  // This method will delete all data associated with `Namespace` including data.
+  rpc DeleteNamespace(DeleteNamespaceRequest) returns (DeleteNamespaceResponse) {}
+}
+
+message ListNamespacesRequest {
+  // ID of the cluster
+  ClusterIdentifier cluster_id = 1 ;
+
+  // Used to filter namespaces by specific params
+  Filter filter = 2;
+
+  message Filter {
+    // List of names to include in the response
+    repeated string names = 3;
+  }
+}
+
+message ListNamespacesResponse {
+  // Found namespaces
+  repeated Namespace namespaces = 1;
+}
+
+message GetNamespaceRequest {
+  // ID of the namespace
+  NamespaceIdentifier namespace_id = 1 ;
+}
+
+message GetNamespaceResponse {
+  // If namespace was found, contains `Namespace` object
+  Namespace namespace = 1;
+}
+
+message CreateNamespaceRequest {
+  // ID of the `Cluster` used in which namespace should be created
+  ClusterIdentifier cluster_id = 1 ;
+
+  // Namespace name
+  string name = 2;
+
+  // Namespace quota
+  Namespace.Quota quota = 3;
+
+  // Credentials for admin user to be created with `Namespace`
+  AdminUser admin_user = 4;
+
+  // IP Filter
+  repeated Namespace.IpFilter ip_filters = 5;
+
+  // Contains Admin level user credentials
+  message AdminUser {
+    // Used as `principal` in the `AuthenticationContext`
+    string name = 1;
+
+    // Used as `credentials` in the `AuthenticationContext`
+    string password = 2;
+  }
+}
+
+message CreateNamespaceResponse {
+  // Contains created namespace
+  Namespace namespace = 1;
+}
+
+message UpdateNamespaceRequest {
+  // ID of the namespace
+  NamespaceIdentifier namespace_id = 1 ;
+  // New quota
+  Namespace.Quota quota = 2;
+  // IP Filters
+  repeated Namespace.IpFilter ip_filters = 3;
+}
+
+message UpdateNamespaceResponse {
+  // Updated namespace
+  Namespace namespace = 1;
+}
+
+message DeleteNamespaceRequest {
+  // ID of the namespace to be deleted
+  NamespaceIdentifier namespace_id = 1 ;
+}
+
+message DeleteNamespaceResponse {}
+
+// ID of the Namespace, composite object which is cluster bound
+message NamespaceIdentifier {
+  // ID of the cluster in which this namespace is resides in
+  ClusterIdentifier cluster_id = 1 ;
+
+  // ID of the namespace, arbitraty string, usualy a uuid/uid
+  string id = 2 ;
+}
+
+// Namespace object represents container for the all storage objects,
+// used to separate storage object on the storage level.
+message Namespace {
+  // ID of the namespace
+  NamespaceIdentifier id = 1 ;
+
+  // Namespace name, arbitrary string
+  string name = 2;
+
+  // Namespace quota
+  Quota quota = 3;
+
+  // IP Filter
+  repeated IpFilter ip_filters = 4;
+
+  message Quota {
+    // Total amount of the storage bytes allocated to namespace.
+    // Sum of all storage objects size should not exceed this number
+    uint64 total_bytes = 1;
+  }
+
+  message IpFilter {
+    string start = 1;
+    string end = 2;
+  }
+}

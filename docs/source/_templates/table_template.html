@@ -1,0 +1,21 @@
+<div class="tableContainer">
+    <table class="table-tiber-theme table-tiber-theme-td-inst fixedColumn">
+        <tr>
+        {% for key in data[0].keys() %}
+            <th> {{ key }}</th>
+        {% endfor %}
+        </tr>
+        {% for row in data %}
+        <tr>
+            {% for value in row.values() %}
+            <td>{{ value }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <tfoot>
+            <tr>
+                <td colspan="100%"><em>Generated on {{ current_date }}</em></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

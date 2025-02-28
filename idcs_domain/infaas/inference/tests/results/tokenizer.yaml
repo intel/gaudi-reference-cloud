@@ -1,0 +1,98 @@
+#################################################
+#################################################
+test_tokenizer_initialization:
+  - model_id: "mistralai/Mistral-7B-Instruct-v0.1"
+    family: "mistralai"
+    eos_token: "</s>"
+    eos_token_id: 2
+  - model_id: "mistralai/Mixtral-8x22B-Instruct-v0.1"
+    family: "mistralai"
+    eos_token: "</s>"
+    eos_token_id: 2
+  - model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
+    family: "meta-llama"
+    eos_token: "<|eot_id|>"
+    eos_token_id: 128009
+  - model_id: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    family: "meta-llama"
+    eos_token: "<|eot_id|>"
+    eos_token_id: 128009
+  - model_id: "meta-llama/Meta-Llama-3-70B-Instruct"
+    family: "meta-llama"
+    eos_token: "<|eot_id|>"
+    eos_token_id: 128009
+  - model_id: "meta-llama/Meta-Llama-3.1-70B-Instruct"
+    family: "meta-llama"
+    eos_token: "<|eot_id|>"
+    eos_token_id: 128009
+  - model_id: "meta-llama/Llama-Guard-3-8B"
+    family: "meta-llama"
+    eos_token: "<|eot_id|>"
+    eos_token_id: 128009
+  - model_id: "meta-llama/Llama-3.2-1B-Instruct"
+    family: "meta-llama"
+    eos_token: "<|eot_id|>"
+    eos_token_id: 128009
+  - model_id: "Qwen/Qwen2.5-0.5B-Instruct"
+    family: "Qwen"
+    eos_token: "<|im_end|>"
+    eos_token_id: 151645
+#################################################
+#################################################
+test_tokenize:
+  - id: 13048
+    text: "Hi"
+  - id: 11
+    text: ","
+  - id: 1246
+    text: " how"
+  - id: 525
+    text: " are"
+  - id: 498
+    text: " you"
+  - id: 30
+    text: "?"
+#################################################
+#################################################
+test_apply_chat_template:
+  raw: "<|im_start|>system\nYou are Qwen, created by Alibaba Cloud. You are a helpful assistant.<|im_end|>\n<|im_start|>user\nHi, how are you?<|im_end|>\n<|im_start|>assistant\n"
+  tokenized:
+    input_ids:
+      - 151644
+      - 8948
+      - 198
+      - 2610
+      - 525
+      - 1207
+      - 16948
+      - 11
+      - 3465
+      - 553
+      - 54364
+      - 14817
+      - 13
+      - 1446
+      - 525
+      - 264
+      - 10950
+      - 17847
+      - 13
+      - 151645
+      - 198
+      - 151644
+      - 872
+      - 198
+      - 13048
+      - 11
+      - 1246
+      - 525
+      - 498
+      - 30
+      - 151645
+      - 198
+    attention_mask:
+      value: 1
+      len: 32
+#################################################
+#################################################
+test_count_tokens: 32

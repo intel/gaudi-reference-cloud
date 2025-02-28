@@ -1,0 +1,33 @@
+replicaCount: 1
+image:
+  repository: intelcloud/grpc-rest-gateway
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+fullnameOverride:
+# The address of grpc-proxy in format "host:port".
+targetAddr: grpc-proxy.idcs-system.svc.cluster.local:8080
+
+# The address of grpc-proxy in format "host:port".
+allowedOrigins: 
+# - "*.intel.com"
+# - "*.idcservice.net"
+
+# "global" or "regional". This controls the services that are enabled in this Helm release.
+deployment: global
+
+# If true, swagger endpoint will be exposed.
+swagger:
+  enabled: false
+
+ingress:
+  # If true, use a standard Kubernetes ingress.
+  enabled: true
+  hosts:
+    - host: '*'
+      paths:
+        - path: /v1/
+          pathType: Prefix
+        - path: /openapiv2/
+          pathType: Prefix

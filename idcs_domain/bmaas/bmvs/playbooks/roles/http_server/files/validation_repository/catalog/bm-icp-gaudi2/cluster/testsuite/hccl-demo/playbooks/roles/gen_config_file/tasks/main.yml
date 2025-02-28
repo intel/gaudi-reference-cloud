@@ -1,0 +1,17 @@
+---
+- name: Get eth0-tenant inet value
+  ansible.builtin.shell: "ip a show eth0-tenant | grep 'inet ' | awk '{print $2}' | head -n 1"
+  register: eth0_tenant_inet_result
+  changed_when: false
+
+- name: Set fact for eth0-tenant inet value
+  set_fact:
+    eth0_tenant_inet: "{{ eth0_tenant_inet_result.stdout }}"
+
+- name: Generate config for IGHS and HCCL-Demo
+  template:
+    src: "ighs-config.j2"
+    dest: "{{ ighs_config_file_path }}"
+  vars:
+    tcp_interface: "{{ eth0_tenant_inet }}"
+    ighs_config_file_path: "{{ playbook_dir }}/roles/ighs/files/utils/ighs_hccl_demo/config.yaml"

@@ -1,0 +1,44 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "bmc",
+    srcs = [
+        "bmc_interface.go",
+        "coyotepass.go",
+        "denalipass.go",
+        "idrac.go",
+        "quanta.go",
+        "quantav2.go",
+        "smc.go",
+        "virtual.go",
+        "wiwynn.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/baremetal_enrollment/bmc",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/baremetal_enrollment/ipmilan",
+        "//go/pkg/baremetal_enrollment/mygofish",
+        "//go/pkg/baremetal_enrollment/util",
+        "//go/pkg/log",
+        "@com_github_stmcginnis_gofish//:gofish",
+        "@com_github_stmcginnis_gofish//common",
+        "@com_github_stmcginnis_gofish//redfish",
+    ],
+)
+
+go_test(
+    name = "bmc_test",
+    srcs = ["bmc_test.go"],
+    deps = [
+        ":bmc",
+        "//go/pkg/baremetal_enrollment/mocks",
+        "//go/pkg/baremetal_enrollment/mygofish",
+        "@com_github_golang_mock//gomock",
+        "@com_github_onsi_ginkgo_v2//:ginkgo",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_stmcginnis_gofish//common",
+        "@com_github_stmcginnis_gofish//redfish",
+    ],
+)

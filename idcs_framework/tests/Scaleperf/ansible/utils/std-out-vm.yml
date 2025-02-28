@@ -1,0 +1,10 @@
+- name: Connect to Harvester VM and install FIO
+  hosts: vm
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Return the os release details
+    ansible.builtin.command: cat /etc/os-release
+    register: osdetails
+  - debug: msg="{{osdetails.stdout}}"

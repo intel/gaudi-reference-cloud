@@ -1,0 +1,64 @@
+replicaCount: 1
+image:
+  registry: internal-placeholder.com
+  repository: intelcloud/sdn-controller-rest
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 
+
+nodePort: 443
+deployment: global
+
+restConfig:
+  type: "NodePort"
+  listenPort: 8081
+  targetPort: 8081
+  healthPort: 8080
+  nodePort: 30444
+  dataCenter: "fxhb3p3s:fxhb3p3r"
+  privateIPV4Addresses: "" # Comma-separated string. Only used if "type" is "LoadBalancer" above.
+  loadBalancerSourceRanges: "0.0.0.0/0" # Comma-separated string of CIDR ranges. Only used if "type" is "LoadBalancer" above.
+  allowedTrunkGroups:
+    - none
+  allowedVlanIds: "21-39,100-3999,4008"
+  allowedNativeVlanIds: "1,55"
+  portChannelsEnabled: true
+
+ingress:
+  enabled: true
+  className: "nginx"
+#  issueCa: ""
+#  externalSecret:
+#    enabled: true
+#    refreshInterval: 30m
+#  annotations: {}
+  hosts:
+    - host: us-dev-1-provider-sdn-controller-rest.idcs-system.svc.cluster.local
+      paths:
+        - path: /
+          pathType: Prefix
+#  tls:
+#    - hosts:
+#        - sdn-controller-rest.local
+
+vault:
+  agent:
+    inject:
+      secret:
+        path: controlplane/data/us-dev-1/us-dev-1a/nw-sdn-controller
+
+log:
+  # Zap log encoding (one of 'json' or 'console')
+  encoder: "console"
+  # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity.
+  level: "debug"
+  # Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+  stacktraceLevel: "error"
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi

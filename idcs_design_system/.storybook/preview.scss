@@ -1,0 +1,20 @@
+@import '../src/scss/providers/style.provider.common.scss';
+@import '../src/scss/providers/style.provider.scss';
+
+.sb-show-main.dark {
+    background-color: #1A1E2E;
+    .docs-story {
+        background-color: #1A1E2E;
+    }
+}
+
+.sb-show-main.light {
+    background-color: #ffffff;
+    .docs-story {
+        background-color: #ffffff;
+    }
+}
+
+.btn {
+    min-width: 10rem;
+}

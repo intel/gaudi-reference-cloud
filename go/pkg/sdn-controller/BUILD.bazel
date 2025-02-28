@@ -1,0 +1,51 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "sdn-controller_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-controller",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/k8s/apis/metal3.io/v1alpha1",
+        "//go/pkg/log",
+        "//go/pkg/mineral-river",
+        "//go/pkg/sdn-controller/api/v1alpha1",
+        "//go/pkg/sdn-controller/controllers",
+        "//go/pkg/sdn-controller/pkg/devices_manager",
+        "//go/pkg/sdn-controller/pkg/pools",
+        "//go/pkg/sdn-controller/pkg/status_reporter",
+        "//go/pkg/sdn-controller/pkg/utils",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//plugin/pkg/client/auth",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/healthz",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
+    ],
+)
+
+go_binary(
+    name = "sdn-controller",
+    embed = [":sdn-controller_lib"],
+    visibility = ["//visibility:public"],
+)
+
+idc_go_image(
+    name = "sdn-controller_image_1",
+    embed = [":sdn-controller_lib"],
+    visibility = ["//visibility:public"],
+)
+
+# Add the intel-certs layer to the generated image.
+container_image(
+    name = "sdn-controller_image",
+    base = ":sdn-controller_image_1",
+    layers = ["//go/certs:intel_certs"],
+    visibility = ["//visibility:public"],
+)

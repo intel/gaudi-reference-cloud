@@ -1,0 +1,34 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+# gazelle:exclude perf_test.go
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "create.go",
+        "delete.go",
+        "get.go",
+        "list.go",
+        "port.go",
+        "root.go",
+        "router.go",
+        "securitygroup.go",
+        "securityrule.go",
+        "staticroute.go",
+        "subnet.go",
+        "switch.go",
+        "update.go",
+        "vpc.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/sdn-vn-controller/client/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/sdn-vn-controller/api/sdn/v1:sdn",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_spf13_cobra//:cobra",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//credentials/insecure",
+    ],
+)

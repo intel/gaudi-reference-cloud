@@ -1,0 +1,31 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "tainttoleration",
+    srcs = ["taint_toleration.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/instance_scheduler/vm/framework/plugins/tainttoleration",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/helper",
+        "//go/pkg/instance_scheduler/vm/framework/plugins/names",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_component_helpers//scheduling/corev1",
+    ],
+)
+
+go_test(
+    name = "tainttoleration_test",
+    srcs = ["taint_toleration_test.go"],
+    embed = [":tainttoleration"],
+    deps = [
+        "//go/pkg/instance_scheduler/vm/framework",
+        "//go/pkg/instance_scheduler/vm/framework/runtime",
+        "//go/pkg/instance_scheduler/vm/internal/cache",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+    ],
+)

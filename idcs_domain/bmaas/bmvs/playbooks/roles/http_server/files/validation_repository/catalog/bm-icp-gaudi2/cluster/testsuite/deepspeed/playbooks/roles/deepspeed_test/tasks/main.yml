@@ -1,0 +1,5 @@
+---
+
+# Setup Deepspeed Test
+
+- include_tasks: setup_deepspeed.yml

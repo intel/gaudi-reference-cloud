@@ -1,0 +1,13 @@
+- name: Delete env vars in .bashrc
+  shell: |
+    sed -i "/export KUBECONFIG=/d" ~/.bashrc
+    sed -i "/export http_proxy=/d" ~/.bashrc
+    sed -i "/export https_proxy=/d" ~/.bashrc
+    sed -i "/export NO_PROXY=/d" ~/.bashrc
+
+- name: Add env vars to .bashrc
+  shell: |
+    echo "export KUBECONFIG=/etc/rancher/rke2/rke2.yaml" >> ~/.bashrc
+    echo "export http_proxy={{ http_proxy }}" >> ~/.bashrc
+    echo "export https_proxy={{ http_proxy }}" >> ~/.bashrc
+    echo "export NO_PROXY={{ no_proxy }}" >> ~/.bashrc

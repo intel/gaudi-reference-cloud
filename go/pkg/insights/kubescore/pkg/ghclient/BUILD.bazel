@@ -1,0 +1,22 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ghclient",
+    srcs = [
+        "client.go",
+        "releases.go",
+        "repository.go",
+        "utils.go",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/insights/kubescore/pkg/ghclient",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/pkg/insights/kubescore/pkg/common",
+        "//go/pkg/log",
+        "@com_github_google_go_github//github",
+        "@com_github_pkg_errors//:errors",
+        "@org_golang_x_oauth2//:oauth2",
+    ],
+)

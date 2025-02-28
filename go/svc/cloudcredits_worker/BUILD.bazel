@@ -1,0 +1,48 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//build/docker:docker.bzl", "idc_go_image")
+
+go_library(
+    name = "cloudcredits-worker_lib",
+    srcs = ["cloudcredits_worker.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/cloudcredits_worker",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/cloudcredits_worker",
+        "//go/pkg/cloudcredits_worker/config",
+        "//go/pkg/conf",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+    ],
+)
+
+idc_go_image(
+    name = "cloudcredits-worker_image",
+    embed = [":cloudcredits-worker_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "cloudcredits_worker",
+    embed = [":cloudcredits_worker_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "cloudcredits_worker_lib",
+    srcs = ["cloudcredits_worker.go"],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/svc/cloudcredits_worker",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/pkg/cloudcredits_worker",
+        "//go/pkg/cloudcredits_worker/config",
+        "//go/pkg/conf",
+        "//go/pkg/grpcutil",
+        "//go/pkg/grpcutil/grpclog",
+        "//go/pkg/log",
+        "//go/pkg/observability",
+    ],
+)

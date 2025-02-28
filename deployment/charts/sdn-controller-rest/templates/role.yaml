@@ -1,0 +1,76 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: sdn-controller-rest-role
+rules:
+- apiGroups:
+  - "" # The core API group is represented by an empty string
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switches
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switches/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switches/status
+  verbs:
+  - get
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - switchports
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - portchannels/status
+  verbs:
+  - get
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - portchannels
+  verbs:
+  - get
+  - list
+  - patch
+  - create
+  - delete
+  - update
+  - watch
+- apiGroups:
+  - idcnetwork.intel.com
+  resources:
+  - portchannels/status
+  verbs:
+  - get

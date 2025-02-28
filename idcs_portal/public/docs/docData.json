@@ -1,0 +1,810 @@
+[
+    {
+        "alttitle": "Account types overview",
+        "base_url": "docs/guides/accounts.html",
+        "category": [
+            "accounts"
+        ],
+        "doctitle": "Account Types",
+        "keywords": [
+            "manage account",
+            "account management",
+            "tiers",
+            "standard",
+            "premium",
+            "enterprise"
+        ],
+        "phrase": "Explore account features, including free-tier products, payments, credits, and coupons. Premium members who encounter issues get account support.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Standard Account": "docs/guides/accounts.html#standard-account",
+                "Premium Account": "docs/guides/accounts.html#premium-account",
+                "Enterprise Account": "docs/guides/accounts.html#enterprise-account",
+                "Account Support": "docs/guides/accounts.html#account-support",
+                "Community support": "docs/guides/accounts.html#community-support"
+            }
+        ]
+    },
+    {
+        "alttitle": "Billing and account usage",
+        "base_url": "docs/guides/billing_usage.html",
+        "category": [
+            "billing",
+            "compute"
+        ],
+        "doctitle": "Billing and usage",
+        "keywords": [
+            "billing",
+            "payment methods",
+            "cloud credits",
+            "invoice",
+            "coupons"
+        ],
+        "phrase": "Understand billing options, payment methods, track usage, and view invoices. View cloud credits and learn how to redeem coupons.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Account Type Payments": "docs/guides/billing_usage.html#account-type-payments",
+                "Cloud Credits and Coupons": "docs/guides/billing_usage.html#cloud-credits-and-coupons",
+                "Current Month Usage": "docs/guides/billing_usage.html#current-month-usage",
+                "Invoices and Usage": "docs/guides/billing_usage.html#invoices-and-usage",
+                "Payment Methods": "docs/guides/billing_usage.html#payment-methods",
+                "Related Topic": "docs/guides/billing_usage.html#related-topic"
+            }
+        ]
+    },
+    {
+        "alttitle": "Cloud Monitor for metrics and logging of your compute instances",
+        "base_url": "docs/guides/cloud_monitor_bm_vm.html",
+        "category": [
+            "compute"
+        ],
+        "doctitle": "Instance Cloud Monitor",
+        "keywords": [
+            "cloud monitor",
+            "metrics",
+            "logging",
+            "telemetry",
+            "CPU usage",
+            "network traffic",
+            "I/O traffic",
+            "read/write operations"
+        ],
+        "phrase": "Cloud Monitor offers metrics and logging for bare metal and VM instances, exposing CPU usage, memory usage, I/O traffic, and more.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/cloud_monitor_bm_vm.html#prerequisites",
+                "Bare Metal Cloud Monitor": "docs/guides/cloud_monitor_bm_vm.html#bare-metal-cloud-monitor",
+                "Virtual Machine Cloud Monitor": "docs/guides/cloud_monitor_bm_vm.html#virtual-machine-cloud-monitor",
+                "Next Steps": "docs/guides/cloud_monitor_bm_vm.html#next-steps"
+            }
+        ]
+    },
+    {
+        "alttitle": "Use Cloud Monitor on Intel\u00ae Kubernetes Service to manage the control plane and monitor cluster performance",
+        "base_url": "docs/guides/cloud_monitor_iks.html",
+        "category": [
+            "intel K8S service"
+        ],
+        "doctitle": "IKS Cloud Monitor",
+        "keywords": [
+            "monitor kubernetes",
+            "cluster",
+            "API servers",
+            "visualize clusters",
+            "cluster performance"
+        ],
+        "phrase": "Use Cloud Monitor to track API servers, monitor Kubernetes* clusters, or troubleshoot performance on Intel\u00ae Tiber\u2122  AI Cloud.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Kubernetes API Server": "docs/guides/cloud_monitor_iks.html#kubernetes-api-server",
+                "Kubernetes etcd Metrics": "docs/guides/cloud_monitor_iks.html#kubernetes-etcd-metrics",
+                "Next Steps": "docs/guides/cloud_monitor_iks.html#next-steps"
+            }
+        ]
+    },
+    {
+        "alttitle": "Cloud Monitor for compute instances or Intel\u00ae Kubernetes Service",
+        "base_url": "docs/guides/cloud_monitor_overview.html",
+        "category": [
+            "cloud monitor"
+        ],
+        "doctitle": "Cloud Monitor",
+        "keywords": [
+            "cloud monitor",
+            "CPU usage",
+            "memory usage",
+            "IO traffic"
+        ],
+        "phrase": "Use Cloud Monitor to better manage your compute instances or Intel\u00ae Kubernetes Service",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Bare Metal and VM Cloud Monitor": "docs/guides/cloud_monitor_overview.html#bare-metal-and-vm-cloud-monitor",
+                "IKS Cloud Monitor": "docs/guides/cloud_monitor_overview.html#iks-cloud-monitor"
+            }
+        ]
+    },
+    {
+        "alttitle": "Use credentials to access services",
+        "base_url": "docs/guides/credentials.html",
+        "category": [
+            "credentials"
+        ],
+        "doctitle": "Credentials as a Service",
+        "keywords": [
+            "credentials",
+            "credentials as a service",
+            "authorization",
+            "token",
+            "API"
+        ],
+        "phrase": "Generate a client secret and client ID to directly interact with a variety of services on the ITAC.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Access Credentials": "docs/guides/credentials.html#access-credentials",
+                "Generate Secret": "docs/guides/credentials.html#generate-secret",
+                "Delete Secret": "docs/guides/credentials.html#delete-secret",
+                "Tips": "docs/guides/credentials.html#tips"
+            }
+        ]
+    },
+    {
+        "alttitle": "Get started with the Intel\u00ae Tiber\u2122 AI Cloud",
+        "base_url": "docs/guides/get_started.html",
+        "category": [
+            "dashboard",
+            "learning"
+        ],
+        "doctitle": "Get Started",
+        "keywords": [
+            "LLM",
+            "large language models",
+            "inference",
+            "training and inference",
+            "AI accelerators"
+        ],
+        "phrase": "Create an account and launch an instance. Develop LLM inference solutions using optimized processors and AI accelerators.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Create Account, Sign In": "docs/guides/get_started.html#create-account-sign-in",
+                "Initiate Instance": "docs/guides/get_started.html#initiate-instance",
+                "Launch Instance": "docs/guides/get_started.html#launch-instance",
+                "Connect to Instance": "docs/guides/get_started.html#connect-to-instance",
+                "Next Steps": "docs/guides/get_started.html#next-steps",
+                "Optional Steps": "docs/guides/get_started.html#optional-steps"
+            }
+        ]
+    },
+    {
+        "alttitle": "Intel Kubernetes Guide",
+        "base_url": "docs/guides/k8s_guide.html",
+        "category": [
+            "intel K8S service"
+        ],
+        "doctitle": "Intel Kubernetes Service Guide",
+        "keywords": [
+            "kubernetes cluster",
+            "cluster management",
+            "node"
+        ],
+        "phrase": "Provision and manage Kubernetes clusters for app development and benchmark testing.  Deploy AI/ML workloads with stable diffusion.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Provision Kubernetes Cluster": "docs/guides/k8s_guide.html#provision-kubernetes-cluster",
+                "Manage Kubernetes Cluster": "docs/guides/k8s_guide.html#manage-kubernetes-cluster",
+                "Configure Ingress, Expose Cluster Services": "docs/guides/k8s_guide.html#configure-ingress-expose-cluster-services",
+                "De-Provision Kubernetes Cluster": "docs/guides/k8s_guide.html#de-provision-kubernetes-cluster",
+                "Deploy Example AI/ML Workloads": "docs/guides/k8s_guide.html#deploy-example-ai-ml-workloads"
+            }
+        ]
+    },
+    {
+        "alttitle": "Load Balancer for application deployment",
+        "base_url": "docs/guides/load_balancer.html",
+        "category": [
+            "load balancer"
+        ],
+        "doctitle": "Load Balancers",
+        "keywords": [
+            "distribute traffic",
+            "route traffic",
+            "listener",
+            "protocols",
+            "ports",
+            "health check"
+        ],
+        "phrase": "Route traffic to one or more instances. Perform health checks. Prepare application deployment.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/load_balancer.html#prerequisites",
+                "Create Load Balancer": "docs/guides/load_balancer.html#create-load-balancer",
+                "Validate Load Balancer": "docs/guides/load_balancer.html#validate-load-balancer",
+                "Edit Load Balancer": "docs/guides/load_balancer.html#edit-load-balancer",
+                "Delete Load Balancer": "docs/guides/load_balancer.html#delete-load-balancer",
+                "Listeners Reference": "docs/guides/load_balancer.html#listeners-reference"
+            }
+        ]
+    },
+    {
+        "alttitle": "Manage a compute instance",
+        "base_url": "docs/guides/manage_instance.html",
+        "category": [
+            "compute"
+        ],
+        "doctitle": "Manage Instance",
+        "keywords": [
+            "compute instance",
+            "SSH",
+            "SSH key",
+            "connect to instance",
+            "CPU",
+            "GPU",
+            "AI-accelerated processors"
+        ],
+        "phrase": "Manage an instance from creation to deletion. Configure and connect. Understand typical uses of bare metal vs. virtual machine instances.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Instance States": "docs/guides/manage_instance.html#instance-states",
+                "Stop Instance": "docs/guides/manage_instance.html#stop-instance",
+                "Restart Instance": "docs/guides/manage_instance.html#restart-instance",
+                "Edit Instance": "docs/guides/manage_instance.html#edit-instance",
+                "Delete an Instance": "docs/guides/manage_instance.html#delete-an-instance",
+                "Optional - Update OS and Add Packages": "docs/guides/manage_instance.html#optional-update-os-and-add-packages"
+            }
+        ]
+    },
+    {
+        "alttitle": "Filter processor by large language model",
+        "base_url": "docs/guides/model_matrix.html",
+        "category": [
+            "compute",
+            "learning",
+            "catalog"
+        ],
+        "doctitle": "Processor Model Matrix",
+        "keywords": [
+            "large language model",
+            "LLM",
+            "inference",
+            "finetuning",
+            "fine tuning"
+        ],
+        "phrase": "Where to start on training and inference? Let the Processor Model Matrix recommend a processor for your LLM use case and AI workload.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Matrix": "docs/guides/model_matrix.html#matrix",
+                "Learn more": "docs/guides/model_matrix.html#learn-more"
+            }
+        ]
+    },
+    {
+        "alttitle": "Use Models as a Service API to build your AI solution",
+        "base_url": "docs/guides/models.html",
+        "category": [
+            "software"
+        ],
+        "doctitle": "Model as a Service API",
+        "keywords": [
+            "model as a service",
+            "Model API",
+            "Model endpoints",
+            "inference"
+        ],
+        "phrase": "Use Model as a Service APIs. Build and deploy AI applications, automate workflows, enhance inference, and generate data to train or fine-tune models.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/models.html#prerequisites",
+                "Supported Models": "docs/guides/models.html#supported-models",
+                "GET Request Workflows": "docs/guides/models.html#get-request-workflows"
+            }
+        ]
+    },
+    {
+        "alttitle": "Multi-user accounts",
+        "base_url": "docs/guides/multi_user_accounts.html",
+        "category": [
+            "accounts",
+            "billing"
+        ],
+        "doctitle": "Multi-user Accounts",
+        "keywords": [
+            "multi-user account",
+            "join account",
+            "account management",
+            "infrastructure as a service"
+        ],
+        "phrase": "Leverage multi-user accounts to share infrastructure, billing, and services for premium and enterprise account members. Invite a new member.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/multi_user_accounts.html#prerequisites",
+                "Administrator": "docs/guides/multi_user_accounts.html#administrator",
+                "Member": "docs/guides/multi_user_accounts.html#member",
+                "Switch accounts": "docs/guides/multi_user_accounts.html#switch-accounts",
+                "FAQ": "docs/guides/multi_user_accounts.html#faq"
+            }
+        ]
+    },
+    {
+        "alttitle": "Preview",
+        "base_url": "docs/guides/preview.html",
+        "category": [
+            "preview"
+        ],
+        "doctitle": "Preview Guide",
+        "keywords": [
+            "preview storage",
+            "preview keys",
+            "early-release",
+            "pre-release",
+            "processor preview"
+        ],
+        "phrase": "Learn how to launch a preview instance that runs on early- and pre-release Intel\u00ae processors. Get started with preview now.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {}
+        ]
+    },
+    {
+        "alttitle": "Preview Catalog",
+        "base_url": "docs/guides/preview_cat.html",
+        "category": [
+            "preview"
+        ],
+        "doctitle": "Preview Catalog",
+        "keywords": [
+            "early-release",
+            "pre-release",
+            "processor preview"
+        ],
+        "phrase": "Try pre-release and early-release CPU, GPU, and AI processors to evaluate and test workload performance. Request a preview instance.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/preview_cat.html#prerequisites",
+                "View Preview Catalog": "docs/guides/preview_cat.html#view-preview-catalog",
+                "Request a Preview Instance": "docs/guides/preview_cat.html#request-a-preview-instance",
+                "Await Request Notification": "docs/guides/preview_cat.html#await-request-notification",
+                "Choose Method to Connect": "docs/guides/preview_cat.html#choose-method-to-connect",
+                "Launch instance": "docs/guides/preview_cat.html#launch-instance"
+            }
+        ]
+    },
+    {
+        "alttitle": "Preview Keys",
+        "base_url": "docs/guides/preview_keys.html",
+        "category": [
+            "preview"
+        ],
+        "doctitle": "Preview Keys",
+        "keywords": [
+            "preview keys",
+            "early-release",
+            "pre-release",
+            "processor preview"
+        ],
+        "phrase": "Learn How to create and add public SSH keys to your preview instance. Connect securely via SSH. Get started with preview.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Create SSH public keys": "docs/guides/preview_keys.html#create-ssh-public-keys",
+                "Add Preview Keys": "docs/guides/preview_keys.html#add-preview-keys",
+                "Await Request Notification": "docs/guides/preview_keys.html#await-request-notification",
+                "Launch instance": "docs/guides/preview_keys.html#launch-instance",
+                "Collaboration and co-development": "docs/guides/preview_keys.html#collaboration-and-co-development"
+            }
+        ]
+    },
+    {
+        "alttitle": "Preview Storage",
+        "base_url": "docs/guides/preview_storage.html",
+        "category": [
+            "preview"
+        ],
+        "doctitle": "Preview Storage",
+        "keywords": [
+            "preview storage",
+            "early-release",
+            "pre-release",
+            "processor preview"
+        ],
+        "phrase": "Connect preview storage to your preview instance. Simplify data storage for training and inference on the latest INTC processors.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/preview_storage.html#prerequisites",
+                "Overview": "docs/guides/preview_storage.html#overview",
+                "Request Storage Bucket": "docs/guides/preview_storage.html#request-storage-bucket",
+                "Connect to Storage Bucket": "docs/guides/preview_storage.html#connect-to-storage-bucket",
+                "Edit Storage": "docs/guides/preview_storage.html#edit-storage",
+                "Extend Storage": "docs/guides/preview_storage.html#extend-storage",
+                "Useful Tips": "docs/guides/preview_storage.html#useful-tips"
+            }
+        ]
+    },
+    {
+        "alttitle": "Filter by AI type to find the best Intel processor",
+        "base_url": "docs/guides/proc_finder.html",
+        "category": [
+            "super computing",
+            "compute",
+            "learning",
+            "catalog"
+        ],
+        "doctitle": "Processor Finder",
+        "keywords": [
+            "deep learning",
+            "inference",
+            "data analytics",
+            "machine learning",
+            "scientific computing"
+        ],
+        "phrase": "Find the best processor by AI type. Choose from deep learning training and inference, classical machine learning, or HPC and scientific computing.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Finder": "docs/guides/proc_finder.html#finder",
+                "Learn more": "docs/guides/proc_finder.html#learn-more"
+            }
+        ]
+    },
+    {
+        "alttitle": "Use Quick Start to launch an instance on Intel\u00ae Tiber\u2122 AI Cloud",
+        "base_url": "docs/guides/quick_start.html",
+        "category": [
+            "dashboard",
+            "learning"
+        ],
+        "doctitle": "Quick Start",
+        "keywords": [
+            "LLM",
+            "large language models",
+            "inference",
+            "training and inference",
+            "AI accelerators"
+        ],
+        "phrase": "Create an account and deploy an instance. Develop AI/ML solutions using optimized Intel\u00ae processors and AI accelerators.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Launch Shared GPU": "docs/guides/quick_start.html#launch-shared-gpu",
+                "Related Documents": "docs/guides/quick_start.html#related-documents"
+            }
+        ]
+    },
+    {
+        "alttitle": "Manage SSH Keys",
+        "base_url": "docs/guides/ssh_keys.html",
+        "category": [
+            "compute",
+            "preview",
+            "intel K8S service"
+        ],
+        "doctitle": "SSH Keys",
+        "keywords": [
+            "SSH",
+            "SSH key",
+            "SSH session",
+            "account keys",
+            "upload SSH",
+            "security"
+        ],
+        "phrase": "Generate or use existing SSH keys to securely connect to an instance per your operating system. Upload, update, or delete SSH keys.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "What is an ssh key?": "docs/guides/ssh_keys.html#what-is-an-ssh-key",
+                "View my account keys": "docs/guides/ssh_keys.html#view-my-account-keys",
+                "Generate an SSH Key": "docs/guides/ssh_keys.html#generate-an-ssh-key",
+                "Upload an SSH Key": "docs/guides/ssh_keys.html#upload-an-ssh-key",
+                "Delete an SSH Key": "docs/guides/ssh_keys.html#delete-an-ssh-key",
+                "Update an SSH Key": "docs/guides/ssh_keys.html#update-an-ssh-key"
+            }
+        ]
+    },
+    {
+        "alttitle": "File storage",
+        "base_url": "docs/guides/staas_file.html",
+        "category": [
+            "storage"
+        ],
+        "doctitle": "File Storage",
+        "keywords": [
+            "storage",
+            "cloud storage",
+            "mount volume",
+            "file-system storage"
+        ],
+        "phrase": "Share files across multiple development environments, media stores, or user directories to support machine learning or model training and inference.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/staas_file.html#prerequisites",
+                "Create volume": "docs/guides/staas_file.html#create-volume",
+                "Delete volume": "docs/guides/staas_file.html#delete-volume",
+                "Mount volume": "docs/guides/staas_file.html#mount-volume",
+                "Verify Storage": "docs/guides/staas_file.html#verify-storage",
+                "FAQ": "docs/guides/staas_file.html#faq"
+            }
+        ]
+    },
+    {
+        "alttitle": "Object storage",
+        "base_url": "docs/guides/staas_object.html",
+        "category": [
+            "storage"
+        ],
+        "doctitle": "Object Storage",
+        "keywords": [
+            "AWS S3",
+            "bucket storage",
+            "unstructured data"
+        ],
+        "phrase": "Leverage object storage for training with unstructured data such as photos, videos, and webpages. Manage your storage bucket.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/guides/staas_object.html#prerequisites",
+                "Create bucket": "docs/guides/staas_object.html#create-bucket",
+                "Create bucket user": "docs/guides/staas_object.html#create-bucket-user",
+                "Install CLI Client": "docs/guides/staas_object.html#install-cli-client",
+                "Access Storage Bucket": "docs/guides/staas_object.html#access-storage-bucket",
+                "Configure Environment Variables": "docs/guides/staas_object.html#configure-environment-variables",
+                "S3 Bucket Commands": "docs/guides/staas_object.html#s3-bucket-commands",
+                "Delete Bucket": "docs/guides/staas_object.html#delete-bucket",
+                "Update user policy": "docs/guides/staas_object.html#update-user-policy",
+                "Apply Lifecycle Rules": "docs/guides/staas_object.html#apply-lifecycle-rules",
+                "Network Security Group": "docs/guides/staas_object.html#network-security-group"
+            }
+        ]
+    },
+    {
+        "alttitle": "Manage storage",
+        "base_url": "docs/guides/staas_overview.html",
+        "category": [
+            "storage"
+        ],
+        "doctitle": "Manage Storage",
+        "keywords": [
+            "storage",
+            "cloud storage",
+            "file-system storage",
+            "object storage"
+        ],
+        "phrase": "Learn which storage options are available to improve scalability, low-latency, throughput, and data retrieval speeds for your AI solution.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {}
+        ]
+    },
+    {
+        "alttitle": "Customer support and community",
+        "base_url": "docs/guides/support.html",
+        "category": [
+            "dashboard"
+        ],
+        "doctitle": "Support Guide",
+        "keywords": [
+            "support",
+            "tier",
+            "account type",
+            "standard",
+            "enterprise",
+            "premium"
+        ],
+        "phrase": "Learn about support options by tier-level, features, and costs. Find pricing information for standard, premium, and enterprise accounts.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Introduction": "docs/guides/support.html#introduction"
+            }
+        ]
+    },
+    {
+        "alttitle": "Run DeepSeek-R1-Distill-Llama-70B with TGI on Intel XPUs",
+        "base_url": "docs/tutorials/deepseek_r1.html",
+        "category": [
+            "compute"
+        ],
+        "doctitle": "Run DeepSeek-R1-Distill-Llama-70B",
+        "keywords": [
+            "DeepSeek",
+            "DeepSeek-R1",
+            "Llama 3",
+            "TGI"
+        ],
+        "phrase": "Run DeepSeek-R1-Distill-Llama-70B using text-generation-inference (TGI) with the Intel\u00ae Data Center GPU Max Series.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/tutorials/deepseek_r1.html#prerequisites",
+                "Compute Instance": "docs/tutorials/deepseek_r1.html#compute-instance",
+                "Launch Instance": "docs/tutorials/deepseek_r1.html#launch-instance",
+                "Launch Container": "docs/tutorials/deepseek_r1.html#launch-container",
+                "Start Model Server": "docs/tutorials/deepseek_r1.html#start-model-server",
+                "Benchmarking": "docs/tutorials/deepseek_r1.html#benchmarking"
+            }
+        ]
+    },
+    {
+        "alttitle": "Expose local services or web apps on Intel\u00ae Tiber\u2122 AI Cloud.",
+        "base_url": "docs/tutorials/expose_app_tunnels.html",
+        "category": [
+            "learning"
+        ],
+        "doctitle": "Expose Local Apps with Tunnels",
+        "keywords": [
+            "web services",
+            "web apps",
+            "TGI server",
+            "vLLM services",
+            "demo"
+        ],
+        "phrase": "Expose local apps and share a public URL for demos, hackathons, or collaboration on Intel\u00ae Tiber\u2122 AI Cloud.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/tutorials/expose_app_tunnels.html#prerequisites",
+                "Cloudflare TryCloudflare": "docs/tutorials/expose_app_tunnels.html#cloudflare-trycloudflare",
+                "Benefits of Cloudflare Tool": "docs/tutorials/expose_app_tunnels.html#benefits-of-cloudflare-tool",
+                "Set Up TryCloudflare": "docs/tutorials/expose_app_tunnels.html#set-up-trycloudflare",
+                "Example Workloads": "docs/tutorials/expose_app_tunnels.html#example-workloads",
+                "Gradio Share Feature": "docs/tutorials/expose_app_tunnels.html#gradio-share-feature",
+                "Benefits of Gradio Tool": "docs/tutorials/expose_app_tunnels.html#benefits-of-gradio-tool",
+                "Set Up Gradio Tunnels": "docs/tutorials/expose_app_tunnels.html#set-up-gradio-tunnels"
+            }
+        ]
+    },
+    {
+        "alttitle": "Fine-tune the Meta Llama-3.2-3B model",
+        "base_url": "docs/tutorials/finetune_llama3_2.html",
+        "category": [
+            "learning"
+        ],
+        "doctitle": "Fine-tune Meta Llama-3.2-3B-Instruct",
+        "keywords": [
+            "meta llama",
+            "meta llama 3.2",
+            "Intel Gaudi",
+            "huggingface"
+        ],
+        "phrase": "Fine-tune the Meta Llama-3.2-3B model with Low-Rank Adaptation using an Optimum Habana container workflow.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/tutorials/finetune_llama3_2.html#prerequisites",
+                "Request Access to Llama3.2-3B-Instruct Model": "docs/tutorials/finetune_llama3_2.html#request-access-to-llama3-2-3b-instruct-model",
+                "Compute Instance": "docs/tutorials/finetune_llama3_2.html#compute-instance",
+                "Log in and Launch Instance": "docs/tutorials/finetune_llama3_2.html#log-in-and-launch-instance",
+                "Run Habana container workflow": "docs/tutorials/finetune_llama3_2.html#run-habana-container-workflow",
+                "Export Hugging Face Token": "docs/tutorials/finetune_llama3_2.html#export-hugging-face-token",
+                "Apply Single-card Finetuning": "docs/tutorials/finetune_llama3_2.html#apply-single-card-finetuning",
+                "View Results in JSON": "docs/tutorials/finetune_llama3_2.html#view-results-in-json",
+                "ChatBot Prompt Exercise": "docs/tutorials/finetune_llama3_2.html#chatbot-prompt-exercise",
+                "Next steps": "docs/tutorials/finetune_llama3_2.html#next-steps"
+            }
+        ]
+    },
+    {
+        "alttitle": "XPU verify tool for discrete GPUs",
+        "base_url": "docs/tutorials/intel_xpu_verify.html",
+        "category": [
+            "learning"
+        ],
+        "doctitle": "XPU Verify Tool",
+        "keywords": [
+            "Linux OS",
+            "Ubuntu",
+            "Red Hat",
+            "RHEL",
+            "Fedora"
+        ],
+        "phrase": "Ensure optimal configuration of discrete GPUs on multiple Linux* distributions by running a suite of tests and automating fixes.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/tutorials/intel_xpu_verify.html#prerequisites",
+                "Setup": "docs/tutorials/intel_xpu_verify.html#setup",
+                "Installation": "docs/tutorials/intel_xpu_verify.html#installation",
+                "Usage": "docs/tutorials/intel_xpu_verify.html#usage",
+                "Supported Tests": "docs/tutorials/intel_xpu_verify.html#supported-tests",
+                "Additional Checks": "docs/tutorials/intel_xpu_verify.html#additional-checks"
+            }
+        ]
+    },
+    {
+        "alttitle": "Jupyter Notebook Learning",
+        "base_url": "docs/tutorials/jupyter_learning.html",
+        "category": [
+            "learning"
+        ],
+        "doctitle": "JupyterLab Learning",
+        "keywords": [
+            "Jupyter Notebooks",
+            "JupyterLab",
+            "JupyterHub",
+            "learning"
+        ],
+        "phrase": "Launch Jupyter Notebooks to learn interactively. Learn AI with Intel\u00ae Gaudi\u00ae accelerator, Gen AI, C++ SYCL Essentials, among others.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/tutorials/jupyter_learning.html#prerequisites",
+                "Overview": "docs/tutorials/jupyter_learning.html#overview",
+                "Launch Jupyter Notebook": "docs/tutorials/jupyter_learning.html#launch-jupyter-notebook",
+                "Launch JupyterLab": "docs/tutorials/jupyter_learning.html#launch-jupyterlab",
+                "Notebook Tips": "docs/tutorials/jupyter_learning.html#notebook-tips",
+                "Hardware and software": "docs/tutorials/jupyter_learning.html#hardware-and-software",
+                "Sessions": "docs/tutorials/jupyter_learning.html#sessions",
+                "Troubleshooting": "docs/tutorials/jupyter_learning.html#troubleshooting",
+                "Policy": "docs/tutorials/jupyter_learning.html#policy"
+            }
+        ]
+    },
+    {
+        "alttitle": "Develop in the Cloud with Visual Studio Code",
+        "base_url": "docs/tutorials/vs_code.html",
+        "category": [
+            "learning"
+        ],
+        "doctitle": "Visual Studio Code* Dev",
+        "keywords": [
+            "Visual Studio Code",
+            "VSCode",
+            "VS Code",
+            "remote tunnel"
+        ],
+        "phrase": "Connect to the Intel\u00ae Tiber\u2122 AI Cloud using the remote tunnel extension in the Visual Studio Code* app and your GitHub* account.",
+        "rating": 0,
+        "show_urls": true,
+        "urls": [
+            {
+                "Prerequisites": "docs/tutorials/vs_code.html#prerequisites",
+                "Instructions": "docs/tutorials/vs_code.html#instructions",
+                "Next Steps": "docs/tutorials/vs_code.html#next-steps",
+                "Troubleshooting": "docs/tutorials/vs_code.html#troubleshooting",
+                "Resources": "docs/tutorials/vs_code.html#resources"
+            }
+        ]
+    }
+]

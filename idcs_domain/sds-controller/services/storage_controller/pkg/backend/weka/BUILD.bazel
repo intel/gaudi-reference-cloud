@@ -1,0 +1,46 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "weka",
+    srcs = [
+        "cluster.go",
+        "filesystem.go",
+        "namespace.go",
+        "s3.go",
+        "statefulclient.go",
+        "user.go",
+        "weka.go",
+    ],
+    importpath = "github.com/intel-innersource/applications.infrastructure.idcstorage.sds-controller/services/storage_controller/pkg/backend/weka",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/backend/weka/client/v4",
+        "//services/storage_controller/pkg/conf",
+        "//services/storage_controller/pkg/server/helpers",
+        "@com_github_deepmap_oapi_codegen_v2//pkg/securityprovider",
+        "@com_github_rs_zerolog//log",
+    ],
+)
+
+go_test(
+    name = "weka_test",
+    srcs = [
+        "cluster_test.go",
+        "filesystem_test.go",
+        "namespace_test.go",
+        "s3_test.go",
+        "statefulclient_test.go",
+        "user_test.go",
+        "weka_test.go",
+    ],
+    embed = [":weka"],
+    deps = [
+        "//services/storage_controller/pkg/backend",
+        "//services/storage_controller/pkg/backend/weka/client/v4/mocks",
+        "//services/storage_controller/pkg/conf",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

@@ -1,0 +1,21 @@
+# INTEL CONFIDENTIAL
+# Copyright (C) 2023 Intel Corporation
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "db",
+    srcs = ["migrations.go"],
+    embedsrcs = [
+        "migrations/20240822_initial.up.sql",
+        "migrations/20250116132853_create_address_translation_table.up.sql",
+        "migrations/20250203_add_deleted_ts_to_subnet_idx.up.sql",
+        "migrations/20250205_add_deleted_ts_to_vpc_index.up.sql",
+        "migrations/20250127_create_table_port.up.sql",
+        "migrations/20250206150629_add_vpcid_and_cidr_indexs_for_subnet.up.sql",
+        "migrations/20250213_add_unique_idx_for_port.up.sql",
+        "migrations/20250213194334_add_address_translation_unique_constraint.up.sql",
+        "migrations/20250223_add_vpc_id_to_subnet_index.up.sql",
+    ],
+    importpath = "github.com/intel-innersource/frameworks.cloud.devcloud.services.idc/go/pkg/network/db",
+    visibility = ["//visibility:public"],
+)
